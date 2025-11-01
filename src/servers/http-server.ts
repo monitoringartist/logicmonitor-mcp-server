@@ -10,69 +10,57 @@ import {
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import { Strategy as GitHubStrategy } from 'passport-github2';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import {
+  registerSession,
+  registerRefreshCallback,
+  startPeriodicCleanup,
+  TokenData,
+} from '../utils/core/token-refresh.js';
+import { parseConfig, validateConfig } from '../utils/core/cli-config.js';
+import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../utils/core/oauth-strategy.js';
 
 // Load environment variables
 dotenv.config();
 
 /**
- * MCP Remote Server with OAuth Authentication
+ * MCP Remote Server with Generic OAuth Authentication
  * - HTTP/SSE transport (instead of stdio)
- * - OAuth authentication (GitHub)
+ * - Generic OAuth/OIDC authentication (supports multiple providers)
  * - Remote access over the network
- * - Session management
+ * - Session management with automatic token refresh
  */
 
-// Configuration
-const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'mcp-session-secret-change-me';
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '';
-const CALLBACK_URL = process.env.CALLBACK_URL || `http://localhost:${PORT}/auth/github/callback`;
+// Parse configuration
+const config = parseConfig();
+validateConfig(config);
 
-// LogicMonitor configuration
-const LM_COMPANY = process.env.LM_COMPANY || '';
-const LM_BEARER_TOKEN = process.env.LM_BEARER_TOKEN || '';
-// Default to true (read-only mode) for safety - explicitly set to 'false' to enable write operations
-const ONLY_READONLY_TOOLS = process.env.ONLY_READONLY_TOOLS !== 'false';
-
-// Validate configuration
-if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-  console.error('ERROR: GitHub OAuth credentials not configured!');
-  console.error('Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in .env file');
-  console.error('See OAUTH-SETUP.md for instructions');
+// Validate OAuth configuration
+if (!config.oauth) {
+  console.error('❌ ERROR: OAuth credentials not configured!');
+  console.error('');
+  console.error('Required environment variables:');
+  console.error('  OAUTH_PROVIDER         - Provider type (github, google, azure, okta, auth0, custom)');
+  console.error('  OAUTH_CLIENT_ID        - OAuth client ID');
+  console.error('  OAUTH_CLIENT_SECRET    - OAuth client secret');
+  console.error('  OAUTH_SESSION_SECRET   - Session encryption secret');
+  console.error('');
+  console.error('See env.example for full configuration options');
   process.exit(1);
 }
 
-// Configure Passport with GitHub Strategy
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: CALLBACK_URL,
-    },
-    (accessToken: string, refreshToken: string, profile: any, done: any) => {
-      // In production, you would store user info in a database
-      // For this example, we just pass the profile
-      return done(null, profile);
-    },
-  ),
-);
+const oauthConfig = config.oauth;
+const PORT = process.env.PORT || 3000;
+const LM_COMPANY = config.lmCompany;
+const LM_BEARER_TOKEN = config.lmBearerToken;
+const ONLY_READONLY_TOOLS = config.readOnly;
 
-// Serialize user for session
-passport.serializeUser((user: any, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((obj: any, done) => {
-  done(null, obj);
-});
+// Configure Passport with the selected OAuth provider
+configureOAuthStrategy(oauthConfig);
 
 // Create Express app
 const app = express();
@@ -87,7 +75,7 @@ app.use(express.json());
 
 app.use(
   session({
-    secret: SESSION_SECRET,
+    secret: oauthConfig.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -245,34 +233,62 @@ app.get('/', (req: Request, res: Response) => {
         <div class="status unauthenticated">
           ⚠️ <strong>Not Authenticated</strong>
           <br><br>
-          <a href="/auth/github">Login with GitHub</a>
+          <a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>
         </div>
       `}
       
       <h2>API Endpoints</h2>
       <ul>
         <li><code>GET /</code> - This page</li>
-        <li><code>GET /auth/github</code> - Initiate GitHub OAuth</li>
-        <li><code>GET /auth/github/callback</code> - OAuth callback</li>
+        <li><code>GET /auth/login</code> - Initiate OAuth login</li>
+        <li><code>GET /auth/callback</code> - OAuth callback</li>
         <li><code>GET /logout</code> - Logout</li>
         <li><code>GET /status</code> - Check authentication status</li>
         <li><code>GET /mcp/sse</code> - MCP SSE endpoint (authenticated)</li>
       </ul>
       
-      <h2>Documentation</h2>
-      <p>See <code>OAUTH-SETUP.md</code> for setup instructions.</p>
+      <h2>Configuration</h2>
+      <p><strong>OAuth Provider:</strong> ${oauthConfig.provider}</p>
+      <p>See <code>env.example</code> for setup instructions.</p>
     </body>
     </html>
   `);
 });
 
-// GitHub OAuth routes
-app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+// Generic OAuth routes
+const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
+app.get('/auth/login', passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { scope: scopeArray }));
 
 app.get(
-  '/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/' }),
+  '/auth/callback',
+  passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { failureRedirect: '/' }),
   (req: Request, res: Response) => {
+    // Register session with token refresh if user has tokens
+    if (req.user && req.session) {
+      const user = req.user as OAuthUser;
+      const sessionId = req.session.id || req.sessionID;
+
+      const tokenData: TokenData = {
+        accessToken: user.tokens.accessToken,
+        refreshToken: user.tokens.refreshToken,
+        expiresAt: user.tokens.expiresAt,
+        tokenType: 'Bearer',
+        scope: oauthConfig.scope,
+      };
+
+      registerSession(sessionId, user, tokenData);
+      console.log(`✅ Session registered with token refresh (${oauthConfig.provider}): ${sessionId.substring(0, 8)}...`);
+
+      // Register refresh callback if provider supports it
+      if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
+        const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
+        if (refreshFn) {
+          registerRefreshCallback(sessionId, refreshFn);
+          console.log(`🔄 Token refresh enabled for ${oauthConfig.provider}`);
+        }
+      }
+    }
+
     res.redirect('/');
   },
 );
@@ -331,9 +347,18 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// Start periodic cleanup of expired sessions
+if (oauthConfig.tokenRefreshEnabled) {
+  startPeriodicCleanup();
+  console.log('✅ Token refresh system initialized');
+}
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 MCP Remote Server with OAuth running on http://localhost:${PORT}`);
   console.log(`📝 Visit http://localhost:${PORT} to authenticate`);
-  console.log('🔐 Using GitHub OAuth for authentication');
+  console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+  if (oauthConfig.tokenRefreshEnabled) {
+    console.log('🔄 Token refresh: enabled (automatic background refresh)');
+  }
 });

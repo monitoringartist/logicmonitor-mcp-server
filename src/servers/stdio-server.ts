@@ -10,27 +10,28 @@ import { config } from 'dotenv';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import { parseConfig, validateConfig } from '../utils/core/cli-config.js';
 
 // Load environment variables
 config();
 
 /**
- * LogicMonitor MCP Server
+ * LogicMonitor MCP Server (STDIO Transport)
  *
  * This server provides MCP tools for interacting with LogicMonitor API.
  * It supports comprehensive device monitoring, alert management, dashboard operations,
  * and more through the LogicMonitor REST API v3.
  *
- * Configuration:
- * - LM_COMPANY: Your LogicMonitor company/account name
- * - LM_BEARER_TOKEN: Your LogicMonitor API bearer token
+ * Configuration via environment variables or CLI flags (see cli-config.ts)
  */
 
-// Validate required environment variables
-const LM_COMPANY = process.env.LM_COMPANY || '';
-const LM_BEARER_TOKEN = process.env.LM_BEARER_TOKEN || '';
-// Default to true (read-only mode) for safety - explicitly set to 'false' to enable write operations
-const ONLY_READONLY_TOOLS = process.env.ONLY_READONLY_TOOLS !== 'false';
+// Parse and validate configuration
+const appConfig = parseConfig();
+validateConfig(appConfig);
+
+const LM_COMPANY = appConfig.lmCompany;
+const LM_BEARER_TOKEN = appConfig.lmBearerToken;
+const ONLY_READONLY_TOOLS = appConfig.readOnly;
 
 // Initialize LogicMonitor client and handlers (will fail at runtime if credentials missing)
 let lmClient: LogicMonitorClient | null = null;

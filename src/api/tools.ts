@@ -50,10 +50,10 @@ const fieldsSchema = {
 const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   // Device Management Tools
   {
-    name: 'list_devices',
-    description: 'List all monitored devices/resources in LogicMonitor (LM) monitoring. Supports filtering, pagination, and field selection. Use filters like "displayName~\\"*server*\\"" or "systemProperties.name:system.devicetype,value:server". Essential for inventory management and finding specific devices.',
+    name: 'list_resources',
+    description: 'List all monitored resources/devices in LogicMonitor (LM) monitoring. Supports filtering, pagination, and field selection. Use filters like "displayName~\\"*server*\\"" or "systemProperties.name:system.devicetype,value:server". Essential for inventory management and finding specific devices.',
     annotations: {
-      title: 'List all monitored devices/resources in LogicMonitor (LM) monitoring. Supports filtering, pagination, and field selection. Use filters like "displayName~\\"*server*\\"" or "systemProperties.name:system.devicetype,value:server". Essential for inventory management and finding specific devices.',
+      title: 'List all monitored resources/devices in LogicMonitor (LM) monitoring. Supports filtering, pagination, and field selection. Use filters like "displayName~\\"*server*\\"" or "systemProperties.name:system.devicetype,value:server". Essential for inventory management and finding specific devices.',
       readOnlyHint: true,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -68,10 +68,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'get_device',
-    description: 'Get detailed information about a specific device/resource in LogicMonitor (LM) monitoring by its ID. Returns device properties, collector assignment, alert status, and monitoring configuration.',
+    name: 'get_resource',
+    description: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. Returns device properties, collector assignment, alert status, and monitoring configuration.',
     annotations: {
-      title: 'Get detailed information about a specific device/resource in LogicMonitor (LM) monitoring by its ID. Returns device properties, collector assignment, alert status, and monitoring configuration.',
+      title: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. Returns device properties, collector assignment, alert status, and monitoring configuration.',
       readOnlyHint: true,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -80,7 +80,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         deviceId: {
           type: 'number',
-          description: 'The ID of the device/resource to retrieve',
+          description: 'The ID of the resource/device to retrieve',
         },
         ...fieldsSchema,
       },
@@ -89,40 +89,40 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'create_device',
-    description: 'Add a new device or multiple devices to LogicMonitor (LM) monitoring. Supports both single device creation and batch creation. For single: provide displayName, name, preferredCollectorId. For batch: provide devices array with batchOptions.',
+    name: 'create_resource',
+    description: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. Supports both single resource/device creation and batch creation. For single: provide displayName, name, preferredCollectorId. For batch: provide resources/devices array with batchOptions.',
     annotations: {
-      title: 'Add a new device or multiple devices to LogicMonitor (LM) monitoring. Supports both single device creation and batch creation.',
+      title: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. Supports both single resource/device creation and batch creation.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
     inputSchema: {
       type: 'object',
       properties: {
-        // Single device properties
+        // Single resource/device properties
         displayName: {
           type: 'string',
-          description: 'Display name for the device/resource (for single creation)',
+          description: 'Display name for the resource/device (for single creation)',
         },
         name: {
           type: 'string',
-          description: 'IP address or hostname of the device/resource (for single creation)',
+          description: 'IP address or hostname of the resource/device (for single creation)',
         },
         preferredCollectorId: {
           type: 'number',
-          description: 'ID of the collector to monitor this device/resource (for single creation)',
+          description: 'ID of the collector to monitor this resource/device (for single creation)',
         },
         hostGroupIds: {
           type: 'string',
-          description: 'Comma-separated list of device/resource group IDs (for single creation)',
+          description: 'Comma-separated list of resource/device group IDs (for single creation)',
         },
         description: {
           type: 'string',
-          description: 'Description of the device/resource (for single creation)',
+          description: 'Description of the resource/device (for single creation)',
         },
         disableAlerting: {
           type: 'boolean',
-          description: 'Whether to disable alerting for this device/resource (for single creation)',
+          description: 'Whether to disable alerting for this resource/device (for single creation)',
         },
         customProperties: {
           type: 'array',
@@ -181,10 +181,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'update_device',
-    description: 'Modify an existing device or multiple devices in LogicMonitor (LM) monitoring. Supports both single and batch update. For single: provide deviceId and fields to update. For batch: provide devices array with batchOptions.',
+    name: 'update_resource',
+    description: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. Supports both single and batch update. For single: provide deviceId and fields to update. For batch: provide devices array with batchOptions.',
     annotations: {
-      title: 'Modify an existing device or multiple devices in LogicMonitor (LM) monitoring. Supports both single and batch update.',
+      title: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. Supports both single and batch update.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -194,15 +194,15 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         // Single device properties
         deviceId: {
           type: 'number',
-          description: 'The ID of the device/resource to update (for single update)',
+          description: 'The ID of the resource/device to update (for single update)',
         },
         displayName: {
           type: 'string',
-          description: 'New display name for the device/resource (for single update)',
+          description: 'New display name for the resource/device (for single update)',
         },
         description: {
           type: 'string',
-          description: 'New description for the device/resource (for single update)',
+          description: 'New description for the resource/device (for single update)',
         },
         disableAlerting: {
           type: 'boolean',
@@ -273,10 +273,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'delete_device',
-    description: 'Remove a device or multiple devices from LogicMonitor (LM) monitoring. Supports both single and batch deletion. For single: provide deviceId. For batch: provide deviceIds array with batchOptions.',
+    name: 'delete_resource',
+    description: 'Remove a resource/device or multiple resources/devices from LogicMonitor (LM) monitoring. Supports both single and batch deletion. For single: provide deviceId. For batch: provide deviceIds array with batchOptions.',
     annotations: {
-      title: 'Remove a device or multiple devices from LogicMonitor (LM) monitoring. Supports both single and batch deletion.',
+      title: 'Remove a resource/device or multiple resources/devices from LogicMonitor (LM) monitoring. Supports both single and batch deletion.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -286,16 +286,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         // Single device properties
         deviceId: {
           type: 'number',
-          description: 'The ID of the device/resource to delete (for single deletion)',
+          description: 'The ID of the resource/device to delete (for single deletion)',
         },
         deleteFromSystem: {
           type: 'boolean',
-          description: 'Whether to delete the device/resource from the system completely',
+          description: 'Whether to delete the resource/device from the system completely',
         },
         // Batch properties
         deviceIds: {
           type: 'array',
-          description: 'Array of device IDs to delete (for batch deletion)',
+          description: 'Array of resource/device IDs to delete (for batch deletion)',
           items: {
             type: 'number',
           },
@@ -321,10 +321,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Device Group Tools
   {
-    name: 'list_device_groups',
-    description: 'List all device/resource groups/folders in LogicMonitor (LM) monitoring. Use groups to organize devices logically. Supports filtering and pagination.',
+    name: 'list_resource_groups',
+    description: 'List all resource/device groups/folders in LogicMonitor (LM) monitoring. Use groups to organize resources/devices logically. Supports filtering and pagination.',
     annotations: {
-      title: 'List all device/resource groups/folders in LogicMonitor (LM) monitoring. Use groups to organize devices logically. Supports filtering and pagination.',
+      title: 'List all resource/device groups/folders in LogicMonitor (LM) monitoring. Use groups to organize resources/devices logically. Supports filtering and pagination.',
       readOnlyHint: true,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -339,10 +339,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'get_device_group',
-    description: 'Get detailed information about a specific device/resource group by its ID in LogicMonitor (LM) monitoring.',
+    name: 'get_resource_group',
+    description: 'Get detailed information about a specific resource/device group by its ID in LogicMonitor (LM) monitoring.',
     annotations: {
-      title: 'Get detailed information about a specific device/resource group by its ID in LogicMonitor (LM) monitoring.',
+      title: 'Get detailed information about a specific resource/device group by its ID in LogicMonitor (LM) monitoring.',
       readOnlyHint: true,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -351,7 +351,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         groupId: {
           type: 'number',
-          description: 'The ID of the device/resource group to retrieve',
+          description: 'The ID of the resource/device group to retrieve',
         },
         ...fieldsSchema,
       },
@@ -360,10 +360,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'create_device_group',
-    description: 'Create a new device/resource group in LogicMonitor (LM) monitoring.',
+    name: 'create_resource_group',
+    description: 'Create a new resource/device group in LogicMonitor (LM) monitoring.',
     annotations: {
-      title: 'Create a new device/resource group in LogicMonitor (LM) monitoring.',
+      title: 'Create a new resource/device group in LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -372,7 +372,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         name: {
           type: 'string',
-          description: 'Name of the device/resource group',
+          description: 'Name of the resource/device group',
         },
         parentId: {
           type: 'number',
@@ -380,7 +380,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         },
         description: {
           type: 'string',
-          description: 'Description of the device/resource group',
+          description: 'Description of the resource/device group',
         },
         disableAlerting: {
           type: 'boolean',
@@ -403,10 +403,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'update_device_group',
-    description: 'Update an existing device/resource group in LogicMonitor (LM) monitoring.',
+    name: 'update_resource_group',
+    description: 'Update an existing resource/device group in LogicMonitor (LM) monitoring.',
     annotations: {
-      title: 'Update an existing device/resource group in LogicMonitor (LM) monitoring.',
+      title: 'Update an existing resource/device group in LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -415,11 +415,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         groupId: {
           type: 'number',
-          description: 'The ID of the device/resource group to update',
+          description: 'The ID of the resource/device group to update',
         },
         name: {
           type: 'string',
-          description: 'New name for the device/resource group',
+          description: 'New name for the resource/device group',
         },
         description: {
           type: 'string',
@@ -439,10 +439,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'delete_device_group',
-    description: 'Delete a device/resource group from LogicMonitor (LM) monitoring.',
+    name: 'delete_resource_group',
+    description: 'Delete a resource/device group from LogicMonitor (LM) monitoring.',
     annotations: {
-      title: 'Delete a device/resource group from LogicMonitor (LM) monitoring.',
+      title: 'Delete a resource/device group from LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
       serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
     },
@@ -451,11 +451,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         groupId: {
           type: 'number',
-          description: 'The ID of the device/resource group to delete',
+          description: 'The ID of the resource/device group to delete',
         },
         deleteChildren: {
           type: 'boolean',
-          description: 'Whether to delete child device/resource groups as well',
+          description: 'Whether to delete child resource/device groups as well',
         },
       },
       additionalProperties: false,
@@ -1396,9 +1396,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   // Search Tools
   {
     name: 'search_devices',
-    description: 'Search for devices/resources in LogicMonitor (LM) monitoring by name or description. Supports both free-text search (e.g., "production") and filter syntax (e.g., "hostStatus:alive"). Free-text searches across displayName, description, and name fields automatically.',
+    description: 'Search for resources/devices in LogicMonitor (LM) monitoring by name or description. Supports both free-text search (e.g., "production") and filter syntax (e.g., "hostStatus:alive"). Free-text searches across displayName, description, and name fields automatically.',
     annotations: {
-      title: 'Search for devices/resources in LogicMonitor (LM) monitoring. Supports free-text search and filter syntax with auto-formatting.',
+      title: 'Search for resources/devices in LogicMonitor (LM) monitoring. Supports free-text search and filter syntax with auto-formatting.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },

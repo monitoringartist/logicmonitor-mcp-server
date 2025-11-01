@@ -29,6 +29,7 @@
         "express-session": "^1.17.3",
         "passport": "^0.7.0",
         "passport-github2": "^0.1.12",
+        "passport-oauth2": "^1.8.0",
         "winston": "^3.18.3"
     },
     "devDependencies": {
@@ -38,6 +39,7 @@
         "@types/node": "^22.18.13",
         "@types/passport": "^1.0.16",
         "@types/passport-github2": "^1.2.9",
+        "@types/passport-oauth2": "^1.4.17",
         "@typescript-eslint/eslint-plugin": "^8.0.0",
         "@typescript-eslint/parser": "^8.0.0",
         "eslint": "^9.0.0",

@@ -11,13 +11,20 @@ import {
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import { Strategy as GitHubStrategy } from 'passport-github2';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import crypto from 'crypto';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import {
+  registerSession,
+  registerRefreshCallback,
+  startPeriodicCleanup,
+  TokenData,
+} from '../utils/core/token-refresh.js';
+import { parseConfig, validateConfig } from '../utils/core/cli-config.js';
+import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../utils/core/oauth-strategy.js';
 
 // Load environment variables
 dotenv.config();
@@ -28,34 +35,40 @@ dotenv.config();
  * Supports:
  * - Streamable HTTP transport (POST /mcp)
  * - SSE transport (GET /mcp/sse)
- * - OAuth authentication (GitHub)
+ * - Generic OAuth/OIDC authentication (multiple providers)
  * - Transport fallback strategies
+ * - Automatic token refresh
  *
  * Transport Options:
- * - http-first: Try HTTP, fallback to SSE (404)
- * - sse-first: Try SSE, fallback to HTTP (405)
  * - http-only: Only HTTP transport
  * - sse-only: Only SSE transport
+ * - both: Both transports available
  */
 
-// Configuration
+// Parse and validate configuration
+const appConfig = parseConfig();
+validateConfig(appConfig);
+
+// Validate OAuth configuration
+if (!appConfig.oauth) {
+  console.error('❌ ERROR: OAuth credentials not configured for multi-transport server!');
+  console.error('See env.example for configuration options');
+  process.exit(1);
+}
+
+const oauthConfig = appConfig.oauth;
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'mcp-session-secret-change-me';
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '';
-const CALLBACK_URL = process.env.CALLBACK_URL || `${BASE_URL}/auth/github/callback`;
 const TRANSPORT_MODE = (process.env.TRANSPORT_MODE || 'both') as 'http-only' | 'sse-only' | 'both';
 
 // LogicMonitor configuration
-const LM_COMPANY = process.env.LM_COMPANY || '';
-const LM_BEARER_TOKEN = process.env.LM_BEARER_TOKEN || '';
-// Default to true (read-only mode) for safety - explicitly set to 'false' to enable write operations
-const ONLY_READONLY_TOOLS = process.env.ONLY_READONLY_TOOLS !== 'false';
+const LM_COMPANY = appConfig.lmCompany;
+const LM_BEARER_TOKEN = appConfig.lmBearerToken;
+const ONLY_READONLY_TOOLS = appConfig.readOnly;
 
 // Logging configuration
-const LOG_LEVEL = (process.env.LOG_LEVEL || 'info') as 'debug' | 'info' | 'warn' | 'error';
-const LOG_FORMAT = (process.env.LOG_FORMAT || 'json') as 'json' | 'chatty';
+const LOG_LEVEL = (process.env.MCP_LOG_LEVEL || appConfig.logLevel) as 'debug' | 'info' | 'warn' | 'error';
+const LOG_FORMAT = (process.env.MCP_LOG_FORMAT || appConfig.logFormat) as 'json' | 'human';
 
 // Log level priorities
 const LOG_LEVELS = {
@@ -154,43 +167,19 @@ function log(level: 'debug' | 'info' | 'warn' | 'error', message: string, data?:
   }
 }
 
-// Validate configuration
-if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-  log('error', 'GitHub OAuth credentials not configured');
-  log('error', 'Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in .env file');
-  log('error', 'See OAUTH-SETUP.md for instructions');
-  process.exit(1);
-}
-
 // Log startup configuration
 log('info', 'Server configuration', {
   port: PORT,
   transport_mode: TRANSPORT_MODE,
+  oauth_provider: oauthConfig.provider,
+  token_refresh: oauthConfig.tokenRefreshEnabled,
   log_level: LOG_LEVEL,
   log_format: LOG_FORMAT,
+  read_only: ONLY_READONLY_TOOLS,
 });
 
-// Configure Passport with GitHub Strategy
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: CALLBACK_URL,
-    },
-    (accessToken: string, refreshToken: string, profile: any, done: any) => {
-      return done(null, profile);
-    },
-  ),
-);
-
-passport.serializeUser((user: any, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((obj: any, done) => {
-  done(null, obj);
-});
+// Configure Passport with the selected OAuth provider
+configureOAuthStrategy(oauthConfig);
 
 // Create Express app
 const app = express();
@@ -261,7 +250,7 @@ app.use(express.text({ type: 'application/json' }));
 
 app.use(
   session({
-    secret: SESSION_SECRET,
+    secret: oauthConfig.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -468,7 +457,7 @@ app.get('/.well-known/oauth-protected-resource', (req: Request, res: Response) =
 app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response) => {
   res.json({
     issuer: BASE_URL,
-    authorization_endpoint: `${BASE_URL}/auth/github`,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
     token_endpoint: `${BASE_URL}/oauth/token`,
     registration_endpoint: `${BASE_URL}/oauth/register`,
     token_endpoint_auth_methods_supported: [
@@ -496,7 +485,7 @@ app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response)
 app.get('/.well-known/openid-configuration', (req: Request, res: Response) => {
   res.json({
     issuer: BASE_URL,
-    authorization_endpoint: `${BASE_URL}/auth/github`,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
     token_endpoint: `${BASE_URL}/oauth/token`,
     registration_endpoint: `${BASE_URL}/oauth/register`,
     userinfo_endpoint: `${BASE_URL}/oauth/userinfo`,
@@ -573,7 +562,7 @@ app.get('/mcp', (req: Request, res: Response) => {
     authentication: {
       required: true,
       type: 'oauth2',
-      authorizationUrl: `${BASE_URL}/auth/github`,
+      authorizationUrl: `${BASE_URL}/auth/login`,
       tokenUrl: `${BASE_URL}/oauth/token`,
     },
   });
@@ -673,7 +662,7 @@ app.get('/', (req: Request, res: Response) => {
         <div class="status unauthenticated">
           ⚠️ <strong>Not Authenticated</strong>
           <br><br>
-          <a href="/auth/github">Login with GitHub</a>
+          <a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>
         </div>
       `}
       
@@ -708,7 +697,7 @@ app.get('/', (req: Request, res: Response) => {
             <td>No</td>
           </tr>
           <tr>
-            <td><code>GET /auth/github</code></td>
+            <td><code>GET /auth/login</code></td>
             <td>Initiate GitHub OAuth</td>
             <td>No</td>
           </tr>
@@ -736,13 +725,16 @@ app.get('/', (req: Request, res: Response) => {
 
 // OAuth routes
 
-// Custom authorization endpoint that handles MCP Inspector's OAuth flow
-app.get('/auth/github', (req: Request, res: Response, next: NextFunction) => {
+// Generic authorization endpoint that handles MCP Inspector's OAuth flow
+const passportStrategy = oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider;
+const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
+
+app.get('/auth/login', (req: Request, res: Response, next: NextFunction) => {
   // Get OAuth parameters from query
   const { redirect_uri, state, code_challenge, code_challenge_method, scope, response_type, client_id, resource, display } = req.query;
 
   if (redirect_uri) {
-    // OAuth flow - encode parameters in GitHub state to survive the round-trip
+    // OAuth flow - encode parameters in provider state to survive the round-trip
     const oauthParams = {
       redirect_uri: redirect_uri as string,
       original_state: state as string,
@@ -755,34 +747,65 @@ app.get('/auth/github', (req: Request, res: Response, next: NextFunction) => {
       display: display as string,
     };
 
-    // Encode parameters as base64 to pass through GitHub OAuth
+    // Encode parameters as base64 to pass through OAuth
     const encodedState = Buffer.from(JSON.stringify(oauthParams)).toString('base64url');
 
     log('info', 'Starting OAuth flow', {
+      provider: oauthConfig.provider,
       redirect_uri,
       code_challenge_method,
       display,
     });
 
-    // Continue with GitHub authentication, passing encoded state
-    passport.authenticate('github', {
-      scope: ['user:email'],
+    // Continue with authentication, passing encoded state
+    passport.authenticate(passportStrategy, {
+      scope: scopeArray,
       state: encodedState,
     })(req, res, next);
   } else {
     // No OAuth parameters, proceed with normal flow
-    passport.authenticate('github', {
-      scope: ['user:email'],
+    passport.authenticate(passportStrategy, {
+      scope: scopeArray,
     })(req, res, next);
   }
 });
 
 app.get(
-  '/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/' }),
+  '/auth/callback',
+  passport.authenticate(passportStrategy, { failureRedirect: '/' }),
   (req: Request, res: Response) => {
     const requestId = (req as any).requestId;
-    log('debug', 'GitHub callback received', undefined, requestId);
+    log('debug', 'OAuth callback received', { provider: oauthConfig.provider }, requestId);
+
+    // Register session with token refresh if user has tokens
+    if (req.user && req.session) {
+      const user = req.user as OAuthUser;
+      const sessionId = req.session.id || req.sessionID;
+
+      const tokenData: TokenData = {
+        accessToken: user.tokens.accessToken,
+        refreshToken: user.tokens.refreshToken,
+        expiresAt: user.tokens.expiresAt,
+        tokenType: 'Bearer',
+        scope: oauthConfig.scope,
+      };
+
+      registerSession(sessionId, user, tokenData);
+      log('info', 'Session registered with token refresh', {
+        provider: oauthConfig.provider,
+        username: user.username,
+        sessionId: sessionId.substring(0, 8) + '...',
+      }, requestId);
+
+      // Register refresh callback if provider supports it
+      if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
+        const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
+        if (refreshFn) {
+          registerRefreshCallback(sessionId, refreshFn);
+          log('info', `Token refresh enabled for ${oauthConfig.provider}`, undefined, requestId);
+        }
+      }
+    }
 
     // Try to decode OAuth parameters from state
     let oauthParams: any = null;
@@ -1559,12 +1582,19 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// Start periodic cleanup of expired sessions
+if (oauthConfig.tokenRefreshEnabled) {
+  startPeriodicCleanup();
+  log('info', 'Token refresh system initialized');
+}
+
 // Start server
 app.listen(PORT, () => {
   log('info', 'MCP Multi-Transport Server started', {
     url: `http://localhost:${PORT}`,
     transport_mode: TRANSPORT_MODE,
-    authentication: 'GitHub OAuth',
+    oauth_provider: oauthConfig.provider,
+    token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
     endpoints: {
       http: TRANSPORT_MODE !== 'sse-only' ? `POST http://localhost:${PORT}/mcp` : null,
       sse: TRANSPORT_MODE !== 'http-only' ? `GET http://localhost:${PORT}/mcp/sse` : null,
