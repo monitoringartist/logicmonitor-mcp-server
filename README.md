@@ -21,11 +21,13 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js >= 18 (or Docker)
 - LogicMonitor account with API access
 - LogicMonitor API Bearer Token
 
 ### Installation
+
+#### Option A: Node.js
 
 ```bash
 # Clone the repository
@@ -38,6 +40,24 @@ npm install
 # Build the project
 npm run build
 ```
+
+#### Option B: Docker
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/logicmonitor-mcp-server.git
+cd logicmonitor-mcp-server
+
+# Build Docker image
+docker build -t logicmonitor-mcp-server .
+
+# Or use Docker Compose
+cp env.docker.example .env
+# Edit .env with your credentials
+docker-compose up -d logicmonitor-mcp-http
+```
+
+See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
 
 ### Configuration
 
@@ -139,6 +159,22 @@ export MCP_ADDRESS=localhost:3000
 export MCP_DEBUG=true
 npm start
 ```
+
+**Health Check Endpoint:** When using SSE or streamable HTTP transports, a health check endpoint is available at `/healthz`:
+
+```bash
+# Check server health
+curl http://localhost:3000/healthz
+# Response: 200 OK with body "ok"
+```
+
+This endpoint can be used by:
+- Load balancers
+- Monitoring systems
+- Orchestration platforms (Docker, Kubernetes)
+- CI/CD health checks
+
+Note: The health check endpoint is not available with STDIO transport.
 
 ### Read-Only Mode (Default - Safe Monitoring)
 

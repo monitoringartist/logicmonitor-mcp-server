@@ -1199,6 +1199,11 @@ app.get('/logout', (req: Request, res: Response) => {
   });
 });
 
+// Health check endpoint
+app.get('/healthz', (req: Request, res: Response) => {
+  res.status(200).send('ok');
+});
+
 // Status endpoint
 app.get('/status', (req: Request, res: Response) => {
   res.json({
