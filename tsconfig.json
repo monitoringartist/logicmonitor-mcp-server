@@ -13,7 +13,8 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "allowImportingTsExtensions": false
+        "allowImportingTsExtensions": false,
+        "isolatedModules": true
     },
     "include": [
         "src/**/*"

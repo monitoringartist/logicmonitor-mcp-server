@@ -8,7 +8,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 
 ## Features
 
-- **69+ MCP Tools** for comprehensive LogicMonitor operations
+- **125 MCP Tools** for comprehensive LogicMonitor operations (73 read-only, 52 write)
 - **Multiple Transport Modes**: STDIO, SSE, and HTTP
 - **Read-Only Mode**: Safe monitoring without modification capabilities
 - **Flexible Configuration**: CLI flags, environment variables, or `.env` file
@@ -106,7 +106,7 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 
 ## Usage Examples
 
-### Claude Desktop (STDIO)
+### Claude Desktop (STDIO - Recommended)
 
 Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
@@ -187,64 +187,226 @@ npm start -- \
 
 ## Available Tools
 
-The server provides 69+ tools for comprehensive LogicMonitor operations:
+The server provides 125 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
-### Device Management
-- `list_devices`, `get_device`, `search_devices`
-- `list_device_groups`, `get_device_group`
-- `list_device_datasources`, `get_device_datasource`
-- `list_device_instances`, `get_device_instance_data`
-- `list_device_properties`
+### Resource/Device Management
+
+**Read-Only:**
+- `list_resources` - List all monitored resources/devices with filtering
+- `get_resource` - Get detailed device information by ID
+- `search_devices` - Search devices by name or description
+- `generate_resource_deeplink` - Generate direct link to device in LM UI
+
+**Write Operations:**
+- `create_resource` - Add new device(s) to monitoring (supports batch)
+- `update_resource` - Modify existing device(s) (supports batch)
+- `delete_resource` - Remove device(s) from monitoring (supports batch)
+
+### Resource/Device Groups
+
+**Read-Only:**
+- `list_resource_groups` - List all device groups/folders
+- `get_resource_group` - Get device group details by ID
+
+**Write Operations:**
+- `create_resource_group` - Create new device group
+- `update_resource_group` - Modify device group
+- `delete_resource_group` - Delete device group
 
 ### Alert Management
-- `list_alerts`, `get_alert`, `search_alerts`
-- `list_alert_rules`, `get_alert_rule`
 
-### Monitoring Resources
-- `list_datasources`, `get_datasource`
-- `list_eventsources`, `get_eventsource`
-- `list_configsources`, `get_configsource`
+**Read-Only:**
+- `list_alerts` - List active alerts with filtering
+- `get_alert` - Get detailed alert information
+- `search_alerts` - Search alerts by criteria
+- `generate_alert_deeplink` - Generate direct link to alert in LM UI
+- `list_alert_rules` - List alert routing rules
+- `get_alert_rule` - Get alert rule details
+
+**Write Operations:**
+- `acknowledge_alert` - Acknowledge alert (stops escalation)
+- `add_alert_note` - Add note to alert for documentation
+- `create_alert_rule` - Create new alert routing rule
+- `update_alert_rule` - Modify alert rule
+- `delete_alert_rule` - Delete alert rule
+
+### DataSources & Monitoring
+
+**Read-Only:**
+- `list_datasources` - List all available datasources
+- `get_datasource` - Get datasource details
+- `list_device_datasources` - List datasources applied to device
+- `get_device_datasource` - Get device datasource details
+- `list_device_instances` - List datasource instances (disks, interfaces, etc.)
+- `get_device_instance_data` - Get time-series metrics data
+- `list_eventsources` - List all eventsources
+- `get_eventsource` - Get eventsource details
+- `list_configsources` - List configuration sources
+- `get_configsource` - Get configsource details
+
+**Write Operations:**
+- `update_device_datasource` - Modify device datasource configuration
 
 ### Dashboards & Reporting
-- `list_dashboards`, `get_dashboard`
-- `list_dashboard_groups`, `get_dashboard_group`
-- `list_reports`, `get_report`
-- `list_report_groups`, `get_report_group`
 
-### Infrastructure
-- `list_collectors`, `get_collector`
-- `list_collector_groups`, `get_collector_group`
-- `list_collector_versions`
-- `list_netscans`, `get_netscan`
+**Read-Only:**
+- `list_dashboards` - List all dashboards
+- `get_dashboard` - Get dashboard details
+- `generate_dashboard_deeplink` - Generate direct link to dashboard in LM UI
+- `list_dashboard_groups` - List dashboard groups
+- `get_dashboard_group` - Get dashboard group details
+- `list_reports` - List all reports
+- `get_report` - Get report details
+- `list_report_groups` - List report groups
+- `get_report_group` - Get report group details
+
+**Write Operations:**
+- `create_dashboard` - Create new dashboard
+- `update_dashboard` - Modify dashboard
+- `delete_dashboard` - Delete dashboard
+- `create_report_group` - Create report group
+- `update_report_group` - Modify report group
+- `delete_report_group` - Delete report group
+
+### Collectors & Infrastructure
+
+**Read-Only:**
+- `list_collectors` - List monitoring collectors (agents)
+- `get_collector` - Get collector details
+- `list_collector_groups` - List collector groups
+- `get_collector_group` - Get collector group details
+- `list_collector_versions` - List available collector versions
+- `list_netscans` - List network discovery scans
+- `get_netscan` - Get netscan details
+- `get_topology` - Get network topology information
+
+**Write Operations:**
+- `create_netscan` - Create network discovery scan
+- `update_netscan` - Modify netscan
+- `delete_netscan` - Delete netscan
 
 ### Website Monitoring
-- `list_websites`, `get_website`
-- `list_website_groups`, `get_website_group`
-- `list_website_checkpoints`
 
-### Services & Business Logic
-- `list_services`, `get_service`
-- `list_service_groups`, `get_service_group`
+**Read-Only:**
+- `list_websites` - List website monitors
+- `get_website` - Get website monitor details
+- `generate_website_deeplink` - Generate direct link to website in LM UI
+- `list_website_groups` - List website groups
+- `get_website_group` - Get website group details
+- `list_website_checkpoints` - List available monitoring checkpoints
 
-### Configuration Management
-- `list_escalation_chains`, `get_escalation_chain`
-- `list_recipients`, `get_recipient`
-- `list_recipient_groups`, `get_recipient_group`
-- `list_integrations`, `get_integration`
+**Write Operations:**
+- `create_website` - Create new website monitor
+- `update_website` - Modify website monitor
+- `delete_website` - Delete website monitor
 
-### Administration
-- `list_users`, `get_user`
-- `list_roles`, `get_role`
-- `list_access_groups`, `get_access_group`
-- `list_api_tokens`
+### Services (Business Logic)
 
-### Maintenance
-- `list_sdts`, `get_sdt`
-- `list_opsnotes`, `get_opsnote`
+**Read-Only:**
+- `list_services` - List business services
+- `get_service` - Get service details
+- `list_service_groups` - List service groups
+- `get_service_group` - Get service group details
 
-### Audit & Monitoring
-- `list_audit_logs`, `get_audit_log`, `search_audit_logs`
-- `get_topology`
+**Write Operations:**
+- `create_service` - Create new business service
+- `update_service` - Modify service
+- `delete_service` - Delete service
+- `create_service_group` - Create service group
+- `update_service_group` - Modify service group
+- `delete_service_group` - Delete service group
+
+### Alert Configuration
+
+**Read-Only:**
+- `list_escalation_chains` - List alert escalation chains
+- `get_escalation_chain` - Get escalation chain details
+- `list_recipients` - List alert recipients
+- `get_recipient` - Get recipient details
+- `list_recipient_groups` - List recipient groups
+- `get_recipient_group` - Get recipient group details
+
+**Write Operations:**
+- `create_escalation_chain` - Create escalation chain
+- `update_escalation_chain` - Modify escalation chain
+- `delete_escalation_chain` - Delete escalation chain
+- `create_recipient` - Create alert recipient
+- `update_recipient` - Modify recipient
+- `delete_recipient` - Delete recipient
+- `create_recipient_group` - Create recipient group
+- `update_recipient_group` - Modify recipient group
+- `delete_recipient_group` - Delete recipient group
+
+### Integrations
+
+**Read-Only:**
+- `list_integrations` - List third-party integrations
+- `get_integration` - Get integration details
+
+**Write Operations:**
+- `create_integration` - Create new integration
+- `update_integration` - Modify integration
+- `delete_integration` - Delete integration
+
+### Administration & Security
+
+**Read-Only:**
+- `list_users` - List users/admins
+- `get_user` - Get user details
+- `list_roles` - List user roles
+- `get_role` - Get role details
+- `list_access_groups` - List access groups
+- `get_access_group` - Get access group details
+- `list_api_tokens` - List API tokens for user
+
+**Write Operations:**
+- `create_access_group` - Create access group
+- `update_access_group` - Modify access group
+- `delete_access_group` - Delete access group
+
+### Properties & Configuration
+
+**Read-Only:**
+- `list_device_properties` - List custom properties for device
+- `list_device_group_properties` - List properties for device group
+
+**Write Operations:**
+- `update_device_property` - Update device property value
+- `update_device_group_property` - Update device group property value
+
+### Scheduled Down Time (SDT)
+
+**Read-Only:**
+- `list_sdts` - List scheduled down times
+- `get_sdt` - Get SDT details
+
+**Write Operations:**
+- `create_device_sdt` - Create scheduled down time
+- `delete_sdt` - Delete scheduled down time
+
+### Operational Notes
+
+**Read-Only:**
+- `list_opsnotes` - List operational notes
+- `get_opsnote` - Get opsnote details
+
+**Write Operations:**
+- `create_opsnote` - Create operational note
+- `update_opsnote` - Modify opsnote
+- `delete_opsnote` - Delete opsnote
+
+### Audit & Compliance
+
+**Read-Only:**
+- `list_audit_logs` - List audit trail logs
+- `get_audit_log` - Get audit log entry details
+- `search_audit_logs` - Search audit logs by user/action
+
+### Summary
+
+- **73 read-only tools** - Safe for production monitoring
+- **52 write tools** - Require caution (disabled by default with `--read-only`)
+- **125 total tools**
 
 For detailed tool descriptions and parameters, see the [API documentation](src/README.md).
 
@@ -286,7 +448,9 @@ npm run start:http   # HTTP/SSE server with OAuth
 npm run start:multi  # Multi-transport server
 
 # Testing
-npm test             # Run tests
+npm test             # Run all tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
 npm run inspect      # Run with MCP inspector
 ```
 

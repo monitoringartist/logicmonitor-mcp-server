@@ -567,6 +567,202 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('DELETE', `/dashboard/dashboards/${dashboardId}`);
   }
 
+  /**
+   * Generate a deeplink URL for a dashboard
+   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}
+   */
+  async generateDashboardDeeplink(dashboardId: number): Promise<{ url: string; dashboard: any; groupPath: any[] }> {
+    // Get dashboard details to retrieve groupId
+    const dashboard = await this.getDashboard(dashboardId, { fields: 'id,name,groupId,groupName' });
+
+    if (!dashboard || !dashboard.id) {
+      throw new LogicMonitorApiError(
+        `Dashboard with ID ${dashboardId} not found`,
+        {
+          status: 404,
+          path: `/dashboard/dashboards/${dashboardId}`,
+          errorMessage: 'Dashboard not found',
+        },
+      );
+    }
+
+    // Build the group hierarchy path
+    const groupPath: any[] = [];
+    let currentGroupId = dashboard.groupId;
+
+    // Traverse up the group hierarchy
+    while (currentGroupId) {
+      try {
+        const group = await this.getDashboardGroup(currentGroupId, { fields: 'id,name,parentId' });
+        groupPath.unshift(group); // Add to beginning to maintain correct order
+        currentGroupId = group.parentId;
+      } catch (error) {
+        // If we can't fetch a parent group (e.g., root level), stop traversing
+        this.logger?.('warn', `Could not fetch dashboard group ${currentGroupId}`, { error });
+        break;
+      }
+    }
+
+    // Build the URL path segments
+    const groupSegments = groupPath.map(group => `dashboardGroups-${group.id}`).join(',');
+    const dashboardSegment = `dashboards-${dashboardId}`;
+    const pathSegments = groupSegments ? `${groupSegments},${dashboardSegment}` : dashboardSegment;
+
+    // Construct the full URL
+    const baseUrl = this.baseUrl.replace('/santaba/rest', '');
+    const url = `${baseUrl}/santaba/uiv4/dashboards/${pathSegments}`;
+
+    return {
+      url,
+      dashboard,
+      groupPath,
+    };
+  }
+
+  /**
+   * Generate a deeplink URL for a resource/device
+   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}
+   * Note: Uses URL encoding (%2C) for commas in the actual URL
+   */
+  async generateResourceDeeplink(deviceId: number): Promise<{ url: string; device: any; groupPath: any[] }> {
+    // Get device details to retrieve hostGroupIds
+    const device = await this.getDevice(deviceId, { fields: 'id,displayName,name,hostGroupIds' });
+
+    if (!device || !device.id) {
+      throw new LogicMonitorApiError(
+        `Device with ID ${deviceId} not found`,
+        {
+          status: 404,
+          path: `/device/devices/${deviceId}`,
+          errorMessage: 'Device not found',
+        },
+      );
+    }
+
+    // Build the group hierarchy path
+    const groupPath: any[] = [];
+
+    // Device can have multiple hostGroupIds, use the first one (primary group)
+    if (device.hostGroupIds && device.hostGroupIds.length > 0) {
+      const deviceGroupIds = device.hostGroupIds.split(',').map((id: string) => parseInt(id.trim()));
+      const primaryGroupId = deviceGroupIds[0];
+
+      let currentGroupId = primaryGroupId;
+
+      // Traverse up the group hierarchy
+      while (currentGroupId) {
+        try {
+          const group = await this.getDeviceGroup(currentGroupId, { fields: 'id,name,parentId' });
+          groupPath.unshift(group); // Add to beginning to maintain correct order
+          currentGroupId = group.parentId;
+        } catch (error) {
+          // If we can't fetch a parent group (e.g., root level), stop traversing
+          this.logger?.('warn', `Could not fetch device group ${currentGroupId}`, { error });
+          break;
+        }
+      }
+    }
+
+    // Build the URL path segments
+    const groupSegments = groupPath.map(group => `resourceGroups-${group.id}`).join(',');
+    const resourceSegment = `resources-${deviceId}`;
+    const pathSegments = groupSegments ? `${groupSegments},${resourceSegment}` : resourceSegment;
+
+    // URL encode the path (commas become %2C)
+    const encodedPath = encodeURIComponent(pathSegments);
+
+    // Construct the full URL
+    const baseUrl = this.baseUrl.replace('/santaba/rest', '');
+    const url = `${baseUrl}/santaba/uiv4/resources/treeNodes?resourcePath=${encodedPath}`;
+
+    return {
+      url,
+      device,
+      groupPath,
+    };
+  }
+
+  /**
+   * Generate a deeplink URL for an alert
+   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}
+   */
+  async generateAlertDeeplink(alertId: string): Promise<{ url: string; alert: any }> {
+    // Get alert details to verify it exists
+    const alert = await this.getAlert(alertId, { fields: 'id,internalId,type,severity,monitorObjectName' });
+
+    if (!alert || !alert.id) {
+      throw new LogicMonitorApiError(
+        `Alert with ID ${alertId} not found`,
+        {
+          status: 404,
+          path: `/alert/alerts/${alertId}`,
+          errorMessage: 'Alert not found',
+        },
+      );
+    }
+
+    // Construct the full URL (simple, no hierarchy needed)
+    const baseUrl = this.baseUrl.replace('/santaba/rest', '');
+    const url = `${baseUrl}/santaba/uiv4/alerts/${alertId}`;
+
+    return {
+      url,
+      alert,
+    };
+  }
+
+  /**
+   * Generate a deeplink URL for a website
+   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}
+   */
+  async generateWebsiteDeeplink(websiteId: number): Promise<{ url: string; website: any; groupPath: any[] }> {
+    // Get website details to retrieve groupId
+    const website = await this.getWebsite(websiteId, { fields: 'id,name,groupId' });
+
+    if (!website || !website.id) {
+      throw new LogicMonitorApiError(
+        `Website with ID ${websiteId} not found`,
+        {
+          status: 404,
+          path: `/website/websites/${websiteId}`,
+          errorMessage: 'Website not found',
+        },
+      );
+    }
+
+    // Build the group hierarchy path
+    const groupPath: any[] = [];
+    let currentGroupId = website.groupId;
+
+    // Traverse up the group hierarchy
+    while (currentGroupId) {
+      try {
+        const group = await this.getWebsiteGroup(currentGroupId, { fields: 'id,name,parentId' });
+        groupPath.unshift(group); // Add to beginning to maintain correct order
+        currentGroupId = group.parentId;
+      } catch (error) {
+        // If we can't fetch a parent group (e.g., root level), stop traversing
+        this.logger?.('warn', `Could not fetch website group ${currentGroupId}`, { error });
+        break;
+      }
+    }
+
+    // Build the URL path segments
+    const groupSegments = groupPath.map(group => `websiteGroups-${group.id}`).join(',');
+    const websiteSegment = `websites-${websiteId}`;
+    const pathSegments = groupSegments ? `${groupSegments},${websiteSegment}` : websiteSegment;
+
+    // Construct the full URL (uses hash # instead of query parameter)
+    const baseUrl = this.baseUrl.replace('/santaba/rest', '');
+    const url = `${baseUrl}/santaba/uiv4/websites/treeNodes#${pathSegments}`;
+
+    return {
+      url,
+      website,
+      groupPath,
+    };
+  }
+
   // Dashboard Groups
   async listDashboardGroups(params?: {
     size?: number;
