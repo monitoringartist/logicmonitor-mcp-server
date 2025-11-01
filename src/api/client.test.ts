@@ -2,7 +2,7 @@
  * Tests for LogicMonitor API Client
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import { escapeFilterValue } from './client.js';
 
 describe('LogicMonitor Client Utils', () => {
