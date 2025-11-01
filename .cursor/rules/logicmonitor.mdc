@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+Makse sure that LogicMonitor API calls follow API documentation: https://www.logicmonitor.com/swagger-ui-master/api-v3/dist/swagger.json
