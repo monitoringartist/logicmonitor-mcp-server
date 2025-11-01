@@ -1423,9 +1423,9 @@ if (TRANSPORT_MODE !== 'sse-only') {
       // Set session header for client
       res.setHeader('Mcp-Session-Id', sessionId);
 
-      // For notifications (null response), return 204 No Content
+      // For notifications (null response), return 200 OK
       if (response === null) {
-        res.status(204).send();
+        res.status(200).send();
       } else {
         res.json(response);
       }

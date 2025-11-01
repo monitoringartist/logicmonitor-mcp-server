@@ -55,7 +55,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List all monitored resources/devices in LogicMonitor (LM) monitoring. Supports filtering, pagination, and field selection. Use filters like "displayName~\\"*server*\\"" or "systemProperties.name:system.devicetype,value:server". Essential for inventory management and finding specific devices.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -73,7 +73,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. Returns device properties, collector assignment, alert status, and monitoring configuration.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -94,7 +94,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. Supports both single resource/device creation and batch creation.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -186,7 +186,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. Supports both single and batch update.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -278,7 +278,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Remove a resource/device or multiple resources/devices from LogicMonitor (LM) monitoring. Supports both single and batch deletion.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -326,7 +326,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List all resource/device groups/folders in LogicMonitor (LM) monitoring. Use groups to organize resources/devices logically. Supports filtering and pagination.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -344,7 +344,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get detailed information about a specific resource/device group by its ID in LogicMonitor (LM) monitoring.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -365,7 +365,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create a new resource/device group in LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -408,7 +408,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update an existing resource/device group in LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -444,7 +444,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete a resource/device group from LogicMonitor (LM) monitoring.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -470,7 +470,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List active alerts in LogicMonitor (LM) monitoring. Filter by severity (critical, error, warn), resource, time, etc. Example filters: severity:critical, resourceTemplateName~"*cpu*". Use this to monitor system health and identify issues.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -493,7 +493,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get detailed information about a specific alert in LogicMonitor (LM) monitoring by its ID. Includes alert history, thresholds, datapoint values, and escalation status.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -519,7 +519,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Acknowledge an alert in LogicMonitor (LM) monitoring to indicate someone is working on it. Stops escalation and shows the alert is being handled.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -543,7 +543,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Add a note to an alert for documentation or collaboration purposes.',
       readOnlyHint: false,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -569,7 +569,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List all LogicMonitor (LM) monitoring collectors (monitoring agents). Collectors are installed on-premise or in cloud to gather metrics from devices. Check collector health and capacity.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -587,7 +587,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get detailed information about a specific collector by its ID in LogicMonitor (LM) monitoring.',
       readOnlyHint: true,
-      serverUrl: 'https://${process.env.LM_COMPANY}.logicmonitor.com',
+      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
