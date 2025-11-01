@@ -41,17 +41,23 @@ dotenv.config();
 const config = parseConfig();
 validateConfig(config);
 
-// Validate OAuth configuration
-if (!config.oauth) {
-  console.error('❌ ERROR: OAuth credentials not configured!');
+// Validate authentication configuration
+// At least one authentication method must be configured: OAuth or static bearer token
+if (!config.oauth && !config.mcpBearerToken) {
+  console.error('❌ ERROR: No authentication configured for HTTP server!');
   console.error('');
-  console.error('Required environment variables:');
-  console.error('  OAUTH_PROVIDER         - Provider type (github, google, azure, okta, auth0, custom)');
-  console.error('  OAUTH_CLIENT_ID        - OAuth client ID');
-  console.error('  OAUTH_CLIENT_SECRET    - OAuth client secret');
-  console.error('  OAUTH_SESSION_SECRET   - Session encryption secret');
+  console.error('Configure at least one authentication method:');
   console.error('');
-  console.error('See env.example for full configuration options');
+  console.error('Option 1: Static Bearer Token (simpler, for development/testing)');
+  console.error('   export MCP_BEARER_TOKEN=your-secret-token-here');
+  console.error('');
+  console.error('Option 2: OAuth/OIDC (recommended for production)');
+  console.error('   export OAUTH_PROVIDER=github');
+  console.error('   export OAUTH_CLIENT_ID=your-client-id');
+  console.error('   export OAUTH_CLIENT_SECRET=your-client-secret');
+  console.error('   export OAUTH_SESSION_SECRET=your-session-secret');
+  console.error('');
+  console.error('See env.example for detailed configuration options');
   process.exit(1);
 }
 
@@ -67,8 +73,13 @@ const LM_COMPANY = config.lmCompany;
 const LM_BEARER_TOKEN = config.lmBearerToken;
 const ONLY_READONLY_TOOLS = config.readOnly;
 
-// Configure Passport with the selected OAuth provider
-configureOAuthStrategy(oauthConfig);
+// MCP Server authentication (static bearer token)
+const MCP_BEARER_TOKEN = config.mcpBearerToken;
+
+// Configure Passport with the selected OAuth provider (if OAuth is configured)
+if (oauthConfig) {
+  configureOAuthStrategy(oauthConfig);
+}
 
 // Create Express app
 const app = express();
@@ -81,26 +92,51 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use(
-  session({
-    secret: oauthConfig.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  }),
-);
+// Session configuration (only needed if OAuth is enabled)
+if (oauthConfig) {
+  app.use(
+    session({
+      secret: oauthConfig.sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  );
 
-app.use(passport.initialize());
-app.use(passport.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
+}
 
 // Authentication middleware
 function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+  // Check for session-based authentication (browser)
   if (req.isAuthenticated()) {
     return next();
   }
+
+  // Check for Bearer token authentication
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+
+    // Check against static MCP_BEARER_TOKEN (if configured)
+    if (MCP_BEARER_TOKEN && token === MCP_BEARER_TOKEN) {
+      // Valid static token - attach minimal user info to request
+      (req as any).user = {
+        id: 'static-token-user',
+        username: 'static-token-user',
+        displayName: 'Static Token User',
+      };
+      console.log('✓ Authenticated via static Bearer token');
+      return next();
+    } else {
+      console.warn('⚠ Invalid Bearer token');
+    }
+  }
+
   res.status(401).json({ error: 'Unauthorized. Please authenticate first.' });
 }
 
@@ -228,7 +264,7 @@ app.get('/', (req: Request, res: Response) => {
         <div class="status authenticated">
           ✅ <strong>Authenticated</strong> as ${(req.user as any)?.username || 'unknown'}
           <br><br>
-          <a href="/logout">Logout</a>
+          ${oauthConfig ? '<a href="/logout">Logout</a>' : ''}
         </div>
         <h2>MCP Endpoint</h2>
         <p>Your MCP server is ready at:</p>
@@ -241,73 +277,81 @@ app.get('/', (req: Request, res: Response) => {
         <div class="status unauthenticated">
           ⚠️ <strong>Not Authenticated</strong>
           <br><br>
-          <a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>
+          ${oauthConfig
+    ? `<a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>`
+    : 'Use Bearer token authentication: <code>Authorization: Bearer YOUR_TOKEN</code>'
+}
         </div>
       `}
       
       <h2>API Endpoints</h2>
       <ul>
         <li><code>GET /</code> - This page</li>
+        ${oauthConfig ? `
         <li><code>GET /auth/login</code> - Initiate OAuth login</li>
         <li><code>GET /auth/callback</code> - OAuth callback</li>
         <li><code>GET /logout</code> - Logout</li>
+        ` : ''}
         <li><code>GET /status</code> - Check authentication status</li>
         <li><code>GET /healthz</code> - Health check endpoint (returns "ok")</li>
         <li><code>GET ${MCP_ENDPOINT_PATH}/sse</code> - MCP SSE endpoint (authenticated)</li>
       </ul>
       
       <h2>Configuration</h2>
-      <p><strong>OAuth Provider:</strong> ${oauthConfig.provider}</p>
+      ${oauthConfig ? `<p><strong>OAuth Provider:</strong> ${oauthConfig.provider}</p>` : ''}
+      ${MCP_BEARER_TOKEN ? '<p><strong>Auth Method:</strong> Static Bearer Token</p>' : ''}
       <p>See <code>env.example</code> for setup instructions.</p>
     </body>
     </html>
   `);
 });
 
-// Generic OAuth routes
-const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
-app.get('/auth/login', passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { scope: scopeArray }));
+// OAuth routes (only if OAuth is configured)
+if (oauthConfig) {
+  const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
+  app.get('/auth/login', passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { scope: scopeArray }));
 
-app.get(
-  '/auth/callback',
-  passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { failureRedirect: '/' }),
-  (req: Request, res: Response) => {
-    // Register session with token refresh if user has tokens
-    if (req.user && req.session) {
-      const user = req.user as OAuthUser;
-      const sessionId = req.session.id || req.sessionID;
+  app.get(
+    '/auth/callback',
+    passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { failureRedirect: '/' }),
+    (req: Request, res: Response) => {
+      // Register session with token refresh if user has tokens
+      if (req.user && req.session) {
+        const user = req.user as OAuthUser;
+        const sessionId = req.session.id || req.sessionID;
 
-      const tokenData: TokenData = {
-        accessToken: user.tokens.accessToken,
-        refreshToken: user.tokens.refreshToken,
-        expiresAt: user.tokens.expiresAt,
-        tokenType: 'Bearer',
-        scope: oauthConfig.scope,
-      };
+        const tokenData: TokenData = {
+          accessToken: user.tokens.accessToken,
+          refreshToken: user.tokens.refreshToken,
+          expiresAt: user.tokens.expiresAt,
+          tokenType: 'Bearer',
+          scope: oauthConfig.scope,
+        };
 
-      registerSession(sessionId, user, tokenData);
-      console.log(`✅ Session registered with token refresh (${oauthConfig.provider}): ${sessionId.substring(0, 8)}...`);
+        registerSession(sessionId, user, tokenData);
+        console.log(`✅ Session registered with token refresh (${oauthConfig.provider}): ${sessionId.substring(0, 8)}...`);
 
-      // Register refresh callback if provider supports it
-      if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
-        const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
-        if (refreshFn) {
-          registerRefreshCallback(sessionId, refreshFn);
-          console.log(`🔄 Token refresh enabled for ${oauthConfig.provider}`);
+        // Register refresh callback if provider supports it
+        if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
+          const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
+          if (refreshFn) {
+            registerRefreshCallback(sessionId, refreshFn);
+            console.log(`🔄 Token refresh enabled for ${oauthConfig.provider}`);
+          }
         }
       }
-    }
 
-    res.redirect('/');
-  },
-);
+      res.redirect('/');
+    },
+  );
 
-// Logout
-app.get('/logout', (req: Request, res: Response) => {
-  req.logout(() => {
-    res.redirect('/');
+  // Logout
+  app.get('/logout', (req: Request, res: Response) => {
+    req.logout(() => {
+      res.redirect('/');
+    });
   });
-});
+}
 
 // Health check endpoint
 app.get('/healthz', (req: Request, res: Response) => {
@@ -361,8 +405,8 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start periodic cleanup of expired sessions
-if (oauthConfig.tokenRefreshEnabled) {
+// Start periodic cleanup of expired sessions (only if OAuth is configured)
+if (oauthConfig && oauthConfig.tokenRefreshEnabled) {
   startPeriodicCleanup();
   console.log('✅ Token refresh system initialized');
 }
@@ -379,12 +423,17 @@ if (useTLS) {
       key: fs.readFileSync(config.tlsKeyFile!),
     };
     https.createServer(tlsOptions, app).listen(PORT, () => {
-      console.log(`🚀 MCP Remote Server with OAuth running on https://${HOST}:${PORT}`);
+      console.log(`🚀 MCP Remote Server running on https://${HOST}:${PORT}`);
       console.log(`📝 Visit https://${HOST}:${PORT} to authenticate`);
-      console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+      if (oauthConfig) {
+        console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+      }
+      if (MCP_BEARER_TOKEN) {
+        console.log('🔐 Auth: Static Bearer Token');
+      }
       console.log('🔒 TLS: enabled');
       console.log(`   Certificate: ${config.tlsCertFile}`);
-      if (oauthConfig.tokenRefreshEnabled) {
+      if (oauthConfig?.tokenRefreshEnabled) {
         console.log('🔄 Token refresh: enabled (automatic background refresh)');
       }
     });
@@ -398,10 +447,15 @@ if (useTLS) {
 } else {
   // HTTP server (no TLS)
   app.listen(PORT, () => {
-    console.log(`🚀 MCP Remote Server with OAuth running on http://${HOST}:${PORT}`);
+    console.log(`🚀 MCP Remote Server running on http://${HOST}:${PORT}`);
     console.log(`📝 Visit http://${HOST}:${PORT} to authenticate`);
-    console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
-    if (oauthConfig.tokenRefreshEnabled) {
+    if (oauthConfig) {
+      console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+    }
+    if (MCP_BEARER_TOKEN) {
+      console.log('🔐 Auth: Static Bearer Token');
+    }
+    if (oauthConfig?.tokenRefreshEnabled) {
       console.log('🔄 Token refresh: enabled (automatic background refresh)');
     }
   });

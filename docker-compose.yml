@@ -39,7 +39,10 @@ services:
       - MCP_LOG_FORMAT=${MCP_LOG_FORMAT:-json}
       - MCP_LOG_LEVEL=${MCP_LOG_LEVEL:-info}
       - MCP_READ_ONLY=${MCP_READ_ONLY:-true}
-      # OAuth configuration (optional)
+      # Authentication (at least one method required)
+      # Option 1: Static Bearer Token (simpler)
+      - MCP_BEARER_TOKEN=${MCP_BEARER_TOKEN:-}
+      # Option 2: OAuth configuration (more secure, optional)
       - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID:-}
       - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET:-}
       - OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL:-http://localhost:3000/auth/callback}
@@ -72,6 +75,14 @@ services:
       - MCP_LOG_FORMAT=${MCP_LOG_FORMAT:-json}
       - MCP_LOG_LEVEL=${MCP_LOG_LEVEL:-info}
       - MCP_READ_ONLY=${MCP_READ_ONLY:-true}
+      # Authentication (at least one method required)
+      # Option 1: Static Bearer Token (simpler)
+      - MCP_BEARER_TOKEN=${MCP_BEARER_TOKEN:-}
+      # Option 2: OAuth configuration (more secure, optional)
+      - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID:-}
+      - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET:-}
+      - OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL:-http://localhost:3000/auth/callback}
+      - SESSION_SECRET=${SESSION_SECRET:-change-me-in-production}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]

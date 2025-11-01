@@ -51,10 +51,22 @@ dotenv.config();
 const appConfig = parseConfig();
 validateConfig(appConfig);
 
-// Validate OAuth configuration
-if (!appConfig.oauth) {
-  console.error('❌ ERROR: OAuth credentials not configured for multi-transport server!');
-  console.error('See env.example for configuration options');
+// Validate authentication configuration
+// At least one authentication method must be configured: OAuth or static bearer token
+if (!appConfig.oauth && !appConfig.mcpBearerToken) {
+  console.error('❌ ERROR: No authentication configured for multi-transport server!');
+  console.error('');
+  console.error('Configure at least one authentication method:');
+  console.error('');
+  console.error('Option 1: Static Bearer Token (simpler, for development/testing)');
+  console.error('   export MCP_BEARER_TOKEN=your-secret-token-here');
+  console.error('');
+  console.error('Option 2: OAuth/OIDC (recommended for production)');
+  console.error('   export OAUTH_PROVIDER=github');
+  console.error('   export OAUTH_CLIENT_ID=your-client-id');
+  console.error('   export OAUTH_CLIENT_SECRET=your-client-secret');
+  console.error('');
+  console.error('See env.example for detailed configuration options');
   process.exit(1);
 }
 
@@ -73,6 +85,9 @@ const MCP_ENDPOINT_PATH = appConfig.endpointPath; // Configurable MCP endpoint p
 const LM_COMPANY = appConfig.lmCompany;
 const LM_BEARER_TOKEN = appConfig.lmBearerToken;
 const ONLY_READONLY_TOOLS = appConfig.readOnly;
+
+// MCP Server authentication (static bearer token)
+const MCP_BEARER_TOKEN = appConfig.mcpBearerToken;
 
 // Logging configuration
 const LOG_LEVEL = (process.env.MCP_LOG_LEVEL || appConfig.logLevel) as 'debug' | 'info' | 'warn' | 'error';
@@ -179,15 +194,18 @@ function log(level: 'debug' | 'info' | 'warn' | 'error', message: string, data?:
 log('info', 'Server configuration', {
   port: PORT,
   transport_mode: TRANSPORT_MODE,
-  oauth_provider: oauthConfig.provider,
-  token_refresh: oauthConfig.tokenRefreshEnabled,
+  oauth_provider: oauthConfig?.provider || 'none',
+  static_token: MCP_BEARER_TOKEN ? 'configured' : 'none',
+  token_refresh: oauthConfig?.tokenRefreshEnabled || false,
   log_level: LOG_LEVEL,
   log_format: LOG_FORMAT,
   read_only: ONLY_READONLY_TOOLS,
 });
 
-// Configure Passport with the selected OAuth provider
-configureOAuthStrategy(oauthConfig);
+// Configure Passport with the selected OAuth provider (if OAuth is configured)
+if (oauthConfig) {
+  configureOAuthStrategy(oauthConfig);
+}
 
 // Create Express app
 const app = express();
@@ -256,20 +274,23 @@ app.use(cors({
 app.use(express.json());
 app.use(express.text({ type: 'application/json' }));
 
-app.use(
-  session({
-    secret: oauthConfig.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  }),
-);
+// Session configuration (only needed if OAuth is enabled)
+if (oauthConfig) {
+  app.use(
+    session({
+      secret: oauthConfig.sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  );
 
-app.use(passport.initialize());
-app.use(passport.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
+}
 
 // Authentication middleware
 function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
@@ -278,21 +299,38 @@ function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
     return next();
   }
 
-  // Check for Bearer token authentication (OAuth clients like MCP Inspector)
+  // Check for Bearer token authentication
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
+
+    // First, check against static MCP_BEARER_TOKEN (if configured)
+    if (MCP_BEARER_TOKEN && token === MCP_BEARER_TOKEN) {
+      // Valid static token - attach minimal user info to request
+      (req as any).user = {
+        id: 'static-token-user',
+        username: 'static-token-user',
+        displayName: 'Static Token User',
+      };
+      (req as any).tokenScope = 'mcp:tools';
+      log('debug', 'Authenticated via static Bearer token', undefined, (req as any).requestId);
+      return next();
+    }
+
+    // Second, check against OAuth access tokens (dynamic tokens from OAuth flow)
     const accessTokens = (global as any).accessTokens || new Map();
     const tokenData = accessTokens.get(token);
 
     if (tokenData && Date.now() < tokenData.expiresAt) {
-      // Valid token - attach user to request
+      // Valid OAuth token - attach user to request
       (req as any).user = tokenData.user;
       (req as any).tokenScope = tokenData.scope;
-      log('debug', 'Authenticated via Bearer token', { username: tokenData.user.username }, (req as any).requestId);
+      log('debug', 'Authenticated via OAuth Bearer token', { username: tokenData.user.username }, (req as any).requestId);
       return next();
+    } else if (tokenData) {
+      log('warn', 'Expired OAuth Bearer token', undefined, (req as any).requestId);
     } else {
-      log('warn', 'Invalid or expired Bearer token', undefined, (req as any).requestId);
+      log('warn', 'Invalid Bearer token', undefined, (req as any).requestId);
     }
   }
 
@@ -762,7 +800,10 @@ app.get('/', (req: Request, res: Response) => {
         <div class="status unauthenticated">
           ⚠️ <strong>Not Authenticated</strong>
           <br><br>
-          <a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>
+          ${oauthConfig
+    ? `<a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>`
+    : 'Use Bearer token authentication: <code>Authorization: Bearer YOUR_TOKEN</code>'
+}
         </div>
       `}
       
@@ -843,137 +884,137 @@ app.get('/', (req: Request, res: Response) => {
   `);
 });
 
-// OAuth routes
+// OAuth routes (only if OAuth is configured)
+if (oauthConfig) {
+  // Generic authorization endpoint that handles MCP Inspector's OAuth flow
+  const passportStrategy = oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider;
+  const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
 
-// Generic authorization endpoint that handles MCP Inspector's OAuth flow
-const passportStrategy = oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider;
-const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
+  app.get('/auth/login', (req: Request, res: Response, next: NextFunction) => {
+    // Get OAuth parameters from query
+    const { redirect_uri, state, code_challenge, code_challenge_method, scope, response_type, client_id, resource, display } = req.query;
 
-app.get('/auth/login', (req: Request, res: Response, next: NextFunction) => {
-  // Get OAuth parameters from query
-  const { redirect_uri, state, code_challenge, code_challenge_method, scope, response_type, client_id, resource, display } = req.query;
-
-  if (redirect_uri) {
-    // OAuth flow - encode parameters in provider state to survive the round-trip
-    const oauthParams = {
-      redirect_uri: redirect_uri as string,
-      original_state: state as string,
-      code_challenge: code_challenge as string,
-      code_challenge_method: code_challenge_method as string,
-      scope: scope as string,
-      response_type: response_type as string,
-      client_id: client_id as string,
-      resource: resource as string,
-      display: display as string,
-    };
-
-    // Encode parameters as base64 to pass through OAuth
-    const encodedState = Buffer.from(JSON.stringify(oauthParams)).toString('base64url');
-
-    log('info', 'Starting OAuth flow', {
-      provider: oauthConfig.provider,
-      redirect_uri,
-      code_challenge_method,
-      display,
-    });
-
-    // Continue with authentication, passing encoded state
-    passport.authenticate(passportStrategy, {
-      scope: scopeArray,
-      state: encodedState,
-    })(req, res, next);
-  } else {
-    // No OAuth parameters, proceed with normal flow
-    passport.authenticate(passportStrategy, {
-      scope: scopeArray,
-    })(req, res, next);
-  }
-});
-
-app.get(
-  '/auth/callback',
-  passport.authenticate(passportStrategy, { failureRedirect: '/' }),
-  (req: Request, res: Response) => {
-    const requestId = (req as any).requestId;
-    log('debug', 'OAuth callback received', { provider: oauthConfig.provider }, requestId);
-
-    // Register session with token refresh if user has tokens
-    if (req.user && req.session) {
-      const user = req.user as OAuthUser;
-      const sessionId = req.session.id || req.sessionID;
-
-      const tokenData: TokenData = {
-        accessToken: user.tokens.accessToken,
-        refreshToken: user.tokens.refreshToken,
-        expiresAt: user.tokens.expiresAt,
-        tokenType: 'Bearer',
-        scope: oauthConfig.scope,
+    if (redirect_uri) {
+      // OAuth flow - encode parameters in provider state to survive the round-trip
+      const oauthParams = {
+        redirect_uri: redirect_uri as string,
+        original_state: state as string,
+        code_challenge: code_challenge as string,
+        code_challenge_method: code_challenge_method as string,
+        scope: scope as string,
+        response_type: response_type as string,
+        client_id: client_id as string,
+        resource: resource as string,
+        display: display as string,
       };
 
-      registerSession(sessionId, user, tokenData);
-      log('info', 'Session registered with token refresh', {
+      // Encode parameters as base64 to pass through OAuth
+      const encodedState = Buffer.from(JSON.stringify(oauthParams)).toString('base64url');
+
+      log('info', 'Starting OAuth flow', {
         provider: oauthConfig.provider,
-        username: user.username,
-        sessionId: sessionId.substring(0, 8) + '...',
-      }, requestId);
-
-      // Register refresh callback if provider supports it
-      if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
-        const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
-        if (refreshFn) {
-          registerRefreshCallback(sessionId, refreshFn);
-          log('info', `Token refresh enabled for ${oauthConfig.provider}`, undefined, requestId);
-        }
-      }
-    }
-
-    // Try to decode OAuth parameters from state
-    let oauthParams: any = null;
-    if (req.query.state) {
-      try {
-        const decoded = Buffer.from(req.query.state as string, 'base64url').toString('utf-8');
-        oauthParams = JSON.parse(decoded);
-        log('debug', 'Decoded OAuth parameters from state', {
-          redirect_uri: oauthParams.redirect_uri,
-          code_challenge_method: oauthParams.code_challenge_method,
-        }, requestId);
-      } catch {
-        log('debug', 'No OAuth parameters in state (normal flow)', undefined, requestId);
-      }
-    }
-
-    // Check if this was initiated by an OAuth client (like MCP Inspector)
-    if (oauthParams && oauthParams.redirect_uri) {
-      const redirectUri = oauthParams.redirect_uri;
-      const state = oauthParams.original_state;
-
-      // Generate authorization code (in production, this should be a secure token)
-      const authCode = Buffer.from(JSON.stringify({
-        userId: (req.user as any)?.id,
-        username: (req.user as any)?.username,
-        timestamp: Date.now(),
-      })).toString('base64url');
-
-      // Store the auth code temporarily (in production, use Redis or database)
-      const authCodes = (global as any).authCodes || ((global as any).authCodes = new Map());
-      authCodes.set(authCode, {
-        user: req.user,
-        code_challenge: oauthParams.code_challenge,
-        code_challenge_method: oauthParams.code_challenge_method,
-        scope: oauthParams.scope,
-        redirectUri: redirectUri,
-        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+        redirect_uri,
+        code_challenge_method,
+        display,
       });
 
-      log('info', 'OAuth flow complete, authorization code generated', undefined, requestId);
+      // Continue with authentication, passing encoded state
+      passport.authenticate(passportStrategy, {
+        scope: scopeArray,
+        state: encodedState,
+      })(req, res, next);
+    } else {
+      // No OAuth parameters, proceed with normal flow
+      passport.authenticate(passportStrategy, {
+        scope: scopeArray,
+      })(req, res, next);
+    }
+  });
 
-      // Check if client wants manual code entry (Quick OAuth Flow)
-      // This is ONLY triggered by explicit display=page parameter
-      const isQuickFlow = (oauthParams.display === 'page');
+  app.get(
+    '/auth/callback',
+    passport.authenticate(passportStrategy, { failureRedirect: '/' }),
+    (req: Request, res: Response) => {
+      const requestId = (req as any).requestId;
+      log('debug', 'OAuth callback received', { provider: oauthConfig.provider }, requestId);
 
-      if (isQuickFlow) {
+      // Register session with token refresh if user has tokens
+      if (req.user && req.session) {
+        const user = req.user as OAuthUser;
+        const sessionId = req.session.id || req.sessionID;
+
+        const tokenData: TokenData = {
+          accessToken: user.tokens.accessToken,
+          refreshToken: user.tokens.refreshToken,
+          expiresAt: user.tokens.expiresAt,
+          tokenType: 'Bearer',
+          scope: oauthConfig.scope,
+        };
+
+        registerSession(sessionId, user, tokenData);
+        log('info', 'Session registered with token refresh', {
+          provider: oauthConfig.provider,
+          username: user.username,
+          sessionId: sessionId.substring(0, 8) + '...',
+        }, requestId);
+
+        // Register refresh callback if provider supports it
+        if (tokenData.refreshToken && oauthConfig.tokenRefreshEnabled) {
+          const refreshFn = getRefreshTokenFunction(oauthConfig.provider);
+          if (refreshFn) {
+            registerRefreshCallback(sessionId, refreshFn);
+            log('info', `Token refresh enabled for ${oauthConfig.provider}`, undefined, requestId);
+          }
+        }
+      }
+
+      // Try to decode OAuth parameters from state
+      let oauthParams: any = null;
+      if (req.query.state) {
+        try {
+          const decoded = Buffer.from(req.query.state as string, 'base64url').toString('utf-8');
+          oauthParams = JSON.parse(decoded);
+          log('debug', 'Decoded OAuth parameters from state', {
+            redirect_uri: oauthParams.redirect_uri,
+            code_challenge_method: oauthParams.code_challenge_method,
+          }, requestId);
+        } catch {
+          log('debug', 'No OAuth parameters in state (normal flow)', undefined, requestId);
+        }
+      }
+
+      // Check if this was initiated by an OAuth client (like MCP Inspector)
+      if (oauthParams && oauthParams.redirect_uri) {
+        const redirectUri = oauthParams.redirect_uri;
+        const state = oauthParams.original_state;
+
+        // Generate authorization code (in production, this should be a secure token)
+        const authCode = Buffer.from(JSON.stringify({
+          userId: (req.user as any)?.id,
+          username: (req.user as any)?.username,
+          timestamp: Date.now(),
+        })).toString('base64url');
+
+        // Store the auth code temporarily (in production, use Redis or database)
+        const authCodes = (global as any).authCodes || ((global as any).authCodes = new Map());
+        authCodes.set(authCode, {
+          user: req.user,
+          code_challenge: oauthParams.code_challenge,
+          code_challenge_method: oauthParams.code_challenge_method,
+          scope: oauthParams.scope,
+          redirectUri: redirectUri,
+          expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+        });
+
+        log('info', 'OAuth flow complete, authorization code generated', undefined, requestId);
+
+        // Check if client wants manual code entry (Quick OAuth Flow)
+        // This is ONLY triggered by explicit display=page parameter
+        const isQuickFlow = (oauthParams.display === 'page');
+
+        if (isQuickFlow) {
         // Display authorization code for manual entry (MCP Inspector pattern)
-        res.send(`
+          res.send(`
           <!DOCTYPE html>
           <html>
           <head>
@@ -1137,187 +1178,188 @@ app.get(
           </body>
           </html>
         `);
-      } else {
+        } else {
         // Automatic redirect for standard OAuth clients
-        const redirectUrl = new URL(redirectUri);
-        redirectUrl.searchParams.set('code', authCode);
-        if (state) {
-          redirectUrl.searchParams.set('state', state as string);
+          const redirectUrl = new URL(redirectUri);
+          redirectUrl.searchParams.set('code', authCode);
+          if (state) {
+            redirectUrl.searchParams.set('state', state as string);
+          }
+          res.redirect(redirectUrl.toString());
         }
-        res.redirect(redirectUrl.toString());
-      }
-    } else {
+      } else {
       // Normal flow - redirect to home page
-      res.redirect('/');
+        res.redirect('/');
+      }
+    },
+  );
+
+  // OAuth Dynamic Client Registration endpoint (RFC 7591)
+  // Required by MCP specification for clients like Cursor to register
+  app.post('/oauth/register', (req: Request, res: Response) => {
+    const requestId = (req as any).requestId;
+    log('info', 'Dynamic Client Registration request received', undefined, requestId);
+
+    try {
+      const {
+        client_name,
+        redirect_uris,
+        grant_types,
+        response_types,
+        application_type,
+        scope,
+      } = req.body;
+
+      // This server only supports public clients (PKCE-only, no secrets)
+      // All clients are public by default
+      const client_id = crypto.randomBytes(16).toString('hex');
+      const client_id_issued_at = Math.floor(Date.now() / 1000);
+
+      // Store client registration (in production, use database)
+      const registeredClients = (global as any).registeredClients || ((global as any).registeredClients = new Map());
+
+      const clientData = {
+        client_id,
+        client_name: client_name || 'Unnamed Client',
+        redirect_uris: redirect_uris || [],
+        grant_types: grant_types || ['authorization_code'],
+        response_types: response_types || ['code'],
+        token_endpoint_auth_method: 'none', // Always public (PKCE-only)
+        application_type: application_type || 'web',
+        scope: scope || 'mcp:tools',
+        client_id_issued_at,
+        created_at: new Date().toISOString(),
+      };
+
+      registeredClients.set(client_id, clientData);
+
+      log('info', 'Client registered (public, PKCE-only)', {
+        client_id,
+        client_name: clientData.client_name,
+        redirect_uris: clientData.redirect_uris,
+      }, requestId);
+
+      // Return client credentials per RFC 7591
+      // No client_secret - this server only supports public clients with PKCE
+      res.json({
+        client_id,
+        client_id_issued_at,
+        client_name: clientData.client_name,
+        redirect_uris: clientData.redirect_uris,
+        grant_types: clientData.grant_types,
+        response_types: clientData.response_types,
+        token_endpoint_auth_method: 'none', // Always public
+        application_type: clientData.application_type,
+        scope: clientData.scope,
+      });
+    } catch (error: any) {
+      log('error', 'Client registration error', { error: error.message }, requestId);
+      res.status(400).json({
+        error: 'invalid_client_metadata',
+        error_description: error.message || 'Invalid client registration request',
+      });
     }
-  },
-);
+  });
 
-// OAuth Dynamic Client Registration endpoint (RFC 7591)
-// Required by MCP specification for clients like Cursor to register
-app.post('/oauth/register', (req: Request, res: Response) => {
-  const requestId = (req as any).requestId;
-  log('info', 'Dynamic Client Registration request received', undefined, requestId);
+  // OAuth token endpoint (for exchanging authorization code for access token)
+  // This server ONLY supports public clients with PKCE (no client secrets)
+  app.post('/oauth/token', express.urlencoded({ extended: true }), (req: Request, res: Response) => {
+    const { grant_type, code, client_id, code_verifier } = req.body;
+    const requestId = (req as any).requestId;
 
-  try {
-    const {
-      client_name,
-      redirect_uris,
-      grant_types,
-      response_types,
-      application_type,
-      scope,
-    } = req.body;
+    log('info', 'Token request received', { grant_type, client_id, has_verifier: !!code_verifier }, requestId);
 
-    // This server only supports public clients (PKCE-only, no secrets)
-    // All clients are public by default
-    const client_id = crypto.randomBytes(16).toString('hex');
-    const client_id_issued_at = Math.floor(Date.now() / 1000);
+    if (grant_type !== 'authorization_code') {
+      return res.status(400).json({
+        error: 'unsupported_grant_type',
+        error_description: 'Only authorization_code grant type is supported',
+      });
+    }
 
-    // Store client registration (in production, use database)
-    const registeredClients = (global as any).registeredClients || ((global as any).registeredClients = new Map());
+    if (!code) {
+      return res.status(400).json({
+        error: 'invalid_request',
+        error_description: 'Missing authorization code',
+      });
+    }
 
-    const clientData = {
-      client_id,
-      client_name: client_name || 'Unnamed Client',
-      redirect_uris: redirect_uris || [],
-      grant_types: grant_types || ['authorization_code'],
-      response_types: response_types || ['code'],
-      token_endpoint_auth_method: 'none', // Always public (PKCE-only)
-      application_type: application_type || 'web',
-      scope: scope || 'mcp:tools',
-      client_id_issued_at,
-      created_at: new Date().toISOString(),
-    };
+    // Retrieve the authorization code data
+    const authCodes = (global as any).authCodes || new Map();
+    const authData = authCodes.get(code);
 
-    registeredClients.set(client_id, clientData);
+    if (!authData) {
+      return res.status(400).json({
+        error: 'invalid_grant',
+        error_description: 'Invalid or expired authorization code',
+      });
+    }
 
-    log('info', 'Client registered (public, PKCE-only)', {
-      client_id,
-      client_name: clientData.client_name,
-      redirect_uris: clientData.redirect_uris,
-    }, requestId);
+    // Check expiration
+    if (Date.now() > authData.expiresAt) {
+      authCodes.delete(code);
+      return res.status(400).json({
+        error: 'invalid_grant',
+        error_description: 'Authorization code has expired',
+      });
+    }
 
-    // Return client credentials per RFC 7591
-    // No client_secret - this server only supports public clients with PKCE
-    res.json({
-      client_id,
-      client_id_issued_at,
-      client_name: clientData.client_name,
-      redirect_uris: clientData.redirect_uris,
-      grant_types: clientData.grant_types,
-      response_types: clientData.response_types,
-      token_endpoint_auth_method: 'none', // Always public
-      application_type: clientData.application_type,
-      scope: clientData.scope,
+    // PKCE is REQUIRED for all clients (this server doesn't support client secrets)
+    if (!authData.code_challenge || !code_verifier) {
+      return res.status(400).json({
+        error: 'invalid_request',
+        error_description: 'PKCE is required. Missing code_challenge or code_verifier. This server only supports public clients with PKCE.',
+      });
+    }
+
+    // Verify PKCE
+    const hash = crypto.createHash('sha256').update(code_verifier).digest('base64url');
+
+    if (hash !== authData.code_challenge) {
+      return res.status(400).json({
+        error: 'invalid_grant',
+        error_description: 'Invalid code verifier - PKCE verification failed',
+      });
+    }
+
+    log('debug', 'PKCE verification successful', undefined, requestId);
+
+    // Generate access token
+    const accessToken = Buffer.from(JSON.stringify({
+      userId: authData.user.id,
+      username: authData.user.username,
+      scope: authData.scope,
+      timestamp: Date.now(),
+    })).toString('base64url');
+
+    // Store access token (in production, use Redis or database)
+    const accessTokens = (global as any).accessTokens || ((global as any).accessTokens = new Map());
+    accessTokens.set(accessToken, {
+      user: authData.user,
+      scope: authData.scope,
+      expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
     });
-  } catch (error: any) {
-    log('error', 'Client registration error', { error: error.message }, requestId);
-    res.status(400).json({
-      error: 'invalid_client_metadata',
-      error_description: error.message || 'Invalid client registration request',
-    });
-  }
-});
 
-// OAuth token endpoint (for exchanging authorization code for access token)
-// This server ONLY supports public clients with PKCE (no client secrets)
-app.post('/oauth/token', express.urlencoded({ extended: true }), (req: Request, res: Response) => {
-  const { grant_type, code, client_id, code_verifier } = req.body;
-  const requestId = (req as any).requestId;
-
-  log('info', 'Token request received', { grant_type, client_id, has_verifier: !!code_verifier }, requestId);
-
-  if (grant_type !== 'authorization_code') {
-    return res.status(400).json({
-      error: 'unsupported_grant_type',
-      error_description: 'Only authorization_code grant type is supported',
-    });
-  }
-
-  if (!code) {
-    return res.status(400).json({
-      error: 'invalid_request',
-      error_description: 'Missing authorization code',
-    });
-  }
-
-  // Retrieve the authorization code data
-  const authCodes = (global as any).authCodes || new Map();
-  const authData = authCodes.get(code);
-
-  if (!authData) {
-    return res.status(400).json({
-      error: 'invalid_grant',
-      error_description: 'Invalid or expired authorization code',
-    });
-  }
-
-  // Check expiration
-  if (Date.now() > authData.expiresAt) {
+    // Delete the authorization code (one-time use)
     authCodes.delete(code);
-    return res.status(400).json({
-      error: 'invalid_grant',
-      error_description: 'Authorization code has expired',
+
+    log('info', 'Access token issued', { username: authData.user.username }, requestId);
+
+    // Return the access token
+    res.json({
+      access_token: accessToken,
+      token_type: 'Bearer',
+      expires_in: 3600,
+      scope: authData.scope || 'mcp:tools',
     });
-  }
-
-  // PKCE is REQUIRED for all clients (this server doesn't support client secrets)
-  if (!authData.code_challenge || !code_verifier) {
-    return res.status(400).json({
-      error: 'invalid_request',
-      error_description: 'PKCE is required. Missing code_challenge or code_verifier. This server only supports public clients with PKCE.',
-    });
-  }
-
-  // Verify PKCE
-  const hash = crypto.createHash('sha256').update(code_verifier).digest('base64url');
-
-  if (hash !== authData.code_challenge) {
-    return res.status(400).json({
-      error: 'invalid_grant',
-      error_description: 'Invalid code verifier - PKCE verification failed',
-    });
-  }
-
-  log('debug', 'PKCE verification successful', undefined, requestId);
-
-  // Generate access token
-  const accessToken = Buffer.from(JSON.stringify({
-    userId: authData.user.id,
-    username: authData.user.username,
-    scope: authData.scope,
-    timestamp: Date.now(),
-  })).toString('base64url');
-
-  // Store access token (in production, use Redis or database)
-  const accessTokens = (global as any).accessTokens || ((global as any).accessTokens = new Map());
-  accessTokens.set(accessToken, {
-    user: authData.user,
-    scope: authData.scope,
-    expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
   });
 
-  // Delete the authorization code (one-time use)
-  authCodes.delete(code);
-
-  log('info', 'Access token issued', { username: authData.user.username }, requestId);
-
-  // Return the access token
-  res.json({
-    access_token: accessToken,
-    token_type: 'Bearer',
-    expires_in: 3600,
-    scope: authData.scope || 'mcp:tools',
+  // Logout
+  app.get('/logout', (req: Request, res: Response) => {
+    req.logout(() => {
+      res.redirect('/');
+    });
   });
-});
-
-// Logout
-app.get('/logout', (req: Request, res: Response) => {
-  req.logout(() => {
-    res.redirect('/');
-  });
-});
+}
 
 // Health check endpoint
 app.get('/healthz', (req: Request, res: Response) => {
@@ -1707,8 +1749,8 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start periodic cleanup of expired sessions
-if (oauthConfig.tokenRefreshEnabled) {
+// Start periodic cleanup of expired sessions (only if OAuth is configured)
+if (oauthConfig && oauthConfig.tokenRefreshEnabled) {
   startPeriodicCleanup();
   log('info', 'Token refresh system initialized');
 }
@@ -1728,8 +1770,9 @@ if (useTLS) {
       log('info', 'MCP Multi-Transport Server started with TLS/HTTPS', {
         url: `https://${HOST}:${PORT}`,
         transport_mode: TRANSPORT_MODE,
-        oauth_provider: oauthConfig.provider,
-        token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
+        oauth_provider: oauthConfig?.provider || 'none',
+        static_token: MCP_BEARER_TOKEN ? 'configured' : 'none',
+        token_refresh: oauthConfig?.tokenRefreshEnabled ? 'enabled' : 'disabled',
         tls: 'enabled',
         cert_file: appConfig.tlsCertFile,
         endpoints: {
@@ -1751,8 +1794,9 @@ if (useTLS) {
     log('info', 'MCP Multi-Transport Server started', {
       url: `http://${HOST}:${PORT}`,
       transport_mode: TRANSPORT_MODE,
-      oauth_provider: oauthConfig.provider,
-      token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
+      oauth_provider: oauthConfig?.provider || 'none',
+      static_token: MCP_BEARER_TOKEN ? 'configured' : 'none',
+      token_refresh: oauthConfig?.tokenRefreshEnabled ? 'enabled' : 'disabled',
       tls: 'disabled',
       endpoints: {
         http: TRANSPORT_MODE !== 'sse-only' ? `POST http://${HOST}:${PORT}${MCP_ENDPOINT_PATH}` : null,

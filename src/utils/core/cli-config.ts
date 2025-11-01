@@ -30,6 +30,9 @@ export interface ServerConfig {
   lmCompany: string;
   lmBearerToken: string;
 
+  // MCP Server authentication
+  mcpBearerToken?: string; // Optional static bearer token for MCP server authentication
+
   // OAuth/OIDC configuration (for remote servers)
   oauth?: OAuthConfig;
 }
@@ -124,6 +127,9 @@ export function parseConfig(): ServerConfig {
   const lmCompany = process.env.LM_COMPANY || getFlag('', '--lm-company') || '';
   const lmBearerToken = process.env.LM_BEARER_TOKEN || getFlag('', '--lm-bearer-token') || '';
 
+  // MCP Server authentication (static bearer token)
+  const mcpBearerToken = process.env.MCP_BEARER_TOKEN || getFlag('', '--mcp-bearer-token') || undefined;
+
   // OAuth configuration (optional, for remote servers)
   const oauth = parseOAuthConfig(address);
 
@@ -142,6 +148,7 @@ export function parseConfig(): ServerConfig {
     disableSearch,
     lmCompany,
     lmBearerToken,
+    mcpBearerToken,
     oauth,
   };
 }
