@@ -121,7 +121,7 @@ export class LogicMonitorHandlers {
     try {
       switch (name) {
         // Device Management
-        case 'list_devices': {
+        case 'list_resources': {
           const result = await this.client.listDevices({
             size: args.size,
             offset: args.offset,
@@ -144,12 +144,12 @@ export class LogicMonitorHandlers {
           };
         }
 
-        case 'get_device':
+        case 'get_resource':
           return await this.client.getDevice(args.deviceId, {
             fields: args.fields,
           });
 
-        case 'create_device': {
+        case 'create_resource': {
           // Check if this is a batch operation
           if (args.devices && Array.isArray(args.devices)) {
             // Batch mode
@@ -202,7 +202,7 @@ export class LogicMonitorHandlers {
           return await this.client.createDevice(device);
         }
 
-        case 'update_device': {
+        case 'update_resource': {
           // Check if this is a batch operation
           if (args.devices && Array.isArray(args.devices)) {
             // Batch mode
@@ -242,7 +242,7 @@ export class LogicMonitorHandlers {
           });
         }
 
-        case 'delete_device': {
+        case 'delete_resource': {
           // Check if this is a batch operation
           if (args.deviceIds && Array.isArray(args.deviceIds)) {
             // Batch mode
@@ -281,7 +281,7 @@ export class LogicMonitorHandlers {
         }
 
         // Device Groups
-        case 'list_device_groups': {
+        case 'list_resource_groups': {
           const result = await this.client.listDeviceGroups({
             size: args.size,
             offset: args.offset,
@@ -302,12 +302,12 @@ export class LogicMonitorHandlers {
           };
         }
 
-        case 'get_device_group':
+        case 'get_resource_group':
           return await this.client.getDeviceGroup(args.groupId, {
             fields: args.fields,
           });
 
-        case 'create_device_group': {
+        case 'create_resource_group': {
           const group: any = {
             name: args.name,
           };
@@ -318,14 +318,14 @@ export class LogicMonitorHandlers {
           return await this.client.createDeviceGroup(group);
         }
 
-        case 'update_device_group': {
+        case 'update_resource_group': {
           const { groupId, opType, ...groupData } = args;
           return await this.client.updateDeviceGroup(groupId, groupData, {
             opType: opType || 'replace',
           });
         }
 
-        case 'delete_device_group':
+        case 'delete_resource_group':
           return await this.client.deleteDeviceGroup(args.groupId, {
             deleteChildren: args.deleteChildren,
           });

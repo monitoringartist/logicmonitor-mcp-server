@@ -101,6 +101,15 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 | `--base-path <path>` | `MCP_BASE_PATH` | - | Base path for the server |
 | `--endpoint-path <path>` | `MCP_ENDPOINT_PATH` | `/mcp` | Endpoint path for streamable-http |
 
+### TLS Configuration (streamable-http transport only)
+
+| Flag | Environment Variable | Default | Description |
+|------|---------------------|---------|-------------|
+| `--server.tls-cert-file <path>` | `MCP_TLS_CERT_FILE` | - | Path to TLS certificate file for HTTPS. Server uses HTTPS if both cert and key are configured |
+| `--server.tls-key-file <path>` | `MCP_TLS_KEY_FILE` | - | Path to TLS private key file for HTTPS. Both cert and key required for HTTPS |
+
+**Note:** By default (when TLS is not configured), the server listens on HTTP protocol. When both certificate and key files are provided, the server automatically switches to HTTPS protocol only.
+
 ### Debug and Logging
 
 | Flag | Environment Variable | Default | Description |
@@ -175,6 +184,50 @@ This endpoint can be used by:
 - CI/CD health checks
 
 Note: The health check endpoint is not available with STDIO transport.
+
+### HTTPS/TLS Configuration (Secure Transport)
+
+To enable HTTPS for the SSE or streamable HTTP transport, provide both certificate and key files:
+
+```bash
+# Using environment variables (recommended)
+export MCP_TLS_CERT_FILE=/path/to/cert.pem
+export MCP_TLS_KEY_FILE=/path/to/key.pem
+export MCP_TRANSPORT=sse
+npm start
+
+# Using CLI flags
+npm start -- --transport sse \
+  --server.tls-cert-file /path/to/cert.pem \
+  --server.tls-key-file /path/to/key.pem
+
+# Access via HTTPS
+curl https://localhost:3000/healthz
+```
+
+**Behavior:**
+- **TLS Not Configured** (default): Server uses HTTP protocol
+- **TLS Configured** (both cert and key files provided): Server uses HTTPS protocol only
+- **Partial TLS Config** (only cert OR only key): Server uses HTTP protocol (both required)
+
+**Generate Self-Signed Certificate for Testing:**
+
+```bash
+# Generate self-signed certificate (for development/testing only)
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes \
+  -subj "/CN=localhost"
+
+# Start server with TLS
+npm start -- --transport sse \
+  --server.tls-cert-file ./cert.pem \
+  --server.tls-key-file ./key.pem
+```
+
+**Production Recommendations:**
+- Use certificates from a trusted Certificate Authority (Let's Encrypt, commercial CAs)
+- Consider using a reverse proxy (nginx, Caddy) for TLS termination
+- Rotate certificates before expiry
+- Use strong TLS protocols (TLS 1.2+)
 
 ### Read-Only Mode (Default - Safe Monitoring)
 
@@ -489,6 +542,12 @@ npm run test:watch   # Run tests in watch mode
 npm run test:coverage # Run tests with coverage report
 npm run inspect      # Run with MCP inspector
 ```
+
+**Test Coverage:** See [TEST_COVERAGE.md](TEST_COVERAGE.md) for detailed test coverage report including:
+- Unit test coverage (40 tests, 3.51% code coverage)
+- Integration test results (58/63 MCP tools passing, 92.1% success rate)
+- Testing roadmap and improvement plans
+
 
 ### Adding New Tools
 

@@ -12,6 +12,8 @@ import session from 'express-session';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import https from 'https';
+import fs from 'fs';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
@@ -54,7 +56,13 @@ if (!config.oauth) {
 }
 
 const oauthConfig = config.oauth;
-const PORT = process.env.PORT || 3000;
+
+// Parse address to extract host and port
+const addressParts = config.address.split(':');
+const HOST = addressParts[0] || 'localhost';
+const PORT = addressParts[1] ? parseInt(addressParts[1], 10) : 3000;
+
+const MCP_ENDPOINT_PATH = config.endpointPath; // Configurable MCP endpoint path (default: /mcp)
 const LM_COMPANY = config.lmCompany;
 const LM_BEARER_TOKEN = config.lmBearerToken;
 const ONLY_READONLY_TOOLS = config.readOnly;
@@ -224,7 +232,7 @@ app.get('/', (req: Request, res: Response) => {
         </div>
         <h2>MCP Endpoint</h2>
         <p>Your MCP server is ready at:</p>
-        <pre>http://localhost:${PORT}/mcp/sse</pre>
+        <pre>http://${HOST}:${PORT}${MCP_ENDPOINT_PATH}/sse</pre>
         
         <h2>Test the Server</h2>
         <p>You can now connect your MCP client to this endpoint.</p>
@@ -244,7 +252,8 @@ app.get('/', (req: Request, res: Response) => {
         <li><code>GET /auth/callback</code> - OAuth callback</li>
         <li><code>GET /logout</code> - Logout</li>
         <li><code>GET /status</code> - Check authentication status</li>
-        <li><code>GET /mcp/sse</code> - MCP SSE endpoint (authenticated)</li>
+        <li><code>GET /healthz</code> - Health check endpoint (returns "ok")</li>
+        <li><code>GET ${MCP_ENDPOINT_PATH}/sse</code> - MCP SSE endpoint (authenticated)</li>
       </ul>
       
       <h2>Configuration</h2>
@@ -317,7 +326,7 @@ app.get('/status', (req: Request, res: Response) => {
 });
 
 // MCP SSE endpoint
-app.get('/mcp/sse', ensureAuthenticated, async (req: Request, res: Response) => {
+app.get(`${MCP_ENDPOINT_PATH}/sse`, ensureAuthenticated, async (req: Request, res: Response) => {
   console.log('New MCP SSE connection from:', (req.user as any)?.username);
 
   // Get or create MCP server for this session
@@ -359,11 +368,41 @@ if (oauthConfig.tokenRefreshEnabled) {
 }
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 MCP Remote Server with OAuth running on http://localhost:${PORT}`);
-  console.log(`📝 Visit http://localhost:${PORT} to authenticate`);
-  console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
-  if (oauthConfig.tokenRefreshEnabled) {
-    console.log('🔄 Token refresh: enabled (automatic background refresh)');
+// Check if TLS is configured
+const useTLS = !!(config.tlsCertFile && config.tlsKeyFile);
+
+if (useTLS) {
+  // HTTPS server with TLS
+  try {
+    const tlsOptions = {
+      cert: fs.readFileSync(config.tlsCertFile!),
+      key: fs.readFileSync(config.tlsKeyFile!),
+    };
+    https.createServer(tlsOptions, app).listen(PORT, () => {
+      console.log(`🚀 MCP Remote Server with OAuth running on https://${HOST}:${PORT}`);
+      console.log(`📝 Visit https://${HOST}:${PORT} to authenticate`);
+      console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+      console.log('🔒 TLS: enabled');
+      console.log(`   Certificate: ${config.tlsCertFile}`);
+      if (oauthConfig.tokenRefreshEnabled) {
+        console.log('🔄 Token refresh: enabled (automatic background refresh)');
+      }
+    });
+  } catch (error) {
+    console.error('❌ ERROR: Failed to start HTTPS server');
+    console.error('  TLS certificate file:', config.tlsCertFile);
+    console.error('  TLS key file:', config.tlsKeyFile);
+    console.error('  Error:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
   }
-});
+} else {
+  // HTTP server (no TLS)
+  app.listen(PORT, () => {
+    console.log(`🚀 MCP Remote Server with OAuth running on http://${HOST}:${PORT}`);
+    console.log(`📝 Visit http://${HOST}:${PORT} to authenticate`);
+    console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
+    if (oauthConfig.tokenRefreshEnabled) {
+      console.log('🔄 Token refresh: enabled (automatic background refresh)');
+    }
+  });
+}

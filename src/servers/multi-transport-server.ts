@@ -14,6 +14,8 @@ import passport from 'passport';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import crypto from 'crypto';
+import https from 'https';
+import fs from 'fs';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
@@ -34,7 +36,7 @@ dotenv.config();
  *
  * Supports:
  * - Streamable HTTP transport (POST /mcp)
- * - SSE transport (GET /mcp/sse)
+ * - SSE transport (GET ${MCP_ENDPOINT_PATH}/sse, default: /mcp/sse)
  * - Generic OAuth/OIDC authentication (multiple providers)
  * - Transport fallback strategies
  * - Automatic token refresh
@@ -57,9 +59,15 @@ if (!appConfig.oauth) {
 }
 
 const oauthConfig = appConfig.oauth;
-const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+
+// Parse address to extract host and port
+const addressParts = appConfig.address.split(':');
+const HOST = addressParts[0] || 'localhost';
+const PORT = addressParts[1] ? parseInt(addressParts[1], 10) : 3000;
+
+const BASE_URL = process.env.BASE_URL || `http://${HOST}:${PORT}`;
 const TRANSPORT_MODE = (process.env.TRANSPORT_MODE || 'both') as 'http-only' | 'sse-only' | 'both';
+const MCP_ENDPOINT_PATH = appConfig.endpointPath; // Configurable MCP endpoint path (default: /mcp)
 
 // LogicMonitor configuration
 const LM_COMPANY = appConfig.lmCompany;
@@ -531,11 +539,97 @@ app.get('/.well-known/openid-configuration', (req: Request, res: Response) => {
   });
 });
 
+// Expose .well-known endpoints under MCP endpoint path as well (configurable via MCP_ENDPOINT_PATH)
+app.get(`${MCP_ENDPOINT_PATH}/.well-known/oauth-protected-resource`, (req: Request, res: Response) => {
+  res.json({
+    resource: BASE_URL,
+    authorization_servers: [BASE_URL],
+    scopes_supported: ['mcp:tools'],
+    bearer_methods_supported: ['header', 'query'],
+    resource_signing_alg_values_supported: ['RS256', 'ES256'],
+    resource_documentation: `${BASE_URL}/docs`,
+    resource_policy_uri: `${BASE_URL}/policy`,
+  });
+});
+
+app.get(`${MCP_ENDPOINT_PATH}/.well-known/oauth-authorization-server`, (req: Request, res: Response) => {
+  res.json({
+    issuer: BASE_URL,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
+    token_endpoint: `${BASE_URL}/oauth/token`,
+    registration_endpoint: `${BASE_URL}/oauth/register`,
+    token_endpoint_auth_methods_supported: [
+      'none', // Only public clients with PKCE supported
+    ],
+    jwks_uri: `${BASE_URL}/oauth/jwks`,
+    scopes_supported: ['mcp:tools', 'openid', 'profile', 'email'],
+    response_types_supported: ['code', 'token'],
+    response_modes_supported: ['query', 'fragment'],
+    grant_types_supported: [
+      'authorization_code',
+      'implicit',
+      'refresh_token',
+    ],
+    subject_types_supported: ['public'],
+    id_token_signing_alg_values_supported: ['RS256', 'ES256'],
+    token_endpoint_auth_signing_alg_values_supported: [], // Not used for public clients
+    code_challenge_methods_supported: ['S256'], // PKCE required
+  });
+});
+
+app.get(`${MCP_ENDPOINT_PATH}/.well-known/openid-configuration`, (req: Request, res: Response) => {
+  res.json({
+    issuer: BASE_URL,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
+    token_endpoint: `${BASE_URL}/oauth/token`,
+    registration_endpoint: `${BASE_URL}/oauth/register`,
+    userinfo_endpoint: `${BASE_URL}/oauth/userinfo`,
+    jwks_uri: `${BASE_URL}/oauth/jwks`,
+    scopes_supported: ['openid', 'profile', 'email', 'mcp:tools'],
+    response_types_supported: ['code', 'id_token', 'token id_token', 'code id_token', 'code token', 'code token id_token'],
+    response_modes_supported: ['query', 'fragment', 'form_post'],
+    grant_types_supported: ['authorization_code', 'implicit', 'refresh_token'],
+    subject_types_supported: ['public'],
+    id_token_signing_alg_values_supported: ['RS256', 'ES256'],
+    userinfo_signing_alg_values_supported: ['RS256', 'ES256', 'none'],
+    token_endpoint_auth_methods_supported: [
+      'none', // Only public clients with PKCE supported
+    ],
+    token_endpoint_auth_signing_alg_values_supported: [], // Not used for public clients
+    display_values_supported: ['page', 'popup'],
+    claim_types_supported: ['normal'],
+    claims_supported: [
+      'sub',
+      'name',
+      'given_name',
+      'family_name',
+      'middle_name',
+      'nickname',
+      'preferred_username',
+      'profile',
+      'picture',
+      'email',
+      'email_verified',
+      'locale',
+      'zoneinfo',
+    ],
+    service_documentation: `${BASE_URL}/docs`,
+    claims_parameter_supported: true,
+    request_parameter_supported: true,
+    request_uri_parameter_supported: true,
+    require_request_uri_registration: false,
+    op_policy_uri: `${BASE_URL}/policy`,
+    op_tos_uri: `${BASE_URL}/terms`,
+    code_challenge_methods_supported: ['S256'], // PKCE required, only S256 supported
+    end_session_endpoint: `${BASE_URL}/logout`,
+  });
+});
+
 // Routes
 
 // MCP Server Info endpoint (unauthenticated for Cursor/client discovery)
-// GET /mcp returns server info, POST /mcp is the authenticated transport endpoint
-app.get('/mcp', (req: Request, res: Response) => {
+// GET ${MCP_ENDPOINT_PATH} returns server info, POST ${MCP_ENDPOINT_PATH} is the authenticated transport endpoint
+app.get(MCP_ENDPOINT_PATH, (req: Request, res: Response) => {
   // Return server info without requiring authentication
   // This allows MCP clients like Cursor to discover server capabilities
   res.json({
@@ -556,8 +650,8 @@ app.get('/mcp', (req: Request, res: Response) => {
       sse: TRANSPORT_MODE !== 'http-only',
     },
     endpoints: {
-      http: TRANSPORT_MODE !== 'sse-only' ? `${BASE_URL}/mcp` : null,
-      sse: TRANSPORT_MODE !== 'http-only' ? `${BASE_URL}/mcp/sse` : null,
+      http: TRANSPORT_MODE !== 'sse-only' ? `${BASE_URL}${MCP_ENDPOINT_PATH}` : null,
+      sse: TRANSPORT_MODE !== 'http-only' ? `${BASE_URL}${MCP_ENDPOINT_PATH}/sse` : null,
     },
     authentication: {
       required: true,
@@ -631,7 +725,7 @@ app.get('/', (req: Request, res: Response) => {
             <tr>
               <td><span class="badge badge-http">HTTP</span></td>
               <td>POST</td>
-              <td><code>/mcp</code></td>
+              <td><code>${MCP_ENDPOINT_PATH}</code></td>
               <td>✅ Available</td>
             </tr>
             ` : ''}
@@ -639,24 +733,30 @@ app.get('/', (req: Request, res: Response) => {
             <tr>
               <td><span class="badge badge-sse">SSE</span></td>
               <td>GET</td>
-              <td><code>/mcp/sse</code></td>
+              <td><code>${MCP_ENDPOINT_PATH}/sse</code></td>
               <td>✅ Available</td>
             </tr>
             ` : ''}
+            <tr>
+              <td><span class="badge" style="background: #e7f1ff; color: #004085;">Health</span></td>
+              <td>GET</td>
+              <td><code>/healthz</code></td>
+              <td>✅ Available</td>
+            </tr>
           </tbody>
         </table>
         
         <h2>📖 Transport Strategies</h2>
         <p>When connecting, clients can use these strategies:</p>
         <ul>
-          <li><strong>http-first</strong>: Try HTTP (POST /mcp), fallback to SSE on 404</li>
-          <li><strong>sse-first</strong>: Try SSE (GET /mcp/sse), fallback to HTTP on 405</li>
+          <li><strong>http-first</strong>: Try HTTP (POST ${MCP_ENDPOINT_PATH}), fallback to SSE on 404</li>
+          <li><strong>sse-first</strong>: Try SSE (GET ${MCP_ENDPOINT_PATH}/sse), fallback to HTTP on 405</li>
           <li><strong>http-only</strong>: Only use HTTP transport</li>
           <li><strong>sse-only</strong>: Only use SSE transport</li>
         </ul>
         
         <h2>💡 Usage Example</h2>
-        <pre>npx mcp-remote --transport http-first http://localhost:${PORT}/mcp</pre>
+        <pre>npx mcp-remote --transport http-first http://${HOST}:${PORT}${MCP_ENDPOINT_PATH}</pre>
         
       ` : `
         <div class="status unauthenticated">
@@ -697,6 +797,21 @@ app.get('/', (req: Request, res: Response) => {
             <td>No</td>
           </tr>
           <tr>
+            <td><code>GET ${MCP_ENDPOINT_PATH}/.well-known/oauth-protected-resource</code></td>
+            <td>OAuth resource metadata (under MCP path)</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>GET ${MCP_ENDPOINT_PATH}/.well-known/oauth-authorization-server</code></td>
+            <td>OAuth server metadata (under MCP path)</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>GET ${MCP_ENDPOINT_PATH}/.well-known/openid-configuration</code></td>
+            <td>OpenID Connect discovery (under MCP path)</td>
+            <td>No</td>
+          </tr>
+          <tr>
             <td><code>GET /auth/login</code></td>
             <td>Initiate GitHub OAuth</td>
             <td>No</td>
@@ -707,12 +822,17 @@ app.get('/', (req: Request, res: Response) => {
             <td>No</td>
           </tr>
           <tr>
-            <td><code>POST /mcp</code></td>
+            <td><code>GET /healthz</code></td>
+            <td>Health check endpoint (returns "ok")</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>POST ${MCP_ENDPOINT_PATH}</code></td>
             <td>HTTP transport endpoint</td>
             <td>Yes</td>
           </tr>
           <tr>
-            <td><code>GET /mcp/sse</code></td>
+            <td><code>GET ${MCP_ENDPOINT_PATH}/sse</code></td>
             <td>SSE transport endpoint</td>
             <td>Yes</td>
           </tr>
@@ -1220,9 +1340,9 @@ app.get('/status', (req: Request, res: Response) => {
   });
 });
 
-// Streamable HTTP Transport - POST /mcp
+// Streamable HTTP Transport - POST ${MCP_ENDPOINT_PATH}
 if (TRANSPORT_MODE !== 'sse-only') {
-  app.post('/mcp', ensureAuthenticated, async (req: Request, res: Response) => {
+  app.post(MCP_ENDPOINT_PATH, ensureAuthenticated, async (req: Request, res: Response) => {
     const requestId = (req as any).requestId;
     log('debug', 'HTTP transport request', { username: (req.user as any)?.username }, requestId);
 
@@ -1285,19 +1405,19 @@ if (TRANSPORT_MODE !== 'sse-only') {
   });
 } else {
   // Return 404 for HTTP endpoint when in SSE-only mode
-  app.post('/mcp', (req: Request, res: Response) => {
+  app.post(MCP_ENDPOINT_PATH, (req: Request, res: Response) => {
     res.status(404).json({
       error: 'HTTP transport not available',
       message: 'Server is configured for SSE-only transport',
       availableTransports: ['sse'],
-      sseEndpoint: '/mcp/sse',
+      sseEndpoint: `${MCP_ENDPOINT_PATH}/sse`,
     });
   });
 }
 
-// SSE Transport - GET /mcp/sse
+// SSE Transport - GET ${MCP_ENDPOINT_PATH}/sse
 if (TRANSPORT_MODE !== 'http-only') {
-  app.get('/mcp/sse', ensureAuthenticated, async (req: Request, res: Response) => {
+  app.get(`${MCP_ENDPOINT_PATH}/sse`, ensureAuthenticated, async (req: Request, res: Response) => {
     const requestId = (req as any).requestId;
     log('debug', 'SSE transport connection', { username: (req.user as any)?.username }, requestId);
 
@@ -1327,17 +1447,17 @@ if (TRANSPORT_MODE !== 'http-only') {
     });
   });
 
-  app.post('/mcp/message', ensureAuthenticated, (req: Request, res: Response) => {
+  app.post(`${MCP_ENDPOINT_PATH}/message`, ensureAuthenticated, (req: Request, res: Response) => {
     res.status(200).send();
   });
 } else {
   // Return 405 for SSE endpoint when in HTTP-only mode
-  app.get('/mcp/sse', (req: Request, res: Response) => {
+  app.get(`${MCP_ENDPOINT_PATH}/sse`, (req: Request, res: Response) => {
     res.status(405).json({
       error: 'SSE transport not available',
       message: 'Server is configured for HTTP-only transport',
       availableTransports: ['http'],
-      httpEndpoint: '/mcp',
+      httpEndpoint: MCP_ENDPOINT_PATH,
     });
   });
 }
@@ -1594,15 +1714,50 @@ if (oauthConfig.tokenRefreshEnabled) {
 }
 
 // Start server
-app.listen(PORT, () => {
-  log('info', 'MCP Multi-Transport Server started', {
-    url: `http://localhost:${PORT}`,
-    transport_mode: TRANSPORT_MODE,
-    oauth_provider: oauthConfig.provider,
-    token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
-    endpoints: {
-      http: TRANSPORT_MODE !== 'sse-only' ? `POST http://localhost:${PORT}/mcp` : null,
-      sse: TRANSPORT_MODE !== 'http-only' ? `GET http://localhost:${PORT}/mcp/sse` : null,
-    },
+// Check if TLS is configured
+const useTLS = !!(appConfig.tlsCertFile && appConfig.tlsKeyFile);
+
+if (useTLS) {
+  // HTTPS server with TLS
+  try {
+    const tlsOptions = {
+      cert: fs.readFileSync(appConfig.tlsCertFile!),
+      key: fs.readFileSync(appConfig.tlsKeyFile!),
+    };
+    https.createServer(tlsOptions, app).listen(PORT, () => {
+      log('info', 'MCP Multi-Transport Server started with TLS/HTTPS', {
+        url: `https://${HOST}:${PORT}`,
+        transport_mode: TRANSPORT_MODE,
+        oauth_provider: oauthConfig.provider,
+        token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
+        tls: 'enabled',
+        cert_file: appConfig.tlsCertFile,
+        endpoints: {
+          http: TRANSPORT_MODE !== 'sse-only' ? `POST https://${HOST}:${PORT}${MCP_ENDPOINT_PATH}` : null,
+          sse: TRANSPORT_MODE !== 'http-only' ? `GET https://${HOST}:${PORT}${MCP_ENDPOINT_PATH}/sse` : null,
+        },
+      });
+    });
+  } catch (error) {
+    console.error('❌ ERROR: Failed to start HTTPS server');
+    console.error('  TLS certificate file:', appConfig.tlsCertFile);
+    console.error('  TLS key file:', appConfig.tlsKeyFile);
+    console.error('  Error:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+} else {
+  // HTTP server (no TLS)
+  app.listen(PORT, () => {
+    log('info', 'MCP Multi-Transport Server started', {
+      url: `http://${HOST}:${PORT}`,
+      transport_mode: TRANSPORT_MODE,
+      oauth_provider: oauthConfig.provider,
+      token_refresh: oauthConfig.tokenRefreshEnabled ? 'enabled' : 'disabled',
+      tls: 'disabled',
+      endpoints: {
+        http: TRANSPORT_MODE !== 'sse-only' ? `POST http://${HOST}:${PORT}${MCP_ENDPOINT_PATH}` : null,
+        sse: TRANSPORT_MODE !== 'http-only' ? `GET http://${HOST}:${PORT}${MCP_ENDPOINT_PATH}/sse` : null,
+      },
+    });
   });
-});
+}

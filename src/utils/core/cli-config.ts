@@ -12,6 +12,10 @@ export interface ServerConfig {
   basePath?: string;
   endpointPath: string;
 
+  // TLS configuration (for streamable-http transport only)
+  tlsCertFile?: string;
+  tlsKeyFile?: string;
+
   // Debug and logging
   debug: boolean;
   logFormat: 'json' | 'human';
@@ -93,6 +97,10 @@ export function parseConfig(): ServerConfig {
   const basePath = process.env.MCP_BASE_PATH || getFlag('', '--base-path');
   const endpointPath = process.env.MCP_ENDPOINT_PATH || getFlag('', '--endpoint-path') || '/mcp';
 
+  // TLS configuration (env takes precedence)
+  const tlsCertFile = process.env.MCP_TLS_CERT_FILE || getFlag('', '--server.tls-cert-file');
+  const tlsKeyFile = process.env.MCP_TLS_KEY_FILE || getFlag('', '--server.tls-key-file');
+
   // Debug and logging (env takes precedence)
   const debug = process.env.MCP_DEBUG === 'true' || hasFlag('', '--debug');
   const logFormat = (
@@ -117,13 +125,15 @@ export function parseConfig(): ServerConfig {
   const lmBearerToken = process.env.LM_BEARER_TOKEN || getFlag('', '--lm-bearer-token') || '';
 
   // OAuth configuration (optional, for remote servers)
-  const oauth = parseOAuthConfig();
+  const oauth = parseOAuthConfig(address);
 
   return {
     transport,
     address,
     basePath,
     endpointPath,
+    tlsCertFile,
+    tlsKeyFile,
     debug,
     logFormat,
     logLevel,
@@ -138,8 +148,9 @@ export function parseConfig(): ServerConfig {
 
 /**
  * Parse OAuth configuration from environment variables
+ * @param address - Server address (host:port) to use for default callback URL
  */
-function parseOAuthConfig(): OAuthConfig | undefined {
+function parseOAuthConfig(address: string): OAuthConfig | undefined {
   const provider = (process.env.OAUTH_PROVIDER || '') as OAuthConfig['provider'];
   const clientId = process.env.OAUTH_CLIENT_ID || '';
   const clientSecret = process.env.OAUTH_CLIENT_SECRET || '';
@@ -150,8 +161,11 @@ function parseOAuthConfig(): OAuthConfig | undefined {
     return undefined;
   }
 
-  const port = process.env.PORT || '3000';
-  const callbackUrl = process.env.OAUTH_CALLBACK_URL || `http://localhost:${port}/auth/callback`;
+  // Parse host and port from address for default callback URL
+  const addressParts = address.split(':');
+  const host = addressParts[0] || 'localhost';
+  const port = addressParts[1] || '3000';
+  const callbackUrl = process.env.OAUTH_CALLBACK_URL || `http://${host}:${port}/auth/callback`;
   
   const config: OAuthConfig = {
     provider,
@@ -276,6 +290,16 @@ TRANSPORT OPTIONS:
   --endpoint-path <path>     Endpoint path for streamable-http
                              Default: /mcp
                              Env: MCP_ENDPOINT_PATH
+
+TLS CONFIGURATION (streamable-http transport only):
+  --server.tls-cert-file <path>  Path to TLS certificate file for HTTPS
+                             If configured with tls-key-file, server uses HTTPS
+                             If unconfigured, server uses HTTP
+                             Env: MCP_TLS_CERT_FILE
+
+  --server.tls-key-file <path>   Path to TLS private key file for HTTPS
+                             Both cert and key required for HTTPS
+                             Env: MCP_TLS_KEY_FILE
 
 DEBUG AND LOGGING:
   --debug                    Enable debug mode with detailed logging
