@@ -25,6 +25,7 @@ import {
 } from '../utils/core/token-refresh.js';
 import { parseConfig, validateConfig } from '../utils/core/cli-config.js';
 import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../utils/core/oauth-strategy.js';
+import { getJWTValidator, isJWT, extractAudience } from '../utils/core/jwt-validator.js';
 
 // Load environment variables
 dotenv.config();
@@ -67,6 +68,7 @@ const oauthConfig = config.oauth;
 const addressParts = config.address.split(':');
 const HOST = addressParts[0] || 'localhost';
 const PORT = addressParts[1] ? parseInt(addressParts[1], 10) : 3000;
+const BASE_URL = process.env.BASE_URL || `http://${HOST}:${PORT}`;
 
 const MCP_ENDPOINT_PATH = config.endpointPath; // Configurable MCP endpoint path (default: /mcp)
 const LM_COMPANY = config.lmCompany;
@@ -80,6 +82,14 @@ const MCP_BEARER_TOKEN = config.mcpBearerToken;
 if (oauthConfig) {
   configureOAuthStrategy(oauthConfig);
 }
+
+// Initialize JWT validator for audience validation (RFC 8707)
+const jwtValidator = getJWTValidator({
+  issuer: BASE_URL,
+  audience: BASE_URL,
+  expiresIn: 3600, // 1 hour
+  algorithm: 'HS256',
+});
 
 // Create Express app
 const app = express();
@@ -110,6 +120,59 @@ if (oauthConfig) {
   app.use(passport.session());
 }
 
+/**
+ * Helper function to send WWW-Authenticate challenge for insufficient scope
+ * Per MCP specification: https://modelcontextprotocol.io/specification/draft/basic/authorization
+ * RFC 6750 Section 3.1: https://tools.ietf.org/html/rfc6750#section-3.1
+ * @unused - Reserved for future HTTP-level scope challenges (403 responses)
+ */
+function _sendInsufficientScopeChallenge(
+  res: Response,
+  requiredScopes: string[],
+  description: string = 'Additional scopes required',
+): void {
+  const baseUrl = process.env.BASE_URL || `http://${HOST}:${PORT}`;
+  const resourceMetadataUrl = `${baseUrl}/.well-known/oauth-protected-resource`;
+  const scopeString = requiredScopes.join(' ');
+
+  // Construct WWW-Authenticate header for insufficient_scope error
+  const wwwAuthenticateValue = [
+    `Bearer realm="${baseUrl}"`,
+    'error="insufficient_scope"',
+    `scope="${scopeString}"`,
+    `resource_metadata="${resourceMetadataUrl}"`,
+    `error_description="${description}"`,
+  ].join(', ');
+
+  console.log('📛 Sending 403 Forbidden with insufficient_scope challenge:', {
+    required_scopes: requiredScopes,
+    resource_metadata: resourceMetadataUrl,
+  });
+
+  res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+  res.status(403).json({
+    error: 'insufficient_scope',
+    error_description: description,
+    scope: scopeString,
+    resource_metadata: resourceMetadataUrl,
+    authorization_endpoint: `${baseUrl}/auth/login`,
+  });
+}
+
+/**
+ * Validates that the authenticated user has the required scopes
+ * Returns true if authorized, false otherwise
+ * @unused - Reserved for future inline scope validation
+ */
+function _validateScopes(userScopes: string | undefined, requiredScopes: string[]): boolean {
+  if (!userScopes) {
+    return false;
+  }
+
+  const scopeArray = userScopes.split(' ');
+  return requiredScopes.every(required => scopeArray.includes(required));
+}
+
 // Authentication middleware
 function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
   // Check for session-based authentication (browser)
@@ -122,7 +185,7 @@ function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
 
-    // Check against static MCP_BEARER_TOKEN (if configured)
+    // First, check against static MCP_BEARER_TOKEN (if configured)
     if (MCP_BEARER_TOKEN && token === MCP_BEARER_TOKEN) {
       // Valid static token - attach minimal user info to request
       (req as any).user = {
@@ -132,12 +195,87 @@ function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
       };
       console.log('✓ Authenticated via static Bearer token');
       return next();
+    }
+
+    // Second, check if it's a JWT token (validate with audience)
+    if (isJWT(token)) {
+      const validationResult = jwtValidator.validateToken(token, BASE_URL);
+
+      if (validationResult.valid && validationResult.payload) {
+        // Valid JWT with correct audience - attach user info
+        (req as any).user = validationResult.payload.user || {
+          id: validationResult.payload.sub,
+          username: validationResult.payload.sub,
+          displayName: validationResult.payload.sub,
+        };
+        (req as any).tokenScope = validationResult.payload.scope;
+        (req as any).tokenPayload = validationResult.payload;
+
+        console.log('✓ Authenticated via JWT Bearer token', {
+          username: (req as any).user.username,
+          audience: validationResult.payload.aud,
+        });
+        return next();
+      } else {
+        // JWT validation failed
+        console.warn('⚠ JWT validation failed:', validationResult.error);
+
+        // Return specific error for audience mismatch
+        if (validationResult.errorCode === 'invalid_audience') {
+          const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+          const wwwAuthenticateValue = [
+            `Bearer realm="${BASE_URL}"`,
+            'error="invalid_token"',
+            'error_description="Token audience mismatch: token not intended for this resource server"',
+            `resource_metadata="${resourceMetadataUrl}"`,
+            'scope="mcp:tools"',
+          ].join(', ');
+
+          res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+          return res.status(401).json({
+            error: 'invalid_token',
+            error_description: 'Token audience mismatch: token not intended for this resource server',
+            details: {
+              expected_audience: BASE_URL,
+              received_audience: extractAudience(token),
+            },
+            resource_metadata: resourceMetadataUrl,
+            authorization_endpoint: `${BASE_URL}/auth/login`,
+            scope: 'mcp:tools',
+          });
+        }
+      }
     } else {
       console.warn('⚠ Invalid Bearer token');
     }
   }
 
-  res.status(401).json({ error: 'Unauthorized. Please authenticate first.' });
+  // Return 401 Unauthorized with WWW-Authenticate header per MCP specification
+  // RFC 6750 Section 3: https://tools.ietf.org/html/rfc6750#section-3
+  // RFC 9728 Section 5.1: https://www.rfc-editor.org/rfc/rfc9728.html#section-5.1
+  const baseUrl = process.env.BASE_URL || `http://${HOST}:${PORT}`;
+  const resourceMetadataUrl = `${baseUrl}/.well-known/oauth-protected-resource`;
+  const requiredScopes = 'mcp:tools';
+
+  // Construct WWW-Authenticate header with resource metadata and scope guidance
+  const wwwAuthenticateValue = [
+    `Bearer realm="${baseUrl}"`,
+    `resource_metadata="${resourceMetadataUrl}"`,
+    `scope="${requiredScopes}"`,
+    'error="invalid_token"',
+    'error_description="The access token is missing, expired, or invalid"',
+  ].join(', ');
+
+  console.log('🔒 Sending 401 Unauthorized with WWW-Authenticate header');
+
+  res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+  res.status(401).json({
+    error: 'invalid_token',
+    error_description: 'The access token is missing, expired, or invalid',
+    resource_metadata: resourceMetadataUrl,
+    authorization_endpoint: `${baseUrl}/auth/login`,
+    scope: requiredScopes,
+  });
 }
 
 // Initialize LogicMonitor client and handlers

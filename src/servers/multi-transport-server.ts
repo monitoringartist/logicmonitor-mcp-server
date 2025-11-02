@@ -27,6 +27,9 @@ import {
 } from '../utils/core/token-refresh.js';
 import { parseConfig, validateConfig } from '../utils/core/cli-config.js';
 import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../utils/core/oauth-strategy.js';
+import { getJWTValidator, isJWT, extractAudience } from '../utils/core/jwt-validator.js';
+import { ScopeManager } from '../utils/core/scope-manager.js';
+import { processResourceParameter, validateResourceMatch, determineAudience } from '../utils/core/resource-validator.js';
 
 // Load environment variables
 dotenv.config();
@@ -207,6 +210,14 @@ if (oauthConfig) {
   configureOAuthStrategy(oauthConfig);
 }
 
+// Initialize JWT validator for audience validation (RFC 8707)
+const jwtValidator = getJWTValidator({
+  issuer: BASE_URL,
+  audience: BASE_URL,
+  expiresIn: 3600, // 1 hour
+  algorithm: 'HS256',
+});
+
 // Create Express app
 const app = express();
 
@@ -292,8 +303,63 @@ if (oauthConfig) {
   app.use(passport.session());
 }
 
+/**
+ * Helper function to send WWW-Authenticate challenge for insufficient scope
+ * Per MCP specification: https://modelcontextprotocol.io/specification/draft/basic/authorization
+ * RFC 6750 Section 3.1: https://tools.ietf.org/html/rfc6750#section-3.1
+ * @unused - Reserved for future HTTP-level scope challenges (403 responses)
+ */
+function _sendInsufficientScopeChallenge(
+  res: Response,
+  requiredScopes: string[],
+  description: string = 'Additional scopes required',
+  requestId?: string,
+): void {
+  const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+  const scopeString = requiredScopes.join(' ');
+
+  // Construct WWW-Authenticate header for insufficient_scope error
+  const wwwAuthenticateValue = [
+    `Bearer realm="${BASE_URL}"`,
+    'error="insufficient_scope"',
+    `scope="${scopeString}"`,
+    `resource_metadata="${resourceMetadataUrl}"`,
+    `error_description="${description}"`,
+  ].join(', ');
+
+  log('debug', 'Sending 403 Forbidden with insufficient_scope challenge', {
+    required_scopes: requiredScopes,
+    resource_metadata: resourceMetadataUrl,
+  }, requestId);
+
+  res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+  res.status(403).json({
+    error: 'insufficient_scope',
+    error_description: description,
+    scope: scopeString,
+    resource_metadata: resourceMetadataUrl,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
+  });
+}
+
+/**
+ * Validates that the authenticated user has the required scopes
+ * Returns true if authorized, false otherwise
+ * @unused - Reserved for future inline scope validation
+ */
+function _validateScopes(userScopes: string | undefined, requiredScopes: string[]): boolean {
+  if (!userScopes) {
+    return false;
+  }
+
+  const scopeArray = userScopes.split(' ');
+  return requiredScopes.every(required => scopeArray.includes(required));
+}
+
 // Authentication middleware
 function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+  const requestId = (req as any).requestId;
+
   // Check for session-based authentication (browser)
   if (req.isAuthenticated()) {
     return next();
@@ -313,28 +379,117 @@ function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
         displayName: 'Static Token User',
       };
       (req as any).tokenScope = 'mcp:tools';
-      log('debug', 'Authenticated via static Bearer token', undefined, (req as any).requestId);
+      log('debug', 'Authenticated via static Bearer token', undefined, requestId);
       return next();
     }
 
-    // Second, check against OAuth access tokens (dynamic tokens from OAuth flow)
-    const accessTokens = (global as any).accessTokens || new Map();
-    const tokenData = accessTokens.get(token);
+    // Second, check if it's a JWT token (validate with audience)
+    if (isJWT(token)) {
+      const validationResult = jwtValidator.validateToken(token, BASE_URL);
 
-    if (tokenData && Date.now() < tokenData.expiresAt) {
-      // Valid OAuth token - attach user to request
-      (req as any).user = tokenData.user;
-      (req as any).tokenScope = tokenData.scope;
-      log('debug', 'Authenticated via OAuth Bearer token', { username: tokenData.user.username }, (req as any).requestId);
-      return next();
-    } else if (tokenData) {
-      log('warn', 'Expired OAuth Bearer token', undefined, (req as any).requestId);
+      if (validationResult.valid && validationResult.payload) {
+        // Valid JWT with correct audience - attach user info
+        (req as any).user = validationResult.payload.user || {
+          id: validationResult.payload.sub,
+          username: validationResult.payload.sub,
+          displayName: validationResult.payload.sub,
+        };
+        (req as any).tokenScope = validationResult.payload.scope;
+        (req as any).tokenPayload = validationResult.payload;
+
+        // Store scope in session for later validation
+        const sessionId = (req.session as any)?.id || (req as any).requestId;
+        if (sessionId) {
+          sessionScopes.set(sessionId, validationResult.payload.scope || 'mcp:tools');
+        }
+
+        log('debug', 'Authenticated via JWT Bearer token', {
+          username: (req as any).user.username,
+          audience: validationResult.payload.aud,
+          scope: validationResult.payload.scope,
+        }, requestId);
+        return next();
+      } else {
+        // JWT validation failed
+        log('warn', 'JWT validation failed', {
+          error: validationResult.error,
+          errorCode: validationResult.errorCode,
+          extractedAudience: extractAudience(token),
+          expectedAudience: BASE_URL,
+        }, requestId);
+
+        // Return specific error for audience mismatch
+        if (validationResult.errorCode === 'invalid_audience') {
+          const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+          const wwwAuthenticateValue = [
+            `Bearer realm="${BASE_URL}"`,
+            'error="invalid_token"',
+            'error_description="Token audience mismatch: token not intended for this resource server"',
+            `resource_metadata="${resourceMetadataUrl}"`,
+            'scope="mcp:tools"',
+          ].join(', ');
+
+          res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+          return res.status(401).json({
+            error: 'invalid_token',
+            error_description: 'Token audience mismatch: token not intended for this resource server',
+            details: {
+              expected_audience: BASE_URL,
+              received_audience: extractAudience(token),
+            },
+            resource_metadata: resourceMetadataUrl,
+            authorization_endpoint: `${BASE_URL}/auth/login`,
+            scope: 'mcp:tools',
+          });
+        }
+      }
     } else {
-      log('warn', 'Invalid Bearer token', undefined, (req as any).requestId);
+      // Third, check against OAuth access tokens (legacy non-JWT tokens)
+      const accessTokens = (global as any).accessTokens || new Map();
+      const tokenData = accessTokens.get(token);
+
+      if (tokenData && Date.now() < tokenData.expiresAt) {
+        // Valid OAuth token - attach user to request
+        (req as any).user = tokenData.user;
+        (req as any).tokenScope = tokenData.scope;
+        log('debug', 'Authenticated via legacy OAuth Bearer token', { username: tokenData.user.username }, requestId);
+        return next();
+      } else if (tokenData) {
+        log('warn', 'Expired OAuth Bearer token', undefined, requestId);
+      } else {
+        log('warn', 'Invalid Bearer token', undefined, requestId);
+      }
     }
   }
 
-  res.status(401).json({ error: 'Unauthorized. Please authenticate first.' });
+  // Return 401 Unauthorized with WWW-Authenticate header per MCP specification
+  // RFC 6750 Section 3: https://tools.ietf.org/html/rfc6750#section-3
+  // RFC 9728 Section 5.1: https://www.rfc-editor.org/rfc/rfc9728.html#section-5.1
+  const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+  const requiredScopes = 'mcp:tools';
+
+  // Construct WWW-Authenticate header with resource metadata and scope guidance
+  const wwwAuthenticateValue = [
+    `Bearer realm="${BASE_URL}"`,
+    `resource_metadata="${resourceMetadataUrl}"`,
+    `scope="${requiredScopes}"`,
+    'error="invalid_token"',
+    'error_description="The access token is missing, expired, or invalid"',
+  ].join(', ');
+
+  log('debug', 'Sending 401 Unauthorized with WWW-Authenticate header', {
+    resource_metadata: resourceMetadataUrl,
+    scope: requiredScopes,
+  }, (req as any).requestId);
+
+  res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+  res.status(401).json({
+    error: 'invalid_token',
+    error_description: 'The access token is missing, expired, or invalid',
+    resource_metadata: resourceMetadataUrl,
+    authorization_endpoint: `${BASE_URL}/auth/login`,
+    scope: requiredScopes,
+  });
 }
 
 // Initialize LogicMonitor client and handlers
@@ -371,6 +526,9 @@ type LogLevel = 'debug' | 'info' | 'warning' | 'error';
 const sessionLogLevels = new Map<string, LogLevel>();
 const defaultLogLevel: LogLevel = 'info';
 
+// Store user scopes per session
+const sessionScopes = new Map<string, string>();
+
 // Log level priority for filtering
 const logLevelPriority: Record<LogLevel, number> = {
   debug: 0,
@@ -394,6 +552,9 @@ function createMCPServer(sessionId?: string): Server {
     },
   );
 
+  // Store current user scope for tool execution
+  (server as any).currentUserScope = sessionId ? sessionScopes.get(sessionId) || 'mcp:tools' : 'mcp:tools';
+
   // Handle tool listing
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return { tools: TOOLS };
@@ -404,6 +565,45 @@ function createMCPServer(sessionId?: string): Server {
     const { name, arguments: args } = request.params;
 
     try {
+      // Get user scope from context (set by authentication middleware)
+      const userScope = (server as any).currentUserScope;
+
+      // Validate scopes for this tool
+      const scopeValidation = ScopeManager.validateToolScopes(name, userScope);
+
+      if (!scopeValidation.valid) {
+        // Insufficient scope - return error
+        log('warn', 'Insufficient scope for tool execution', {
+          tool: name,
+          userScopes: ScopeManager.parseScopes(userScope),
+          requiredScopes: scopeValidation.requiredScopes,
+          missingScopes: scopeValidation.missingScopes,
+          sessionId,
+        });
+
+        const errorMessage = `Insufficient scope to execute tool "${name}". ` +
+          `Missing scopes: ${ScopeManager.formatScopes(scopeValidation.missingScopes)}. ` +
+          'Please re-authorize with additional permissions.';
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                error: 'insufficient_scope',
+                error_description: errorMessage,
+                tool: name,
+                required_scopes: scopeValidation.requiredScopes,
+                missing_scopes: scopeValidation.missingScopes,
+                resource_metadata: `${BASE_URL}/.well-known/oauth-protected-resource`,
+                authorization_endpoint: `${BASE_URL}/auth/login`,
+              }, null, 2),
+            },
+          ],
+          isError: true,
+        };
+      }
+
       // Check for custom bearer token in session
       let handlers = lmHandlers;
       const customToken = sessionId ? sessionBearerTokens.get(sessionId) : undefined;
@@ -420,6 +620,12 @@ function createMCPServer(sessionId?: string): Server {
       } else if (!lmHandlers) {
         throw new Error('LogicMonitor credentials not configured. Please set LM_COMPANY and LM_BEARER_TOKEN environment variables or provide X-LM-BEARER-TOKEN header.');
       }
+
+      log('debug', 'Executing tool with valid scopes', {
+        tool: name,
+        userScopes: ScopeManager.parseScopes(userScope),
+        requiredScopes: scopeValidation.requiredScopes,
+      });
 
       const result = await handlers!.handleToolCall(name, args || {});
 
@@ -491,11 +697,17 @@ app.get('/.well-known/oauth-protected-resource', (req: Request, res: Response) =
   res.json({
     resource: BASE_URL,
     authorization_servers: [BASE_URL],
-    scopes_supported: ['mcp:tools'],
+    scopes_supported: ScopeManager.getAvailableScopes(),
     bearer_methods_supported: ['header', 'query'],
     resource_signing_alg_values_supported: ['RS256', 'ES256'],
     resource_documentation: `${BASE_URL}/docs`,
     resource_policy_uri: `${BASE_URL}/policy`,
+    scope_descriptions: Object.fromEntries(
+      ScopeManager.getAvailableScopes().map(scope => [
+        scope,
+        ScopeManager.getScopeDescription(scope),
+      ]),
+    ),
   });
 });
 
@@ -510,7 +722,7 @@ app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response)
       'none', // Only public clients with PKCE supported
     ],
     jwks_uri: `${BASE_URL}/oauth/jwks`,
-    scopes_supported: ['mcp:tools', 'openid', 'profile', 'email'],
+    scopes_supported: [...ScopeManager.getAvailableScopes(), 'openid', 'profile', 'email'],
     response_types_supported: ['code', 'token'],
     response_modes_supported: ['query', 'fragment'],
     grant_types_supported: [
@@ -522,6 +734,7 @@ app.get('/.well-known/oauth-authorization-server', (req: Request, res: Response)
     id_token_signing_alg_values_supported: ['RS256', 'ES256'],
     token_endpoint_auth_signing_alg_values_supported: [], // Not used for public clients
     code_challenge_methods_supported: ['S256'], // PKCE required, only S256 supported
+    resource_indicators_supported: true, // RFC 8707: Resource Indicators for OAuth 2.0
     service_documentation: `${BASE_URL}/docs`,
     ui_locales_supported: ['en-US', 'en-GB'],
   });
@@ -536,7 +749,7 @@ app.get('/.well-known/openid-configuration', (req: Request, res: Response) => {
     registration_endpoint: `${BASE_URL}/oauth/register`,
     userinfo_endpoint: `${BASE_URL}/oauth/userinfo`,
     jwks_uri: `${BASE_URL}/oauth/jwks`,
-    scopes_supported: ['openid', 'profile', 'email', 'mcp:tools'],
+    scopes_supported: ['openid', 'profile', 'email', ...ScopeManager.getAvailableScopes()],
     response_types_supported: ['code', 'id_token', 'token id_token', 'code id_token', 'code token', 'code token id_token'],
     response_modes_supported: ['query', 'fragment', 'form_post'],
     grant_types_supported: ['authorization_code', 'implicit', 'refresh_token'],
@@ -573,6 +786,7 @@ app.get('/.well-known/openid-configuration', (req: Request, res: Response) => {
     op_policy_uri: `${BASE_URL}/policy`,
     op_tos_uri: `${BASE_URL}/terms`,
     code_challenge_methods_supported: ['S256'], // PKCE required, only S256 supported
+    resource_indicators_supported: true, // RFC 8707: Resource Indicators for OAuth 2.0
     end_session_endpoint: `${BASE_URL}/logout`,
   });
 });
@@ -582,11 +796,17 @@ app.get(`${MCP_ENDPOINT_PATH}/.well-known/oauth-protected-resource`, (req: Reque
   res.json({
     resource: BASE_URL,
     authorization_servers: [BASE_URL],
-    scopes_supported: ['mcp:tools'],
+    scopes_supported: ScopeManager.getAvailableScopes(),
     bearer_methods_supported: ['header', 'query'],
     resource_signing_alg_values_supported: ['RS256', 'ES256'],
     resource_documentation: `${BASE_URL}/docs`,
     resource_policy_uri: `${BASE_URL}/policy`,
+    scope_descriptions: Object.fromEntries(
+      ScopeManager.getAvailableScopes().map(scope => [
+        scope,
+        ScopeManager.getScopeDescription(scope),
+      ]),
+    ),
   });
 });
 
@@ -600,7 +820,7 @@ app.get(`${MCP_ENDPOINT_PATH}/.well-known/oauth-authorization-server`, (req: Req
       'none', // Only public clients with PKCE supported
     ],
     jwks_uri: `${BASE_URL}/oauth/jwks`,
-    scopes_supported: ['mcp:tools', 'openid', 'profile', 'email'],
+    scopes_supported: [...ScopeManager.getAvailableScopes(), 'openid', 'profile', 'email'],
     response_types_supported: ['code', 'token'],
     response_modes_supported: ['query', 'fragment'],
     grant_types_supported: [
@@ -612,6 +832,7 @@ app.get(`${MCP_ENDPOINT_PATH}/.well-known/oauth-authorization-server`, (req: Req
     id_token_signing_alg_values_supported: ['RS256', 'ES256'],
     token_endpoint_auth_signing_alg_values_supported: [], // Not used for public clients
     code_challenge_methods_supported: ['S256'], // PKCE required
+    resource_indicators_supported: true, // RFC 8707: Resource Indicators for OAuth 2.0
   });
 });
 
@@ -623,7 +844,7 @@ app.get(`${MCP_ENDPOINT_PATH}/.well-known/openid-configuration`, (req: Request, 
     registration_endpoint: `${BASE_URL}/oauth/register`,
     userinfo_endpoint: `${BASE_URL}/oauth/userinfo`,
     jwks_uri: `${BASE_URL}/oauth/jwks`,
-    scopes_supported: ['openid', 'profile', 'email', 'mcp:tools'],
+    scopes_supported: ['openid', 'profile', 'email', ...ScopeManager.getAvailableScopes()],
     response_types_supported: ['code', 'id_token', 'token id_token', 'code id_token', 'code token', 'code token id_token'],
     response_modes_supported: ['query', 'fragment', 'form_post'],
     grant_types_supported: ['authorization_code', 'implicit', 'refresh_token'],
@@ -659,6 +880,7 @@ app.get(`${MCP_ENDPOINT_PATH}/.well-known/openid-configuration`, (req: Request, 
     op_policy_uri: `${BASE_URL}/policy`,
     op_tos_uri: `${BASE_URL}/terms`,
     code_challenge_methods_supported: ['S256'], // PKCE required, only S256 supported
+    resource_indicators_supported: true, // RFC 8707: Resource Indicators for OAuth 2.0
     end_session_endpoint: `${BASE_URL}/logout`,
   });
 });
@@ -893,8 +1115,28 @@ if (oauthConfig) {
   app.get('/auth/login', (req: Request, res: Response, next: NextFunction) => {
     // Get OAuth parameters from query
     const { redirect_uri, state, code_challenge, code_challenge_method, scope, response_type, client_id, resource, display } = req.query;
+    const requestId = (req as any).requestId;
 
     if (redirect_uri) {
+      // Validate resource parameter per RFC 8707
+      const resourceValidation = processResourceParameter(resource as string | string[] | undefined, BASE_URL, requestId);
+
+      if (!resourceValidation.valid) {
+        log('warn', 'Invalid resource parameter in authorization request', {
+          error: resourceValidation.error,
+          error_description: resourceValidation.error_description,
+        }, requestId);
+
+        // Return error per RFC 6749 Section 4.1.2.1 and RFC 8707 Section 2
+        const errorParams = new URLSearchParams({
+          error: resourceValidation.error || 'invalid_request',
+          error_description: resourceValidation.error_description || 'Invalid resource parameter',
+          state: state as string || '',
+        });
+
+        return res.redirect(`${redirect_uri}?${errorParams.toString()}`);
+      }
+
       // OAuth flow - encode parameters in provider state to survive the round-trip
       const oauthParams = {
         redirect_uri: redirect_uri as string,
@@ -904,7 +1146,7 @@ if (oauthConfig) {
         scope: scope as string,
         response_type: response_type as string,
         client_id: client_id as string,
-        resource: resource as string,
+        resource: resource as string | string[] | undefined,
         display: display as string,
       };
 
@@ -916,7 +1158,8 @@ if (oauthConfig) {
         redirect_uri,
         code_challenge_method,
         display,
-      });
+        resources: resourceValidation.resources,
+      }, requestId);
 
       // Continue with authentication, passing encoded state
       passport.authenticate(passportStrategy, {
@@ -1002,6 +1245,7 @@ if (oauthConfig) {
           code_challenge: oauthParams.code_challenge,
           code_challenge_method: oauthParams.code_challenge_method,
           scope: oauthParams.scope,
+          resource: oauthParams.resource, // RFC 8707: Store resource parameter for token endpoint validation
           redirectUri: redirectUri,
           expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
         });
@@ -1264,10 +1508,10 @@ if (oauthConfig) {
   // OAuth token endpoint (for exchanging authorization code for access token)
   // This server ONLY supports public clients with PKCE (no client secrets)
   app.post('/oauth/token', express.urlencoded({ extended: true }), (req: Request, res: Response) => {
-    const { grant_type, code, client_id, code_verifier } = req.body;
+    const { grant_type, code, client_id, code_verifier, resource } = req.body;
     const requestId = (req as any).requestId;
 
-    log('info', 'Token request received', { grant_type, client_id, has_verifier: !!code_verifier }, requestId);
+    log('info', 'Token request received', { grant_type, client_id, has_verifier: !!code_verifier, resource }, requestId);
 
     if (grant_type !== 'authorization_code') {
       return res.status(400).json({
@@ -1323,15 +1567,46 @@ if (oauthConfig) {
 
     log('debug', 'PKCE verification successful', undefined, requestId);
 
-    // Generate access token
-    const accessToken = Buffer.from(JSON.stringify({
-      userId: authData.user.id,
-      username: authData.user.username,
-      scope: authData.scope,
-      timestamp: Date.now(),
-    })).toString('base64url');
+    // RFC 8707: Validate resource parameter if provided
+    // The resource in the token request must match or be a subset of what was authorized
+    const resourceValidation = validateResourceMatch(resource, authData.resource);
+    if (!resourceValidation.valid) {
+      log('warn', 'Resource parameter mismatch', {
+        requested: resource,
+        authorized: authData.resource,
+        error: resourceValidation.error,
+      }, requestId);
 
-    // Store access token (in production, use Redis or database)
+      return res.status(400).json({
+        error: 'invalid_target',
+        error_description: resourceValidation.error || 'Requested resource does not match authorized resource',
+      });
+    }
+
+    // Determine the JWT audience based on resource parameter (RFC 8707 Section 4)
+    // If resource was specified, use it as the audience. Otherwise, use BASE_URL
+    const audience = determineAudience(resource, authData.resource, BASE_URL);
+
+    log('debug', 'Resource validation successful', { audience }, requestId);
+
+    // Generate JWT access token with audience binding (RFC 8707)
+    // Per MCP specification: "MCP clients MUST implement and use the resource parameter"
+    const accessToken = jwtValidator.createToken({
+      sub: authData.user.id,
+      scope: authData.scope || 'mcp:tools',
+      client_id: client_id,
+      // Override default audience with resource-specific audience
+      ...(audience !== BASE_URL && { aud: audience }),
+      user: {
+        id: authData.user.id,
+        username: authData.user.username,
+        displayName: authData.user.displayName,
+        email: authData.user.email,
+      },
+    });
+
+    // Store access token for validation (in production, use Redis or database)
+    // This allows us to support both JWT and legacy tokens
     const accessTokens = (global as any).accessTokens || ((global as any).accessTokens = new Map());
     accessTokens.set(accessToken, {
       user: authData.user,
@@ -1342,9 +1617,13 @@ if (oauthConfig) {
     // Delete the authorization code (one-time use)
     authCodes.delete(code);
 
-    log('info', 'Access token issued', { username: authData.user.username }, requestId);
+    log('info', 'JWT access token issued with audience binding', {
+      username: authData.user.username,
+      audience: BASE_URL,
+      scope: authData.scope,
+    }, requestId);
 
-    // Return the access token
+    // Return the access token per RFC 6749
     res.json({
       access_token: accessToken,
       token_type: 'Bearer',
