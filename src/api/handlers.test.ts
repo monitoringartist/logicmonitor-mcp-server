@@ -1318,7 +1318,7 @@ describe('LogicMonitorHandlers', () => {
 
       await expect(
         handlers.handleToolCall('get_resource', { deviceId: 123 }),
-      ).rejects.toThrow('Error: Generic error');
+      ).rejects.toThrow('Generic error');
     });
 
     it('should handle non-Error objects', async () => {

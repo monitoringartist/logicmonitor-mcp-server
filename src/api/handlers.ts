@@ -5,9 +5,10 @@
  */
 
 import { LogicMonitorClient } from './client.js';
-import { batchProcessor } from '../utils/helpers/batch-processor.js';
+import { batchProcessor, smartBatchProcessor as _smartBatchProcessor } from '../utils/helpers/batch-processor.js';
 import { autoFormatFilter, SEARCH_FIELDS } from '../utils/helpers/filters.js';
 import { LogicMonitorApiError } from '../utils/core/lm-error.js';
+import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../utils/core/error-handler.js';
 
 // Default field sets for curated responses (when no fields parameter specified)
 const DEFAULT_DEVICE_FIELDS = [
@@ -152,7 +153,9 @@ export class LogicMonitorHandlers {
         case 'create_resource': {
           // Check if this is a batch operation
           if (args.devices && Array.isArray(args.devices)) {
-            // Batch mode
+            // Batch mode with adaptive concurrency support
+            // Use smartBatchProcessor for automatic rate limit handling:
+            // const result = await smartBatchProcessor.processBatchSmart(..., { adaptiveConcurrency: true })
             const batchOptions = args.batchOptions || {};
             const result = await batchProcessor.processBatch(
               args.devices,
@@ -1366,24 +1369,152 @@ export class LogicMonitorHandlers {
           });
 
         default:
-          throw new Error(`Unknown tool: ${name}`);
+          throw new MCPError(
+            `Unknown tool: ${name}`,
+            ErrorCodes.INVALID_PARAMETERS,
+            { toolName: name },
+            [
+              'Check the tool name spelling',
+              'Run list_tools to see available tools',
+              'Verify you are using a supported tool version',
+            ],
+          );
       }
     } catch (error) {
-      // If it's a LogicMonitor API error, preserve all details
-      if (error instanceof LogicMonitorApiError) {
-        // Re-throw with detailed message
-        const detailedError = new Error(error.toMCPError());
-        // Attach original error details as properties for JSON serialization
-        (detailedError as any).lmError = error.toJSON();
-        throw detailedError;
+      // If it's already an MCPError, re-throw it
+      if (error instanceof MCPError) {
+        throw error;
       }
 
-      // For other errors, wrap them
+      // If it's a LogicMonitor API error, convert to MCPError with suggestions
+      if (error instanceof LogicMonitorApiError) {
+        throw this.convertLMErrorToMCPError(error, name);
+      }
+
+      // For other errors, wrap them in MCPError
       if (error instanceof Error) {
-        throw new Error(`Error: ${error.message}`);
+        throw createMCPError(error, {
+          operation: name,
+          code: ErrorCodes.INTERNAL_ERROR,
+          suggestions: [
+            'Check the server logs for more details',
+            'Verify your LogicMonitor credentials are valid',
+            'Ensure the API endpoint is accessible',
+          ],
+        });
       }
       throw error;
     }
+  }
+
+  /**
+   * Convert LogicMonitor API error to MCPError with contextual suggestions
+   */
+  private convertLMErrorToMCPError(error: LogicMonitorApiError, toolName: string): MCPError {
+    const httpStatus = error.status;
+    const lmError = error.errorMessage;
+
+    // Determine error code and suggestions based on operation and HTTP status
+    let code: string = ErrorCodes.API_REQUEST_FAILED;
+    let suggestions: string[] = [];
+
+    // Authentication errors (401, 403)
+    if (httpStatus === 401 || httpStatus === 403) {
+      code = httpStatus === 401 ? ErrorCodes.AUTHENTICATION_FAILED : ErrorCodes.INSUFFICIENT_PERMISSIONS;
+      suggestions = [...ErrorSuggestions.authentication];
+    }
+    // Not found errors (404)
+    else if (httpStatus === 404) {
+      if (toolName.includes('device') || toolName.includes('resource')) {
+        code = ErrorCodes.DEVICE_NOT_FOUND;
+        suggestions = [
+          'Verify the device ID exists',
+          'Check if the device was recently deleted',
+          'Use list_resources or search_devices to find the correct ID',
+        ];
+      } else if (toolName.includes('group')) {
+        code = ErrorCodes.GROUP_NOT_FOUND;
+        suggestions = [...ErrorSuggestions.groupOperations];
+      } else if (toolName.includes('alert')) {
+        code = ErrorCodes.ALERT_NOT_FOUND;
+        suggestions = [...ErrorSuggestions.alertOperations];
+      } else {
+        suggestions = [
+          'Verify the resource ID exists',
+          'Check if the resource was recently deleted',
+          'Use the appropriate list command to find valid IDs',
+        ];
+      }
+    }
+    // Rate limit errors (429)
+    else if (httpStatus === 429) {
+      code = ErrorCodes.RATE_LIMIT_EXCEEDED;
+      suggestions = [...ErrorSuggestions.rateLimit];
+    }
+    // Validation errors (400)
+    else if (httpStatus === 400) {
+      code = ErrorCodes.INVALID_PARAMETERS;
+      suggestions = [...ErrorSuggestions.validation];
+
+      // Add operation-specific suggestions
+      if (toolName.includes('create')) {
+        if (toolName.includes('device') || toolName.includes('resource')) {
+          code = ErrorCodes.DEVICE_CREATE_FAILED;
+          suggestions = [...ErrorSuggestions.deviceCreate];
+        } else if (toolName.includes('group')) {
+          code = ErrorCodes.GROUP_CREATE_FAILED;
+          suggestions = [...ErrorSuggestions.groupOperations];
+        }
+      } else if (toolName.includes('update')) {
+        if (toolName.includes('device') || toolName.includes('resource')) {
+          code = ErrorCodes.DEVICE_UPDATE_FAILED;
+          suggestions = [...ErrorSuggestions.deviceUpdate];
+        } else if (toolName.includes('group')) {
+          code = ErrorCodes.GROUP_UPDATE_FAILED;
+          suggestions = [...ErrorSuggestions.groupOperations];
+        }
+      } else if (toolName.includes('delete')) {
+        if (toolName.includes('device') || toolName.includes('resource')) {
+          code = ErrorCodes.DEVICE_DELETE_FAILED;
+          suggestions = [...ErrorSuggestions.deviceDelete];
+        } else if (toolName.includes('group')) {
+          code = ErrorCodes.GROUP_DELETE_FAILED;
+          suggestions = [...ErrorSuggestions.groupOperations];
+        }
+      } else if (toolName.includes('acknowledge_alert')) {
+        code = ErrorCodes.ALERT_ACK_FAILED;
+        suggestions = [...ErrorSuggestions.alertOperations];
+      } else if (toolName.includes('alert_note')) {
+        code = ErrorCodes.ALERT_NOTE_FAILED;
+        suggestions = [...ErrorSuggestions.alertOperations];
+      }
+    }
+    // Server errors (5xx)
+    else if (httpStatus >= 500) {
+      code = ErrorCodes.API_REQUEST_FAILED;
+      suggestions = [
+        'LogicMonitor API is experiencing issues',
+        'Wait a few moments and retry',
+        'Check LogicMonitor status page',
+        'Contact LogicMonitor support if the issue persists',
+      ];
+    }
+    // Network/timeout errors
+    else if (httpStatus === 0 || httpStatus === -1) {
+      code = ErrorCodes.NETWORK_ERROR;
+      suggestions = [...ErrorSuggestions.networkError];
+    }
+
+    return new MCPError(
+      lmError || error.message,
+      code,
+      {
+        tool: toolName,
+        httpStatus,
+        apiError: error.toJSON(),
+      },
+      suggestions,
+    );
   }
 
   formatResponse(data: any): string {

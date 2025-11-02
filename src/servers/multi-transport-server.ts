@@ -30,6 +30,7 @@ import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../u
 import { getJWTValidator, isJWT, extractAudience } from '../utils/core/jwt-validator.js';
 import { ScopeManager } from '../utils/core/scope-manager.js';
 import { processResourceParameter, validateResourceMatch, determineAudience } from '../utils/core/resource-validator.js';
+import { isMCPError, formatErrorForUser } from '../utils/core/error-handler.js';
 
 // Load environment variables
 dotenv.config();
@@ -638,6 +639,20 @@ function createMCPServer(sessionId?: string): Server {
         ],
       };
     } catch (error) {
+      // Handle MCPError with structured suggestions
+      if (isMCPError(error)) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: formatErrorForUser(error),
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // Fallback for other errors
       let errorResponse: any = {
         error: 'Unknown error occurred',
         tool: name,
@@ -1003,6 +1018,12 @@ app.get('/', (req: Request, res: Response) => {
               <td><code>/healthz</code></td>
               <td>✅ Available</td>
             </tr>
+            <tr>
+              <td><span class="badge" style="background: #e7f1ff; color: #004085;">Health</span></td>
+              <td>GET</td>
+              <td><code>/health</code></td>
+              <td>✅ Available</td>
+            </tr>
           </tbody>
         </table>
         
@@ -1086,7 +1107,12 @@ app.get('/', (req: Request, res: Response) => {
           </tr>
           <tr>
             <td><code>GET /healthz</code></td>
-            <td>Health check endpoint (returns "ok")</td>
+            <td>Simple health check (returns "ok")</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>GET /health</code></td>
+            <td>Detailed health check (status, version, uptime, memory, connections)</td>
             <td>No</td>
           </tr>
           <tr>
@@ -1640,9 +1666,37 @@ if (oauthConfig) {
   });
 }
 
-// Health check endpoint
+// Health check endpoint (simple)
 app.get('/healthz', (req: Request, res: Response) => {
   res.status(200).send('ok');
+});
+
+// Detailed health check endpoint
+app.get('/health', (req: Request, res: Response) => {
+  const memoryUsage = process.memoryUsage();
+
+  res.json({
+    status: 'healthy',
+    version: '1.0.0',
+    uptime: process.uptime(),
+    memory: {
+      rss: memoryUsage.rss,
+      heapTotal: memoryUsage.heapTotal,
+      heapUsed: memoryUsage.heapUsed,
+      external: memoryUsage.external,
+      arrayBuffers: memoryUsage.arrayBuffers,
+    },
+    connections: {
+      mcp: mcpServers.size,
+      http: httpSessions.size,
+    },
+    timestamp: new Date().toISOString(),
+    transport: {
+      mode: TRANSPORT_MODE,
+      http: TRANSPORT_MODE !== 'sse-only',
+      sse: TRANSPORT_MODE !== 'http-only',
+    },
+  });
 });
 
 // Status endpoint
@@ -1901,6 +1955,29 @@ async function handleMCPMessage(server: Server, message: JSONRPCMessage): Promis
                 id: messageId,
               });
             } catch (error: any) {
+              // Handle MCPError with structured suggestions
+              if (isMCPError(error)) {
+                log('error', 'MCP error in tool execution', {
+                  tool: params.name,
+                  code: error.code,
+                  message: error.message,
+                });
+
+                resolve({
+                  jsonrpc: '2.0',
+                  result: {
+                    content: [{
+                      type: 'text',
+                      text: formatErrorForUser(error),
+                    }],
+                    isError: true,
+                  },
+                  id: messageId,
+                });
+                return;
+              }
+
+              // Fallback for other errors
               let errorMessage = 'Unknown error occurred';
               let errorData: any = errorMessage;
 
@@ -2038,6 +2115,8 @@ if (oauthConfig && oauthConfig.tokenRefreshEnabled) {
 // Check if TLS is configured
 const useTLS = !!(appConfig.tlsCertFile && appConfig.tlsKeyFile);
 
+let server: https.Server | ReturnType<typeof app.listen>;
+
 if (useTLS) {
   // HTTPS server with TLS
   try {
@@ -2045,7 +2124,7 @@ if (useTLS) {
       cert: fs.readFileSync(appConfig.tlsCertFile!),
       key: fs.readFileSync(appConfig.tlsKeyFile!),
     };
-    https.createServer(tlsOptions, app).listen(PORT, () => {
+    server = https.createServer(tlsOptions, app).listen(PORT, () => {
       log('info', 'MCP Multi-Transport Server started with TLS/HTTPS', {
         url: `https://${HOST}:${PORT}`,
         transport_mode: TRANSPORT_MODE,
@@ -2069,7 +2148,7 @@ if (useTLS) {
   }
 } else {
   // HTTP server (no TLS)
-  app.listen(PORT, () => {
+  server = app.listen(PORT, () => {
     log('info', 'MCP Multi-Transport Server started', {
       url: `http://${HOST}:${PORT}`,
       transport_mode: TRANSPORT_MODE,
@@ -2084,3 +2163,52 @@ if (useTLS) {
     });
   });
 }
+
+// Graceful shutdown handler
+async function gracefulShutdown(signal: string) {
+  log('info', `${signal} received, closing server gracefully...`);
+
+  try {
+    // Close all MCP connections
+    log('info', `Closing ${mcpServers.size} MCP SSE connections...`);
+    for (const [sessionId, mcpServer] of mcpServers) {
+      try {
+        await mcpServer.close();
+        log('debug', `Closed MCP connection for session: ${sessionId}`);
+      } catch (error) {
+        log('error', `Error closing MCP connection for session ${sessionId}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    // Close HTTP sessions (these don't need explicit close, but we clean up references)
+    log('info', `Cleaning up ${httpSessions.size} HTTP sessions...`);
+    httpSessions.clear();
+    sessionBearerTokens.clear();
+    sessionLogLevels.clear();
+    sessionScopes.clear();
+
+    // Close HTTP/HTTPS server
+    log('info', 'Closing HTTP/HTTPS server...');
+    server.close(() => {
+      log('info', 'Server closed successfully');
+      process.exit(0);
+    });
+
+    // Force close after 10 seconds if graceful shutdown takes too long
+    setTimeout(() => {
+      log('error', 'Graceful shutdown timed out after 10 seconds, forcing exit...');
+      process.exit(1);
+    }, 10000);
+  } catch (error) {
+    log('error', 'Error during graceful shutdown', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    process.exit(1);
+  }
+}
+
+// Handle shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));

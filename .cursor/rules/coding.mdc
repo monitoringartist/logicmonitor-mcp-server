@@ -30,3 +30,5 @@ npx jest -t "test name"        # Run tests matching pattern
 - `/src`: Source code with client, server, and shared modules
 - Tests alongside source files with `.test.ts` suffix
 - Node.js >= 18 required
+
+Run nmp run lint, npm run test, npm run build after implementation. Improve implementation if these tests are failing.

@@ -16,6 +16,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 - **Tool Filtering**: Enable specific tools or disable search functionality
 - **Rate Limiting**: Automatic retry with exponential backoff
 - **Batch Operations**: Process multiple resources efficiently
+- **Smart Batching**: Adaptive concurrency that automatically adjusts to API rate limits
 
 ## Quick Start
 
@@ -169,21 +170,55 @@ export MCP_DEBUG=true
 npm start
 ```
 
-**Health Check Endpoint:** When using SSE or streamable HTTP transports, a health check endpoint is available at `/healthz`:
+**Health Check Endpoints:** When using SSE or streamable HTTP transports, health check endpoints are available:
 
+#### Simple Health Check (`/healthz`)
 ```bash
-# Check server health
+# Quick health check
 curl http://localhost:3000/healthz
 # Response: 200 OK with body "ok"
 ```
 
-This endpoint can be used by:
-- Load balancers
-- Monitoring systems
+#### Detailed Health Check (`/health`)
+```bash
+# Detailed health information
+curl http://localhost:3000/health
+```
+
+Response includes:
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "uptime": 3600.5,
+  "memory": {
+    "rss": 52428800,
+    "heapTotal": 20971520,
+    "heapUsed": 15728640,
+    "external": 1048576,
+    "arrayBuffers": 262144
+  },
+  "connections": {
+    "mcp": 5,
+    "http": 3
+  },
+  "timestamp": "2025-11-02T12:00:00.000Z",
+  "transport": {
+    "mode": "both",
+    "http": true,
+    "sse": true
+  }
+}
+```
+
+These endpoints can be used by:
+- Load balancers (use `/healthz` for simple checks)
+- Monitoring systems (use `/health` for detailed metrics)
 - Orchestration platforms (Docker, Kubernetes)
 - CI/CD health checks
+- APM and observability tools
 
-Note: The health check endpoint is not available with STDIO transport.
+Note: Health check endpoints are not available with STDIO transport.
 
 ### HTTPS/TLS Configuration (Secure Transport)
 
@@ -499,6 +534,90 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 
 For detailed tool descriptions and parameters, see the [API documentation](src/README.md).
 
+## Batch Operations & Performance
+
+### Smart Batch Processing
+
+The server includes an intelligent batch processor that automatically adapts concurrency based on API rate limits.
+
+#### Features
+
+- **Adaptive Concurrency**: Automatically adjusts parallel requests based on API response
+- **Rate Limit Detection**: Recognizes rate limit errors and backs off immediately
+- **Progressive Scaling**: Gradually increases concurrency when operations succeed
+- **Configurable Limits**: Set minimum and maximum concurrency boundaries
+
+#### How It Works
+
+1. **Starts Conservative**: Begins with moderate concurrency (default: 5 concurrent requests)
+2. **Monitors Success**: Tracks consecutive successful requests
+3. **Scales Up**: After 10 consecutive successes, increases concurrency by 20%
+4. **Detects Rate Limits**: Recognizes rate limit errors (429, "too many requests")
+5. **Backs Off**: Immediately reduces concurrency by 50% when rate limited
+6. **Adapts Continuously**: Adjusts throughout the batch operation
+
+#### Usage Example
+
+```typescript
+import { smartBatchProcessor } from './utils/helpers/batch-processor.js';
+
+// Batch create devices with adaptive concurrency
+const result = await smartBatchProcessor.processBatchSmart(
+  devices,
+  async (device) => {
+    return await createDevice(device);
+  },
+  {
+    adaptiveConcurrency: true,        // Enable smart batching
+    apiRateLimit: 100,                // Optional: target 100 req/s
+    minConcurrency: 2,                // Don't go below 2 concurrent
+    maxConcurrencyLimit: 20,          // Don't exceed 20 concurrent
+    continueOnError: true,            // Keep processing on errors
+    onConcurrencyChange: (newValue, reason) => {
+      console.log(`Concurrency changed to ${newValue}: ${reason}`);
+    },
+  },
+);
+
+console.log(`Processed ${result.summary.succeeded}/${result.summary.total} items`);
+```
+
+#### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `adaptiveConcurrency` | boolean | `true` | Enable adaptive concurrency adjustment |
+| `apiRateLimit` | number | auto | Target API rate limit (requests/second) |
+| `minConcurrency` | number | `1` | Minimum concurrent requests |
+| `maxConcurrencyLimit` | number | `20` | Maximum concurrent requests |
+| `continueOnError` | boolean | `true` | Continue processing if some items fail |
+| `onConcurrencyChange` | function | - | Callback when concurrency changes |
+| `onProgress` | function | - | Callback for progress updates |
+
+#### Performance Benefits
+
+- **Faster Processing**: Automatically finds optimal concurrency
+- **Prevents Rate Limiting**: Backs off before hitting API limits
+- **Self-Tuning**: Adapts to API performance in real-time
+- **Resilient**: Recovers from temporary rate limit errors
+
+#### Standard vs Smart Batching
+
+```typescript
+// Standard batching (fixed concurrency)
+import { batchProcessor } from './utils/helpers/batch-processor.js';
+const result = await batchProcessor.processBatch(items, processor, {
+  maxConcurrent: 5,  // Always 5, never adjusts
+});
+
+// Smart batching (adaptive concurrency)
+import { smartBatchProcessor } from './utils/helpers/batch-processor.js';
+const result = await smartBatchProcessor.processBatchSmart(items, processor, {
+  adaptiveConcurrency: true,  // Automatically adjusts 1-20
+  maxConcurrencyLimit: 20,
+});
+```
+
 ## Development
 
 ### Project Structure
@@ -582,6 +701,68 @@ MCP_DEBUG=false
 MCP_LOG_FORMAT=human
 MCP_LOG_LEVEL=info
 ```
+
+## Error Handling
+
+The server provides structured error messages with actionable suggestions to help troubleshoot issues quickly.
+
+### Enhanced Error Messages
+
+All errors include:
+- **Error Code**: Machine-readable error code (e.g., `DEVICE_CREATE_FAILED`)
+- **Message**: Human-readable error description
+- **Details**: Context about what went wrong
+- **Suggestions**: Actionable steps to resolve the issue
+
+### Example Error Output
+
+```
+Error: Failed to create device
+
+Details:
+{
+  "deviceName": "web-server-01",
+  "collectorId": 123,
+  "httpStatus": 400,
+  "apiError": "Collector not found"
+}
+
+Suggestions:
+  1. Verify the collector ID exists and is active
+  2. Check if the device name is unique
+  3. Ensure you have permissions to create devices
+  4. Verify the host group path exists
+  5. Check if all required properties are provided
+```
+
+### Common Error Codes
+
+| Code | Description | Common Causes |
+|------|-------------|---------------|
+| `AUTHENTICATION_FAILED` | Invalid credentials | Expired token, wrong bearer token |
+| `DEVICE_CREATE_FAILED` | Device creation error | Invalid collector ID, duplicate name |
+| `DEVICE_NOT_FOUND` | Device doesn't exist | Wrong ID, device deleted |
+| `RATE_LIMIT_EXCEEDED` | Too many API calls | High request frequency |
+| `INVALID_PARAMETERS` | Invalid request data | Missing required fields |
+
+### Error Suggestions by Category
+
+**Authentication Errors:**
+- Verify your `LM_BEARER_TOKEN` is valid and not expired
+- Check if the API token has the required permissions
+- Ensure your LogicMonitor account is active
+
+**Rate Limiting:**
+- Wait a few moments before retrying
+- Reduce the frequency of API calls
+- Use batch operations when possible
+- Contact LogicMonitor support to increase rate limits
+
+**Network Errors:**
+- Check your internet connection
+- Verify the LogicMonitor API is accessible
+- Check firewall rules
+- Verify the `LM_COMPANY` name is correct
 
 ## Security Considerations
 
@@ -667,10 +848,6 @@ Contributions are welcome! Please:
 3. Make your changes
 4. Run `npm run lint` and `npm run build`
 5. Submit a pull request
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 

@@ -136,7 +136,6 @@ export class LogicMonitorClient {
 
     try {
       response = await fetch(url.toString(), options);
-      clearTimeout(timeoutId); // Clear timeout on successful fetch
       data = await response.json();
 
       const duration = Date.now() - startTime;
@@ -198,7 +197,6 @@ export class LogicMonitorClient {
         );
       }
     } catch (error) {
-      clearTimeout(timeoutId); // Clear timeout on error
       const duration = Date.now() - startTime;
 
       // Check if error is due to timeout
@@ -217,6 +215,9 @@ export class LogicMonitorClient {
       }
 
       throw error;
+    } finally {
+      // Always clear timeout to prevent memory leaks
+      clearTimeout(timeoutId);
     }
 
     return data;
