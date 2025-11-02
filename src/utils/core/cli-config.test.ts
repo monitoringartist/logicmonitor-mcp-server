@@ -27,8 +27,36 @@ describe('CLI Configuration Parser', () => {
     // Reset process.argv
     process.argv = ['node', 'script.js'];
     
-    // Reset process.env
+    // Reset process.env - create a clean copy without test-specific vars
     process.env = { ...originalEnv };
+    
+    // Explicitly delete any LM/MCP related env vars to ensure clean state
+    delete process.env.LM_COMPANY;
+    delete process.env.LM_BEARER_TOKEN;
+    delete process.env.MCP_TRANSPORT;
+    delete process.env.MCP_ADDRESS;
+    delete process.env.MCP_BASE_PATH;
+    delete process.env.MCP_ENDPOINT_PATH;
+    delete process.env.MCP_DEBUG;
+    delete process.env.MCP_LOG_FORMAT;
+    delete process.env.MCP_LOG_LEVEL;
+    delete process.env.MCP_ENABLED_TOOLS;
+    delete process.env.MCP_READ_ONLY;
+    delete process.env.MCP_DISABLE_SEARCH;
+    delete process.env.MCP_BEARER_TOKEN;
+    delete process.env.TLS_CERT_FILE;
+    delete process.env.TLS_KEY_FILE;
+    delete process.env.OAUTH_PROVIDER;
+    delete process.env.OAUTH_CLIENT_ID;
+    delete process.env.OAUTH_CLIENT_SECRET;
+    delete process.env.OAUTH_SESSION_SECRET;
+    delete process.env.OAUTH_CALLBACK_URL;
+    delete process.env.OAUTH_SCOPE;
+    delete process.env.OAUTH_TOKEN_REFRESH_ENABLED;
+    delete process.env.OAUTH_AUTHORIZATION_URL;
+    delete process.env.OAUTH_TOKEN_URL;
+    delete process.env.OAUTH_USER_PROFILE_URL;
+    delete process.env.SESSION_SECRET;
     
     // Mock console methods
     consoleOutput = [];
