@@ -5,17 +5,18 @@
  */
 
 /**
- * Normalizes a URL by removing trailing slashes and converting to lowercase
+ * Normalizes a URL by removing trailing slashes
  * This ensures consistent URL comparison regardless of trailing slashes
  */
 export function normalizeUrl(url: string): string {
   try {
     const urlObj = new URL(url);
-    // Remove trailing slash from pathname
+    // Remove trailing slash from pathname (even from root "/")
     let pathname = urlObj.pathname;
-    if (pathname.endsWith('/') && pathname.length > 1) {
+    if (pathname.endsWith('/')) {
       pathname = pathname.slice(0, -1);
     }
+    // If pathname becomes empty, keep it empty (will result in no path)
     // Reconstruct URL without trailing slash
     return `${urlObj.protocol}//${urlObj.host}${pathname}${urlObj.search}${urlObj.hash}`;
   } catch {

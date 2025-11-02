@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.41% </span>
+                <span class="strong">94.31% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>176/211</span>
+                <span class='fraction'>199/211</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">76.66% </span>
+                <span class="strong">72.22% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>23/30</span>
+                <span class='fraction'>26/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.41% </span>
+                <span class="strong">94.31% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>176/211</span>
+                <span class='fraction'>199/211</span>
             </div>
         
             
@@ -393,8 +393,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -406,31 +406,31 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -603,9 +603,9 @@ function needsQuoting(value: string): boolean {
    * Special characters that need escaping: ( ) : , ~ " \
    * Note: Asterisk (*) is NOT escaped as it's used for wildcards
    */
-export<span class="fstat-no" title="function not covered" > function escapeFilterValue(value: string): string {</span>
-<span class="cstat-no" title="statement not covered" >  return value.replace(/([(),:~"\\])/g, '\\$1');</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+export function escapeFilterValue(value: string): string {
+  return value.replace(/([(),:~"\\])/g, '\\$1');
+}
 &nbsp;
 /**
    * Auto-format a filter or search query intelligently:
@@ -616,32 +616,32 @@ export<span class="fstat-no" title="function not covered" > function escapeFilte
    * @param searchFields - Fields to search across for plain text (optional)
    * @returns Formatted filter string
    */
-export<span class="fstat-no" title="function not covered" > function autoFormatFilter(</span>
-<span class="cstat-no" title="statement not covered" >  input: string | undefined,</span>
-<span class="cstat-no" title="statement not covered" >  searchFields?: string[],</span>
-<span class="cstat-no" title="statement not covered" >): string | undefined {</span>
-<span class="cstat-no" title="statement not covered" >  if (!input) return input;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  const trimmedInput = input.trim();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  // If it contains filter operators, treat as a proper filter expression</span>
-<span class="cstat-no" title="statement not covered" >  if (trimmedInput.includes(':') || trimmedInput.includes('~')) {</span>
+export function autoFormatFilter(
+  input: string | undefined,
+  searchFields?: string[],
+): string | undefined {
+  if (!input) <span class="branch-0 cbranch-no" title="branch not covered" >return input;</span>
+&nbsp;
+  const trimmedInput = input.trim();
+&nbsp;
+  // If it contains filter operators, treat as a proper filter expression
+  if (trimmedInput.includes(':') || trimmedInput.includes('~')) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >    return formatLogicMonitorFilter(trimmedInput);</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  // If no search fields provided, just format as-is (for backward compatibility)</span>
-<span class="cstat-no" title="statement not covered" >  if (!searchFields || searchFields.length === 0) {</span>
+&nbsp;
+  // If no search fields provided, just format as-is (for backward compatibility)
+  if (!searchFields || searchFields.length === 0) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >    return formatLogicMonitorFilter(trimmedInput);</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  // Plain text search - create OR filter across all search fields</span>
-<span class="cstat-no" title="statement not covered" >  const escapedQuery = escapeFilterValue(trimmedInput);</span>
-<span class="cstat-no" title="statement not covered" >  const searchConditions = searchFields.map(</span>
-<span class="cstat-no" title="statement not covered" >    field =&gt; `${field}~"*${escapedQuery}*"`,</span>
-<span class="cstat-no" title="statement not covered" >  );</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  return searchConditions.join(' || ');</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+&nbsp;
+  // Plain text search - create OR filter across all search fields
+  const escapedQuery = escapeFilterValue(trimmedInput);
+  const searchConditions = searchFields.map(
+    field =&gt; `${field}~"*${escapedQuery}*"`,
+  );
+&nbsp;
+  return searchConditions.join(' || ');
+}
 &nbsp;
 /**
    * Common search field configurations for different resource types
@@ -703,7 +703,7 @@ export const FILTER_EXAMPLES = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-01T21:59:22.204Z
+                at 2025-11-02T09:45:26.550Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
