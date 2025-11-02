@@ -495,17 +495,17 @@ export class LogicMonitorHandlers {
         case 'delete_dashboard':
           return await this.client.deleteDashboard(args.dashboardId);
 
-        case 'generate_dashboard_deeplink':
-          return await this.client.generateDashboardDeeplink(args.dashboardId);
+        case 'generate_dashboard_link':
+          return await this.client.generateDashboardLink(args.dashboardId);
 
-        case 'generate_resource_deeplink':
-          return await this.client.generateResourceDeeplink(args.deviceId);
+        case 'generate_resource_link':
+          return await this.client.generateResourceLink(args.deviceId);
 
-        case 'generate_alert_deeplink':
-          return await this.client.generateAlertDeeplink(args.alertId);
+        case 'generate_alert_link':
+          return await this.client.generateAlertLink(args.alertId);
 
-        case 'generate_website_deeplink':
-          return await this.client.generateWebsiteDeeplink(args.websiteId);
+        case 'generate_website_link':
+          return await this.client.generateWebsiteLink(args.websiteId);
 
         // Dashboard Groups
         case 'list_dashboard_groups': {

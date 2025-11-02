@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3236/3236</span>
+                <span class='fraction'>3239/3239</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3236/3236</span>
+                <span class='fraction'>3239/3239</span>
             </div>
         
             
@@ -3299,7 +3299,13 @@
 <a name='L3234'></a><a href='#L3234'>3234</a>
 <a name='L3235'></a><a href='#L3235'>3235</a>
 <a name='L3236'></a><a href='#L3236'>3236</a>
-<a name='L3237'></a><a href='#L3237'>3237</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L3237'></a><a href='#L3237'>3237</a>
+<a name='L3238'></a><a href='#L3238'>3238</a>
+<a name='L3239'></a><a href='#L3239'>3239</a>
+<a name='L3240'></a><a href='#L3240'>3240</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -7380,10 +7386,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_dashboard_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) dashboard. Returns the full URL with the complete dashboard group hierarchy path, allowing direct navigation to the dashboard in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}',
+    name: 'generate_dashboard_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard. Returns the full URL with the complete dashboard group hierarchy path, allowing direct navigation to the dashboard in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}',
     annotations: {
-      title: 'Generate a direct deeplink URL for a LogicMonitor (LM) dashboard with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -7392,7 +7398,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         dashboardId: {
           type: 'number',
-          description: 'The ID of the dashboard to generate a deeplink for',
+          description: 'The ID of the dashboard to generate a link for',
         },
       },
       additionalProperties: false,
@@ -7400,10 +7406,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_resource_deeplink',
-    description: 'Generate a direct deeplink URL for a LogicMonitor (LM) resource/device. Returns the full URL with the complete resource group hierarchy path, allowing direct navigation to the resource in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}',
+    name: 'generate_resource_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device. Returns the full URL with the complete resource group hierarchy path, allowing direct navigation to the resource in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) resource/device with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -7412,7 +7418,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         deviceId: {
           type: 'number',
-          description: 'The ID of the resource/device to generate a deeplink for',
+          description: 'The ID of the resource/device to generate a link for',
         },
       },
       additionalProperties: false,
@@ -7420,10 +7426,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_alert_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) alert. Returns the full URL allowing direct navigation to the alert details in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}',
+    name: 'generate_alert_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert. Returns the full URL allowing direct navigation to the alert details in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) alert',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -7432,7 +7438,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         alertId: {
           type: 'string',
-          description: 'The ID of the alert to generate a deeplink for',
+          description: 'The ID of the alert to generate a link for',
         },
       },
       additionalProperties: false,
@@ -7440,10 +7446,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_website_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) website monitor. Returns the full URL with the complete website group hierarchy path, allowing direct navigation to the website in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}',
+    name: 'generate_website_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) website monitor. Returns the full URL with the complete website group hierarchy path, allowing direct navigation to the website in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) website monitor with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) website monitor with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -7452,7 +7458,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         websiteId: {
           type: 'number',
-          description: 'The ID of the website monitor to generate a deeplink for',
+          description: 'The ID of the website monitor to generate a link for',
         },
       },
       additionalProperties: false,
@@ -8062,6 +8068,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'List audit logs in LogicMonitor (LM) monitoring for compliance and security auditing.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -8080,6 +8087,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'Get detailed information about a specific audit log entry in LogicMonitor (LM) monitoring.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -8101,6 +8109,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'Search audit logs in LogicMonitor (LM) monitoring with free-text or filter syntax.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -9778,7 +9787,7 @@ export function getLogicMonitorTools(onlyReadOnly: boolean = false): Tool[] {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-02T11:40:23.372Z
+                at 2025-11-02T14:52:31.964Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -316,29 +316,29 @@ describe('getLogicMonitorTools', () => {
       });
     });
 
-    describe('Deeplink Tools', () => {
-      it('should include deeplink generation tools', () => {
+    describe('Link Tools', () => {
+      it('should include link generation tools', () => {
         const tools = getLogicMonitorTools(false);
         const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('generate_dashboard_deeplink');
-        expect(toolNames).toContain('generate_resource_deeplink');
-        expect(toolNames).toContain('generate_alert_deeplink');
-        expect(toolNames).toContain('generate_website_deeplink');
+        expect(toolNames).toContain('generate_dashboard_link');
+        expect(toolNames).toContain('generate_resource_link');
+        expect(toolNames).toContain('generate_alert_link');
+        expect(toolNames).toContain('generate_website_link');
       });
 
-      it('should mark deeplink tools as read-only', () => {
+      it('should mark link tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
 
-        const dashboardDeeplink = tools.find(t => t.name === 'generate_dashboard_deeplink');
-        const resourceDeeplink = tools.find(t => t.name === 'generate_resource_deeplink');
-        const alertDeeplink = tools.find(t => t.name === 'generate_alert_deeplink');
-        const websiteDeeplink = tools.find(t => t.name === 'generate_website_deeplink');
+        const dashboardLink = tools.find(t => t.name === 'generate_dashboard_link');
+        const resourceLink = tools.find(t => t.name === 'generate_resource_link');
+        const alertLink = tools.find(t => t.name === 'generate_alert_link');
+        const websiteLink = tools.find(t => t.name === 'generate_website_link');
 
-        expect(dashboardDeeplink?.annotations?.readOnlyHint).toBe(true);
-        expect(resourceDeeplink?.annotations?.readOnlyHint).toBe(true);
-        expect(alertDeeplink?.annotations?.readOnlyHint).toBe(true);
-        expect(websiteDeeplink?.annotations?.readOnlyHint).toBe(true);
+        expect(dashboardLink?.annotations?.readOnlyHint).toBe(true);
+        expect(resourceLink?.annotations?.readOnlyHint).toBe(true);
+        expect(alertLink?.annotations?.readOnlyHint).toBe(true);
+        expect(websiteLink?.annotations?.readOnlyHint).toBe(true);
       });
     });
 

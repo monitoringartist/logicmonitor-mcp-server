@@ -843,10 +843,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_dashboard_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) dashboard. Returns the full URL with the complete dashboard group hierarchy path, allowing direct navigation to the dashboard in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}',
+    name: 'generate_dashboard_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard. Returns the full URL with the complete dashboard group hierarchy path, allowing direct navigation to the dashboard in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}',
     annotations: {
-      title: 'Generate a direct deeplink URL for a LogicMonitor (LM) dashboard with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -855,7 +855,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         dashboardId: {
           type: 'number',
-          description: 'The ID of the dashboard to generate a deeplink for',
+          description: 'The ID of the dashboard to generate a link for',
         },
       },
       additionalProperties: false,
@@ -863,10 +863,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_resource_deeplink',
-    description: 'Generate a direct deeplink URL for a LogicMonitor (LM) resource/device. Returns the full URL with the complete resource group hierarchy path, allowing direct navigation to the resource in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}',
+    name: 'generate_resource_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device. Returns the full URL with the complete resource group hierarchy path, allowing direct navigation to the resource in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) resource/device with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -875,7 +875,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         deviceId: {
           type: 'number',
-          description: 'The ID of the resource/device to generate a deeplink for',
+          description: 'The ID of the resource/device to generate a link for',
         },
       },
       additionalProperties: false,
@@ -883,10 +883,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_alert_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) alert. Returns the full URL allowing direct navigation to the alert details in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}',
+    name: 'generate_alert_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert. Returns the full URL allowing direct navigation to the alert details in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) alert',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -895,7 +895,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         alertId: {
           type: 'string',
-          description: 'The ID of the alert to generate a deeplink for',
+          description: 'The ID of the alert to generate a link for',
         },
       },
       additionalProperties: false,
@@ -903,10 +903,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'generate_website_deeplink',
-    description: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) website monitor. Returns the full URL with the complete website group hierarchy path, allowing direct navigation to the website in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}',
+    name: 'generate_website_link',
+    description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) website monitor. Returns the full URL with the complete website group hierarchy path, allowing direct navigation to the website in the LogicMonitor UI. The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}',
     annotations: {
-      title: 'Generate a direct URL/link/deeplink/weburl for a LogicMonitor (LM) website monitor with complete group hierarchy',
+      title: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) website monitor with complete group hierarchy',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -915,7 +915,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         websiteId: {
           type: 'number',
-          description: 'The ID of the website monitor to generate a deeplink for',
+          description: 'The ID of the website monitor to generate a link for',
         },
       },
       additionalProperties: false,
@@ -1525,6 +1525,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'List audit logs in LogicMonitor (LM) monitoring for compliance and security auditing.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -1543,6 +1544,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'Get detailed information about a specific audit log entry in LogicMonitor (LM) monitoring.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -1564,6 +1566,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       title: 'Search audit logs in LogicMonitor (LM) monitoring with free-text or filter syntax.',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
+      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',

@@ -45,10 +45,10 @@ describe('LogicMonitorHandlers', () => {
       createDashboard: jest.fn(),
       updateDashboard: jest.fn(),
       deleteDashboard: jest.fn(),
-      generateDashboardDeeplink: jest.fn(),
-      generateResourceDeeplink: jest.fn(),
-      generateAlertDeeplink: jest.fn(),
-      generateWebsiteDeeplink: jest.fn(),
+      generateDashboardLink: jest.fn(),
+      generateResourceLink: jest.fn(),
+      generateAlertLink: jest.fn(),
+      generateWebsiteLink: jest.fn(),
       listDashboardGroups: jest.fn(),
       getDashboardGroup: jest.fn(),
       listReports: jest.fn(),
@@ -811,9 +811,9 @@ describe('LogicMonitorHandlers', () => {
           dashboard: { id: 1, name: 'test' },
           groupPath: [],
         };
-        mockClient.generateDashboardDeeplink.mockResolvedValue(mockDeeplink);
+        mockClient.generateDashboardLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_dashboard_deeplink', {
+        const result = await handlers.handleToolCall('generate_dashboard_link', {
           dashboardId: 1,
         });
 
@@ -826,9 +826,9 @@ describe('LogicMonitorHandlers', () => {
           device: { id: 1, displayName: 'test' },
           groupPath: [],
         };
-        mockClient.generateResourceDeeplink.mockResolvedValue(mockDeeplink);
+        mockClient.generateResourceLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_resource_deeplink', {
+        const result = await handlers.handleToolCall('generate_resource_link', {
           deviceId: 1,
         });
 
@@ -840,9 +840,9 @@ describe('LogicMonitorHandlers', () => {
           url: 'https://example.com/alert/1',
           alert: { id: 'alert1', severity: 'error' },
         };
-        mockClient.generateAlertDeeplink.mockResolvedValue(mockDeeplink);
+        mockClient.generateAlertLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_alert_deeplink', {
+        const result = await handlers.handleToolCall('generate_alert_link', {
           alertId: 'alert1',
         });
 
@@ -855,9 +855,9 @@ describe('LogicMonitorHandlers', () => {
           website: { id: 1, name: 'test' },
           groupPath: [],
         };
-        mockClient.generateWebsiteDeeplink.mockResolvedValue(mockDeeplink);
+        mockClient.generateWebsiteLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_website_deeplink', {
+        const result = await handlers.handleToolCall('generate_website_link', {
           websiteId: 1,
         });
 

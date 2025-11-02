@@ -319,7 +319,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 - `list_resources` - List all monitored resources/devices with filtering
 - `get_resource` - Get detailed device information by ID
 - `search_devices` - Search devices by name or description
-- `generate_resource_deeplink` - Generate direct link to device in LM UI
+- `generate_resource_link` - Generate direct link to device in LM UI
 
 **Write Operations:**
 - `create_resource` - Add new device(s) to monitoring (supports batch)
@@ -343,7 +343,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 - `list_alerts` - List active alerts with filtering
 - `get_alert` - Get detailed alert information
 - `search_alerts` - Search alerts by criteria
-- `generate_alert_deeplink` - Generate direct link to alert in LM UI
+- `generate_alert_link` - Generate direct link to alert in LM UI
 - `list_alert_rules` - List alert routing rules
 - `get_alert_rule` - Get alert rule details
 
@@ -376,7 +376,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_dashboards` - List all dashboards
 - `get_dashboard` - Get dashboard details
-- `generate_dashboard_deeplink` - Generate direct link to dashboard in LM UI
+- `generate_dashboard_link` - Generate direct link to dashboard in LM UI
 - `list_dashboard_groups` - List dashboard groups
 - `get_dashboard_group` - Get dashboard group details
 - `list_reports` - List all reports
@@ -414,7 +414,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_websites` - List website monitors
 - `get_website` - Get website monitor details
-- `generate_website_deeplink` - Generate direct link to website in LM UI
+- `generate_website_link` - Generate direct link to website in LM UI
 - `list_website_groups` - List website groups
 - `get_website_group` - Get website group details
 - `list_website_checkpoints` - List available monitoring checkpoints

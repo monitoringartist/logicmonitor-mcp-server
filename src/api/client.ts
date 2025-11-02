@@ -569,10 +569,10 @@ export class LogicMonitorClient {
   }
 
   /**
-   * Generate a deeplink URL for a dashboard
+   * Generate a link URL for a dashboard
    * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}
    */
-  async generateDashboardDeeplink(dashboardId: number): Promise<{ url: string; dashboard: any; groupPath: any[] }> {
+  async generateDashboardLink(dashboardId: number): Promise<{ url: string; dashboard: any; groupPath: any[] }> {
     // Get dashboard details to retrieve groupId
     const dashboard = await this.getDashboard(dashboardId, { fields: 'id,name,groupId,groupName' });
 
@@ -621,11 +621,11 @@ export class LogicMonitorClient {
   }
 
   /**
-   * Generate a deeplink URL for a resource/device
+   * Generate a link URL for a resource/device
    * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}
    * Note: Uses URL encoding (%2C) for commas in the actual URL
    */
-  async generateResourceDeeplink(deviceId: number): Promise<{ url: string; device: any; groupPath: any[] }> {
+  async generateResourceLink(deviceId: number): Promise<{ url: string; device: any; groupPath: any[] }> {
     // Get device details to retrieve hostGroupIds
     const device = await this.getDevice(deviceId, { fields: 'id,displayName,name,hostGroupIds' });
 
@@ -684,10 +684,10 @@ export class LogicMonitorClient {
   }
 
   /**
-   * Generate a deeplink URL for an alert
+   * Generate a link URL for an alert
    * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}
    */
-  async generateAlertDeeplink(alertId: string): Promise<{ url: string; alert: any }> {
+  async generateAlertLink(alertId: string): Promise<{ url: string; alert: any }> {
     // Get alert details to verify it exists
     const alert = await this.getAlert(alertId, { fields: 'id,internalId,type,severity,monitorObjectName' });
 
@@ -713,10 +713,10 @@ export class LogicMonitorClient {
   }
 
   /**
-   * Generate a deeplink URL for a website
+   * Generate a link URL for a website
    * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}
    */
-  async generateWebsiteDeeplink(websiteId: number): Promise<{ url: string; website: any; groupPath: any[] }> {
+  async generateWebsiteLink(websiteId: number): Promise<{ url: string; website: any; groupPath: any[] }> {
     // Get website details to retrieve groupId
     const website = await this.getWebsite(websiteId, { fields: 'id,name,groupId' });
 

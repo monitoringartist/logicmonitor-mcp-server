@@ -496,6 +496,34 @@ app.get('/healthz', (req: Request, res: Response) => {
   res.status(200).send('ok');
 });
 
+// Detailed health check endpoint
+app.get('/health', (req: Request, res: Response) => {
+  const memoryUsage = process.memoryUsage();
+
+  res.json({
+    status: 'healthy',
+    version: '1.0.0',
+    uptime: process.uptime(),
+    memory: {
+      rss: memoryUsage.rss,
+      heapTotal: memoryUsage.heapTotal,
+      heapUsed: memoryUsage.heapUsed,
+      external: memoryUsage.external,
+      arrayBuffers: memoryUsage.arrayBuffers,
+    },
+    connections: {
+      mcp: mcpServers.size,
+      http: 0, // HTTP-only transport doesn't track separate sessions
+    },
+    timestamp: new Date().toISOString(),
+    transport: {
+      mode: 'sse',
+      http: false,
+      sse: true,
+    },
+  });
+});
+
 // Status endpoint
 app.get('/status', (req: Request, res: Response) => {
   res.json({

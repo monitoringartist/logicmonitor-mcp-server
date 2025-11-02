@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.8% </span>
+                <span class="strong">2.79% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>42/1500</span>
+                <span class='fraction'>42/1501</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.8% </span>
+                <span class="strong">2.79% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>42/1500</span>
+                <span class='fraction'>42/1501</span>
             </div>
         
             
@@ -1563,7 +1563,8 @@
 <a name='L1498'></a><a href='#L1498'>1498</a>
 <a name='L1499'></a><a href='#L1499'>1499</a>
 <a name='L1500'></a><a href='#L1500'>1500</a>
-<a name='L1501'></a><a href='#L1501'>1501</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L1501'></a><a href='#L1501'>1501</a>
+<a name='L1502'></a><a href='#L1502'>1502</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1605,6 +1606,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3201,7 +3203,6 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      response = await fetch(url.toString(), options);</span>
-<span class="cstat-no" title="statement not covered" >      clearTimeout(timeoutId); // Clear timeout on successful fetch</span>
 <span class="cstat-no" title="statement not covered" >      data = await response.json();</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      const duration = Date.now() - startTime;</span>
@@ -3263,7 +3264,6 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >        );</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      clearTimeout(timeoutId); // Clear timeout on error</span>
 <span class="cstat-no" title="statement not covered" >      const duration = Date.now() - startTime;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      // Check if error is due to timeout</span>
@@ -3282,6 +3282,9 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
+<span class="cstat-no" title="statement not covered" >    } finally {</span>
+<span class="cstat-no" title="statement not covered" >      // Always clear timeout to prevent memory leaks</span>
+<span class="cstat-no" title="statement not covered" >      clearTimeout(timeoutId);</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    return data;</span>
@@ -3633,10 +3636,10 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
-<span class="cstat-no" title="statement not covered" >   * Generate a deeplink URL for a dashboard</span>
+<span class="cstat-no" title="statement not covered" >   * Generate a link URL for a dashboard</span>
 <span class="cstat-no" title="statement not covered" >   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{groupId1},dashboardGroups-{groupId2},...,dashboards-{dashboardId}</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
-<span class="cstat-no" title="statement not covered" >  async generateDashboardDeeplink(dashboardId: number): Promise&lt;{ url: string; dashboard: any; groupPath: any[] }&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  async generateDashboardLink(dashboardId: number): Promise&lt;{ url: string; dashboard: any; groupPath: any[] }&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    // Get dashboard details to retrieve groupId</span>
 <span class="cstat-no" title="statement not covered" >    const dashboard = await this.getDashboard(dashboardId, { fields: 'id,name,groupId,groupName' });</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -3685,11 +3688,11 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
-<span class="cstat-no" title="statement not covered" >   * Generate a deeplink URL for a resource/device</span>
+<span class="cstat-no" title="statement not covered" >   * Generate a link URL for a resource/device</span>
 <span class="cstat-no" title="statement not covered" >   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}</span>
 <span class="cstat-no" title="statement not covered" >   * Note: Uses URL encoding (%2C) for commas in the actual URL</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
-<span class="cstat-no" title="statement not covered" >  async generateResourceDeeplink(deviceId: number): Promise&lt;{ url: string; device: any; groupPath: any[] }&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  async generateResourceLink(deviceId: number): Promise&lt;{ url: string; device: any; groupPath: any[] }&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    // Get device details to retrieve hostGroupIds</span>
 <span class="cstat-no" title="statement not covered" >    const device = await this.getDevice(deviceId, { fields: 'id,displayName,name,hostGroupIds' });</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -3748,10 +3751,10 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
-<span class="cstat-no" title="statement not covered" >   * Generate a deeplink URL for an alert</span>
+<span class="cstat-no" title="statement not covered" >   * Generate a link URL for an alert</span>
 <span class="cstat-no" title="statement not covered" >   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
-<span class="cstat-no" title="statement not covered" >  async generateAlertDeeplink(alertId: string): Promise&lt;{ url: string; alert: any }&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  async generateAlertLink(alertId: string): Promise&lt;{ url: string; alert: any }&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    // Get alert details to verify it exists</span>
 <span class="cstat-no" title="statement not covered" >    const alert = await this.getAlert(alertId, { fields: 'id,internalId,type,severity,monitorObjectName' });</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -3777,10 +3780,10 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
-<span class="cstat-no" title="statement not covered" >   * Generate a deeplink URL for a website</span>
+<span class="cstat-no" title="statement not covered" >   * Generate a link URL for a website</span>
 <span class="cstat-no" title="statement not covered" >   * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId}</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
-<span class="cstat-no" title="statement not covered" >  async generateWebsiteDeeplink(websiteId: number): Promise&lt;{ url: string; website: any; groupPath: any[] }&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  async generateWebsiteLink(websiteId: number): Promise&lt;{ url: string; website: any; groupPath: any[] }&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    // Get website details to retrieve groupId</span>
 <span class="cstat-no" title="statement not covered" >    const website = await this.getWebsite(websiteId, { fields: 'id,name,groupId' });</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -4570,7 +4573,7 @@ export class LogicMonitorClient<span class="fstat-no" title="function not covere
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-02T11:40:23.372Z
+                at 2025-11-02T14:52:31.964Z
             </div>
         <script src="../prettify.js"></script>
         <script>
