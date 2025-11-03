@@ -29,7 +29,7 @@ const DEFAULT_COLLECTOR_FIELDS = [
 ];
 
 const DEFAULT_DATASOURCE_FIELDS = [
-  'id', 'name', 'displayName', 'description', 'appliesTo', 'group',
+  'id', 'name', 'displayName', 'description', 'group',
   'dataSourceType', 'collectMethod', 'hasMultiInstances',
 ];
 

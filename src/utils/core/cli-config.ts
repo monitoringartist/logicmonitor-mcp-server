@@ -158,13 +158,13 @@ export function parseConfig(): ServerConfig {
  * @param address - Server address (host:port) to use for default callback URL
  */
 function parseOAuthConfig(address: string): OAuthConfig | undefined {
-  const provider = (process.env.OAUTH_PROVIDER || '') as OAuthConfig['provider'];
+  const provider = (process.env.OAUTH_PROVIDER || 'none') as OAuthConfig['provider'] | 'none';
   const clientId = process.env.OAUTH_CLIENT_ID || '';
   const clientSecret = process.env.OAUTH_CLIENT_SECRET || '';
   const sessionSecret = process.env.OAUTH_SESSION_SECRET || process.env.SESSION_SECRET || '';
 
-  // OAuth is optional, only parse if provider is set
-  if (!provider || !clientId || !clientSecret) {
+  // OAuth is optional - disabled if provider is 'none' or not set
+  if (provider === 'none' || !provider || !clientId || !clientSecret) {
     return undefined;
   }
 

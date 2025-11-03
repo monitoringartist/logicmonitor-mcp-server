@@ -9,14 +9,17 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 ## Features
 
 - **125 MCP Tools** for comprehensive LogicMonitor operations (73 read-only, 52 write)
-- **Multiple Transport Modes**: STDIO, SSE, and HTTP
-- **Read-Only Mode**: Safe monitoring without modification capabilities
+- **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
+- **Multiple Transport Modes**: STDIO for local use, SSE for web clients, HTTP for integrations
+- **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
+- **Read-Only Mode**: Safe monitoring without modification capabilities (enabled by default)
 - **Flexible Configuration**: CLI flags, environment variables, or `.env` file
 - **Debug Logging**: JSON or human-readable formats with detailed request/response logging
 - **Tool Filtering**: Enable specific tools or disable search functionality
 - **Rate Limiting**: Automatic retry with exponential backoff
 - **Batch Operations**: Process multiple resources efficiently
 - **Smart Batching**: Adaptive concurrency that automatically adjusts to API rate limits
+- **TLS/HTTPS Support**: Optional TLS for secure remote access
 
 ## Quick Start
 
@@ -139,8 +142,15 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 | Flag | Environment Variable | Default | Description |
 |------|---------------------|---------|-------------|
 | `--mcp-bearer-token <token>` | `MCP_BEARER_TOKEN` | - | Static bearer token for authenticating clients connecting to the MCP server. Used as an alternative or supplement to OAuth for remote access via SSE/HTTP transports. Not required for STDIO transport. |
+| - | `OAUTH_PROVIDER` | `none` | OAuth provider type: `none` (disabled), `github`, `google`, `azure`, `okta`, `auth0`, or `custom`. Set to `none` or leave unset to disable OAuth authentication. |
 
-**Note:** This is for authenticating **to** the MCP server, not for LogicMonitor API access. Use this for simple authentication, or see [env.example](env.example) for advanced OAuth/OIDC configuration options.
+**Note:** This is for authenticating **to** the MCP server, not for LogicMonitor API access.
+
+**Authentication Modes:**
+- **No Authentication** (default): If neither `MCP_BEARER_TOKEN` nor OAuth is configured (`OAUTH_PROVIDER=none`), unauthenticated access is allowed. Suitable for development/testing only.
+- **Bearer Token**: Simple static token authentication - set `MCP_BEARER_TOKEN`
+- **OAuth/OIDC**: Enterprise authentication - configure `OAUTH_PROVIDER` and related settings (see [env.example](env.example))
+- **Both**: Both authentication methods can work simultaneously
 
 ## Usage Examples
 
@@ -154,16 +164,19 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
     "logicmonitor": {
       "command": "node",
       "args": [
-        "/path/to/logicmonitor-mcp-server/build/servers/stdio-server.js"
+        "/path/to/logicmonitor-mcp-server/build/servers/index.js"
       ],
       "env": {
         "LM_COMPANY": "mycompany",
-        "LM_BEARER_TOKEN": "your-bearer-token"
+        "LM_BEARER_TOKEN": "your-bearer-token",
+        "MCP_TRANSPORT": "stdio"
       }
     }
   }
 }
 ```
+
+**Note:** The `MCP_TRANSPORT=stdio` is optional as it's the default, but included for clarity.
 
 ### SSE Transport (Remote Access)
 
@@ -176,7 +189,14 @@ export MCP_TRANSPORT=sse
 export MCP_ADDRESS=localhost:3000
 export MCP_DEBUG=true
 npm start
+
+# Or use the convenience script
+npm run start:sse
 ```
+
+**Note:** For SSE/HTTP transports, authentication is optional but recommended:
+- **Development/Testing**: No authentication required (default with `OAUTH_PROVIDER=none`)
+- **Production**: Configure `MCP_BEARER_TOKEN` or OAuth (see Authentication Modes below)
 
 **Health Check Endpoints:** When using SSE or streamable HTTP transports, health check endpoints are available:
 
@@ -315,6 +335,22 @@ npm start -- \
   --read-only \
   --log-format json \
   --log-level info
+```
+
+### Transport Mode Shortcuts
+
+The unified server supports convenient npm scripts for each transport:
+
+```bash
+# STDIO transport (default, for Claude Desktop)
+npm start
+npm run start:stdio
+
+# SSE transport (for web/remote clients)
+npm run start:sse
+
+# HTTP transport (for advanced integrations)
+npm run start:http
 ```
 
 ## Available Tools
@@ -544,27 +580,133 @@ For detailed tool descriptions and parameters, see the [API documentation](src/R
 
 ## Security Considerations
 
-### Read-Only Mode
+### Authentication by Transport Mode
+
+| Transport | Authentication | Security Level | Use Case |
+|-----------|---------------|----------------|----------|
+| **STDIO** | Not required (local process) | ✅ Secure | Claude Desktop, local CLI |
+| **SSE/HTTP** (no auth) | None (default: `OAUTH_PROVIDER=none`) | ⚠️ **Development only** | Local testing |
+| **SSE/HTTP** (bearer) | Static token via `MCP_BEARER_TOKEN` | ✅ Secure (with HTTPS) | API clients, internal services |
+| **SSE/HTTP** (OAuth) | OAuth/OIDC provider | ✅ Secure (with HTTPS) | Web applications, enterprise SSO |
+
+### Read-Only Mode (Recommended)
 
 For production monitoring, enable read-only mode to prevent accidental modifications:
 
 ```bash
 npm start -- --read-only
+# or
+export MCP_READ_ONLY=true
+npm start
+```
+
+This disables all 52 write operations, leaving only 73 safe read-only tools.
+
+### Authentication Setup
+
+#### Development (No Authentication)
+```bash
+# Default configuration - no authentication required
+export LM_COMPANY=mycompany
+export LM_BEARER_TOKEN=your-lm-token
+export MCP_TRANSPORT=sse
+export OAUTH_PROVIDER=none  # or omit - this is the default
+npm start
+```
+
+**⚠️ Warning:** Unauthenticated access allows anyone to connect. Use only in trusted environments.
+
+#### Production - Bearer Token (Simple)
+```bash
+# Generate a strong token
+export MCP_BEARER_TOKEN=$(openssl rand -base64 32)
+export OAUTH_PROVIDER=none
+
+# Enable TLS
+export MCP_TLS_CERT_FILE=/path/to/cert.pem
+export MCP_TLS_KEY_FILE=/path/to/key.pem
+
+# Start server
+npm start -- --transport sse
+```
+
+Clients must include the token:
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" https://localhost:3000/health
+```
+
+#### Production - OAuth (Enterprise)
+```bash
+# Configure OAuth provider
+export OAUTH_PROVIDER=github  # github, google, azure, okta, auth0, custom
+export OAUTH_CLIENT_ID=your-client-id
+export OAUTH_CLIENT_SECRET=your-client-secret
+export OAUTH_SESSION_SECRET=$(openssl rand -hex 32)
+export OAUTH_CALLBACK_URL=https://your-domain.com/auth/callback
+
+# Enable TLS
+export MCP_TLS_CERT_FILE=/path/to/cert.pem
+export MCP_TLS_KEY_FILE=/path/to/key.pem
+
+# Start server
+npm start -- --transport sse
+```
+
+Users authenticate via browser at `/auth/login`.
+
+#### Production - Combined (Flexible)
+```bash
+# Both OAuth and bearer token enabled
+export OAUTH_PROVIDER=github
+export OAUTH_CLIENT_ID=your-client-id
+export OAUTH_CLIENT_SECRET=your-client-secret
+export MCP_BEARER_TOKEN=$(openssl rand -base64 32)
+
+# Users: OAuth login via browser
+# APIs: Bearer token in Authorization header
 ```
 
 ### API Token Security
 
-- Never commit tokens to version control
-- Use environment variables or `.env` files (add `.env` to `.gitignore`)
-- Rotate tokens regularly
-- Use tokens with minimal required permissions
+**LogicMonitor API Token (`LM_BEARER_TOKEN`):**
+- Never commit to version control
+- Use environment variables or `.env` files (`.env` is in `.gitignore`)
+- Rotate regularly (monthly recommended)
+- Use minimal required permissions in LogicMonitor portal
+
+**MCP Server Token (`MCP_BEARER_TOKEN`):**
+- Generate strong tokens (32+ bytes): `openssl rand -base64 32`
+- Store securely (environment variables, secrets management)
+- Never expose in logs or error messages
+- Rotate regularly
+- Use different tokens for different environments
 
 ### Network Security
 
-- For remote access (SSE/HTTP), use HTTPS in production
-- Configure firewall rules to restrict access
-- Use OAuth authentication for web-based access
-- Consider VPN or bastion hosts for sensitive environments
+**Required for Production SSE/HTTP:**
+- ✅ **HTTPS/TLS**: Always use encrypted connections (`MCP_TLS_CERT_FILE`, `MCP_TLS_KEY_FILE`)
+- ✅ **Authentication**: Enable bearer token or OAuth (never run unauthenticated in production)
+- ✅ **Firewall**: Restrict access by IP/network
+- ✅ **Rate Limiting**: Built-in automatic rate limiting
+- ⚡ **Monitoring**: Use `/health` endpoint for health checks
+
+**Optional (Defense in Depth):**
+- Use reverse proxy (nginx, Caddy) for additional security layers
+- Implement WAF (Web Application Firewall)
+- Use VPN or bastion hosts for sensitive environments
+- Enable audit logging (`--log-format json --log-level info`)
+
+### Security Checklist for Production
+
+- [ ] Read-only mode enabled (`MCP_READ_ONLY=true`)
+- [ ] HTTPS/TLS configured (`MCP_TLS_CERT_FILE`, `MCP_TLS_KEY_FILE`)
+- [ ] Authentication enabled (`MCP_BEARER_TOKEN` or OAuth configured)
+- [ ] LogicMonitor API token rotated recently
+- [ ] `.env` file not in version control
+- [ ] Firewall rules restrict access to authorized IPs
+- [ ] Health check endpoint monitored (`/health`)
+- [ ] Logs reviewed regularly
+- [ ] Minimal LogicMonitor API permissions granted
 
 ## Troubleshooting
 
@@ -614,8 +756,26 @@ Or check if read-only mode is excluding write operations:
 
 ```bash
 # Show all tools (including write operations)
-npm start  # without --read-only
+export MCP_READ_ONLY=false
+npm start
 ```
+
+### Authentication Issues
+
+**"401 Unauthorized" when connecting to SSE/HTTP:**
+- Check that `MCP_BEARER_TOKEN` is set and matches the token in your request
+- For OAuth, ensure you've logged in at `/auth/login`
+- Verify token hasn't expired (OAuth tokens expire, static tokens don't)
+
+**"No authentication configured" warning:**
+- This is expected when `OAUTH_PROVIDER=none` and `MCP_BEARER_TOKEN` is not set
+- For development, this is fine - server allows unauthenticated access
+- For production, configure authentication (see Security Considerations above)
+
+**OAuth login not working:**
+- Verify `OAUTH_PROVIDER`, `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET` are set correctly
+- Check callback URL matches OAuth provider configuration
+- Review server logs for detailed error messages (`--debug --log-level debug`)
 
 ## Contributing
 

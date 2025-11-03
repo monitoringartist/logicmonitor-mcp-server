@@ -1112,11 +1112,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Use "list_resource_instances" → get instanceId for specific instance (e.g., CPU Core 0)' +
       '\n- Use this tool → get actual metric values for that instance' +
       '\n\n**Parameters:** ' +
-      '\n- deviceId: Device ID from "list_resources"' +
-      '\n- deviceDataSourceId: From "list_resource_datasources"' +
+      '\n- deviceId: Device ID from "get_resource" or "list_resources"' +
+      '\n- deviceDataSourceId: From "get_resource_datasource" or "list_resource_datasources"' +
       '\n- instanceId: From "list_resource_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
-      '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must before current time' +
+      '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
       '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
       '\n\n**Related tools:** "list_resource_datasources", "list_resource_instances".',
@@ -1146,7 +1146,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         },
         start: {
           type: 'number',
-          description: 'Start time (epoch milliseconds)',
+          description: 'Start time (epoch milliseconds), start time must be before current time',
         },
         end: {
           type: 'number',
@@ -5569,16 +5569,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
 
-  // Netscans
+  // NetScans
   {
     name: 'list_netscans',
-    description: 'List all network discovery scans (Netscans) in LogicMonitor (LM) monitoring. ' +
+    description: 'List all network discovery scans (NetScans) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of netscans with: id, name, description, scan method (nmap/script/ICMP/SNMP), schedule, target networks (IP ranges/subnets), collector, last run time, resource/device discovered. ' +
       '\n\n**What are netscans:** Automated network discovery that finds resource/device on your network and adds them to monitoring. Instead of manually adding resource/device one-by-one, netscan automatically discovers and onboards resource/device based on IP ranges or subnets. ' +
       '\n\n**When to use:** (1) Audit existing discovery configurations, (2) Check which networks are being scanned, (3) Review netscan schedules, (4) Troubleshoot why resource/device not auto-discovered, (5) Find netscan IDs for modifications. ' +
       '\n\n**How netscans work:** ' +
       'Scheduled job → Scan network range (e.g., 192.168.1.0/24) → Find live resource/device → Check if already monitored → If new, add to LogicMonitor → Apply resource/device properties and datasources → Begin monitoring ' +
-      '\n\n**Netscan methods:** ' +
+      '\n\n**NetScan methods:** ' +
       '\n- **nmap:** Network mapper scan (comprehensive, detects OS, ports, services) ' +
       '\n- **ICMP Ping:** Simple ping sweep (fastest, basic reachability) ' +
       '\n- **SNMP Walk:** Query SNMP-enabled resource/device (network gear, servers with SNMP) ' +
@@ -5648,11 +5648,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   },
   {
     name: 'create_netscan',
-    description: 'Create a new network discovery scan (Netscan) in LogicMonitor (LM) monitoring to automatically discover and add resources/devices. ' +
+    description: 'Create a new network discovery scan (NetScan) in LogicMonitor (LM) monitoring to automatically discover and add resources/devices. ' +
       '\n\n**What this does:** Creates automated network scanner that discovers resource/device by IP range/subnet and adds them to monitoring. Runs on schedule to continuously discover new infrastructure. ' +
       '\n\n**When to use:** (1) Automate resource/device discovery instead of manual adds, (2) Onboard entire subnets, (3) Keep monitoring in sync with dynamic infrastructure (cloud/containers), (4) Continuous discovery for DHCP/dynamic environments, (5) Bulk resource/device onboarding. ' +
       '\n\n**Required parameters:** ' +
-      '\n- name: Netscan name (e.g., "Production Network Scan", "AWS EC2 Discovery") ' +
+      '\n- name: NetScan name (e.g., "Production Network Scan", "AWS EC2 Discovery") ' +
       '\n- collectorId: Collector to perform scan (from "list_collectors") ' +
       '\n- targetType: "subnet", "iprange", "script", "awsEC2", "azureVMs", etc. ' +
       '\n- target: What to scan (depends on type - subnet CIDR, IP range, script, etc.) ' +
@@ -5700,7 +5700,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Schedule during low-traffic hours (scans generate network traffic) ' +
       '\n- Test credentials before scheduling ' +
       '\n- Group resource/device appropriately with deviceGroupId ' +
-      '\n\n**After creation:** Netscan runs on schedule. Use "list_netscans" to view, "get_netscan" for details. Check "list_resources" to see discovered resources/devices. ' +
+      '\n\n**After creation:** NetScan runs on schedule. Use "list_netscans" to view, "get_netscan" for details. Check "list_resources" to see discovered resources/devices. ' +
       '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find deviceGroupId), "update_netscan" (modify), "delete_netscan" (remove).',
     annotations: {
       title: 'Create netscan',
@@ -5741,11 +5741,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   },
   {
     name: 'update_netscan',
-    description: 'Update an existing network discovery scan (Netscan) in LogicMonitor (LM) monitoring. ' +
+    description: 'Update an existing network discovery scan (NetScan) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify netscan name, target, schedule, credentials, or settings. Changes take effect on next scan run. ' +
       '\n\n**When to use:** (1) Change IP range/subnet scanned, (2) Update scan schedule, (3) Modify credentials, (4) Change destination group for discovered resources/devices, (5) Update exclusion filters. ' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: Netscan ID (from "list_netscans") ' +
+      '\n- netscanId: NetScan ID (from "list_netscans") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New netscan name ' +
       '\n- target: New IP range/subnet ' +
@@ -5798,13 +5798,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   },
   {
     name: 'delete_netscan',
-    description: 'Delete a network discovery scan (Netscan) from LogicMonitor (LM) monitoring. ' +
+    description: 'Delete a network discovery scan (NetScan) from LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Permanently removes netscan. Stops all future automatic resource/device discovery for this target. Previously discovered resource/device remain in monitoring. ' +
       '\n\n**When to use:** (1) Decommissioned network/subnet, (2) Discovery no longer needed (static environment), (3) Consolidating duplicate netscans, (4) Migrating to different discovery method. ' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: Netscan ID to delete (from "list_netscans") ' +
+      '\n- netscanId: NetScan ID to delete (from "list_netscans") ' +
       '\n\n**Impact:** ' +
-      '\n- Netscan stops running (no more automatic discovery) ' +
+      '\n- NetScan stops running (no more automatic discovery) ' +
       '\n- Previously discovered resource/device remain in monitoring (not deleted) ' +
       '\n- New resource/device in target range will NOT be automatically added ' +
       '\n- Cannot be undone ' +

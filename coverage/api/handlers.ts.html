@@ -1696,10 +1696,10 @@
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">170x</span>
+<span class="cline-any cline-yes">150x</span>
 <span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-yes">44x</span>
-<span class="cline-any cline-yes">170x</span>
+<span class="cline-any cline-yes">150x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -3125,7 +3125,7 @@ import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../utils
 const DEFAULT_DEVICE_FIELDS = [
   'id', 'displayName', 'name', 'hostGroupIds', 'preferredCollectorId',
   'hostStatus', 'alertStatus', 'alertStatusPriority', 'disableAlerting',
-  'customProperties', 'createdOn', 'updatedOn', 'sdtStatus', 'alertDisableStatus',
+  'customProperties', 'sdtStatus',
 ];
 &nbsp;
 const DEFAULT_ALERT_FIELDS = [
@@ -3136,31 +3136,31 @@ const DEFAULT_ALERT_FIELDS = [
 &nbsp;
 const DEFAULT_COLLECTOR_FIELDS = [
   'id', 'description', 'hostname', 'platform', 'status', 'numberOfHosts',
-  'createdOn', 'updatedOn', 'escalatingChainId', 'suppressAlertClear',
+  'escalatingChainId', 'suppressAlertClear',
 ];
 &nbsp;
 const DEFAULT_DATASOURCE_FIELDS = [
-  'id', 'name', 'displayName', 'description', 'appliesTo', 'group',
-  'dataSourceType', 'collectMethod', 'technology', 'hasMultiInstances',
+  'id', 'name', 'displayName', 'description', 'group',
+  'dataSourceType', 'collectMethod', 'hasMultiInstances',
 ];
 &nbsp;
 const DEFAULT_DASHBOARD_FIELDS = [
-  'id', 'name', 'description', 'groupId', 'groupName', 'sharable',
-  'createdOn', 'updatedOn', 'widgetsConfigVersion', 'widgetTokens',
+  'id', 'name', 'description', 'groupId', 'groupName',
+  'widgetsConfigVersion', 'widgetTokens',
 ];
 &nbsp;
 const DEFAULT_WEBSITE_FIELDS = [
   'id', 'name', 'description', 'type', 'schema', 'domain', 'isInternal',
-  'status', 'stopMonitoring', 'overallAlertLevel', 'createdOn',
+  'status', 'stopMonitoring', 'overallAlertLevel',
 ];
 &nbsp;
 const DEFAULT_USER_FIELDS = [
   'id', 'username', 'email', 'firstName', 'lastName', 'roles',
-  'status', 'createdOn', 'lastAction', 'twoFAEnabled',
+  'status', 'lastAction',
 ];
 &nbsp;
 const DEFAULT_ROLE_FIELDS = [
-  'id', 'name', 'description', 'requireEULA', 'roleGroupId',
+  'id', 'name', 'description', 'roleGroupId',
   'customHelpLabel', 'customHelpURL', 'privileges',
 ];
 &nbsp;
@@ -3171,12 +3171,12 @@ const DEFAULT_SDT_FIELDS = [
 &nbsp;
 const DEFAULT_DEVICE_GROUP_FIELDS = [
   'id', 'name', 'fullPath', 'description', 'parentId', 'numOfHosts',
-  'numOfDirectDevices', 'createdOn', 'disableAlerting', 'alertStatus',
+  'numOfDirectDevices', 'disableAlerting', 'alertStatus',
 ];
 &nbsp;
 const DEFAULT_DASHBOARD_GROUP_FIELDS = [
   'id', 'name', 'description', 'parentId', 'numOfDashboards',
-  'fullPath', 'widgetCount',
+  'fullPath',
 ];
 &nbsp;
 const DEFAULT_WEBSITE_GROUP_FIELDS = [
@@ -3199,18 +3199,18 @@ const DEFAULT_DEVICE_PROPERTY_FIELDS = [
 ];
 &nbsp;
 const DEFAULT_API_TOKEN_FIELDS = [
-  'adminId', 'adminName', 'accessId', 'note', 'createdOn',
+  'adminId', 'adminName', 'accessId', 'note',
   'status', 'lastUsedOn',
 ];
 &nbsp;
 const DEFAULT_AUDIT_LOG_FIELDS = [
   'id', 'happenedOn', 'username', 'sessionId', 'ip',
-  'description', 'companyName', 'userId',
+  'description', 'userId',
 ];
 &nbsp;
 const DEFAULT_ACCESS_GROUP_FIELDS = [
-  'id', 'name', 'description', 'tenantId', 'createdOn',
-  'updatedOn', 'numOfDevices', 'numOfUsers',
+  'id', 'name', 'description', 'tenantId',
+  'numOfDevices', 'numOfUsers',
 ];
 &nbsp;
 /**
@@ -3536,7 +3536,7 @@ export class LogicMonitorHandlers {
           });
 &nbsp;
         // Device DataSource Instances
-        case 'list_device_instances':
+        case 'list_resource_instances':
           return await this.client.listDeviceDataSourceInstances(
             args.deviceId,
             args.deviceDataSourceId,
@@ -3548,7 +3548,7 @@ export class LogicMonitorHandlers {
             },
           );
 &nbsp;
-        case 'get_device_instance_data':
+        case 'get_resource_instance_data':
           return await this.client.getDeviceDataSourceInstanceData(
             args.deviceId,
             args.deviceDataSourceId,
@@ -3848,7 +3848,7 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 &nbsp;
-        case 'create_device_sdt': {
+        case 'create_resource_sdt': {
           const sdt: any = {
             sdtType: 1, // Device SDT
             deviceId: args.deviceId,
@@ -3891,7 +3891,7 @@ export class LogicMonitorHandlers {
           });
 &nbsp;
         // Device Properties
-        case 'list_device_properties': {
+        case 'list_resource_properties': {
           const result = await this.client.listDeviceProperties(args.deviceId, {
             size: args.size,
             offset: args.offset,
@@ -3912,7 +3912,7 @@ export class LogicMonitorHandlers {
           };
         }
 &nbsp;
-        case 'update_device_property':
+        case 'update_resource_property':
           return await this.client.updateDeviceProperty(
             args.deviceId,
             args.propertyName,
@@ -4033,7 +4033,7 @@ export class LogicMonitorHandlers {
           return await this.client.deleteAccessGroup(args.accessGroupId);
 &nbsp;
         // Device DataSources
-        case 'list_device_datasources':
+        case 'list_resource_datasources':
           return await this.client.listDeviceDataSources(args.deviceId, {
             size: args.size,
             offset: args.offset,
@@ -4042,12 +4042,12 @@ export class LogicMonitorHandlers {
             autoPaginate: args.autoPaginate,
           });
 &nbsp;
-        case 'get_device_datasource':
+        case 'get_resource_datasource':
           return await this.client.getDeviceDataSource(args.deviceId, args.deviceDataSourceId, {
             fields: args.fields,
           });
 &nbsp;
-        case 'update_device_datasource': {
+        case 'update_resource_datasource': {
           const data: any = {};
           if (args.disableAlerting !== undefined) data.disableAlerting = args.disableAlerting;
           if (args.stopMonitoring !== undefined) data.stopMonitoring = args.stopMonitoring;
@@ -4369,7 +4369,7 @@ export class LogicMonitorHandlers {
 <span class="cstat-no" title="statement not covered" >          });</span>
 &nbsp;
         // Device Group Properties
-<span class="branch-0 cbranch-no" title="branch not covered" >        case 'list_device_group_properties':</span>
+<span class="branch-0 cbranch-no" title="branch not covered" >        case 'list_resource_group_properties':</span>
 <span class="cstat-no" title="statement not covered" >          return await this.client.listDeviceGroupProperties(args.groupId, {</span>
 <span class="cstat-no" title="statement not covered" >            size: args.size,</span>
 <span class="cstat-no" title="statement not covered" >            offset: args.offset,</span>
@@ -4378,7 +4378,7 @@ export class LogicMonitorHandlers {
 <span class="cstat-no" title="statement not covered" >            autoPaginate: args.autoPaginate,</span>
 <span class="cstat-no" title="statement not covered" >          });</span>
 &nbsp;
-<span class="branch-0 cbranch-no" title="branch not covered" >        case 'update_device_group_property':</span>
+<span class="branch-0 cbranch-no" title="branch not covered" >        case 'update_resource_group_property':</span>
 <span class="cstat-no" title="statement not covered" >          return await this.client.updateDeviceGroupProperty(</span>
 <span class="cstat-no" title="statement not covered" >            args.groupId,</span>
 <span class="cstat-no" title="statement not covered" >            args.propertyName,</span>
@@ -4639,7 +4639,7 @@ export class LogicMonitorHandlers {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-02T23:37:21.084Z
+                at 2025-11-03T23:56:16.977Z
             </div>
         <script src="../prettify.js"></script>
         <script>

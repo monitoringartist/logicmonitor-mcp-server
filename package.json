@@ -3,20 +3,21 @@
     "version": "0.0.1",
     "description": "LogicMonitor Model Context Protocol Server",
     "type": "module",
-    "main": "build/servers/stdio-server.js",
+    "main": "build/servers/index.js",
     "bin": {
-        "logicmonitor-mcp-server": "build/servers/stdio-server.js"
+        "logicmonitor-mcp-server": "build/servers/index.js"
     },
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
-        "start": "node build/servers/stdio-server.js",
-        "start:http": "node build/servers/http-server.js",
-        "start:multi": "node build/servers/multi-transport-server.js",
+        "start": "node build/servers/index.js",
+        "start:stdio": "node build/servers/index.js --transport stdio",
+        "start:sse": "node build/servers/index.js --transport sse",
+        "start:http": "node build/servers/index.js --transport streamable-http",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
         "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
         "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-        "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/servers/multi-transport-server.js",
+        "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/servers/index.js",
         "lint": "eslint src/**/*.ts"
     },
     "keywords": [
