@@ -67,7 +67,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
       '\n\n**Related tools:** "get_resource" (details), "search_resources" (simpler text search), "generate_resource_link" (get UI link).',
     annotations: {
-      title: 'List monitored resources/resources/devices',
+      title: 'List monitored resources/devices',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -112,13 +112,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   },
   {
     name: 'create_resource',
-    description: 'Add a new resource/device or multiple resources/resources/devices to LogicMonitor (LM) monitoring. ' +
+    description: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch creation** ' +
       '\n\n**Single resource/device mode (most common):** ' +
       '\n- Required: displayName (friendly name), name (IP/hostname), preferredCollectorId (from "list_collectors")' +
       '\n- Optional: hostGroupIds (folder location), description, disableAlerting, customProperties' +
       '\n- Example: Add "prod-web-01" at 192.168.1.100 to Production folder monitored by collector 5' +
-      '\n\n**Batch mode (for multiple resources/resources/devices):** ' +
+      '\n\n**Batch mode (for multiple resources/devices):** ' +
       '\n- Provide resource/device array, each with displayName, name, preferredCollectorId' +
       '\n- Use batchOptions: {maxConcurrent: 5, continueOnError: true}' +
       '\n- Processes up to 5 resource/device simultaneously' +
@@ -346,7 +346,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   },
   {
     name: 'delete_resource',
-    description: 'Remove a resource/device or multiple resources/resources/devices from LogicMonitor (LM) monitoring. ' +
+    description: 'Remove a resource/device or multiple resources/devices from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING: DESTRUCTIVE OPERATION** ' +
       '\n- This permanently removes the resource/device from monitoring' +
       '\n- All historical data will be deleted' +
@@ -532,7 +532,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- /Customer-A (parentId: 0)' +
       '\n- /Customer-B (parentId: 0)' +
       '\n\n**Custom properties for groups:** ' +
-      'Properties set on group are automatically inherited by all resources/resources/devices: ' +
+      'Properties set on group are automatically inherited by all resources/devices: ' +
       '\n- Credentials: {name: "ssh.user", value: "monitoring"}' +
       '\n- Environment tag: {name: "env", value: "production"}' +
       '\n- Owner: {name: "team", value: "platform"}' +
@@ -590,7 +590,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**When to use:** ' +
       '\n- Rename group' +
       '\n- Update description' +
-      '\n- Change/add custom properties (affects all resources/resources/devices)' +
+      '\n- Change/add custom properties (affects all resources/devices)' +
       '\n- Modify dynamic membership (appliesTo)' +
       '\n- Move group to different parent' +
       '\n\n**Required parameters:** ' +
@@ -599,7 +599,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- name: New group name' +
       '\n- description: New description' +
       '\n- parentId: Move to different parent group' +
-      '\n- customProperties: Update inherited properties (affects all resources/resources/devices!)' +
+      '\n- customProperties: Update inherited properties (affects all resources/devices!)' +
       '\n- appliesTo: Change dynamic membership query' +
       '\n\n**Common update scenarios:** ' +
       '\n\n**Rename group:** ' +
@@ -1116,7 +1116,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- deviceDataSourceId: From "list_resource_datasources"' +
       '\n- instanceId: From "list_resource_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
-      '\n- start/end: Time range in epoch milliseconds (not seconds!)' +
+      '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must before current time' +
       '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
       '\n\n**Related tools:** "list_resource_datasources", "list_resource_instances".',
@@ -2704,7 +2704,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Find alive resource/device in subnet" → query:"192.168.1,hostStatus:alive"' +
       '\n\n**Related tools:** "list_resources" (complex filtering), "get_resource" (get details), "generate_resource_link" (get URL).',
     annotations: {
-      title: 'Search resources/resources/devices',
+      title: 'Search resources/devices',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -2971,7 +2971,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'create_access_group',
     description: 'Create a new access group in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Creates permission boundary controlling which resources/resources/devices users can see and manage. Essential for multi-tenant environments (MSPs) or departmental isolation. ' +
+      '\n\n**What this does:** Creates permission boundary controlling which resources/devices users can see and manage. Essential for multi-tenant environments (MSPs) or departmental isolation. ' +
       '\n\n**When to use:** ' +
       '\n- Set up multi-tenant monitoring (MSP with multiple customers)' +
       '\n- Segment access by department/team' +
@@ -3270,7 +3270,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'update_resource_datasource',
     description: 'Update resource/device datasource configuration in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Modify how a specific datasource monitors a specific resource/device. Control alerting, enable/disable monitoring, or adjust device-specific datasource settings without affecting other resources/resources/devices. ' +
+      '\n\n**What this does:** Modify how a specific datasource monitors a specific resource/device. Control alerting, enable/disable monitoring, or adjust device-specific datasource settings without affecting other resources/devices. ' +
       '\n\n**When to use:** (1) Disable monitoring for specific datasource on one resource/device, (2) Disable alerting during maintenance, (3) Enable previously disabled datasource, (4) Adjust polling interval for device, (5) Update device-specific thresholds. ' +
       '\n\n**Required parameters:** ' +
       '\n- deviceId: Device ID (from "list_resources") ' +
@@ -4216,7 +4216,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Priority 3 (Business Hours):** IF severity = warning → Route to "Business Hours Email" chain (no pages) ' +
       '\n- **Priority 99 (Catch-All):** IF any alert not matched above → Route to "Default NOC" escalation chain ' +
       '\n\n**Use cases:** ' +
-      '\n- "Who gets paged for production CPU alerts?" → Find rule matching prod resources/resources/devices+ CPU datasource ' +
+      '\n- "Who gets paged for production CPU alerts?" → Find rule matching prod resources/devices+ CPU datasource ' +
       '\n- "Update team notifications" → Modify alert rule to route to different escalation chain ' +
       '\n- "Stop getting low-priority pages" → Check which rule routes those alerts, adjust severity or chain ' +
       '\n\n**Critical for notification troubleshooting:** If alerts aren\'t reaching people, check: (1) Does alert match any rule? (2) Is matched rule enabled? (3) Is escalation chain configured correctly? ' +
@@ -4297,7 +4297,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Common alert rule patterns:** ' +
       '\n\n**Critical production alerts (Priority 1):** ' +
       '{name: "Critical Production", priority: 1, deviceGroups: "*/Production/*", severity: "critical", escalationChainId: 10} ' +
-      '// Critical alerts from production resources/resources/devices→ On-call chain ' +
+      '// Critical alerts from production resources/devices→ On-call chain ' +
       '\n\n**Database team alerts (Priority 2):** ' +
       '{name: "Database Team", priority: 2, datasources: "*MySQL*,*PostgreSQL*,*Oracle*", escalationChainId: 20} ' +
       '// Any database datasource → Database team chain ' +
@@ -4779,7 +4779,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'list_services',
     description: 'List all business services in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of services with: id, name, description, health status, dependencies, monitored resources, service level objectives (SLOs), availability percentage. ' +
-      '\n\n**What are services:** Business-level monitoring constructs that aggregate multiple resources/resources/devices/resources into a single health status. Represent customer-facing services, applications, or business processes. Example: "E-Commerce Platform" service includes web servers, databases, load balancers, and APIs - one health indicator for entire platform. ' +
+      '\n\n**What are services:** Business-level monitoring constructs that aggregate multiple resources/devices/resources into a single health status. Represent customer-facing services, applications, or business processes. Example: "E-Commerce Platform" service includes web servers, databases, load balancers, and APIs - one health indicator for entire platform. ' +
       '\n\n**When to use:** (1) Monitor business service health vs individual resource/device health, (2) Track SLA compliance for customer-facing services, (3) Understand service dependencies, (4) Create business-level dashboards, (5) Report on application availability. ' +
       '\n\n**Service health calculation:** ' +
       'Service health = Aggregate of all dependent resources. If critical resource fails, service status = down. Allows stakeholders to see "Is the application working?" instead of "Is server X working?" ' +
@@ -4897,7 +4897,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '{name: "Global API - Asia-Pacific", groupId: 40, resources/devices: [asiaPacificDevices...]} ' +
       '\n\n**Workflow for creating services:** ' +
       '1. Identify business-critical application/service ' +
-      '2. List all resources/resources/devices/components required for service to function ' +
+      '2. List all resources/devices/components required for service to function ' +
       '3. Create service group for organization (if needed) ' +
       '4. Create service with all member resource/device ' +
       '5. Create dashboard showing service health ' +
@@ -4963,7 +4963,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Update SLA documentation:** ' +
       '{serviceId: 123, description: "Customer-facing checkout - SLA 99.95% (updated Q4 2024)"} ' +
       '\n\n**⚠️ Important:** ' +
-      'Updating resource/device array REPLACES all members. Include existing + new resources/resources/devices, or resource/device will be removed from service. ' +
+      'Updating resource/device array REPLACES all members. Include existing + new resources/devices, or resource/device will be removed from service. ' +
       '\n\n**Best practice workflow:** ' +
       '1. Use "get_service" to see current membership ' +
       '2. Update service with complete resource/device list ' +
