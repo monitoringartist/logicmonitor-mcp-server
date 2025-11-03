@@ -38,9 +38,7 @@ Thumbs.db
 .gitattributes
 
 # Documentation
-README.md
-CHANGELOG.md
-TESTING.md
+*.md
 docs/
 
 # CI/CD

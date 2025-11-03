@@ -53,7 +53,7 @@ cd logicmonitor-mcp-server
 docker build -t logicmonitor-mcp-server .
 
 # Or use Docker Compose
-cp env.docker.example .env
+cp env.example .env
 # Edit .env with your credentials
 docker-compose up -d logicmonitor-mcp-http
 ```
@@ -318,7 +318,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_resources` - List all monitored resources/devices with filtering
 - `get_resource` - Get detailed device information by ID
-- `search_devices` - Search devices by name or description
+- `search_resources` - Search devices by name or description
 - `generate_resource_link` - Generate direct link to device in LM UI
 
 **Write Operations:**
@@ -359,17 +359,17 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_datasources` - List all available datasources
 - `get_datasource` - Get datasource details
-- `list_device_datasources` - List datasources applied to device
-- `get_device_datasource` - Get device datasource details
-- `list_device_instances` - List datasource instances (disks, interfaces, etc.)
-- `get_device_instance_data` - Get time-series metrics data
+- `list_resource_datasources` - List datasources applied to device
+- `get_resource_datasource` - Get device datasource details
+- `list_resource_instances` - List datasource instances (disks, interfaces, etc.)
+- `get_resource_instance_data` - Get time-series metrics data
 - `list_eventsources` - List all eventsources
 - `get_eventsource` - Get eventsource details
 - `list_configsources` - List configuration sources
 - `get_configsource` - Get configsource details
 
 **Write Operations:**
-- `update_device_datasource` - Modify device datasource configuration
+- `update_resource_datasource` - Modify device datasource configuration
 
 ### Dashboards & Reporting
 
@@ -491,12 +491,12 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 ### Properties & Configuration
 
 **Read-Only:**
-- `list_device_properties` - List custom properties for device
-- `list_device_group_properties` - List properties for device group
+- `list_resource_properties` - List custom properties for device
+- `list_resource_group_properties` - List properties for device group
 
 **Write Operations:**
-- `update_device_property` - Update device property value
-- `update_device_group_property` - Update device group property value
+- `update_resource_property` - Update device property value
+- `update_resource_group_property` - Update device group property value
 
 ### Scheduled Down Time (SDT)
 
@@ -505,7 +505,7 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 - `get_sdt` - Get SDT details
 
 **Write Operations:**
-- `create_device_sdt` - Create scheduled down time
+- `create_resource_sdt` - Create scheduled down time
 - `delete_sdt` - Delete scheduled down time
 
 ### Operational Notes

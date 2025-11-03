@@ -121,9 +121,9 @@ export class LogicMonitorHandlers {
   async handleToolCall(name: string, args: any): Promise<any> {
     try {
       switch (name) {
-        // Device Management
+        // Resource Management
         case 'list_resources': {
-          const result = await this.client.listDevices({
+          const result = await this.client.listResources({
             size: args.size,
             offset: args.offset,
             filter: args.filter,
@@ -425,7 +425,7 @@ export class LogicMonitorHandlers {
           });
 
         // Device DataSource Instances
-        case 'list_device_instances':
+        case 'list_resource_instances':
           return await this.client.listDeviceDataSourceInstances(
             args.deviceId,
             args.deviceDataSourceId,
@@ -437,7 +437,7 @@ export class LogicMonitorHandlers {
             },
           );
 
-        case 'get_device_instance_data':
+        case 'get_resource_instance_data':
           return await this.client.getDeviceDataSourceInstanceData(
             args.deviceId,
             args.deviceDataSourceId,
@@ -737,7 +737,7 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
-        case 'create_device_sdt': {
+        case 'create_resource_sdt': {
           const sdt: any = {
             sdtType: 1, // Device SDT
             deviceId: args.deviceId,
@@ -780,7 +780,7 @@ export class LogicMonitorHandlers {
           });
 
         // Device Properties
-        case 'list_device_properties': {
+        case 'list_resource_properties': {
           const result = await this.client.listDeviceProperties(args.deviceId, {
             size: args.size,
             offset: args.offset,
@@ -801,7 +801,7 @@ export class LogicMonitorHandlers {
           };
         }
 
-        case 'update_device_property':
+        case 'update_resource_property':
           return await this.client.updateDeviceProperty(
             args.deviceId,
             args.propertyName,
@@ -809,8 +809,8 @@ export class LogicMonitorHandlers {
           );
 
         // Search Tools (aliases with specific filters)
-        case 'search_devices': {
-          return await this.client.listDevices({
+        case 'search_resources': {
+          return await this.client.listResources({
             size: args.size,
             offset: args.offset,
             filter: autoFormatFilter(args.query, SEARCH_FIELDS.devices),
@@ -922,7 +922,7 @@ export class LogicMonitorHandlers {
           return await this.client.deleteAccessGroup(args.accessGroupId);
 
         // Device DataSources
-        case 'list_device_datasources':
+        case 'list_resource_datasources':
           return await this.client.listDeviceDataSources(args.deviceId, {
             size: args.size,
             offset: args.offset,
@@ -931,12 +931,12 @@ export class LogicMonitorHandlers {
             autoPaginate: args.autoPaginate,
           });
 
-        case 'get_device_datasource':
+        case 'get_resource_datasource':
           return await this.client.getDeviceDataSource(args.deviceId, args.deviceDataSourceId, {
             fields: args.fields,
           });
 
-        case 'update_device_datasource': {
+        case 'update_resource_datasource': {
           const data: any = {};
           if (args.disableAlerting !== undefined) data.disableAlerting = args.disableAlerting;
           if (args.stopMonitoring !== undefined) data.stopMonitoring = args.stopMonitoring;
@@ -1258,7 +1258,7 @@ export class LogicMonitorHandlers {
           });
 
         // Device Group Properties
-        case 'list_device_group_properties':
+        case 'list_resource_group_properties':
           return await this.client.listDeviceGroupProperties(args.groupId, {
             size: args.size,
             offset: args.offset,
@@ -1267,7 +1267,7 @@ export class LogicMonitorHandlers {
             autoPaginate: args.autoPaginate,
           });
 
-        case 'update_device_group_property':
+        case 'update_resource_group_property':
           return await this.client.updateDeviceGroupProperty(
             args.groupId,
             args.propertyName,
@@ -1430,7 +1430,7 @@ export class LogicMonitorHandlers {
         suggestions = [
           'Verify the device ID exists',
           'Check if the device was recently deleted',
-          'Use list_resources or search_devices to find the correct ID',
+          'Use list_resources or search_resources to find the correct ID',
         ];
       } else if (toolName.includes('group')) {
         code = ErrorCodes.GROUP_NOT_FOUND;

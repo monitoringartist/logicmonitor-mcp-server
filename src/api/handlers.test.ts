@@ -20,7 +20,7 @@ describe('LogicMonitorHandlers', () => {
 
     // Create mock client
     mockClient = {
-      listDevices: jest.fn(),
+      listResources: jest.fn(),
       getDevice: jest.fn(),
       createDevice: jest.fn(),
       updateDevice: jest.fn(),
@@ -164,14 +164,14 @@ describe('LogicMonitorHandlers', () => {
           total: 1,
         };
 
-        mockClient.listDevices.mockResolvedValue(mockResponse);
+        mockClient.listResources.mockResolvedValue(mockResponse);
 
         const result = await handlers.handleToolCall('list_resources', {
           size: 10,
           offset: 0,
         });
 
-        expect(mockClient.listDevices).toHaveBeenCalledWith({
+        expect(mockClient.listResources).toHaveBeenCalledWith({
           size: 10,
           offset: 0,
           filter: undefined,
@@ -196,7 +196,7 @@ describe('LogicMonitorHandlers', () => {
           total: 1,
         };
 
-        mockClient.listDevices.mockResolvedValue(mockResponse);
+        mockClient.listResources.mockResolvedValue(mockResponse);
 
         const result = await handlers.handleToolCall('list_resources', {
           fields: 'id,customField',
@@ -207,13 +207,13 @@ describe('LogicMonitorHandlers', () => {
 
       it('should list devices with filter', async () => {
         const mockResponse = { items: [], total: 0 };
-        mockClient.listDevices.mockResolvedValue(mockResponse);
+        mockClient.listResources.mockResolvedValue(mockResponse);
 
         await handlers.handleToolCall('list_resources', {
           filter: 'displayName~*server*',
         });
 
-        expect(mockClient.listDevices).toHaveBeenCalledWith({
+        expect(mockClient.listResources).toHaveBeenCalledWith({
           size: undefined,
           offset: undefined,
           filter: 'displayName~*server*',
@@ -647,12 +647,12 @@ describe('LogicMonitorHandlers', () => {
       });
     });
 
-    describe('list_device_instances', () => {
+    describe('list_resource_instances', () => {
       it('should list device datasource instances', async () => {
         const mockInstances = { items: [], total: 0 };
         mockClient.listDeviceDataSourceInstances.mockResolvedValue(mockInstances);
 
-        const result = await handlers.handleToolCall('list_device_instances', {
+        const result = await handlers.handleToolCall('list_resource_instances', {
           deviceId: 1,
           deviceDataSourceId: 2,
         });
@@ -667,12 +667,12 @@ describe('LogicMonitorHandlers', () => {
       });
     });
 
-    describe('get_device_instance_data', () => {
+    describe('get_resource_instance_data', () => {
       it('should get device instance data', async () => {
         const mockData = { data: [], timestamps: [] };
         mockClient.getDeviceDataSourceInstanceData.mockResolvedValue(mockData);
 
-        const result = await handlers.handleToolCall('get_device_instance_data', {
+        const result = await handlers.handleToolCall('get_resource_instance_data', {
           deviceId: 1,
           deviceDataSourceId: 2,
           instanceId: 3,
@@ -691,7 +691,7 @@ describe('LogicMonitorHandlers', () => {
         const mockData = { data: [], timestamps: [] };
         mockClient.getDeviceDataSourceInstanceData.mockResolvedValue(mockData);
 
-        await handlers.handleToolCall('get_device_instance_data', {
+        await handlers.handleToolCall('get_resource_instance_data', {
           deviceId: 1,
           deviceDataSourceId: 2,
           instanceId: 3,
@@ -1074,7 +1074,7 @@ describe('LogicMonitorHandlers', () => {
       const mockSDT = { id: 1, deviceId: 123 };
       mockClient.createDeviceSDT.mockResolvedValue(mockSDT);
 
-      const result = await handlers.handleToolCall('create_device_sdt', {
+      const result = await handlers.handleToolCall('create_resource_sdt', {
         deviceId: 123,
         type: 1,
         startDateTime: 1234567890,
@@ -1095,7 +1095,7 @@ describe('LogicMonitorHandlers', () => {
       const mockSDT = { id: 1, deviceId: 123 };
       mockClient.createDeviceSDT.mockResolvedValue(mockSDT);
 
-      await handlers.handleToolCall('create_device_sdt', {
+      await handlers.handleToolCall('create_resource_sdt', {
         deviceId: 123,
         type: 1,
         startDateTime: 1234567890,
@@ -1151,7 +1151,7 @@ describe('LogicMonitorHandlers', () => {
       const mockResponse = { items: [{ name: 'prop1', value: 'val1' }], total: 1 };
       mockClient.listDeviceProperties.mockResolvedValue(mockResponse);
 
-      const result = await handlers.handleToolCall('list_device_properties', {
+      const result = await handlers.handleToolCall('list_resource_properties', {
         deviceId: 1,
       });
 
@@ -1161,7 +1161,7 @@ describe('LogicMonitorHandlers', () => {
     it('should update device property', async () => {
       mockClient.updateDeviceProperty.mockResolvedValue({});
 
-      const result = await handlers.handleToolCall('update_device_property', {
+      const result = await handlers.handleToolCall('update_resource_property', {
         deviceId: 1,
         propertyName: 'test.prop',
         value: 'new-value',
@@ -1175,13 +1175,13 @@ describe('LogicMonitorHandlers', () => {
   describe('Search Tools', () => {
     it('should search devices', async () => {
       const mockResponse = { items: [], total: 0 };
-      mockClient.listDevices.mockResolvedValue(mockResponse);
+      mockClient.listResources.mockResolvedValue(mockResponse);
 
-      await handlers.handleToolCall('search_devices', {
+      await handlers.handleToolCall('search_resources', {
         query: 'server',
       });
 
-      expect(mockClient.listDevices).toHaveBeenCalled();
+      expect(mockClient.listResources).toHaveBeenCalled();
     });
 
     it('should search alerts', async () => {
@@ -1358,11 +1358,11 @@ describe('LogicMonitorHandlers', () => {
   });
 
   describe('Additional Tools', () => {
-    it('should handle list_device_datasources', async () => {
+    it('should handle list_resource_datasources', async () => {
       const mockResponse = { items: [], total: 0 };
       mockClient.listDeviceDataSources.mockResolvedValue(mockResponse);
 
-      await handlers.handleToolCall('list_device_datasources', {
+      await handlers.handleToolCall('list_resource_datasources', {
         deviceId: 1,
       });
 
@@ -1375,11 +1375,11 @@ describe('LogicMonitorHandlers', () => {
       });
     });
 
-    it('should handle get_device_datasource', async () => {
+    it('should handle get_resource_datasource', async () => {
       const mockDS = { id: 1, dataSourceId: 2 };
       mockClient.getDeviceDataSource.mockResolvedValue(mockDS);
 
-      const result = await handlers.handleToolCall('get_device_datasource', {
+      const result = await handlers.handleToolCall('get_resource_datasource', {
         deviceId: 1,
         deviceDataSourceId: 2,
       });
@@ -1387,10 +1387,10 @@ describe('LogicMonitorHandlers', () => {
       expect(result).toEqual(mockDS);
     });
 
-    it('should handle update_device_datasource', async () => {
+    it('should handle update_resource_datasource', async () => {
       mockClient.updateDeviceDataSource.mockResolvedValue({});
 
-      await handlers.handleToolCall('update_device_datasource', {
+      await handlers.handleToolCall('update_resource_datasource', {
         deviceId: 1,
         deviceDataSourceId: 2,
         disableAlerting: true,

@@ -236,14 +236,14 @@ describe('getLogicMonitorTools', () => {
         const tools = getLogicMonitorTools(false);
         const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('search_devices');
+        expect(toolNames).toContain('search_resources');
         expect(toolNames).toContain('search_alerts');
       });
 
       it('should mark search tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
 
-        const searchDevices = tools.find(t => t.name === 'search_devices');
+        const searchDevices = tools.find(t => t.name === 'search_resources');
         const searchAlerts = tools.find(t => t.name === 'search_alerts');
 
         expect(searchDevices?.annotations?.readOnlyHint).toBe(true);
@@ -258,7 +258,7 @@ describe('getLogicMonitorTools', () => {
 
         expect(toolNames).toContain('list_sdts');
         expect(toolNames).toContain('get_sdt');
-        expect(toolNames).toContain('create_device_sdt');
+        expect(toolNames).toContain('create_resource_sdt');
         expect(toolNames).toContain('delete_sdt');
       });
 
@@ -267,7 +267,7 @@ describe('getLogicMonitorTools', () => {
 
         const listTool = tools.find(t => t.name === 'list_sdts');
         const getTool = tools.find(t => t.name === 'get_sdt');
-        const createTool = tools.find(t => t.name === 'create_device_sdt');
+        const createTool = tools.find(t => t.name === 'create_resource_sdt');
         const deleteTool = tools.find(t => t.name === 'delete_sdt');
 
         expect(listTool?.annotations?.readOnlyHint).toBe(true);
@@ -349,8 +349,8 @@ describe('getLogicMonitorTools', () => {
 
         expect(toolNames).toContain('list_datasources');
         expect(toolNames).toContain('get_datasource');
-        expect(toolNames).toContain('list_device_instances');
-        expect(toolNames).toContain('get_device_instance_data');
+        expect(toolNames).toContain('list_resource_instances');
+        expect(toolNames).toContain('get_resource_instance_data');
       });
 
       it('should mark datasource query tools as read-only', () => {
@@ -358,8 +358,8 @@ describe('getLogicMonitorTools', () => {
 
         const listDS = tools.find(t => t.name === 'list_datasources');
         const getDS = tools.find(t => t.name === 'get_datasource');
-        const listInstances = tools.find(t => t.name === 'list_device_instances');
-        const getData = tools.find(t => t.name === 'get_device_instance_data');
+        const listInstances = tools.find(t => t.name === 'list_resource_instances');
+        const getData = tools.find(t => t.name === 'get_resource_instance_data');
 
         expect(listDS?.annotations?.readOnlyHint).toBe(true);
         expect(getDS?.annotations?.readOnlyHint).toBe(true);
@@ -569,7 +569,7 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most get tools should support fields parameter
-        if (tool.name !== 'get_device_instance_data' &&
+        if (tool.name !== 'get_resource_instance_data' &&
             tool.name !== 'get_topology') {
           expect(properties).toHaveProperty('fields');
         }

@@ -332,7 +332,7 @@ export class LogicMonitorClient {
 
   // Device Management
   /**
-   * List devices with optional filtering
+   * List resources with optional filtering
    *
    * Filter examples:
    * - Exact match: filter: 'id:123'
@@ -346,7 +346,7 @@ export class LogicMonitorClient {
    * Note: Filter parameter is automatically URL-encoded. For special characters in filter values,
    * use escapeFilterValue() to escape them before building the filter string.
    */
-  async listDevices(params?: {
+  async listResources(params?: {
     size?: number;
     offset?: number;
     filter?: string;

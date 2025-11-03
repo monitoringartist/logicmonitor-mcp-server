@@ -82,7 +82,7 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'get_dashboard': ['mcp:tools', 'lm:dashboards:read'],
   'list_datasources': ['mcp:tools', 'lm:read'],
   'get_datasource': ['mcp:tools', 'lm:read'],
-  'search_devices': ['mcp:tools', 'lm:read'],
+  'search_resources': ['mcp:tools', 'lm:read'],
   'search_alerts': ['mcp:tools', 'lm:alerts:read'],
 
   // Write operations - require write scopes

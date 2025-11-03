@@ -215,7 +215,7 @@ export class SmartBatchProcessor extends BatchProcessor {
   ): Promise<BatchResponse<TOutput>> {
     const {
       adaptiveConcurrency = true,
-      minConcurrency = 1,
+      minConcurrency = 3,
       maxConcurrencyLimit = 20,
       apiRateLimit,
       onConcurrencyChange,

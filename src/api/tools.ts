@@ -53,15 +53,19 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'list_resources',
     description: 'List all monitored resources/devices in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of resource/device with: id, displayName, name (IP/hostname), hostStatus (dead/alive/unknown), preferredCollectorId, deviceType, custom properties, group memberships. ' +
-      '\n\n**When to use:** (1) Get inventory of all monitored resources/devices, (2) Find specific resource/device by name/IP/property, (3) Check resource/device health status, (4) Get resource/device IDs for other operations. ' +
+      '\n\n**When to use:** ' +
+      '\n - Get inventory of all monitored resources/devices' +
+      '\n - Find specific resource/device by name/IP/property' +
+      '\n - Check resource/device health status' +
+      '\n - Get resource/device IDs for other operations' +
       '\n\n**Common filter patterns:** ' +
-      '• By name: filter:"displayName~*prod*" (wildcard search) ' +
-      '• By status: filter:"hostStatus:alive" or filter:"hostStatus:dead" ' +
-      '• By type: filter:"systemProperties.name:system.devicetype,value:server" ' +
-      '• By collector: filter:"preferredCollectorId:123" ' +
-      '• Multiple conditions: filter:"hostStatus:alive,displayName~*web*" (comma = AND) ' +
+      '\n- By name: filter:"displayName\\~\\*prod\\*" (wildcard search) ' +
+      '\n- By status: filter:"hostStatus:alive" or filter:"hostStatus:dead" ' +
+      '\n- By type: filter:"systemProperties.name:system.devicetype,value:server" ' +
+      '\n- By collector: filter:"preferredCollectorId:123" ' +
+      '\n- Multiple conditions: filter:"hostStatus:alive,displayName~\\*web\\*" (comma = AND) ' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
-      '\n\n**Related tools:** "get_resource" (details), "search_devices" (simpler text search), "generate_resource_link" (get UI link).',
+      '\n\n**Related tools:** "get_resource" (details), "search_resources" (simpler text search), "generate_resource_link" (get UI link).',
     annotations: {
       title: 'List monitored resources/resources/devices',
       readOnlyHint: true,
@@ -82,7 +86,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete resource/device details including: displayName, IP/hostname, hostStatus, alertStatus, collector assignment, resource/device type, custom properties, applied datasources, group memberships, last data time, creation date. ' +
       '\n\n**When to use:** (1) Get full details after finding resource/device ID via "list_resources", (2) Check resource/device configuration, (3) Verify collector assignment, (4) Review custom properties before updating. ' +
-      '\n\n**Workflow:** Use "list_resources" or "search_devices" first to find the deviceId, then use this tool for complete details. ' +
+      '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
       '\n\n**Related tools:** "list_device_datasources" (see what\'s monitored), "list_device_properties" (view all properties), "generate_resource_link" (get UI link).',
     annotations: {
       title: 'Get resource/device details',
@@ -221,7 +225,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch update** ' +
       '\n\n**Single resource/device mode:** ' +
-      '• Required: deviceId (from "list_resources" or "search_devices") ' +
+      '• Required: deviceId (from "list_resources" or "search_resources") ' +
       '• Optional: displayName, description, disableAlerting, preferredCollectorId, customProperties ' +
       '• opType: "replace" (default) overwrites all, "add" merges with existing ' +
       '\n\n**Batch mode:** ' +
@@ -236,7 +240,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**opType explained:** ' +
       '• "replace": Overwrites entire field (careful with customProperties!) ' +
       '• "add": Merges/appends to existing values (safer for properties) ' +
-      '\n\n**Workflow:** First find deviceId using "list_resources" or "search_devices", then update. ' +
+      '\n\n**Workflow:** First find deviceId using "list_resources" or "search_resources", then update. ' +
       '\n\n**Related tools:** "list_resources" (find device), "get_resource" (verify before update), "update_device_property" (simpler property updates).',
     annotations: {
       title: 'Update resource/device(s)',
@@ -974,7 +978,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Device DataSource Instance Tools
   {
-    name: 'list_device_instances',
+    name: 'list_resource_instances',
     description: 'List instances of a datasource on a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of instances with: id, name, displayName, description, status, alert status, last collection time. ' +
       '\n\n**What are instances:** Individual components monitored by a datasource. Examples: individual disks (C:, D:, E:), network interfaces (eth0, eth1), database tables, processes. ' +
@@ -1012,7 +1016,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'get_device_instance_data',
+    name: 'get_resource_instance_data',
     description: 'Get time-series metrics/datapoints data (e.g., CPU/memory/network utilization) for a specific resource/device datasource instance in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Time-series data with timestamps and values for requested datapoints. Format: {timestamps: [epoch1, epoch2], values: {datapoint1: [val1, val2], datapoint2: [val1, val2]}}. ' +
       '\n\n**When to use:** (1) Get CPU utilization for last 24 hours, (2) Fetch disk usage trends, (3) Retrieve network bandwidth data, (4) Export metrics for analysis, (5) Build custom dashboards/reports. ' +
@@ -1342,7 +1346,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Returns:** Complete resource URL with full group hierarchy, resource/device details (id, name, displayName), and group path array. URL pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{path},resources-{id}' +
       '\n\n**When to use:** (1) Share resource/device links in incident tickets, (2) Create alert notifications with resource/device links, (3) Build reports with clickable resource/device references, (4) Document infrastructure with direct LM links. ' +
       '\n\n**Why use this:** Provides the complete URL including all parent group IDs, so clicking the link navigates directly to the resource/device in the correct folder context. ' +
-      '\n\n**Workflow:** First find resource/device using "list_resources" or "search_devices", then use this tool with deviceId to generate shareable link. ' +
+      '\n\n**Workflow:** First find resource/device using "list_resources" or "search_resources", then use this tool with deviceId to generate shareable link. ' +
       '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "generate_alert_link" (link to resource/device alerts).',
     annotations: {
       title: 'Generate resource/device link',
@@ -2150,7 +2154,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'create_device_sdt',
+    name: 'create_resource_sdt',
     description: 'Schedule Down Time (SDT) for a resource/device in LogicMonitor (LM) monitoring to suppress alerts during planned maintenance. ' +
       '\n\n**What this does:** Prevents alert notifications during specified time window. No alerts generated = no noise during planned work like patching, upgrades, reboots, migrations. ' +
       '\n\n**When to use:** (1) Before patching servers, (2) During planned maintenance windows, (3) Network changes that will cause temporary outages, (4) Application deployments, (5) Database maintenance. ' +
@@ -2318,7 +2322,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Device Property Tools
   {
-    name: 'list_device_properties',
+    name: 'list_resource_properties',
     description: 'List all custom properties (system and user-defined) for a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of properties with: name, value, source (device-level vs inherited from group), type (system vs custom). ' +
       '\n\n**When to use:** (1) Review resource/device configuration, (2) Check credentials/authentication settings, (3) See inherited vs device-specific properties, (4) Troubleshoot datasource applies logic, (5) Audit resource/device metadata. ' +
@@ -2360,7 +2364,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'update_device_property',
+    name: 'update_resource_property',
     description: 'Update or create a custom property for a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Set/update a single resource/device-level custom property. Simpler alternative to "update_resource" when only changing one property. ' +
       '\n\n**When to use:** (1) Update single property value, (2) Add new property to device, (3) Override inherited property value, (4) Update credentials for one resource/device, (5) Change resource/device tags/metadata. ' +
@@ -2430,7 +2434,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Search Tools
   {
-    name: 'search_devices',
+    name: 'search_resources',
     description: 'Search for resources/devices in LogicMonitor (LM) monitoring with simplified search syntax. ' +
       '\n\n**Returns:** Array of matching resource/device with id, displayName, name (IP), hostStatus, deviceType. ' +
       '\n\n**When to use:** (1) Find resource/device by partial name (don\'t know exact name), (2) Quick resource/device lookup without complex filter syntax, (3) Search by IP address pattern, (4) Find resource/device when you know name but not filter syntax, (5) Discover resource/device matching keywords. ' +
@@ -2438,7 +2442,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '1. **Free-text search:** Simple queries (e.g., "production", "web-server", "192.168.1.100") automatically search across displayName, description, and name fields ' +
       '2. **Filter syntax:** Precise queries (e.g., "hostStatus:alive") for exact field matching ' +
       '\n\n**Choose the right tool:** ' +
-      '• Use "search_devices" for quick name-based searches (simplest) ' +
+      '• Use "search_resources" for quick name-based searches (simplest) ' +
       '• Use "list_resources" with filter parameter for complex multi-field filtering (most powerful) ' +
       '• Use this tool when you know resource/device name but not exact filter syntax ' +
       '\n\n**Free-text examples:** ' +
@@ -2925,7 +2929,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Device DataSources
   {
-    name: 'list_device_datasources',
+    name: 'list_resource_datasources',
     description: 'List datasources applied to a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of datasources actively monitoring this resource/device with: id (deviceDataSourceId), dataSourceName, dataSourceDisplayName, status, alert status, instance count, last poll time. ' +
       '\n\n**When to use:** (1) See what\'s being monitored on a resource/device, (2) Verify datasource is collecting data, (3) Get deviceDataSourceId for metric retrieval, (4) Troubleshoot missing data, (5) Check datasource health. ' +
@@ -2965,7 +2969,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'get_device_datasource',
+    name: 'get_resource_datasource',
     description: 'Get detailed information about a specific datasource applied to a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete resource/device datasource details: dataSourceName, status, alert status, number of instances, monitoring configuration, stop monitoring flag, custom properties, graphs. ' +
       '\n\n**When to use:** (1) Check if datasource is collecting data, (2) Review alert status for specific datasource, (3) Verify custom thresholds, (4) Get deviceDataSourceId for instance operations, (5) Troubleshoot data collection issues. ' +
@@ -2999,7 +3003,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'update_device_datasource',
+    name: 'update_resource_datasource',
     description: 'Update resource/device datasource configuration in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify how a specific datasource monitors a specific resource/device. Control alerting, enable/disable monitoring, or adjust device-specific datasource settings without affecting other resources/resources/devices. ' +
       '\n\n**When to use:** (1) Disable monitoring for specific datasource on one resource/device, (2) Disable alerting during maintenance, (3) Enable previously disabled datasource, (4) Adjust polling interval for device, (5) Update device-specific thresholds. ' +
@@ -5203,7 +5207,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
 
   // Device Group Properties
   {
-    name: 'list_device_group_properties',
+    name: 'list_resource_group_properties',
     description: 'List all custom properties for a specific resource/device group in LogicMonitor (LM) monitoring. Properties set at group level are inherited by all resource/device in the group. ' +
       '\n\n**Returns:** Array of properties with: name, value, type (custom vs system), and inheritance source. ' +
       '\n\n**When to use:** (1) Review properties before bulk updates, (2) Audit credentials/settings applied to resource/device group, (3) Verify property inheritance from parent groups, (4) Check which properties resource/device will inherit when added to group, (5) Document group configuration. ' +
@@ -5246,7 +5250,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
   {
-    name: 'update_device_group_property',
+    name: 'update_resource_group_property',
     description: 'Update a custom property value for a resource/device group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies group-level property inherited by all resource/device in group. Changes immediately affect all member resources/devices. ' +
       '\n\n**When to use:** (1) Update credentials for all resource/device in group, (2) Change environment tags, (3) Update owner/team information, (4) Modify monitoring settings, (5) Bulk property updates. ' +
