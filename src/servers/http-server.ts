@@ -14,6 +14,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import https from 'https';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
@@ -29,6 +31,13 @@ import { getJWTValidator, isJWT, extractAudience } from '../utils/core/jwt-valid
 
 // Load environment variables
 dotenv.config();
+
+// Read version from package.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJsonPath = path.join(__dirname, '../../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const SERVER_VERSION = packageJson.version;
 
 /**
  * MCP Remote Server with Generic OAuth Authentication
@@ -295,7 +304,34 @@ if (LM_COMPANY && LM_BEARER_TOKEN) {
 }
 
 // Get filtered tools based on ONLY_READONLY_TOOLS setting
-const TOOLS: Tool[] = getLogicMonitorTools(ONLY_READONLY_TOOLS);
+let TOOLS: Tool[] = getLogicMonitorTools(ONLY_READONLY_TOOLS);
+
+// Filter out search tools if disabled
+if (config.disableSearch) {
+  const searchTools = ['search_resources', 'search_alerts', 'search_audit_logs'];
+  const originalCount = TOOLS.length;
+  TOOLS = TOOLS.filter(tool => !searchTools.includes(tool.name));
+  console.log(`ℹ️  Search tools disabled: ${originalCount} -> ${TOOLS.length} tools`);
+}
+
+// Filter by enabled tools if specified
+if (config.enabledTools && config.enabledTools.length > 0) {
+  const originalCount = TOOLS.length;
+  TOOLS = TOOLS.filter(tool => config.enabledTools!.includes(tool.name));
+  console.log(`ℹ️  Filtered tools by enabled tools list: ${originalCount} -> ${TOOLS.length} tools`);
+
+  // Warn if no tools match
+  if (TOOLS.length === 0) {
+    console.warn('⚠️  No tools match the enabled tools list! Check your MCP_ENABLED_TOOLS configuration.');
+  }
+
+  // Warn about unknown tools
+  const knownToolNames = getLogicMonitorTools(ONLY_READONLY_TOOLS).map(t => t.name);
+  const unknownTools = config.enabledTools.filter((name: string) => !knownToolNames.includes(name));
+  if (unknownTools.length > 0) {
+    console.warn('⚠️  Unknown tools in enabled tools list:', unknownTools.join(', '));
+  }
+}
 
 // Store active MCP servers per session
 const mcpServers = new Map<string, Server>();
@@ -502,7 +538,7 @@ app.get('/health', (req: Request, res: Response) => {
 
   res.json({
     status: 'healthy',
-    version: '1.0.0',
+    version: SERVER_VERSION,
     uptime: process.uptime(),
     memory: {
       rss: memoryUsage.rss,
@@ -589,7 +625,7 @@ if (useTLS) {
       key: fs.readFileSync(config.tlsKeyFile!),
     };
     https.createServer(tlsOptions, app).listen(PORT, () => {
-      console.log(`🚀 MCP Remote Server running on https://${HOST}:${PORT}`);
+      console.log(`🚀 MCP Remote Server v${SERVER_VERSION} running on https://${HOST}:${PORT}`);
       console.log(`📝 Visit https://${HOST}:${PORT} to authenticate`);
       if (oauthConfig) {
         console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);
@@ -613,7 +649,7 @@ if (useTLS) {
 } else {
   // HTTP server (no TLS)
   app.listen(PORT, () => {
-    console.log(`🚀 MCP Remote Server running on http://${HOST}:${PORT}`);
+    console.log(`🚀 MCP Remote Server v${SERVER_VERSION} running on http://${HOST}:${PORT}`);
     console.log(`📝 Visit http://${HOST}:${PORT} to authenticate`);
     if (oauthConfig) {
       console.log(`🔐 OAuth Provider: ${oauthConfig.provider}`);

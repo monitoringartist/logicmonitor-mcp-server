@@ -170,10 +170,10 @@ describe('CLI Configuration Parser', () => {
       });
 
       it('should parse enabled tools from env', () => {
-        process.env.MCP_ENABLED_TOOLS = 'list_devices,get_device,list_alerts';
+        process.env.MCP_ENABLED_TOOLS = 'list_resources,get_resource,list_alerts';
         const config = parseConfig();
-        
-        expect(config.enabledTools).toEqual(['list_devices', 'get_device', 'list_alerts']);
+
+        expect(config.enabledTools).toEqual(['list_resources', 'get_resource', 'list_alerts']);
       });
 
       it('should parse read-only flag from env', () => {

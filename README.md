@@ -134,6 +134,14 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 | `--lm-company <name>` | `LM_COMPANY` | Your LogicMonitor company/account name (subdomain). Example: if your portal is `mycompany.logicmonitor.com`, use `mycompany` |
 | `--lm-bearer-token <token>` | `LM_BEARER_TOKEN` | LogicMonitor API Bearer Token. Generate at: Settings > Users & Roles > API Tokens |
 
+### MCP Server Authentication (Optional - for SSE/HTTP transports only)
+
+| Flag | Environment Variable | Default | Description |
+|------|---------------------|---------|-------------|
+| `--mcp-bearer-token <token>` | `MCP_BEARER_TOKEN` | - | Static bearer token for authenticating clients connecting to the MCP server. Used as an alternative or supplement to OAuth for remote access via SSE/HTTP transports. Not required for STDIO transport. |
+
+**Note:** This is for authenticating **to** the MCP server, not for LogicMonitor API access. Use this for simple authentication, or see [env.example](env.example) for advanced OAuth/OIDC configuration options.
+
 ## Usage Examples
 
 ### Claude Desktop (STDIO - Recommended)
@@ -284,7 +292,7 @@ npm start
 
 ```bash
 # Enable specific tools only
-npm start -- --enabled-tools "list_devices,get_device,list_alerts,get_alert"
+npm start -- --enabled-tools "list_resources,get_resource,list_alerts,get_alert"
 
 # Disable search functionality
 npm start -- --disable-search
@@ -534,236 +542,6 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 
 For detailed tool descriptions and parameters, see the [API documentation](src/README.md).
 
-## Batch Operations & Performance
-
-### Smart Batch Processing
-
-The server includes an intelligent batch processor that automatically adapts concurrency based on API rate limits.
-
-#### Features
-
-- **Adaptive Concurrency**: Automatically adjusts parallel requests based on API response
-- **Rate Limit Detection**: Recognizes rate limit errors and backs off immediately
-- **Progressive Scaling**: Gradually increases concurrency when operations succeed
-- **Configurable Limits**: Set minimum and maximum concurrency boundaries
-
-#### How It Works
-
-1. **Starts Conservative**: Begins with moderate concurrency (default: 5 concurrent requests)
-2. **Monitors Success**: Tracks consecutive successful requests
-3. **Scales Up**: After 10 consecutive successes, increases concurrency by 20%
-4. **Detects Rate Limits**: Recognizes rate limit errors (429, "too many requests")
-5. **Backs Off**: Immediately reduces concurrency by 50% when rate limited
-6. **Adapts Continuously**: Adjusts throughout the batch operation
-
-#### Usage Example
-
-```typescript
-import { smartBatchProcessor } from './utils/helpers/batch-processor.js';
-
-// Batch create devices with adaptive concurrency
-const result = await smartBatchProcessor.processBatchSmart(
-  devices,
-  async (device) => {
-    return await createDevice(device);
-  },
-  {
-    adaptiveConcurrency: true,        // Enable smart batching
-    apiRateLimit: 100,                // Optional: target 100 req/s
-    minConcurrency: 2,                // Don't go below 2 concurrent
-    maxConcurrencyLimit: 20,          // Don't exceed 20 concurrent
-    continueOnError: true,            // Keep processing on errors
-    onConcurrencyChange: (newValue, reason) => {
-      console.log(`Concurrency changed to ${newValue}: ${reason}`);
-    },
-  },
-);
-
-console.log(`Processed ${result.summary.succeeded}/${result.summary.total} items`);
-```
-
-#### Configuration Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `adaptiveConcurrency` | boolean | `true` | Enable adaptive concurrency adjustment |
-| `apiRateLimit` | number | auto | Target API rate limit (requests/second) |
-| `minConcurrency` | number | `1` | Minimum concurrent requests |
-| `maxConcurrencyLimit` | number | `20` | Maximum concurrent requests |
-| `continueOnError` | boolean | `true` | Continue processing if some items fail |
-| `onConcurrencyChange` | function | - | Callback when concurrency changes |
-| `onProgress` | function | - | Callback for progress updates |
-
-#### Performance Benefits
-
-- **Faster Processing**: Automatically finds optimal concurrency
-- **Prevents Rate Limiting**: Backs off before hitting API limits
-- **Self-Tuning**: Adapts to API performance in real-time
-- **Resilient**: Recovers from temporary rate limit errors
-
-#### Standard vs Smart Batching
-
-```typescript
-// Standard batching (fixed concurrency)
-import { batchProcessor } from './utils/helpers/batch-processor.js';
-const result = await batchProcessor.processBatch(items, processor, {
-  maxConcurrent: 5,  // Always 5, never adjusts
-});
-
-// Smart batching (adaptive concurrency)
-import { smartBatchProcessor } from './utils/helpers/batch-processor.js';
-const result = await smartBatchProcessor.processBatchSmart(items, processor, {
-  adaptiveConcurrency: true,  // Automatically adjusts 1-20
-  maxConcurrencyLimit: 20,
-});
-```
-
-## Development
-
-### Project Structure
-
-```
-src/
-├── api/                      # LogicMonitor API integration
-│   ├── client.ts             # HTTP client for LM REST API
-│   ├── handlers.ts           # MCP tool request handlers
-│   └── tools.ts              # MCP tool definitions
-├── servers/                  # MCP server implementations
-│   ├── stdio-server.ts       # STDIO transport (main)
-│   ├── http-server.ts        # HTTP/SSE with OAuth
-│   └── multi-transport-server.ts  # Advanced server
-└── utils/                    # Shared utilities
-    ├── core/                 # Core infrastructure
-    │   ├── cli-config.ts     # CLI configuration parser
-    │   ├── lm-error.ts       # Error handling
-    │   └── rate-limiter.ts   # Rate limiting
-    └── helpers/              # Helper utilities
-        ├── batch-processor.ts  # Batch operations
-        └── filters.ts        # Filter formatting
-```
-
-### Scripts
-
-```bash
-# Development
-npm run dev          # Watch mode with auto-rebuild
-npm run build        # Build TypeScript to JavaScript
-npm run lint         # Run ESLint
-
-# Running servers
-npm start            # STDIO server (default)
-npm run start:http   # HTTP/SSE server with OAuth
-npm run start:multi  # Multi-transport server
-
-# Testing
-npm test             # Run all tests
-npm run test:watch   # Run tests in watch mode
-npm run test:coverage # Run tests with coverage report
-npm run inspect      # Run with MCP inspector
-```
-
-**Test Coverage:** See [TEST_COVERAGE.md](TEST_COVERAGE.md) for detailed test coverage report including:
-- Unit test coverage (40 tests, 3.51% code coverage)
-- Integration test results (58/63 MCP tools passing, 92.1% success rate)
-- Testing roadmap and improvement plans
-
-
-### Adding New Tools
-
-1. Add API method to `src/api/client.ts`
-2. Add tool handler to `src/api/handlers.ts`
-3. Add tool definition to `src/api/tools.ts`
-4. Rebuild and test
-
-See [src/README.md](src/README.md) for detailed development guidelines.
-
-## Environment Variables Reference
-
-See [env.example](env.example) for a complete list of configuration options.
-
-### Essential Variables
-
-```bash
-# Required
-LM_COMPANY=mycompany
-LM_BEARER_TOKEN=your-bearer-token
-
-# Transport (optional)
-MCP_TRANSPORT=stdio
-MCP_ADDRESS=localhost:3000
-
-# Security (optional)
-MCP_READ_ONLY=false
-MCP_DISABLE_SEARCH=false
-
-# Logging (optional)
-MCP_DEBUG=false
-MCP_LOG_FORMAT=human
-MCP_LOG_LEVEL=info
-```
-
-## Error Handling
-
-The server provides structured error messages with actionable suggestions to help troubleshoot issues quickly.
-
-### Enhanced Error Messages
-
-All errors include:
-- **Error Code**: Machine-readable error code (e.g., `DEVICE_CREATE_FAILED`)
-- **Message**: Human-readable error description
-- **Details**: Context about what went wrong
-- **Suggestions**: Actionable steps to resolve the issue
-
-### Example Error Output
-
-```
-Error: Failed to create device
-
-Details:
-{
-  "deviceName": "web-server-01",
-  "collectorId": 123,
-  "httpStatus": 400,
-  "apiError": "Collector not found"
-}
-
-Suggestions:
-  1. Verify the collector ID exists and is active
-  2. Check if the device name is unique
-  3. Ensure you have permissions to create devices
-  4. Verify the host group path exists
-  5. Check if all required properties are provided
-```
-
-### Common Error Codes
-
-| Code | Description | Common Causes |
-|------|-------------|---------------|
-| `AUTHENTICATION_FAILED` | Invalid credentials | Expired token, wrong bearer token |
-| `DEVICE_CREATE_FAILED` | Device creation error | Invalid collector ID, duplicate name |
-| `DEVICE_NOT_FOUND` | Device doesn't exist | Wrong ID, device deleted |
-| `RATE_LIMIT_EXCEEDED` | Too many API calls | High request frequency |
-| `INVALID_PARAMETERS` | Invalid request data | Missing required fields |
-
-### Error Suggestions by Category
-
-**Authentication Errors:**
-- Verify your `LM_BEARER_TOKEN` is valid and not expired
-- Check if the API token has the required permissions
-- Ensure your LogicMonitor account is active
-
-**Rate Limiting:**
-- Wait a few moments before retrying
-- Reduce the frequency of API calls
-- Use batch operations when possible
-- Contact LogicMonitor support to increase rate limits
-
-**Network Errors:**
-- Check your internet connection
-- Verify the LogicMonitor API is accessible
-- Check firewall rules
-- Verify the `LM_COMPANY` name is correct
-
 ## Security Considerations
 
 ### Read-Only Mode
@@ -829,7 +607,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 Enable specific tools:
 
 ```bash
-npm start -- --enabled-tools "list_devices,get_device"
+npm start -- --enabled-tools "list_resources,get_resource"
 ```
 
 Or check if read-only mode is excluding write operations:
