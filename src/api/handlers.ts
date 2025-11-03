@@ -14,7 +14,7 @@ import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../utils
 const DEFAULT_DEVICE_FIELDS = [
   'id', 'displayName', 'name', 'hostGroupIds', 'preferredCollectorId',
   'hostStatus', 'alertStatus', 'alertStatusPriority', 'disableAlerting',
-  'customProperties', 'createdOn', 'updatedOn', 'sdtStatus', 'alertDisableStatus',
+  'customProperties', 'sdtStatus',
 ];
 
 const DEFAULT_ALERT_FIELDS = [
@@ -25,31 +25,31 @@ const DEFAULT_ALERT_FIELDS = [
 
 const DEFAULT_COLLECTOR_FIELDS = [
   'id', 'description', 'hostname', 'platform', 'status', 'numberOfHosts',
-  'createdOn', 'updatedOn', 'escalatingChainId', 'suppressAlertClear',
+  'escalatingChainId', 'suppressAlertClear',
 ];
 
 const DEFAULT_DATASOURCE_FIELDS = [
   'id', 'name', 'displayName', 'description', 'appliesTo', 'group',
-  'dataSourceType', 'collectMethod', 'technology', 'hasMultiInstances',
+  'dataSourceType', 'collectMethod', 'hasMultiInstances',
 ];
 
 const DEFAULT_DASHBOARD_FIELDS = [
-  'id', 'name', 'description', 'groupId', 'groupName', 'sharable',
-  'createdOn', 'updatedOn', 'widgetsConfigVersion', 'widgetTokens',
+  'id', 'name', 'description', 'groupId', 'groupName',
+  'widgetsConfigVersion', 'widgetTokens',
 ];
 
 const DEFAULT_WEBSITE_FIELDS = [
   'id', 'name', 'description', 'type', 'schema', 'domain', 'isInternal',
-  'status', 'stopMonitoring', 'overallAlertLevel', 'createdOn',
+  'status', 'stopMonitoring', 'overallAlertLevel',
 ];
 
 const DEFAULT_USER_FIELDS = [
   'id', 'username', 'email', 'firstName', 'lastName', 'roles',
-  'status', 'createdOn', 'lastAction', 'twoFAEnabled',
+  'status', 'lastAction',
 ];
 
 const DEFAULT_ROLE_FIELDS = [
-  'id', 'name', 'description', 'requireEULA', 'roleGroupId',
+  'id', 'name', 'description', 'roleGroupId',
   'customHelpLabel', 'customHelpURL', 'privileges',
 ];
 
@@ -60,12 +60,12 @@ const DEFAULT_SDT_FIELDS = [
 
 const DEFAULT_DEVICE_GROUP_FIELDS = [
   'id', 'name', 'fullPath', 'description', 'parentId', 'numOfHosts',
-  'numOfDirectDevices', 'createdOn', 'disableAlerting', 'alertStatus',
+  'numOfDirectDevices', 'disableAlerting', 'alertStatus',
 ];
 
 const DEFAULT_DASHBOARD_GROUP_FIELDS = [
   'id', 'name', 'description', 'parentId', 'numOfDashboards',
-  'fullPath', 'widgetCount',
+  'fullPath',
 ];
 
 const DEFAULT_WEBSITE_GROUP_FIELDS = [
@@ -88,18 +88,18 @@ const DEFAULT_DEVICE_PROPERTY_FIELDS = [
 ];
 
 const DEFAULT_API_TOKEN_FIELDS = [
-  'adminId', 'adminName', 'accessId', 'note', 'createdOn',
+  'adminId', 'adminName', 'accessId', 'note',
   'status', 'lastUsedOn',
 ];
 
 const DEFAULT_AUDIT_LOG_FIELDS = [
   'id', 'happenedOn', 'username', 'sessionId', 'ip',
-  'description', 'companyName', 'userId',
+  'description', 'userId',
 ];
 
 const DEFAULT_ACCESS_GROUP_FIELDS = [
-  'id', 'name', 'description', 'tenantId', 'createdOn',
-  'updatedOn', 'numOfDevices', 'numOfUsers',
+  'id', 'name', 'description', 'tenantId',
+  'numOfDevices', 'numOfUsers',
 ];
 
 /**
