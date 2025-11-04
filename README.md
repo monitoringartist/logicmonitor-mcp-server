@@ -445,12 +445,12 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 - `get_collector_group` - Get collector group details
 - `list_collector_versions` - List available collector versions
 - `list_netscans` - List network discovery scans
-- `get_netscan` - Get netscan details
+- `get_netscan` - Get NetScan details
 - `get_topology` - Get network topology information
 
 **Write Operations:**
-- `create_netscan` - Create network discovery scan
-- `update_netscan` - Modify netscan
+- `create_netscan` - Create NetScan
+- `update_netscan` - Modify NetScan
 - `delete_netscan` - Delete netscan
 
 ### Website Monitoring

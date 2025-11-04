@@ -65,7 +65,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By collector: filter:"preferredCollectorId:123" ' +
       '\n- Multiple conditions: filter:"hostStatus:alive,displayName\\~\\*web\\*" (comma = AND) ' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
-      '\n\n**Related tools:** "get_resource" (details), "search_resources" (simpler text search), "generate_resource_link" (get UI link).',
+      '\n\n**Related tools:** "get\\_resource" (details), "search\\_resources" (simpler text search), "generate\\_resource\\_link" (get UI link).',
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
@@ -86,12 +86,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete resource/device details including: displayName, IP/hostname, hostStatus, alertStatus, collector assignment, resource/device type, custom properties, applied datasources, group memberships, last data time, creation date. ' +
       '\n\n**When to use:** ' +
-      '\n- Get full details after finding resource/device ID via "list_resources"' +
+      '\n- Get full details after finding resource/device ID via "list\\_resources"' +
       '\n- Check resource/device configuration' +
       '\n- Verify collector assignment' +
       '\n- Review custom properties before updating' +
-      '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "generate_resource_link" (get UI link).',
+      '\n\n**Workflow:** Use "list\\_resources" or "search\\_resources" first to find the deviceId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_resource\\_datasources" (see what\'s monitored), "list\\_resource\\_properties" (view all properties), "generate\\_resource\\_link" (get UI link).',
     annotations: {
       title: 'Get resource/device details',
       readOnlyHint: true,
@@ -115,7 +115,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch creation** ' +
       '\n\n**Single resource/device mode (most common):** ' +
-      '\n- Required: displayName (friendly name), name (IP/hostname), preferredCollectorId (from "list_collectors")' +
+      '\n- Required: displayName (friendly name), name (IP/hostname), preferredCollectorId (from "list\\_collectors")' +
       '\n- Optional: hostGroupIds (folder location), description, disableAlerting, customProperties' +
       '\n- Example: Add "prod-web-01" at 192.168.1.100 to Production folder monitored by collector 5' +
       '\n\n**Batch mode (for multiple resources/devices):** ' +
@@ -129,16 +129,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Bulk import from CMDB/inventory' +
       '\n- Auto-discovery integration' +
       '\n\n**Before creating:** ' +
-      '\n- Use "list_collectors" to find available collectorId (must be alive/healthy)' +
-      '\n- Use "list_resource_groups" to find hostGroupIds for folder placement' +
+      '\n- Use "list\\_collectors" to find available collectorId (must be alive/healthy)' +
+      '\n- Use "list\\_resource\\_groups" to find hostGroupIds for folder placement' +
       '\n- Verify IP/hostname is reachable from collector' +
       '\n\n**Custom properties examples:** ' +
       '\n- Environment: {name: "env", value: "production"}' +
       '\n- Owner: {name: "owner", value: "platform-team"}' +
       '\n- Credentials: {name: "ssh.user", value: "monitoring"} (for authentication)' +
       '\n\n**Performance tip:** For >50 resources/devices, use batch mode to avoid rate limits. ' +
-      '\n\n**After creation:** Use "list_resources" to verify resource/device was added, check hostStatus. ' +
-      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find folder), "update_resource" (modify), "generate_resource_link" (get URL).',
+      '\n\n**After creation:** Use "list\\_resources" to verify resource/device was added, check hostStatus. ' +
+      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_resource\\_groups" (find folder), "update\\_resource" (modify), "generate\\_resource\\_link" (get URL).',
     annotations: {
       title: 'Add resource/device(s)',
       readOnlyHint: false,
@@ -233,7 +233,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch update** ' +
       '\n\n**Single resource/device mode:** ' +
-      '\n- Required: deviceId (from "list_resources" or "search_resources")' +
+      '\n- Required: deviceId (from "list\\_resources" or "search\\_resources")' +
       '\n- Optional: displayName, description, disableAlerting, preferredCollectorId, customProperties' +
       '\n- opType: "replace" (default) overwrites all, "add" merges with existing' +
       '\n\n**Batch mode:** ' +
@@ -253,8 +253,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**opType explained:** ' +
       '\n- "replace": Overwrites entire field (careful with customProperties!)' +
       '\n- "add": Merges/appends to existing values (safer for properties)' +
-      '\n\n**Workflow:** First find deviceId using "list_resources" or "search_resources", then update. ' +
-      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (verify before update), "update_resource_property" (simpler property updates).',
+      '\n\n**Workflow:** First find deviceId using "list\\_resources" or "search\\_resources", then update. ' +
+      '\n\n**Related tools:** "list\\_resources" (find device), "get\\_resource" (verify before update), "update\\_resource\\_property" (simpler property updates).',
     annotations: {
       title: 'Update resource/device(s)',
       readOnlyHint: false,
@@ -354,7 +354,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- This action CANNOT be undone' +
       '\n\n**Two modes: Single resource/device OR Batch deletion** ' +
       '\n\n**Single resource/device mode:** ' +
-      '\n- Required: deviceId (from "list_resources")' +
+      '\n- Required: deviceId (from "list\\_resources")' +
       '\n- Optional: deleteFromSystem (true = complete removal including history)' +
       '\n\n**Batch mode:** ' +
       '\n- Provide deviceIds array [123, 456, 789]' +
@@ -366,16 +366,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Remove duplicate entries' +
       '\n- Bulk decommissioning' +
       '\n\n**⚠️ CONSIDER ALTERNATIVES FIRST:** ' +
-      '\n- Need temporary suppression? Use "create_resource_sdt" instead (reversible!)' +
-      '\n- Need to stop monitoring but keep history? Use "update_resource" with disableAlerting:true' +
-      '\n- Moving to different collector? Use "update_resource" to change collector' +
+      '\n- Need temporary suppression? Use "create\\_resource\\_sdt" instead (reversible!)' +
+      '\n- Need to stop monitoring but keep history? Use "update\\_resource" with disableAlerting:true' +
+      '\n- Moving to different collector? Use "update\\_resource" to change collector' +
       '\n\n**Best practice workflow:** ' +
-      '\n- Use "get_resource" to verify you have correct resource/device' +
+      '\n- Use "get\\_resource" to verify you have correct resource/device' +
       '\n- Consider if SDT or disableAlerting is better option' +
       '\n- If deletion necessary, delete resource/device' +
       '\n- No verification step possible (irreversible)' +
       '\n\n**Batch deletion tip:** For >50 resources/devices, use batch mode with continueOnError:true to handle any failures gracefully. ' +
-      '\n\n**Related tools:** "create_resource_sdt" (temporary alternative), "update_resource" (disable without deleting), "list_resources" (find resource/device to delete).',
+      '\n\n**Related tools:** "create\\_resource\\_sdt" (temporary alternative), "update\\_resource" (disable without deleting), "list\\_resources" (find resource/device to delete).',
     annotations: {
       title: 'Delete resource/device(s)',
       readOnlyHint: false,
@@ -441,7 +441,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Root groups: filter:"parentId:1"' +
       '\n- Non-empty: filter:"numOfDirectDevices>0"' +
       '\n\n**Groups inherit properties:** Custom properties set on group are inherited by all resource/device in that group (useful for credentials, location tags). ' +
-      '\n\n**Related tools:** "get_resource_group" (details), "create_resource_group" (create new), "list_resource_group_properties" (group properties).',
+      '\n\n**Related tools:** "get\\_resource\\_group" (details), "create\\_resource\\_group" (create new), "list\\_resource\\_group\\_properties" (group properties).',
     annotations: {
       title: 'List resource/device groups',
       readOnlyHint: true,
@@ -478,8 +478,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Credentials: {name: "ssh.user", value: "monitoring"}' +
       '\n- Environment tags: {name: "env", value: "production"}' +
       '\n- Owner: {name: "team", value: "platform-engineering"}' +
-      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, then use this tool for complete details including inherited properties. ' +
-      '\n\n**Related tools:** "list_resource_groups" (find groups), "create_resource_group" (create new), "list_resources" (devices in group).',
+      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, then use this tool for complete details including inherited properties. ' +
+      '\n\n**Related tools:** "list\\_resource\\_groups" (find groups), "create\\_resource\\_group" (create new), "list\\_resources" (devices in group).',
     annotations: {
       title: 'Get resource/device group details',
       readOnlyHint: true,
@@ -541,8 +541,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- appliesTo: "isWindows()" - All Windows resource/device' +
       '\n- appliesTo: "system.hostname =\\~ \\"\\*prod\\*\\"" - Hostnames containing "prod"' +
       '\n- appliesTo: "hasCategory(\\"AWS/EC2\\")" - All AWS EC2 instances' +
-      '\n\n**Workflow:** Create group hierarchy first, then add resource/device to groups via "create_resource" or move existing resource/device via "update_resource". ' +
-      '\n\n**Related tools:** "list_resource_groups" (browse hierarchy), "update_resource_group" (modify), "delete_resource_group" (remove empty groups).',
+      '\n\n**Workflow:** Create group hierarchy first, then add resource/device to groups via "create\\_resource" or move existing resource/device via "update\\_resource". ' +
+      '\n\n**Related tools:** "list\\_resource\\_groups" (browse hierarchy), "update\\_resource\\_group" (modify), "delete\\_resource\\_group" (remove empty groups).',
     annotations: {
       title: 'Create resource/device group',
       readOnlyHint: false,
@@ -594,7 +594,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Modify dynamic membership (appliesTo)' +
       '\n- Move group to different parent' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Group ID to update (from "list_resource_groups")' +
+      '\n- groupId: Group ID to update (from "list\\_resource\\_groups")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name' +
       '\n- description: New description' +
@@ -617,9 +617,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Devices inherit properties - changes propagate immediately' +
       '\n- Moving group (changing parentId) moves all resource/device and subgroups with it' +
       '\n- Changing appliesTo can cause resource/device to auto-add or auto-remove' +
-      '\n\n**Best practice:** Use "get_resource_group" first to review current configuration and see which resource/device will be affected. ' +
-      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, review with "get_resource_group", then update. ' +
-      '\n\n**Related tools:** "get_resource_group" (review before update), "list_resources" (see affected resources/devices), "list_resource_groups" (find group).',
+      '\n\n**Best practice:** Use "get\\_resource\\_group" first to review current configuration and see which resource/device will be affected. ' +
+      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, review with "get\\_resource\\_group", then update. ' +
+      '\n\n**Related tools:** "get\\_resource\\_group" (review before update), "list\\_resources" (see affected resources/devices), "list\\_resource\\_groups" (find group).',
     annotations: {
       title: 'Update resource/device group',
       readOnlyHint: false,
@@ -668,13 +668,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Remove temporary groupings' +
       '\n- Consolidate duplicate groups' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Group ID to delete (from "list_resource_groups")' +
+      '\n- groupId: Group ID to delete (from "list\\_resource\\_groups")' +
       '\n\n**Optional parameters:** ' +
       '\n- deleteHardFlag: true = delete even if has resource/device (moves resource/device to root), false = fail if not empty (safer, default)' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get_resource_group" to see how many resource/device and subgroups' +
-      '\n- Use "list_resources" with filter to see which resource/device are in group' +
-      '\n- Move resource/device to another group via "update_resource" if needed' +
+      '\n- Use "get\\_resource\\_group" to see how many resource/device and subgroups' +
+      '\n- Use "list\\_resources" with filter to see which resource/device are in group' +
+      '\n- Move resource/device to another group via "update\\_resource" if needed' +
       '\n- Delete or move subgroups first' +
       '\n\n**Common workflow for cleanup:** ' +
       '\n\n**Safe deletion (empty group only):** ' +
@@ -691,8 +691,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Dashboards filtering by group may show no data' +
       '\n- Reports scoped to this group need updating' +
       '\n\n**Best practice:** Move resource/device to new group before deleting old group to avoid losing custom properties. ' +
-      '\n\n**Workflow:** Use "get_resource_group" to verify empty, then delete. Or move resource/device first via "update_resource". ' +
-      '\n\n**Related tools:** "get_resource_group" (check before delete), "list_resources" (find resource/device in group), "update_resource" (move resource/device first).',
+      '\n\n**Workflow:** Use "get\\_resource\\_group" to verify empty, then delete. Or move resource/device first via "update\\_resource". ' +
+      '\n\n**Related tools:** "get\\_resource\\_group" (check before delete), "list\\_resources" (find resource/device in group), "update\\_resource" (move resource/device first).',
     annotations: {
       title: 'Delete resource/device group',
       readOnlyHint: false,
@@ -734,7 +734,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Recent alerts: filter:"startEpoch>1730851200" (epoch seconds)' +
       '\n- Combined: filter:"severity:critical,acked:false" (AND logic)' +
       '\n\n**Important:** Alert API does NOT support OR operator (||). Use comma for AND only. For complex queries, make multiple calls. ' +
-      '\n\n**Related tools:** "get_alert" (full details), "acknowledge_alert" (acknowledge), "add_alert_note" (add notes), "search_alerts" (text search), "generate_alert_link" (get URL).',
+      '\n\n**Related tools:** "get\\_alert" (full details), "acknowledge\\_alert" (acknowledge), "add\\_alert\\_note" (add notes), "search\\_alerts" (text search), "generate\\_alert\\_link" (get URL).',
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
@@ -760,12 +760,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific alert in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete alert details: alert message, severity, threshold crossed, current value, alert history, escalation chain triggered, acknowledgement details, resource details, datasource/datapoint info, alert rule applied. ' +
       '\n\n**When to use:** ' +
-      '\n- Investigate specific alert after getting ID from "list_alerts"' +
+      '\n- Investigate specific alert after getting ID from "list\\_alerts"' +
       '\n- Check threshold and current values' +
       '\n- Review alert history and escalation' +
       '\n- Get context before acknowledging' +
-      '\n\n**Workflow:** First use "list_alerts" to find the alertId, then use this tool for complete investigation details. ' +
-      '\n\n**Related tools:** "acknowledge_alert" (acknowledge alert), "add_alert_note" (document findings), "generate_alert_link" (share with team).',
+      '\n\n**Workflow:** First use "list\\_alerts" to find the alertId, then use this tool for complete investigation details. ' +
+      '\n\n**Related tools:** "acknowledge\\_alert" (acknowledge alert), "add\\_alert\\_note" (document findings), "generate\\_alert\\_link" (share with team).',
     annotations: {
       title: 'Get alert details',
       readOnlyHint: true,
@@ -804,12 +804,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Before scheduling maintenance' +
       '\n- During incident response' +
       '\n\n**Required parameters:** ' +
-      '\n- alertId: Alert ID from "list_alerts" or "search_alerts"' +
+      '\n- alertId: Alert ID from "list\\_alerts" or "search\\_alerts"' +
       '\n- comment: REQUIRED - Explain what you\'re doing (e.g., "Investigating high CPU. Checking processes.")' +
       '\n\n**Best practices:** ' +
       '\n- Acknowledge immediately when starting investigation' +
       '\n- Add meaningful comment for team communication' +
-      '\n- Use "add_alert_note" to document findings as you investigate' +
+      '\n- Use "add\\_alert\\_note" to document findings as you investigate' +
       '\n- If false alarm, acknowledge with explanation' +
       '\n\n**Comment examples:** ' +
       '\n- "Investigating. Appears to be batch job. Monitoring."' +
@@ -817,13 +817,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Working on fix. ETA 30 minutes. - John"' +
       '\n- "Escalated to network team. Ticket INC-12345."' +
       '\n\n**Workflow for alert handling:** ' +
-      '\n- Use "list_alerts" with filter:"acked:false" to find unacked alerts' +
+      '\n- Use "list\\_alerts" with filter:"acked:false" to find unacked alerts' +
       '\n- Use this tool to acknowledge (stops notifications)' +
       '\n- Investigate issue' +
-      '\n- Use "add_alert_note" to document findings and actions' +
+      '\n- Use "add\\_alert\\_note" to document findings and actions' +
       '\n- Resolve underlying issue (alert auto-clears when metrics normalize)' +
       '\n\n**Note:** If alert continues (still above threshold), it stays acknowledged until cleared. New instances = new alerts. ' +
-      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (investigate), "add_alert_note" (document), "generate_alert_link" (share).',
+      '\n\n**Related tools:** "list\\_alerts" (find alerts), "get\\_alert" (investigate), "add\\_alert\\_note" (document), "generate\\_alert\\_link" (share).',
     annotations: {
       title: 'Acknowledge alert',
       readOnlyHint: false,
@@ -861,7 +861,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Note false positives' +
       '\n- Link to tickets/incidents' +
       '\n\n**Required parameters:** ' +
-      '\n- alertId: Alert ID from "list_alerts"' +
+      '\n- alertId: Alert ID from "list\\_alerts"' +
       '\n- note: Your documentation/findings' +
       '\n\n**Use cases and examples:** ' +
       '\n\n**During investigation:** ' +
@@ -883,11 +883,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Document "why false alarm" for future reference' +
       '\n- Use clear, actionable language' +
       '\n\n**Workflow:** ' +
-      '\n- Acknowledge alert with "acknowledge_alert" (stops notifications)' +
+      '\n- Acknowledge alert with "acknowledge\\_alert" (stops notifications)' +
       '\n- Add initial note: "Starting investigation"' +
       '\n- Add notes as you discover findings' +
       '\n- Add final note with resolution or next steps' +
-      '\n\n**Related tools:** "acknowledge_alert" (first step), "get_alert" (view existing notes), "list_alerts" (find alerts).',
+      '\n\n**Related tools:** "acknowledge\\_alert" (first step), "get\\_alert" (view existing notes), "list\\_alerts" (find alerts).',
     annotations: {
       title: 'Add alert note',
       readOnlyHint: false,
@@ -926,8 +926,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By platform: filter:"platform:Linux" or filter:"platform:Windows"' +
       '\n- By name: filter:"description\\~\\*prod\\*"' +
       '\n- Low capacity: filter:"numberOfHosts<100"' +
-      '\n\n**Before creating resources/devices:** Use this tool to find collectorId for the "preferredCollectorId" parameter in "create_resource". ' +
-      '\n\n**Related tools:** "get_collector" (details), "list_collector_groups" (browse groups), "list_collector_versions" (check updates).',
+      '\n\n**Before creating resources/devices:** Use this tool to find collectorId for the "preferredCollectorId" parameter in "create\\_resource". ' +
+      '\n\n**Related tools:** "get\\_collector" (details), "list\\_collector\\_groups" (browse groups), "list\\_collector\\_versions" (check updates).',
     annotations: {
       title: 'List collectors',
       readOnlyHint: true,
@@ -957,10 +957,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- status: "alive" (healthy) vs "dead" (offline/problem)' +
       '\n- numberOfHosts: How many resource/device this collector monitors (capacity planning)' +
       '\n- freeDiskSpace: Disk space available (needs GB for data buffering)' +
-      '\n- build: Version number (compare with "list_collector_versions" for updates)' +
+      '\n- build: Version number (compare with "list\\_collector\\_versions" for updates)' +
       '\n- lastHeartbeatTime: Recent = healthy, old = potential issue' +
-      '\n\n**Workflow:** Use "list_collectors" to find collectorId, then use this tool for detailed health check. ' +
-      '\n\n**Related tools:** "list_collectors" (find collector), "list_collector_versions" (check updates), "list_resources" (see assigned resources/devices).',
+      '\n\n**Workflow:** Use "list\\_collectors" to find collectorId, then use this tool for detailed health check. ' +
+      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_collector\\_versions" (check updates), "list\\_resources" (see assigned resources/devices).',
     annotations: {
       title: 'Get collector details',
       readOnlyHint: true,
@@ -997,7 +997,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Database: filter:"name\\~\\*MySQL\\*" or filter:"name\\~\\*SQL_Server\\*"' +
       '\n- Network: filter:"name\\~\\*Cisco\\*" or filter:"name\\~\\*SNMP\\*"' +
       '\n\n**Examples:** AWS_EC2 (monitors EC2 instances), SNMP_Network_Interfaces (network stats), WinCPU (Windows CPU), Linux_SSH (Linux via SSH). ' +
-      '\n\n**Related tools:** "get_datasource" (details), "list_resource_datasources" (see what\'s applied to specific resource/device).',
+      '\n\n**Related tools:** "get\\_datasource" (details), "list\\_resource\\_datasources" (see what\'s applied to specific resource/device).',
     annotations: {
       title: 'List datasources',
       readOnlyHint: true,
@@ -1033,8 +1033,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- isWindows() - Only Windows resource/device' +
       '\n- system.devicetype == "server" - Only servers' +
       '\n- hasCategory("AWS/EC2") - Only AWS EC2 instances' +
-      '\n\n**Workflow:** Use "list_datasources" to find dataSourceId, then use this tool to understand how it works. ' +
-      '\n\n**Related tools:** "list_datasources" (find datasource), "list_resource_datasources" (see which resource/device use it).',
+      '\n\n**Workflow:** Use "list\\_datasources" to find dataSourceId, then use this tool to understand how it works. ' +
+      '\n\n**Related tools:** "list\\_datasources" (find datasource), "list\\_resource\\_datasources" (see which resource/device use it).',
     annotations: {
       title: 'Get datasource details',
       readOnlyHint: true,
@@ -1069,10 +1069,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'Device "web-server-01" has datasource "WinVolumeUsage-" → instances: C:, D:, E: (each disk is an instance) ' +
       'Device "router-01" has datasource "SNMP_Network_Interfaces" → instances: GigabitEthernet0/1, GigabitEthernet0/2 (each interface is an instance) ' +
       '\n\n**Complete workflow to get metrics:** ' +
-      '\n- Use "list_resource_datasources" to get deviceDataSourceId' +
+      '\n- Use "list\\_resource\\_datasources" to get deviceDataSourceId' +
       '\n- Use this tool to list instances and get instanceId' +
-      '\n- Use "get_resource_instance_data" with instanceId to get actual metrics' +
-      '\n\n**Related tools:** "list_resource_datasources" (first step), "get_resource_instance_data" (get metrics).',
+      '\n- Use "get\\_resource\\_instance\\_data" with instanceId to get actual metrics' +
+      '\n\n**Related tools:** "list\\_resource\\_datasources" (first step), "get\\_resource\\_instance\\_data" (get metrics).',
     annotations: {
       title: 'List datasource instances',
       readOnlyHint: true,
@@ -1108,18 +1108,18 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Export metrics for analysis' +
       '\n- Build custom dashboards/reports' +
       '\n\n**Required workflow (3 steps):** ' +
-      '\n- Use "list_resource_datasources" → get deviceDataSourceId for datasource (e.g., WinCPU)' +
-      '\n- Use "list_resource_instances" → get instanceId for specific instance (e.g., CPU Core 0)' +
+      '\n- Use "list\\_resource\\_datasources" → get deviceDataSourceId for datasource (e.g., WinCPU)' +
+      '\n- Use "list\\_resource\\_instances" → get instanceId for specific instance (e.g., CPU Core 0)' +
       '\n- Use this tool → get actual metric values for that instance' +
       '\n\n**Parameters:** ' +
-      '\n- deviceId: Device ID from "get_resource" or "list_resources"' +
-      '\n- deviceDataSourceId: From "get_resource_datasource" or "list_resource_datasources"' +
-      '\n- instanceId: From "list_resource_instances"' +
+      '\n- deviceId: Device ID from "get\\_resource" or "list\\_resources"' +
+      '\n- deviceDataSourceId: From "get\\_resource\\_datasource" or "list\\_resource\\_datasources"' +
+      '\n- instanceId: From "list\\_resource\\_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
       '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
       '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
-      '\n\n**Related tools:** "list_resource_datasources", "list_resource_instances".',
+      '\n\n**Related tools:** "list\\_resource\\_datasources", "list\\_resource\\_instances".',
     annotations: {
       title: 'Get time-series metric data',
       readOnlyHint: true,
@@ -1176,9 +1176,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By name: filter:"name\\~\\*AWS\\*" (find all AWS dashboards)' +
       '\n- By group: filter:"groupId:5" or filter:"groupName\\~\\*Cloud\\*"' +
       '\n- By owner: filter:"owner:john.doe"' +
-      '\n\n**Next step:** Use "generate_dashboard_link" with the dashboard ID to get the full clickable URL for sharing. ' +
-      '\n\n**Tip:** Dashboards are organized in groups. Use "list_dashboard_groups" to browse the hierarchy. ' +
-      '\n\n**Related tools:** "get_dashboard" (details), "generate_dashboard_link" (get URL), "list_dashboard_groups" (browse hierarchy).',
+      '\n\n**Next step:** Use "generate\\_dashboard\\_link" with the dashboard ID to get the full clickable URL for sharing. ' +
+      '\n\n**Tip:** Dashboards are organized in groups. Use "list\\_dashboard\\_groups" to browse the hierarchy. ' +
+      '\n\n**Related tools:** "get\\_dashboard" (details), "generate\\_dashboard\\_link" (get URL), "list\\_dashboard\\_groups" (browse hierarchy).',
     annotations: {
       title: 'List dashboards',
       readOnlyHint: true,
@@ -1214,8 +1214,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Export dashboard configuration for backup' +
       '\n- Audit which resources/devices/metrics are being visualized' +
       '\n- Document dashboard purpose and widgets' +
-      '\n\n**Workflow:** Use "list_dashboards" to find dashboardId, then get details, then "generate_dashboard_link" to get shareable URL. ' +
-      '\n\n**Related tools:** "list_dashboards" (find dashboard), "generate_dashboard_link" (get URL), "update_dashboard" (modify), "list_dashboard_groups" (browse folders).',
+      '\n\n**Workflow:** Use "list\\_dashboards" to find dashboardId, then get details, then "generate\\_dashboard\\_link" to get shareable URL. ' +
+      '\n\n**Related tools:** "list\\_dashboards" (find dashboard), "generate\\_dashboard\\_link" (get URL), "update\\_dashboard" (modify), "list\\_dashboard\\_groups" (browse folders).',
     annotations: {
       title: 'Get dashboard details',
       readOnlyHint: true,
@@ -1247,7 +1247,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Required parameters:** ' +
       '\n- name: Dashboard name (e.g., "Production Infrastructure", "Executive Summary")' +
       '\n\n**Optional parameters:** ' +
-      '\n- groupId: Dashboard folder ID (from "list_dashboard_groups", use 1 for root)' +
+      '\n- groupId: Dashboard folder ID (from "list\\_dashboard\\_groups", use 1 for root)' +
       '\n- description: Dashboard purpose/audience' +
       '\n- widgetsConfig: JSON array of widget configurations (graphs, alerts, gauges, maps)' +
       '\n- sharable: true (public link) or false (private, login required)' +
@@ -1255,8 +1255,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Dashboard workflow:** ' +
       '\n- Create empty dashboard with name and folder' +
       '\n- Use LogicMonitor UI to add widgets visually (easier than JSON)' +
-      '\n- Use "get_dashboard" to export widgetsConfig for cloning' +
-      '\n- Use "generate_dashboard_link" to get shareable URL' +
+      '\n- Use "get\\_dashboard" to export widgetsConfig for cloning' +
+      '\n- Use "generate\\_dashboard\\_link" to get shareable URL' +
       '\n\n**Common dashboard types:** ' +
       '\n\n**NOC/SOC Dashboard:** ' +
       '\n- Alert widgets showing critical alerts' +
@@ -1278,9 +1278,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Use groups to organize dashboards by team/function' +
       '\n- Make critical dashboards "sharable" for NOC displays' +
       '\n- Use widgetTokens for dynamic filtering (##defaultDeviceGroup##)' +
-      '\n- Clone existing dashboards using "get_dashboard" widgetsConfig' +
-      '\n\n**After creation:** Use "generate_dashboard_link" to get the full URL for sharing or embedding. ' +
-      '\n\n**Related tools:** "generate_dashboard_link" (get URL), "list_dashboards" (browse existing), "get_dashboard" (export for cloning), "update_dashboard" (modify).',
+      '\n- Clone existing dashboards using "get\\_dashboard" widgetsConfig' +
+      '\n\n**After creation:** Use "generate\\_dashboard\\_link" to get the full URL for sharing or embedding. ' +
+      '\n\n**Related tools:** "generate\\_dashboard\\_link" (get URL), "list\\_dashboards" (browse existing), "get\\_dashboard" (export for cloning), "update\\_dashboard" (modify).',
     annotations: {
       title: 'Create dashboard',
       readOnlyHint: false,
@@ -1321,7 +1321,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Change sharing settings' +
       '\n- Bulk update widgets (advanced)' +
       '\n\n**Required parameters:** ' +
-      '\n- id: Dashboard ID (from "list_dashboards")' +
+      '\n- id: Dashboard ID (from "list\\_dashboards")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New dashboard name' +
       '\n- description: Updated description' +
@@ -1342,10 +1342,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'Updating widgetsConfig directly is complex (large JSON). Easier to: ' +
       '\n- Modify widgets in LogicMonitor UI' +
       '\n- Use API only for name/description/folder changes' +
-      '\n- Or use "get_dashboard" to export, modify JSON, then update' +
-      '\n\n**Best practice:** Use "get_dashboard" first to see current configuration, then update specific fields. ' +
-      '\n\n**After update:** Use "generate_dashboard_link" to get updated URL if needed. ' +
-      '\n\n**Related tools:** "get_dashboard" (review before update), "list_dashboards" (find dashboard), "generate_dashboard_link" (get new URL).',
+      '\n- Or use "get\\_dashboard" to export, modify JSON, then update' +
+      '\n\n**Best practice:** Use "get\\_dashboard" first to see current configuration, then update specific fields. ' +
+      '\n\n**After update:** Use "generate\\_dashboard\\_link" to get updated URL if needed. ' +
+      '\n\n**Related tools:** "get\\_dashboard" (review before update), "list\\_dashboards" (find dashboard), "generate\\_dashboard\\_link" (get new URL).',
     annotations: {
       title: 'Update dashboard',
       readOnlyHint: false,
@@ -1386,11 +1386,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Delete test/temporary dashboards' +
       '\n- Consolidate similar dashboards' +
       '\n\n**Required parameters:** ' +
-      '\n- id: Dashboard ID to delete (from "list_dashboards")' +
+      '\n- id: Dashboard ID to delete (from "list\\_dashboards")' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get_dashboard" to verify it\'s the correct dashboard' +
+      '\n- Use "get\\_dashboard" to verify it\'s the correct dashboard' +
       '\n- Check if dashboard is widely shared/used' +
-      '\n- Consider exporting configuration for backup (via "get_dashboard")' +
+      '\n- Consider exporting configuration for backup (via "get\\_dashboard")' +
       '\n- Notify users if it\'s a team dashboard' +
       '\n\n**Impact of deletion:** ' +
       '\n- NOC/SOC displays showing this dashboard will break' +
@@ -1401,10 +1401,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Rename to "ARCHIVED - [name]" instead of deleting' +
       '\n- Move to "Archived" folder' +
       '\n- Make private (sharable: false) instead of deleting' +
-      '\n- Export configuration via "get_dashboard" before deleting' +
+      '\n- Export configuration via "get\\_dashboard" before deleting' +
       '\n\n**Best practice:** Export dashboard configuration before deletion in case you need to recreate it. ' +
-      '\n\n**Workflow:** Use "get_dashboard" to backup/verify, then delete. ' +
-      '\n\n**Related tools:** "get_dashboard" (backup before delete), "list_dashboards" (find dashboard), "update_dashboard" (archive instead of delete).',
+      '\n\n**Workflow:** Use "get\\_dashboard" to backup/verify, then delete. ' +
+      '\n\n**Related tools:** "get\\_dashboard" (backup before delete), "list\\_dashboards" (find dashboard), "update\\_dashboard" (archive instead of delete).',
     annotations: {
       title: 'Delete dashboard',
       readOnlyHint: false,
@@ -1427,15 +1427,15 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'generate_dashboard_link',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard. ' +
-      '\n\n**Returns:** Complete dashboard URL with full group hierarchy path, dashboard details (id, name, groupName), and group path array. URL pattern: https://{company}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{path},dashboards-{id}' +
+      `\n\n**Returns:** Complete dashboard URL with full group hierarchy path, dashboard details (id, name, groupName), and group path array. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{path},dashboards-{id}` +
       '\n\n**When to use:** ' +
       '\n- Share dashboard links in Slack/email/tickets' +
       '\n- Create documentation with direct dashboard links' +
       '\n- Embed dashboard URLs in runbooks' +
       '\n- Build custom reports with clickable links' +
       '\n\n**Why use this:** Provides the complete navigable URL including all parent group IDs, so the link opens the dashboard in correct context within the UI navigation tree. ' +
-      '\n\n**Workflow:** First use "list_dashboards" to find dashboard ID, then use this tool to generate the shareable link. ' +
-      '\n\n**Related tools:** "list_dashboards" (find dashboard), "get_dashboard" (get details).',
+      '\n\n**Workflow:** First use "list\\_dashboards" to find dashboard ID, then use this tool to generate the shareable link. ' +
+      '\n\n**Related tools:** "list\\_dashboards" (find dashboard), "get\\_dashboard" (get details).',
     annotations: {
       title: 'Generate dashboard link',
       readOnlyHint: true,
@@ -1456,15 +1456,15 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'generate_resource_link',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device. ' +
-      '\n\n**Returns:** Complete resource URL with full group hierarchy, resource/device details (id, name, displayName), and group path array. URL pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{path},resources-{id}' +
+      `\n\n**Returns:** Complete resource URL with full group hierarchy, resource/device details (id, name, displayName), and group path array. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{path},resources-{id}` +
       '\n\n**When to use:** ' +
       '\n- Share resource/device links in incident tickets' +
       '\n- Create alert notifications with resource/device links' +
       '\n- Build reports with clickable resource/device references' +
       '\n- Document infrastructure with direct LM links' +
       '\n\n**Why use this:** Provides the complete URL including all parent group IDs, so clicking the link navigates directly to the resource/device in the correct folder context. ' +
-      '\n\n**Workflow:** First find resource/device using "list_resources" or "search_resources", then use this tool with deviceId to generate shareable link. ' +
-      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "generate_alert_link" (link to resource/device alerts).',
+      '\n\n**Workflow:** First find resource/device using "list\\_resources" or "search\\_resources", then use this tool with deviceId to generate shareable link. ' +
+      '\n\n**Related tools:** "list\\_resources" (find device), "get\\_resource" (get details), "generate\\_alert\\_link" (link to resource/device alerts).',
     annotations: {
       title: 'Generate resource/device link',
       readOnlyHint: true,
@@ -1485,15 +1485,15 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'generate_alert_link',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert. ' +
-      '\n\n**Returns:** Direct URL to alert details page. URL pattern: https://{company}.logicmonitor.com/santaba/uiv4/alerts/{alertId}' +
+      `\n\n**Returns:** Direct URL to alert details page. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/alerts/{alertId}` +
       '\n\n**When to use:** ' +
       '\n- Include alert links in Slack/PagerDuty notifications' +
       '\n- Share alert context with team members' +
       '\n- Create incident tickets with direct alert references' +
       '\n- Build alert reports with clickable links' +
       '\n\n**Why use this:** Simplifies alert investigation by providing direct navigation to the alert details page with full context, history, and acknowledgement options. ' +
-      '\n\n**Workflow:** Get alertId from "list_alerts", then use this tool to generate the shareable link for team collaboration. ' +
-      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (get details), "acknowledge_alert" (acknowledge).',
+      '\n\n**Workflow:** Get alertId from "list\\_alerts", then use this tool to generate the shareable link for team collaboration. ' +
+      '\n\n**Related tools:** "list\\_alerts" (find alerts), "get\\_alert" (get details), "acknowledge\\_alert" (acknowledge).',
     annotations: {
       title: 'Generate alert link',
       readOnlyHint: true,
@@ -1515,9 +1515,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   // Generate Link Group Tools
   {
     name: 'generate_website_link',
-    description: 'Generate a direct URL/link for a LogicMonitor (LM) website monitor with full hierarchy path for easy sharing and navigation. ' +
+    description: 'Generate a direct direct URL/link/weburl for a LogicMonitor (LM) website monitor with full hierarchy path for easy sharing and navigation. ' +
       '\n\n**What this does:** Creates shareable URL that opens specific website monitor in LogicMonitor UI, preserving the full folder hierarchy path. Link works for anyone with access to the LogicMonitor portal. ' +
-      '\n\n**Returns:** Complete URL in format: https://{company}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId} ' +
+      `\n\n**Returns:** Complete URL in format: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId} ` +
       '\n\n**When to use:** ' +
       '\n- Share website monitor with team (Slack/email/tickets)' +
       '\n- Create documentation with direct links' +
@@ -1525,7 +1525,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Reference in incident tickets' +
       '\n- Bookmark frequently accessed monitors' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID (from "list_websites" or "search_websites")' +
+      '\n- websiteId: Website monitor ID (from "list\\_websites" or "search\\_websites")' +
       '\n\n**Common use cases:** ' +
       '\n\n**Share in Slack/Teams:** ' +
       '"Production API health check is failing: [View Monitor](generated-url-here)" ' +
@@ -1560,7 +1560,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Include in runbooks for quick troubleshooting access' +
       '\n- Add to monitoring dashboards for drill-down capability' +
       '\n- Share with stakeholders who have LM access' +
-      '\n\n**Related tools:** "list_websites" (find website), "get_website" (verify details), "generate_dashboard_link" (for dashboards), "generate_resource_link" (for resources/devices), "generate_alert_link" (for alerts).',
+      '\n\n**Related tools:** "list\\_websites" (find website), "get\\_website" (verify details), "generate\\_dashboard\\_link" (for dashboards), "generate\\_resource\\_link" (for resources/devices), "generate\\_alert\\_link" (for alerts).',
     annotations: {
       title: 'Generate website monitor link',
       readOnlyHint: true,
@@ -1593,8 +1593,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By environment: "Production", "Staging", "Development"' +
       '\n- By application: "Web App", "API Services", "Background Jobs"' +
       '\n- By cloud provider: "AWS Dashboards", "Azure Dashboards"' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_dashboards" filtered by groupId to see dashboards in specific folder. ' +
-      '\n\n**Related tools:** "get_dashboard_group" (details), "list_dashboards" (dashboards in group), "create_dashboard_group" (create folder).',
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_dashboards" filtered by groupId to see dashboards in specific folder. ' +
+      '\n\n**Related tools:** "get\\_dashboard\\_group" (details), "list\\_dashboards" (dashboards in group), "create\\_dashboard\\_group" (create folder).',
     annotations: {
       title: 'List dashboard groups',
       readOnlyHint: true,
@@ -1619,8 +1619,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Check group membership counts' +
       '\n- Verify group hierarchy' +
       '\n- Review permissions before creating dashboards in it' +
-      '\n\n**Workflow:** Use "list_dashboard_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_dashboard_groups" (find groups), "list_dashboards" (dashboards in group), "create_dashboard_group" (create new).',
+      '\n\n**Workflow:** Use "list\\_dashboard\\_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_dashboard\\_groups" (find groups), "list\\_dashboards" (dashboards in group), "create\\_dashboard\\_group" (create new).',
     annotations: {
       title: 'Get dashboard group details',
       readOnlyHint: true,
@@ -1669,8 +1669,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Monthly: End-of-month SLA reports' +
       '\n- Quarterly: Capacity planning reviews' +
       '\n- On-demand: Generate for specific incidents/audits' +
-      '\n\n**Workflow:** Use this tool to find reports, then "get_report" for details, or "generate_report" to run on-demand. ' +
-      '\n\n**Related tools:** "get_report" (details), "list_report_groups" (organization), "generate_report" (run now).',
+      '\n\n**Workflow:** Use this tool to find reports, then "get\\_report" for details, or "generate\\_report" to run on-demand. ' +
+      '\n\n**Related tools:** "get\\_report" (details), "list\\_report\\_groups" (organization), "generate\\_report" (run now).',
     annotations: {
       title: 'List reports',
       readOnlyHint: true,
@@ -1702,8 +1702,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Format: PDF (management), HTML (web), CSV (data analysis)' +
       '\n- Scope: Which resources/devices/groups are included' +
       '\n- Date range: Last 7 days, last month, custom period' +
-      '\n\n**Workflow:** Use "list_reports" to find reportId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list_reports" (find reports), "update_report" (modify), "generate_report" (run now).',
+      '\n\n**Workflow:** Use "list\\_reports" to find reportId, then use this tool for complete configuration. ' +
+      '\n\n**Related tools:** "list\\_reports" (find reports), "update\\_report" (modify), "generate\\_report" (run now).',
     annotations: {
       title: 'Get report details',
       readOnlyHint: true,
@@ -1743,7 +1743,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By status: filter:"overallAlertStatus:critical" (find down sites)' +
       '\n- By name: filter:"name\\~\\*production\\*"' +
       '\n\n**Use cases:** Monitor public websites, API endpoints, login pages, load balancer health checks, SaaS service availability. ' +
-      '\n\n**Related tools:** "get_website" (details), "create_website" (add new), "generate_website_link" (get URL).',
+      '\n\n**Related tools:** "get\\_website" (details), "create\\_website" (add new), "generate\\_website\\_link" (get URL).',
     annotations: {
       title: 'List website monitors',
       readOnlyHint: true,
@@ -1782,8 +1782,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Review response time thresholds (too strict? too lenient?)' +
       '\n- Troubleshoot why website checks are failing' +
       '\n- Document what endpoints are monitored' +
-      '\n\n**Workflow:** Use "list_websites" to find websiteId, then use this tool for complete monitoring configuration. ' +
-      '\n\n**Related tools:** "list_websites" (find website), "update_website" (modify), "generate_website_link" (get URL), "list_website_checkpoints" (available locations).',
+      '\n\n**Workflow:** Use "list\\_websites" to find websiteId, then use this tool for complete monitoring configuration. ' +
+      '\n\n**Related tools:** "list\\_websites" (find website), "update\\_website" (modify), "generate\\_website\\_link" (get URL), "list\\_website\\_checkpoints" (available locations).',
     annotations: {
       title: 'Get website monitor details',
       readOnlyHint: true,
@@ -1818,9 +1818,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- domain: URL or hostname (e.g., "example.com", "https://api.example.com")' +
       '\n- type: "webcheck" (HTTP/HTTPS) or "pingcheck" (ICMP ping")' +
       '\n\n**Optional parameters:** ' +
-      '\n- groupId: Website folder ID (from "list_website_groups", default: root)' +
+      '\n- groupId: Website folder ID (from "list\\_website\\_groups", default: root)' +
       '\n- description: Monitor purpose/notes' +
-      '\n- checkpoints: Array of checkpoint IDs (from "list_website_checkpoints") for multi-region testing' +
+      '\n- checkpoints: Array of checkpoint IDs (from "list\\_website\\_checkpoints") for multi-region testing' +
       '\n- steps: Array of HTTP steps for multi-step transactions (login, add to cart, checkout)' +
       '\n- testLocation: "external" (from cloud) or "internal" (from collector)' +
       '\n- schema: "https" or "http"' +
@@ -1857,8 +1857,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Use internal testLocation for private/VPN applications' +
       '\n- Test multi-step transactions for critical user flows' +
       '\n- Set failedCount >=2 to reduce false alarms' +
-      '\n\n**After creation:** Use "generate_website_link" to get direct URL to view monitor results. ' +
-      '\n\n**Related tools:** "list_website_checkpoints" (find locations), "generate_website_link" (get URL), "update_website" (modify), "list_websites" (browse existing).',
+      '\n\n**After creation:** Use "generate\\_website\\_link" to get direct URL to view monitor results. ' +
+      '\n\n**Related tools:** "list\\_website\\_checkpoints" (find locations), "generate\\_website\\_link" (get URL), "update\\_website" (modify), "list\\_websites" (browse existing).',
     annotations: {
       title: 'Create website monitor',
       readOnlyHint: false,
@@ -1904,7 +1904,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Update multi-step transaction steps' +
       '\n- Enable/disable monitoring' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID (from "list_websites")' +
+      '\n- websiteId: Website monitor ID (from "list\\_websites")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New monitor name' +
       '\n- domain: New URL/hostname' +
@@ -1929,9 +1929,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '{websiteId: 123, stopMonitoring: true} // During maintenance ' +
       '\n\n**Update multi-step transaction:** ' +
       '{websiteId: 123, steps: [{url: "/api/v2/health"}, {url: "/api/v2/status"}]} // New API version ' +
-      '\n\n**Best practice:** Use "get_website" first to review current configuration, then update specific fields. ' +
+      '\n\n**Best practice:** Use "get\\_website" first to review current configuration, then update specific fields. ' +
       '\n\n**After update:** Monitor may take 1-2 minutes to reflect changes in next check cycle. ' +
-      '\n\n**Related tools:** "get_website" (review before update), "list_websites" (find website), "generate_website_link" (get updated URL).',
+      '\n\n**Related tools:** "get\\_website" (review before update), "list\\_websites" (find website), "generate\\_website\\_link" (get updated URL).',
     annotations: {
       title: 'Update website monitor',
       readOnlyHint: false,
@@ -1972,9 +1972,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Duplicate monitors cleanup' +
       '\n- Replacing with different monitoring approach' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID to delete (from "list_websites")' +
+      '\n- websiteId: Website monitor ID to delete (from "list\\_websites")' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get_website" to verify correct monitor' +
+      '\n- Use "get\\_website" to verify correct monitor' +
       '\n- Check if others depend on this monitor (dashboards, reports)' +
       '\n- Consider exporting historical data if needed' +
       '\n- Verify no active incidents related to this monitor' +
@@ -1985,13 +1985,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Reports including this monitor need updating' +
       '\n- Alert rules filtering on this monitor may break' +
       '\n\n**Alternatives to deletion:** ' +
-      '\n- **Pause instead:** Use "update_website" with stopMonitoring:true (preserves history)' +
+      '\n- **Pause instead:** Use "update\\_website" with stopMonitoring:true (preserves history)' +
       '\n- **Rename:** Mark as "DISABLED - [name]" instead of deleting' +
       '\n- **Move to archive folder:** Keep monitor but organize differently' +
       '\n- **Reduce check frequency:** Update to check less often instead of deleting' +
-      '\n\n**Best practice:** Use "update_website" to pause monitoring (stopMonitoring:true) instead of deleting if you might need to resume monitoring later. ' +
-      '\n\n**Workflow:** Use "get_website" to verify, export historical data if needed, then delete. ' +
-      '\n\n**Related tools:** "get_website" (verify before delete), "list_websites" (find website), "update_website" (pause instead of delete).',
+      '\n\n**Best practice:** Use "update\\_website" to pause monitoring (stopMonitoring:true) instead of deleting if you might need to resume monitoring later. ' +
+      '\n\n**Workflow:** Use "get\\_website" to verify, export historical data if needed, then delete. ' +
+      '\n\n**Related tools:** "get\\_website" (verify before delete), "list\\_websites" (find website), "update\\_website" (pause instead of delete).',
     annotations: {
       title: 'Delete website monitor',
       readOnlyHint: false,
@@ -2032,8 +2032,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Group customer-facing vs internal endpoints' +
       '\n- Separate production vs non-production monitoring' +
       '\n- Structure multi-region website monitoring' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_websites" filtered by groupId to see monitors in specific folder. ' +
-      '\n\n**Related tools:** "get_website_group" (details), "list_websites" (websites in group), "create_website_group" (create folder).',
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_websites" filtered by groupId to see monitors in specific folder. ' +
+      '\n\n**Related tools:** "get\\_website\\_group" (details), "list\\_websites" (websites in group), "create\\_website\\_group" (create folder).',
     annotations: {
       title: 'List website groups',
       readOnlyHint: true,
@@ -2058,8 +2058,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Check website membership counts' +
       '\n- Verify group hierarchy' +
       '\n- Review group structure before creating monitors' +
-      '\n\n**Workflow:** Use "list_website_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_website_groups" (find groups), "list_websites" (websites in group), "create_website_group" (create new).',
+      '\n\n**Workflow:** Use "list\\_website\\_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_website\\_groups" (find groups), "list\\_websites" (websites in group), "create\\_website\\_group" (create new).',
     annotations: {
       title: 'Get website group details',
       readOnlyHint: true,
@@ -2096,7 +2096,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By role: filter:"roles:\\*administrator\\*"' +
       '\n- Recent logins: filter:"lastLoginOn>{epoch}"' +
       '\n- Never logged in: filter:"lastLoginOn:0"' +
-      '\n\n**Related tools:** "get_user" (details), "list_roles" (available roles), "list_api_tokens" (user\'s API tokens).',
+      '\n\n**Related tools:** "get\\_user" (details), "list\\_roles" (available roles), "list\\_api\\_tokens" (user\'s API tokens).',
     annotations: {
       title: 'List users',
       readOnlyHint: true,
@@ -2133,8 +2133,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Review which users have admin roles' +
       '\n- Check if former employees still have access' +
       '\n- Verify API token usage per user' +
-      '\n\n**Workflow:** Use "list_users" to find userId, then use this tool for complete user profile. ' +
-      '\n\n**Related tools:** "list_users" (find user), "list_roles" (see available roles), "list_api_tokens" (view user\'s tokens), "update_user" (modify).',
+      '\n\n**Workflow:** Use "list\\_users" to find userId, then use this tool for complete user profile. ' +
+      '\n\n**Related tools:** "list\\_users" (find user), "list\\_roles" (see available roles), "list\\_api\\_tokens" (view user\'s tokens), "update\\_user" (modify).',
     annotations: {
       title: 'Get user details',
       readOnlyHint: true,
@@ -2175,8 +2175,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "What roles exist?" → List all to see options' +
       '\n- "Who can delete resources/devices?" → Check which roles have delete permissions' +
       '\n- "Create read-only user" → Find "readonly" role ID for user creation' +
-      '\n\n**Workflow:** Use this tool to discover roles, then "get_role" for detailed permissions, then use in "create_user" or "update_user". ' +
-      '\n\n**Related tools:** "get_role" (detailed permissions), "list_users" (see user assignments), "create_user" (assign roles to new users).',
+      '\n\n**Workflow:** Use this tool to discover roles, then "get\\_role" for detailed permissions, then use in "create\\_user" or "update\\_user". ' +
+      '\n\n**Related tools:** "get\\_role" (detailed permissions), "list\\_users" (see user assignments), "create\\_user" (assign roles to new users).',
     annotations: {
       title: 'List roles',
       readOnlyHint: true,
@@ -2214,8 +2214,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Least privilege: Choose role with minimal required permissions' +
       '\n- Documentation: Export role permissions for compliance' +
       '\n- Role comparison: Compare multiple roles to find right fit' +
-      '\n\n**Workflow:** Use "list_roles" to find roleId, then use this tool to review detailed permissions before assigning to users. ' +
-      '\n\n**Related tools:** "list_roles" (find roles), "list_users" (see who has this role), "create_role" (create custom role).',
+      '\n\n**Workflow:** Use "list\\_roles" to find roleId, then use this tool to review detailed permissions before assigning to users. ' +
+      '\n\n**Related tools:** "list\\_roles" (find roles), "list\\_users" (see who has this role), "create\\_role" (create custom role).',
     annotations: {
       title: 'Get role details',
       readOnlyHint: true,
@@ -2263,12 +2263,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Regularly audit and remove unused tokens (check lastUsedOn timestamp)' +
       '\n- Use least-privilege: Create users with minimal required permissions, then create tokens for those users' +
       '\n\n**Security workflow:** ' +
-      '\n- List all users with "list_users"' +
+      '\n- List all users with "list\\_users"' +
       '\n- For each user, use this tool to check their API tokens' +
       '\n- Review lastUsedOn - if >90 days, consider revoking' +
       '\n- Check note field to understand token purpose' +
-      '\n\n**Workflow:** Use this tool with userId from "list_users" to audit that user\'s API access. ' +
-      '\n\n**Related tools:** "list_users" (find userId), "create_api_token" (generate new), "delete_api_token" (revoke access).',
+      '\n\n**Workflow:** Use this tool with userId from "list\\_users" to audit that user\'s API access. ' +
+      '\n\n**Related tools:** "list\\_users" (find userId), "create\\_api\\_token" (generate new), "delete\\_api\\_token" (revoke access).',
     annotations: {
       title: 'Get API tokens',
       readOnlyHint: true,
@@ -2314,7 +2314,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- DeviceDataSourceSDT: Specific datasource on resource/device' +
       '\n- DeviceDataSourceInstanceSDT: Specific instance only (e.g., C: drive)' +
       '\n\n**Best practice:** Always add meaningful comment explaining maintenance reason for audit trail. ' +
-      '\n\n**Related tools:** "create_resource_sdt" (schedule maintenance), "delete_sdt" (cancel maintenance), "get_sdt" (details).',
+      '\n\n**Related tools:** "create\\_resource\\_sdt" (schedule maintenance), "delete\\_sdt" (cancel maintenance), "get\\_sdt" (details).',
     annotations: {
       title: 'Get Scheduled Down Times',
       readOnlyHint: true,
@@ -2344,8 +2344,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- scheduled: Future maintenance window (not started yet)' +
       '\n- active: Currently in maintenance window (alerts suppressed now)' +
       '\n- expired: Maintenance window completed (historical record)' +
-      '\n\n**Workflow:** Use "list_sdts" to find SDT ID, then use this tool for complete details before deciding to extend or delete. ' +
-      '\n\n**Related tools:** "list_sdts" (find SDTs), "create_resource_sdt" (create new), "delete_sdt" (cancel).',
+      '\n\n**Workflow:** Use "list\\_sdts" to find SDT ID, then use this tool for complete details before deciding to extend or delete. ' +
+      '\n\n**Related tools:** "list\\_sdts" (find SDTs), "create\\_resource\\_sdt" (create new), "delete\\_sdt" (cancel).',
     annotations: {
       title: 'Get Scheduled Down Time details',
       readOnlyHint: true,
@@ -2375,7 +2375,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Application deployments' +
       '\n- Database maintenance' +
       '\n\n**Required parameters:** ' +
-      '\n- deviceId: Device to schedule maintenance for (from "list_resources")' +
+      '\n- deviceId: Device to schedule maintenance for (from "list\\_resources")' +
       '\n- type: "DeviceSDT" (entire device) or "DeviceDataSourceSDT" (specific datasource)' +
       '\n- startDateTime: Start time in epoch MILLISECONDS (e.g., Date.now() + 3600000 for 1 hour from now)' +
       '\n- endDateTime: End time in epoch MILLISECONDS' +
@@ -2389,8 +2389,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Best practices:** ' +
       '\n- Add detailed comment (e.g., "Patching Windows updates - Change ticket CHG12345")' +
       '\n- Use appropriate time buffer (start 15 min early, end 15 min late)' +
-      '\n- Verify SDT with "list_sdts" after creation' +
-      '\n\n**Related tools:** "list_sdts" (verify created), "delete_sdt" (cancel if needed).',
+      '\n- Verify SDT with "list\\_sdts" after creation' +
+      '\n\n**Related tools:** "list\\_sdts" (verify created), "delete\\_sdt" (cancel if needed).',
     annotations: {
       title: 'Schedule maintenance window',
       readOnlyHint: false,
@@ -2447,12 +2447,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Check resource/device status before deleting active SDT to avoid alert flood' +
       '\n- Cannot delete only to extend - must delete and create new with longer duration' +
       '\n\n**Workflow:** ' +
-      '\n- Use "list_sdts" to find SDT ID (check status: active/scheduled)' +
-      '\n- Use "get_sdt" to verify correct SDT before deleting' +
+      '\n- Use "list\\_sdts" to find SDT ID (check status: active/scheduled)' +
+      '\n- Use "get\\_sdt" to verify correct SDT before deleting' +
       '\n- Delete SDT' +
       '\n- If resource/device still has issues, expect alerts immediately' +
       '\n\n**Best practice:** Add comment in related ticket/documentation explaining why SDT was canceled. ' +
-      '\n\n**Related tools:** "list_sdts" (find SDT), "get_sdt" (verify before delete), "create_resource_sdt" (create replacement if needed).',
+      '\n\n**Related tools:** "list\\_sdts" (find SDT), "get\\_sdt" (verify before delete), "create\\_resource\\_sdt" (create replacement if needed).',
     annotations: {
       title: 'Delete Scheduled Down Time',
       readOnlyHint: false,
@@ -2497,7 +2497,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- F5_LTM_Config: F5 load balancer configs' +
       '\n- Palo_Alto_Config: Palo Alto firewall rules' +
       '\n- Linux_Config_Files: Monitor /etc files' +
-      '\n\n**Related tools:** "get_configsource" (details), "list_device_configs" (see configs for device).',
+      '\n\n**Related tools:** "get\\_configsource" (details), "list\\_device\\_configs" (see configs for device).',
     annotations: {
       title: 'List ConfigSources',
       readOnlyHint: true,
@@ -2527,8 +2527,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- collectMethod: How config is retrieved (CLI commands, SNMP, API)' +
       '\n- configAlerts: Settings for when to alert on changes' +
       '\n- lineageId: Built-in (LogicMonitor) vs custom ConfigSource' +
-      '\n\n**Workflow:** Use "list_configsources" to find configSourceId, then use this tool to understand how it works. ' +
-      '\n\n**Related tools:** "list_configsources" (find ConfigSource), "list_device_configs" (see configs for device).',
+      '\n\n**Workflow:** Use "list\\_configsources" to find configSourceId, then use this tool to understand how it works. ' +
+      '\n\n**Related tools:** "list\\_configsources" (find ConfigSource), "list\\_device\\_configs" (see configs for device).',
     annotations: {
       title: 'Get ConfigSource details',
       readOnlyHint: true,
@@ -2574,8 +2574,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'Properties can be set at: Device level (highest priority) → Group level → Parent group (inherited). ' +
       '\n\n**Datasource appliesTo logic uses properties:** ' +
       'Many datasources check properties to decide if they should monitor device. Example: AWS_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
-      '\n\n**Workflow:** Use "list_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
-      '\n\n**Related tools:** "update_device_property" (modify), "get_resource" (see summary), "list_datasources" (see how properties affect monitoring).',
+      '\n\n**Workflow:** Use "list\\_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
+      '\n\n**Related tools:** "update\\_device\\_property" (modify), "get\\_resource" (see summary), "list\\_datasources" (see how properties affect monitoring).',
     annotations: {
       title: 'List resource/device properties',
       readOnlyHint: true,
@@ -2599,7 +2599,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'update_resource_property',
     description: 'Update or create a custom property for a specific resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Set/update a single resource/device-level custom property. Simpler alternative to "update_resource" when only changing one property. ' +
+      '\n\n**What this does:** Set/update a single resource/device-level custom property. Simpler alternative to "update\\_resource" when only changing one property. ' +
       '\n\n**When to use:** ' +
       '\n- Update single property value' +
       '\n- Add new property to device' +
@@ -2607,7 +2607,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Update credentials for one resource/device' +
       '\n- Change resource/device tags/metadata' +
       '\n\n**Required parameters:** ' +
-      '\n- deviceId: Device ID (from "list_resources")' +
+      '\n- deviceId: Device ID (from "list\\_resources")' +
       '\n- name: Property name (e.g., "ssh.user", "env", "owner")' +
       '\n- value: Property value' +
       '\n\n**Property types and examples:** ' +
@@ -2642,8 +2642,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '{deviceId: 123, name: "servicenow.ci_id", value: "ci-web-01"} ' +
       '\n\n**Set custom alert threshold:** ' +
       '{deviceId: 123, name: "cpu.threshold", value: "85"} ' +
-      '\n\n**Workflow:** Use "list_device_properties" to see current properties, then update or add new ones. ' +
-      '\n\n**Related tools:** "list_device_properties" (view all properties), "update_resource" (update multiple properties), "update_resource_group" (set group-level properties).',
+      '\n\n**Workflow:** Use "list\\_device\\_properties" to see current properties, then update or add new ones. ' +
+      '\n\n**Related tools:** "list\\_device\\_properties" (view all properties), "update\\_resource" (update multiple properties), "update\\_resource\\_group" (set group-level properties).',
     annotations: {
       title: 'Update resource/device properties',
       readOnlyHint: false,
@@ -2685,8 +2685,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Free-text search:** Simple queries (e.g., "production", "web-server", "192.168.1.100") automatically search across displayName, description, and name fields' +
       '\n- **Filter syntax:** Precise queries (e.g., "hostStatus:alive") for exact field matching' +
       '\n\n**Choose the right tool:** ' +
-      '\n- Use "search_resources" for quick name-based searches (simplest)' +
-      '\n- Use "list_resources" with filter parameter for complex multi-field filtering (most powerful)' +
+      '\n- Use "search\\_resources" for quick name-based searches (simplest)' +
+      '\n- Use "list\\_resources" with filter parameter for complex multi-field filtering (most powerful)' +
       '\n- Use this tool when you know resource/device name but not exact filter syntax' +
       '\n\n**Free-text examples:** ' +
       '\n- query:"production" → finds all resource/device with "production" in name or description' +
@@ -2702,7 +2702,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Find resource/device by IP" → query:"192.168.1.100"' +
       '\n- "Find all database servers" → query:"database" or query:"db"' +
       '\n- "Find alive resource/device in subnet" → query:"192.168.1,hostStatus:alive"' +
-      '\n\n**Related tools:** "list_resources" (complex filtering), "get_resource" (get details), "generate_resource_link" (get URL).',
+      '\n\n**Related tools:** "list\\_resources" (complex filtering), "get\\_resource" (get details), "generate\\_resource\\_link" (get URL).',
     annotations: {
       title: 'Search resources/devices',
       readOnlyHint: true,
@@ -2735,8 +2735,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Free-text search:** Simple device/resource name queries (e.g., "prod-web-01", "k8s-cluster")' +
       '\n- **Filter syntax:** Precise alert filtering (e.g., "severity:critical", "acked:false")' +
       '\n\n**Choose the right tool:** ' +
-      '\n- Use "search_alerts" for quick resource/device name searches' +
-      '\n- Use "list_alerts" with filter parameter for complex multi-field filtering (recommended for most cases)' +
+      '\n- Use "search\\_alerts" for quick resource/device name searches' +
+      '\n- Use "list\\_alerts" with filter parameter for complex multi-field filtering (recommended for most cases)' +
       '\n\n**Free-text examples:** ' +
       '\n- query:"production" → finds alerts on resource/device with "production" in name' +
       '\n- query:"k8s-prod-cluster" → finds all alerts for this cluster' +
@@ -2753,7 +2753,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Find CPU alerts" → query:"resourceTemplateName~\\*CPU\\*"' +
       '\n- "Find alerts on web servers" → query:"web-server"' +
       '\n\n**Important limitation:** Alert API does NOT support OR operator (||). Use comma for AND only. For OR logic, make multiple separate calls. ' +
-      '\n\n**Related tools:** "list_alerts" (structured filtering), "get_alert" (details), "generate_alert_link" (get URL), "acknowledge_alert" (ack alerts).',
+      '\n\n**Related tools:** "list\\_alerts" (structured filtering), "get\\_alert" (details), "generate\\_alert\\_link" (get URL), "acknowledge\\_alert" (ack alerts).',
     annotations: {
       title: 'Search alerts',
       readOnlyHint: true,
@@ -2796,8 +2796,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Time uses epoch SECONDS (not milliseconds like other LM APIs)' +
       '\n- Cannot use OR operator (||) in audit logs, only AND (comma)' +
       '\n- Use autoPaginate:true for complete history (may take time for large datasets)' +
-      '\n\n**Web UI access:** https://{company}.logicmonitor.com/santaba/uiv4/settings/access-logs (Settings → Users & Roles → Audit Logs) ' +
-      '\n\n**Related tools:** "get_audit_log" (details of specific entry), "search_audit_logs" (free-text search).',
+      `\n\n**Web UI access:** https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs (Settings → Audit Logs) ` +
+      '\n\n**Related tools:** "get\\_audit\\_log" (details of specific entry), "search\\_audit\\_logs" (free-text search).',
     annotations: {
       title: 'List audit logs',
       readOnlyHint: true,
@@ -2819,11 +2819,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific audit log entry in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete audit log details: username, IP address, exact timestamp, full description of action, session ID, affected resources, before/after values (for updates). ' +
       '\n\n**When to use:** ' +
-      '\n- Get complete details after finding log ID via "list_audit_logs"' +
+      '\n- Get complete details after finding log ID via "list\\_audit\\_logs"' +
       '\n- Review exact changes made (old vs new values)' +
       '\n- Investigate specific incident with full context' +
-      '\n\n**Workflow:** First use "list_audit_logs" with filters to find relevant entries, then use this tool with the log ID for complete details. ' +
-      '\n\n**Related tools:** "list_audit_logs" (search logs), "search_audit_logs" (text search).',
+      '\n\n**Workflow:** First use "list\\_audit\\_logs" with filters to find relevant entries, then use this tool with the log ID for complete details. ' +
+      '\n\n**Related tools:** "list\\_audit\\_logs" (search logs), "search\\_audit\\_logs" (text search).',
     annotations: {
       title: 'Get audit details',
       readOnlyHint: true,
@@ -2852,7 +2852,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**When to use:** ' +
       '\n- Use free-text when you know general terms but not exact field names' +
       '\n- Use filter syntax when you need precise filtering by specific fields' +
-      '\n- Use "list_audit_logs" when you need complex AND/OR logic across multiple fields' +
+      '\n- Use "list\\_audit\\_logs" when you need complex AND/OR logic across multiple fields' +
       '\n\n**Free-text examples:** ' +
       '\n- query:"device" → finds all logs mentioning "device" in any field' +
       '\n- query:"192.168.1.100" → finds logs from this IP or mentioning this IP' +
@@ -2863,7 +2863,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- query:"description~\\*device\\*" → description contains "device"' +
       '\n- query:"ip:192.168.1.\\*" → IP address wildcard match' +
       '\n- query:"username:admin,happenedOn>1640995200" → combine with comma (AND)' +
-      '\n\n**Related tools:** "list_audit_logs" (structured filtering), "get_audit_log" (get details).',
+      '\n\n**Related tools:** "list\\_audit\\_logs" (structured filtering), "get\\_audit\\_log" (get details).',
     annotations: {
       title: 'Search audit logs',
       readOnlyHint: true,
@@ -2913,8 +2913,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Access Group "Production" - Only prod resource/device' +
       '\n- Access Group "Dev/Test" - Only non-prod resource/device' +
       '\n- Junior staff limited to dev/test access group' +
-      '\n\n**Workflow:** Use this tool to find access groups, then assign users to groups via "update_user" to control resource visibility. ' +
-      '\n\n**Related tools:** "get_access_group" (details), "create_access_group" (create new), "list_users" (see user assignments), "list_resources" (associate resource/device with groups).',
+      '\n\n**Workflow:** Use this tool to find access groups, then assign users to groups via "update\\_user" to control resource visibility. ' +
+      '\n\n**Related tools:** "get\\_access\\_group" (details), "create\\_access\\_group" (create new), "list\\_users" (see user assignments), "list\\_resources" (associate resource/device with groups).',
     annotations: {
       title: 'List access groups',
       readOnlyHint: true,
@@ -2948,8 +2948,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Removing resource: Users lose visibility to those resource/device' +
       '\n- Removing user: User loses visibility to all resources in group' +
       '\n- Deleting group: All users lose their access scope' +
-      '\n\n**Workflow:** Use "list_access_groups" to find accessGroupId, then use this tool to review complete configuration before modifications. ' +
-      '\n\n**Related tools:** "list_access_groups" (find groups), "update_access_group" (modify), "list_users" (see user access).',
+      '\n\n**Workflow:** Use "list\\_access\\_groups" to find accessGroupId, then use this tool to review complete configuration before modifications. ' +
+      '\n\n**Related tools:** "list\\_access\\_groups" (find groups), "update\\_access\\_group" (modify), "list\\_users" (see user access).',
     annotations: {
       title: 'Get access group details',
       readOnlyHint: true,
@@ -3031,7 +3031,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- One access group per team (department isolation)' +
       '\n- Empty resourceGroups = full access (admin groups)' +
       '\n- Descriptive names: "Customer Name - Environment"' +
-      '\n\n**Related tools:** "update_access_group" (add/remove resources), "list_access_groups" (view all), "create_user" (assign users to group), "list_resource_groups" (find group IDs).',
+      '\n\n**Related tools:** "update\\_access\\_group" (add/remove resources), "list\\_access\\_groups" (view all), "create\\_user" (assign users to group), "list\\_resource\\_groups" (find group IDs).',
     annotations: {
       title: 'Create access group',
       readOnlyHint: false,
@@ -3063,7 +3063,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify access group properties, add/remove resources, or change tenant assignment. Affects all users assigned to this group immediately. ' +
       '\n\n**When to use:** (1) Add/remove resource/device groups from access scope, (2) Rename access group, (3) Update description, (4) Add new resources after customer growth, (5) Remove decommissioned resources. ' +
       '\n\n**Required parameters:** ' +
-      '\n- accessGroupId: Access group ID (from "list_access_groups") ' +
+      '\n- accessGroupId: Access group ID (from "list\\_access\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New access group name ' +
       '\n- description: Updated description ' +
@@ -3086,8 +3086,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Adding resource/device group: Users instantly gain access to new resource/device ' +
       '\n- Users currently viewing removed resources will see "no access" errors ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_access_group" to see current configuration ' +
-      '2. Use "list_users" to see which users affected by change ' +
+      '1. Use "get\\_access\\_group" to see current configuration ' +
+      '2. Use "list\\_users" to see which users affected by change ' +
       '3. Update access group with new resource scope ' +
       '4. Notify users of access changes ' +
       '\n\n**Example: Customer adds new infrastructure:** ' +
@@ -3096,7 +3096,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '   // Returns: resourceGroups: [10,11] ' +
       '3. Add new group: update_access_group(accessGroupId: 123, resourceGroups: [10,11,12]) ' +
       '4. Customer users now see new AWS resource/device ' +
-      '\n\n**Related tools:** "get_access_group" (review before update), "list_access_groups" (find group), "list_users" (see affected users), "list_resource_groups" (find group IDs).',
+      '\n\n**Related tools:** "get\\_access\\_group" (review before update), "list\\_access\\_groups" (find group), "list\\_users" (see affected users), "list\\_resource\\_groups" (find group IDs).',
     annotations: {
       title: 'Update access group',
       readOnlyHint: false,
@@ -3137,10 +3137,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes access group. All users assigned to this group lose their resource visibility immediately. ' +
       '\n\n**When to use:** (1) Customer/client offboarded (MSP), (2) Department dissolved/restructured, (3) Consolidating duplicate access groups, (4) Cleanup unused access groups. ' +
       '\n\n**Required parameters:** ' +
-      '\n- accessGroupId: Access group ID to delete (from "list_access_groups") ' +
+      '\n- accessGroupId: Access group ID to delete (from "list\\_access\\_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "get_access_group" to see which resources are in scope ' +
-      '2. Use "list_users" with filter to find ALL users assigned to this group ' +
+      '1. Use "get\\_access\\_group" to see which resources are in scope ' +
+      '2. Use "list\\_users" with filter to find ALL users assigned to this group ' +
       '3. Verify users have alternate access groups to move to ' +
       '4. Coordinate with users - they will lose access immediately ' +
       '\n\n**Impact of deletion:** ' +
@@ -3173,7 +3173,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '4. Delete old access group ' +
       '\n\n**⚠️ NEVER delete access group with active users unless intentionally revoking their access immediately!** ' +
       '\n\n**Best practice:** Always reassign users to new access group BEFORE deleting old group to prevent access disruption. ' +
-      '\n\n**Related tools:** "get_access_group" (check users), "list_users" (find affected users), "update_user" (reassign users), "create_access_group" (create replacement).',
+      '\n\n**Related tools:** "get\\_access\\_group" (check users), "list\\_users" (find affected users), "update\\_user" (reassign users), "create\\_access\\_group" (create replacement).',
     annotations: {
       title: 'Delete access group',
       readOnlyHint: false,
@@ -3206,13 +3206,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**This is step 1 for getting metrics:** ' +
       '**Complete workflow to retrieve metric data:** ' +
       '1. Use this tool → get deviceDataSourceId for datasource you want (e.g., WinCPU) ' +
-      '2. Use "list_device_instances" → get instanceId for specific instance ' +
-      '3. Use "get_device_instance_data" → get actual metric values ' +
+      '2. Use "list\\_device\\_instances" → get instanceId for specific instance ' +
+      '3. Use "get\\_device\\_instance\\_data" → get actual metric values ' +
       '\n\n**Troubleshooting use cases:** ' +
       '\n- "Why no CPU data?" → Check if WinCPU datasource is applied and collecting ' +
       '\n- "Find disk datasource" → Look for datasource with "disk" or "volume" in name ' +
       '\n- "Check datasource errors" → Review status field for error messages ' +
-      '\n\n**Related tools:** "list_device_instances" (next step), "get_device_instance_data" (get metrics), "update_device_datasource" (enable/disable).',
+      '\n\n**Related tools:** "list\\_device\\_instances" (next step), "get\\_device\\_instance\\_data" (get metrics), "update\\_device\\_datasource" (enable/disable).',
     annotations: {
       title: 'List resource/device datasources',
       readOnlyHint: true,
@@ -3243,8 +3243,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- status: Collection status (normal vs error) ' +
       '\n- alertStatus: Any active alerts from this datasource ' +
       '\n- stopMonitoring: Whether datasource is disabled on this resource/device ' +
-      '\n\n**Workflow:** Use "list_device_datasources" to find deviceDataSourceId, then use this tool for detailed status. ' +
-      '\n\n**Related tools:** "list_device_datasources" (find datasource), "list_device_instances" (get instances), "update_device_datasource" (enable/disable).',
+      '\n\n**Workflow:** Use "list\\_device\\_datasources" to find deviceDataSourceId, then use this tool for detailed status. ' +
+      '\n\n**Related tools:** "list\\_device\\_datasources" (find datasource), "list\\_device\\_instances" (get instances), "update\\_device\\_datasource" (enable/disable).',
     annotations: {
       title: 'Get resource/device datasource details',
       readOnlyHint: true,
@@ -3273,8 +3273,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify how a specific datasource monitors a specific resource/device. Control alerting, enable/disable monitoring, or adjust device-specific datasource settings without affecting other resources/devices. ' +
       '\n\n**When to use:** (1) Disable monitoring for specific datasource on one resource/device, (2) Disable alerting during maintenance, (3) Enable previously disabled datasource, (4) Adjust polling interval for device, (5) Update device-specific thresholds. ' +
       '\n\n**Required parameters:** ' +
-      '\n- deviceId: Device ID (from "list_resources") ' +
-      '\n- deviceDataSourceId: Device datasource ID (from "list_device_datasources") ' +
+      '\n- deviceId: Device ID (from "list\\_resources") ' +
+      '\n- deviceDataSourceId: Device datasource ID (from "list\\_device\\_datasources") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- disableAlerting: true (mute alerts) or false (enable alerts) ' +
       '\n- stopMonitoring: true (stop data collection) or false (resume monitoring) ' +
@@ -3307,8 +3307,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'pollingInterval: 60 (every minute for critical metrics) ' +
       '\n\n**Low-frequency monitoring:** ' +
       'pollingInterval: 600 (every 10 minutes for less critical metrics) ' +
-      '\n\n**Workflow:** Use "list_device_datasources" to find deviceDataSourceId, then update configuration. ' +
-      '\n\n**Related tools:** "list_device_datasources" (find datasource), "get_device_datasource" (check current config), "list_device_instances" (see monitored instances).',
+      '\n\n**Workflow:** Use "list\\_device\\_datasources" to find deviceDataSourceId, then update configuration. ' +
+      '\n\n**Related tools:** "list\\_device\\_datasources" (find datasource), "get\\_device\\_datasource" (check current config), "list\\_device\\_instances" (see monitored instances).',
     annotations: {
       title: 'Update resource/device datasource',
       readOnlyHint: false,
@@ -3363,7 +3363,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Alert on ERROR/CRITICAL in application logs ' +
       '\n- Collect network resource/device syslog for troubleshooting ' +
       '\n- Track security events for compliance ' +
-      '\n\n**Related tools:** "get_eventsource" (details), "list_device_eventsources" (events for device).',
+      '\n\n**Related tools:** "get\\_eventsource" (details), "list\\_device\\_eventsources" (events for device).',
     annotations: {
       title: 'List EventSources',
       readOnlyHint: true,
@@ -3389,8 +3389,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- filters: Rules for parsing/matching events ' +
       '\n- severityMapping: Map event levels (INFO/WARN/ERROR) to LM alert levels ' +
       '\n- schedule: When event collection runs ' +
-      '\n\n**Workflow:** Use "list_eventsources" to find eventSourceId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list_eventsources" (find EventSource), "list_device_eventsources" (events for device).',
+      '\n\n**Workflow:** Use "list\\_eventsources" to find eventSourceId, then use this tool for complete configuration. ' +
+      '\n\n**Related tools:** "list\\_eventsources" (find EventSource), "list\\_device\\_eventsources" (events for device).',
     annotations: {
       title: 'Get EventSource details',
       readOnlyHint: true,
@@ -3427,7 +3427,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Who gets paged for critical database alerts?" → Check escalation chain ' +
       '\n- "Why didn\'t I get notified?" → Verify you\'re in the escalation chain ' +
       '\n- "Update on-call rotation" → Modify escalation chain recipients ' +
-      '\n\n**Related tools:** "get_escalation_chain" (detailed stages), "list_alert_rules" (see which rules use chain), "list_recipients" (available notification targets).',
+      '\n\n**Related tools:** "get\\_escalation\\_chain" (detailed stages), "list\\_alert\\_rules" (see which rules use chain), "list\\_recipients" (available notification targets).',
     annotations: {
       title: 'List escalation chains',
       readOnlyHint: true,
@@ -3459,8 +3459,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'Stage 1 (0 min): Email "oncall@company.com", SMS "+1-555-1234" ' +
       'Stage 2 (15 min): PagerDuty integration, Email "team-lead@company.com" ' +
       'Stage 3 (30 min): Slack webhook, Email "engineering-manager@company.com" ' +
-      '\n\n**Workflow:** Use "list_escalation_chains" to find chainId, then use this tool to review complete notification workflow. ' +
-      '\n\n**Related tools:** "list_escalation_chains" (find chains), "update_escalation_chain" (modify), "list_recipients" (see recipients).',
+      '\n\n**Workflow:** Use "list\\_escalation\\_chains" to find chainId, then use this tool to review complete notification workflow. ' +
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (find chains), "update\\_escalation\\_chain" (modify), "list\\_recipients" (see recipients).',
     annotations: {
       title: 'Get escalation chain details',
       readOnlyHint: true,
@@ -3548,7 +3548,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Business hours chains for non-critical alerts (reduce after-hours noise) ' +
       '\n- Test escalation chains before production use ' +
       '\n- Document who is in each stage for on-call handoffs ' +
-      '\n\n**Related tools:** "list_recipients" (find recipients), "list_recipient_groups" (find groups), "list_integrations" (find integrations), "create_alert_rule" (route alerts to chain), "list_escalation_chains" (view all).',
+      '\n\n**Related tools:** "list\\_recipients" (find recipients), "list\\_recipient\\_groups" (find groups), "list\\_integrations" (find integrations), "create\\_alert\\_rule" (route alerts to chain), "list\\_escalation\\_chains" (view all).',
     annotations: {
       title: 'Create escalation chain',
       readOnlyHint: false,
@@ -3580,7 +3580,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify escalation chain stages, recipients, timing, or notification methods. Changes affect all alert rules using this chain immediately. ' +
       '\n\n**When to use:** (1) Update on-call rotation recipients, (2) Adjust escalation timing, (3) Add/remove notification stages, (4) Change notification methods, (5) Update business hours schedules. ' +
       '\n\n**Required parameters:** ' +
-      '\n- chainId: Escalation chain ID (from "list_escalation_chains") ' +
+      '\n- chainId: Escalation chain ID (from "list\\_escalation\\_chains") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New chain name ' +
       '\n- description: Updated description ' +
@@ -3601,11 +3601,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- New alerts use updated stages ' +
       '\n- Disabling chain stops all notifications for alerts routed to it ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_escalation_chain" to review current configuration ' +
-      '2. Use "list_alert_rules" to see which rules use this chain (impact analysis) ' +
+      '1. Use "get\\_escalation\\_chain" to review current configuration ' +
+      '2. Use "list\\_alert\\_rules" to see which rules use this chain (impact analysis) ' +
       '3. Update escalation chain ' +
       '4. Monitor alerts to verify new configuration works ' +
-      '\n\n**Related tools:** "get_escalation_chain" (review), "list_alert_rules" (impact analysis), "list_recipients" (find new recipients).',
+      '\n\n**Related tools:** "get\\_escalation\\_chain" (review), "list\\_alert\\_rules" (impact analysis), "list\\_recipients" (find new recipients).',
     annotations: {
       title: 'Update escalation chain',
       readOnlyHint: false,
@@ -3646,9 +3646,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes escalation chain. Alert rules referencing this chain lose their notification path and stop sending alerts. ' +
       '\n\n**When to use:** (1) Consolidating duplicate chains, (2) Replacing with better-configured chain, (3) Team/process restructuring, (4) Cleanup unused chains. ' +
       '\n\n**Required parameters:** ' +
-      '\n- chainId: Escalation chain ID to delete (from "list_escalation_chains") ' +
+      '\n- chainId: Escalation chain ID to delete (from "list\\_escalation\\_chains") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list_alert_rules" with filter to find ALL rules using this chain ' +
+      '1. Use "list\\_alert\\_rules" with filter to find ALL rules using this chain ' +
       '2. Create/identify replacement escalation chain ' +
       '3. Update all alert rules to use new chain BEFORE deleting ' +
       '4. Verify no rules still reference this chain ' +
@@ -3681,7 +3681,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '4. Delete duplicate chains ' +
       '\n\n**⚠️ NEVER delete escalation chain without updating alert rules first - notifications will silently stop!** ' +
       '\n\n**Best practice:** Always migrate alert rules to replacement chain BEFORE deleting old chain. ' +
-      '\n\n**Related tools:** "list_alert_rules" (find usage), "update_alert_rule" (migrate rules), "create_escalation_chain" (create replacement).',
+      '\n\n**Related tools:** "list\\_alert\\_rules" (find usage), "update\\_alert\\_rule" (migrate rules), "create\\_escalation\\_chain" (create replacement).',
     annotations: {
       title: 'Delete escalation chain',
       readOnlyHint: false,
@@ -3720,8 +3720,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Recipients vs Recipient Groups:** ' +
       '\n- Recipients: Individual targets (one email, one phone) ' +
       '\n- Recipient Groups: Collections of recipients (notify entire team at once) ' +
-      '\n\n**Workflow:** Use this tool to find available recipients, then use in "create_escalation_chain" or "update_escalation_chain" to set up notifications. ' +
-      '\n\n**Related tools:** "get_recipient" (details), "list_recipient_groups" (group management), "list_escalation_chains" (see who gets notified).',
+      '\n\n**Workflow:** Use this tool to find available recipients, then use in "create\\_escalation\\_chain" or "update\\_escalation\\_chain" to set up notifications. ' +
+      '\n\n**Related tools:** "get\\_recipient" (details), "list\\_recipient\\_groups" (group management), "list\\_escalation\\_chains" (see who gets notified).',
     annotations: {
       title: 'List alert recipients',
       readOnlyHint: true,
@@ -3747,8 +3747,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Schedule: When notifications are sent (always vs business hours) ' +
       '\n- Rate limit: Max notifications per time period (prevent notification fatigue) ' +
       '\n- Method: Delivery mechanism (SMTP, Twilio, webhook) ' +
-      '\n\n**Workflow:** Use "list_recipients" to find recipientId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list_recipients" (find recipient), "update_recipient" (modify), "list_escalation_chains" (usage).',
+      '\n\n**Workflow:** Use "list\\_recipients" to find recipientId, then use this tool for complete configuration. ' +
+      '\n\n**Related tools:** "list\\_recipients" (find recipient), "update\\_recipient" (modify), "list\\_escalation\\_chains" (usage).',
     annotations: {
       title: 'Get recipient details',
       readOnlyHint: true,
@@ -3822,7 +3822,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Rate limit SMS/voice to control costs ' +
       '\n- Group related recipients (easier management) ' +
       '\n- Test with sample alert before production use ' +
-      '\n\n**Related tools:** "create_recipient_group" (organize recipients), "create_escalation_chain" (use recipients), "list_recipients" (view all).',
+      '\n\n**Related tools:** "create\\_recipient\\_group" (organize recipients), "create\\_escalation\\_chain" (use recipients), "list\\_recipients" (view all).',
     annotations: {
       title: 'Create recipient',
       readOnlyHint: false,
@@ -3858,7 +3858,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify recipient contact information, notification schedule, rate limits, or name. Changes affect all escalation chains using this recipient. ' +
       '\n\n**When to use:** (1) Update phone number/email after personnel changes, (2) Change notification schedule, (3) Adjust rate limits, (4) Update recipient name, (5) Switch from email to SMS. ' +
       '\n\n**Required parameters:** ' +
-      '\n- recipientId: Recipient ID (from "list_recipients") ' +
+      '\n- recipientId: Recipient ID (from "list\\_recipients") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- address: New contact info (email, phone, webhook URL) ' +
       '\n- name: New friendly name ' +
@@ -3874,10 +3874,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Update webhook URL:** ' +
       '{recipientId: 123, address: "https://new-webhook-url.com/alerts"} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_recipient" to review current configuration ' +
+      '1. Use "get\\_recipient" to review current configuration ' +
       '2. Update recipient information ' +
       '3. Changes take effect immediately for new notifications ' +
-      '\n\n**Related tools:** "get_recipient" (review), "list_recipients" (find recipient), "list_escalation_chains" (see usage).',
+      '\n\n**Related tools:** "get\\_recipient" (review), "list\\_recipients" (find recipient), "list\\_escalation\\_chains" (see usage).',
     annotations: {
       title: 'Update recipient',
       readOnlyHint: false,
@@ -3918,9 +3918,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes recipient. Escalation chains referencing this recipient lose that notification endpoint. ' +
       '\n\n**When to use:** (1) Employee left company, (2) Phone number decommissioned, (3) Email no longer valid, (4) Webhook endpoint retired, (5) Consolidating duplicate recipients. ' +
       '\n\n**Required parameters:** ' +
-      '\n- recipientId: Recipient ID to delete (from "list_recipients") ' +
+      '\n- recipientId: Recipient ID to delete (from "list\\_recipients") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list_escalation_chains" to find chains using this recipient ' +
+      '1. Use "list\\_escalation\\_chains" to find chains using this recipient ' +
       '2. Create/identify replacement recipient ' +
       '3. Update escalation chains to use new recipient BEFORE deleting ' +
       '4. Verify no chains reference this recipient ' +
@@ -3935,7 +3935,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '4. Verify updated ' +
       '5. Delete old recipient ' +
       '\n\n**Best practice:** Replace recipient in all escalation chains BEFORE deleting to prevent notification gaps. ' +
-      '\n\n**Related tools:** "list_escalation_chains" (find usage), "create_recipient" (replacement), "update_escalation_chain" (migrate).',
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (find usage), "create\\_recipient" (replacement), "update\\_escalation\\_chain" (migrate).',
     annotations: {
       title: 'Delete recipient',
       readOnlyHint: false,
@@ -3975,7 +3975,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Rotate on-call" → Update group members without touching escalation chains ' +
       '\n- "Add new team member" → Add to group, automatically included in alerts ' +
       '\n\n**Workflow:** Use this tool to find groups, then use in escalation chains to notify multiple people at once. ' +
-      '\n\n**Related tools:** "get_recipient_group" (details), "list_recipients" (individual members), "list_escalation_chains" (see usage).',
+      '\n\n**Related tools:** "get\\_recipient\\_group" (details), "list\\_recipients" (individual members), "list\\_escalation\\_chains" (see usage).',
     annotations: {
       title: 'List recipient groups',
       readOnlyHint: true,
@@ -4001,8 +4001,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Usage: Which escalation chains reference this group ' +
       '\n- Description: Purpose/team name ' +
       '\n\n**Before modifying group:** Review escalation chain usage to understand impact of changes. Removing member from group affects all chains using that group. ' +
-      '\n\n**Workflow:** Use "list_recipient_groups" to find groupId, then use this tool to review membership before updating. ' +
-      '\n\n**Related tools:** "list_recipient_groups" (find groups), "update_recipient_group" (modify), "list_escalation_chains" (see where used).',
+      '\n\n**Workflow:** Use "list\\_recipient\\_groups" to find groupId, then use this tool to review membership before updating. ' +
+      '\n\n**Related tools:** "list\\_recipient\\_groups" (find groups), "update\\_recipient\\_group" (modify), "list\\_escalation\\_chains" (see where used).',
     annotations: {
       title: 'Get recipient group details',
       readOnlyHint: true,
@@ -4070,7 +4070,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Use groups in escalation chains instead of individual recipients ' +
       '\n- Keep groups small (3-10 members) for manageability ' +
       '\n- Document group purpose in description ' +
-      '\n\n**Related tools:** "list_recipients" (find recipients), "update_recipient_group" (change members), "create_escalation_chain" (use groups).',
+      '\n\n**Related tools:** "list\\_recipients" (find recipients), "update\\_recipient\\_group" (change members), "create\\_escalation\\_chain" (use groups).',
     annotations: {
       title: 'Create recipient group',
       readOnlyHint: false,
@@ -4102,7 +4102,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify group membership, name, or description. Changes affect all escalation chains using this group immediately. ' +
       '\n\n**When to use:** (1) Update on-call rotation (swap team members), (2) Add new team members to notifications, (3) Remove departed employees, (4) Reorganize team structure, (5) Rename group. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Recipient group ID (from "list_recipient_groups") ' +
+      '\n- groupId: Recipient group ID (from "list\\_recipient\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
@@ -4121,10 +4121,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Removing member: They stop receiving notifications ' +
       '\n- Adding member: They start receiving notifications ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_recipient_group" to see current members ' +
+      '1. Use "get\\_recipient\\_group" to see current members ' +
       '2. Update group with new membership ' +
       '3. Changes take effect for next alerts ' +
-      '\n\n**Related tools:** "get_recipient_group" (review), "list_recipient_groups" (find group), "list_recipients" (find recipients).',
+      '\n\n**Related tools:** "get\\_recipient\\_group" (review), "list\\_recipient\\_groups" (find group), "list\\_recipients" (find recipients).',
     annotations: {
       title: 'Update recipient group',
       readOnlyHint: false,
@@ -4165,9 +4165,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes recipient group. Escalation chains referencing this group lose that notification path. ' +
       '\n\n**When to use:** (1) Team dissolved/restructured, (2) Consolidating duplicate groups, (3) Replacing with individual recipients, (4) Cleanup unused groups. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Recipient group ID to delete (from "list_recipient_groups") ' +
+      '\n- groupId: Recipient group ID to delete (from "list\\_recipient\\_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list_escalation_chains" to find chains using this group ' +
+      '1. Use "list\\_escalation\\_chains" to find chains using this group ' +
       '2. Create replacement group or identify individual recipients ' +
       '3. Update all escalation chains BEFORE deleting group ' +
       '4. Verify no chains reference this group ' +
@@ -4182,7 +4182,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '4. Verify updated ' +
       '5. Delete old group ' +
       '\n\n**Best practice:** Migrate escalation chains to replacement group/recipients BEFORE deleting to prevent notification gaps. ' +
-      '\n\n**Related tools:** "list_escalation_chains" (find usage), "create_recipient_group" (replacement), "update_escalation_chain" (migrate).',
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (find usage), "create\\_recipient\\_group" (replacement), "update\\_escalation\\_chain" (migrate).',
     annotations: {
       title: 'Delete recipient group',
       readOnlyHint: false,
@@ -4220,7 +4220,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Update team notifications" → Modify alert rule to route to different escalation chain ' +
       '\n- "Stop getting low-priority pages" → Check which rule routes those alerts, adjust severity or chain ' +
       '\n\n**Critical for notification troubleshooting:** If alerts aren\'t reaching people, check: (1) Does alert match any rule? (2) Is matched rule enabled? (3) Is escalation chain configured correctly? ' +
-      '\n\n**Related tools:** "get_alert_rule" (detailed conditions), "list_escalation_chains" (destination chains), "update_alert_rule" (modify routing).',
+      '\n\n**Related tools:** "get\\_alert\\_rule" (detailed conditions), "list\\_escalation\\_chains" (destination chains), "update\\_alert\\_rule" (modify routing).',
     annotations: {
       title: 'List alert rules',
       readOnlyHint: true,
@@ -4252,8 +4252,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Why did this CPU alert go to wrong team?" → Check resource/device group + datasource filters ' +
       '\n- "Why didn\'t I get paged?" → Verify alert matches conditions AND check escalation chain ' +
       '\n- "Too many alerts" → Review if conditions too broad, add instance filters ' +
-      '\n\n**Workflow:** Use "list_alert_rules" to find ruleId, then use this tool to review complete matching logic and routing. ' +
-      '\n\n**Related tools:** "list_alert_rules" (find rules), "update_alert_rule" (modify), "get_escalation_chain" (check notification chain).',
+      '\n\n**Workflow:** Use "list\\_alert\\_rules" to find ruleId, then use this tool to review complete matching logic and routing. ' +
+      '\n\n**Related tools:** "list\\_alert\\_rules" (find rules), "update\\_alert\\_rule" (modify), "get\\_escalation\\_chain" (check notification chain).',
     annotations: {
       title: 'Get alert rule details',
       readOnlyHint: true,
@@ -4334,7 +4334,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '2. Create alert rules (define WHICH alerts go to which chains) ' +
       '3. Test with sample alerts ' +
       '4. Monitor alert routing to verify working correctly ' +
-      '\n\n**Related tools:** "list_escalation_chains" (create chains first), "update_alert_rule" (modify), "list_alert_rules" (view all), "list_alerts" (test routing).',
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (create chains first), "update\\_alert\\_rule" (modify), "list\\_alert\\_rules" (view all), "list\\_alerts" (test routing).',
     annotations: {
       title: 'Create alert rule',
       readOnlyHint: false,
@@ -4374,7 +4374,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify rule matching conditions, priority, escalation chain, or enable/disable rule. Changes affect how NEW alerts are routed immediately. ' +
       '\n\n**When to use:** (1) Route alerts to different team, (2) Adjust rule priority, (3) Update matching conditions, (4) Temporarily disable rule, (5) Broaden/narrow alert scope. ' +
       '\n\n**Required parameters:** ' +
-      '\n- ruleId: Alert rule ID (from "list_alert_rules") ' +
+      '\n- ruleId: Alert rule ID (from "list\\_alert\\_rules") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New rule name ' +
       '\n- priority: Change evaluation order ' +
@@ -4405,11 +4405,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Rule B (priority 2): datasources="*CPU*" ' +
       '\n- Alert from Production resource/device with CPU datasource → Rule A wins (priority 1) ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_alert_rule" to review current configuration ' +
-      '2. Use "list_alert_rules" to check priority conflicts ' +
+      '1. Use "get\\_alert\\_rule" to review current configuration ' +
+      '2. Use "list\\_alert\\_rules" to check priority conflicts ' +
       '3. Update alert rule ' +
       '4. Monitor new alerts to verify routing correctly ' +
-      '\n\n**Related tools:** "get_alert_rule" (review), "list_alert_rules" (check priorities), "list_alerts" (verify routing).',
+      '\n\n**Related tools:** "get\\_alert\\_rule" (review), "list\\_alert\\_rules" (check priorities), "list\\_alerts" (verify routing).',
     annotations: {
       title: 'Update alert rule',
       readOnlyHint: false,
@@ -4458,10 +4458,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes alert rule from routing logic. Alerts previously matched by this rule will be evaluated by remaining rules. ' +
       '\n\n**When to use:** (1) Consolidating duplicate rules, (2) Team/function no longer exists, (3) Replacing with better-configured rule, (4) Cleanup after reorganization. ' +
       '\n\n**Required parameters:** ' +
-      '\n- ruleId: Alert rule ID to delete (from "list_alert_rules") ' +
+      '\n- ruleId: Alert rule ID to delete (from "list\\_alert\\_rules") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "get_alert_rule" to understand what alerts this rule matches ' +
-      '2. Use "list_alert_rules" to identify which rule will handle these alerts after deletion ' +
+      '1. Use "get\\_alert\\_rule" to understand what alerts this rule matches ' +
+      '2. Use "list\\_alert\\_rules" to identify which rule will handle these alerts after deletion ' +
       '3. If replacing, create new rule with LOWER priority BEFORE deleting old one ' +
       '4. Verify alert coverage gap won\'t occur ' +
       '\n\n**Impact of deletion:** ' +
@@ -4492,7 +4492,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Delete priority 10 (catch-all) → Alerts with no other match might go unnotified! ' +
       '\n\n**⚠️ NEVER delete catch-all rule (high priority like 99) without replacement - creates notification black hole!** ' +
       '\n\n**Best practice:** Create replacement rule BEFORE deleting old rule to ensure continuous alert coverage. ' +
-      '\n\n**Related tools:** "get_alert_rule" (review before delete), "list_alert_rules" (check coverage), "create_alert_rule" (replacement).',
+      '\n\n**Related tools:** "get\\_alert\\_rule" (review before delete), "list\\_alert\\_rules" (check coverage), "create\\_alert\\_rule" (replacement).',
     annotations: {
       title: 'Delete alert rule',
       readOnlyHint: false,
@@ -4540,7 +4540,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By tags: filter:"tags~*deployment*" ' +
       '\n- By device: filter:"monitorObjectName~*prod-web*" ' +
       '\n\n**Displayed on:** Graphs, dashboards, resource/device pages - visible wherever metrics are shown. ' +
-      '\n\n**Related tools:** "get_opsnote" (details), "create_opsnote" (add new), "create_device_sdt" (maintenance windows).',
+      '\n\n**Related tools:** "get\\_opsnote" (details), "create\\_opsnote" (add new), "create\\_device\\_sdt" (maintenance windows).',
     annotations: {
       title: 'List OpsNotes',
       readOnlyHint: true,
@@ -4561,8 +4561,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific operational note by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete OpsNote details: note text, timestamp, creator, tags, scope (resources/devices/groups affected), related SDTs, linked resources. ' +
       '\n\n**When to use:** (1) Get full note details after finding ID via list, (2) Review what was documented at specific time, (3) Check scope of operational event, (4) Verify linked resources. ' +
-      '\n\n**Workflow:** Use "list_opsnotes" to find note ID, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_opsnotes" (find notes), "create_opsnote" (add new), "update_opsnote" (modify).',
+      '\n\n**Workflow:** Use "list\\_opsnotes" to find note ID, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_opsnotes" (find notes), "create\\_opsnote" (add new), "update\\_opsnote" (modify).',
     annotations: {
       title: 'Get OpsNote details',
       readOnlyHint: true,
@@ -4641,8 +4641,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '2. Updates: Add notes as you discover findings ' +
       '3. Resolution: Create note "RESOLVED: Killed runaway process" ' +
       '\n\n**After creation:** ' +
-      'OpsNotes appear as vertical lines on graphs at the timestamp. Hover to see note text. Use "list_opsnotes" to search/review notes. ' +
-      '\n\n**Related tools:** "list_opsnotes" (view all notes), "update_opsnote" (modify), "delete_opsnote" (remove).',
+      'OpsNotes appear as vertical lines on graphs at the timestamp. Hover to see note text. Use "list\\_opsnotes" to search/review notes. ' +
+      '\n\n**Related tools:** "list\\_opsnotes" (view all notes), "update\\_opsnote" (modify), "delete\\_opsnote" (remove).',
     annotations: {
       title: 'Create OpsNote',
       readOnlyHint: false,
@@ -4678,7 +4678,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify OpsNote text, timestamp, tags, or scope. Useful for correcting mistakes or adding details after initial creation. ' +
       '\n\n**When to use:** (1) Fix typos in note text, (2) Add more details after investigation, (3) Correct timestamp, (4) Update tags for better organization, (5) Change scope (different device/group). ' +
       '\n\n**Required parameters:** ' +
-      '\n- opsNoteId: OpsNote ID (from "list_opsnotes") ' +
+      '\n- opsNoteId: OpsNote ID (from "list\\_opsnotes") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- note: New note text ' +
       '\n- timestamp: Corrected time (epoch milliseconds) ' +
@@ -4699,10 +4699,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '{opsNoteId: 111, tags: ["deployment", "rollback", "production", "critical"]} ' +
       '// Added more descriptive tags ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list_opsnotes" to find note to update ' +
+      '1. Use "list\\_opsnotes" to find note to update ' +
       '2. Update with new information ' +
       '3. Graph annotations update immediately ' +
-      '\n\n**Related tools:** "list_opsnotes" (find note), "create_opsnote" (create new), "delete_opsnote" (remove).',
+      '\n\n**Related tools:** "list\\_opsnotes" (find note), "create\\_opsnote" (create new), "delete\\_opsnote" (remove).',
     annotations: {
       title: 'Update OpsNote',
       readOnlyHint: false,
@@ -4738,7 +4738,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes OpsNote. Annotation disappears from graphs and dashboards immediately. ' +
       '\n\n**When to use:** (1) Created note by mistake, (2) Note contains incorrect information, (3) Note is no longer relevant, (4) Cleanup old test notes. ' +
       '\n\n**Required parameters:** ' +
-      '\n- opsNoteId: OpsNote ID to delete (from "list_opsnotes") ' +
+      '\n- opsNoteId: OpsNote ID to delete (from "list\\_opsnotes") ' +
       '\n\n**Impact:** ' +
       '\n- Note removed from all graphs and dashboards immediately ' +
       '\n- Historical record deleted (cannot be recovered) ' +
@@ -4751,11 +4751,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Best practice:** ' +
       'Consider updating note instead of deleting if it just needs correction. Deletion removes historical record. ' +
       '\n\n**Workflow:** ' +
-      '1. Use "list_opsnotes" to find note ' +
+      '1. Use "list\\_opsnotes" to find note ' +
       '2. Verify correct note before deleting ' +
       '3. Delete note ' +
       '4. Annotation disappears from graphs immediately ' +
-      '\n\n**Related tools:** "list_opsnotes" (find note), "update_opsnote" (alternative to deletion), "create_opsnote" (recreate if needed).',
+      '\n\n**Related tools:** "list\\_opsnotes" (find note), "update\\_opsnote" (alternative to deletion), "create\\_opsnote" (recreate if needed).',
     annotations: {
       title: 'Delete OpsNote',
       readOnlyHint: false,
@@ -4800,8 +4800,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Common filter patterns:** ' +
       '\n- By status: filter:"status:normal" or filter:"status:dead" ' +
       '\n- By name: filter:"name~*production*" ' +
-      '\n\n**Workflow:** Use this tool to find services, then "get_service" for detailed dependency tree and health status. ' +
-      '\n\n**Related tools:** "get_service" (details and dependencies), "list_service_groups" (organization), "create_service" (define new business service).',
+      '\n\n**Workflow:** Use this tool to find services, then "get\\_service" for detailed dependency tree and health status. ' +
+      '\n\n**Related tools:** "get\\_service" (details and dependencies), "list\\_service\\_groups" (organization), "create\\_service" (define new business service).',
     annotations: {
       title: 'List services',
       readOnlyHint: true,
@@ -4830,8 +4830,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Alert configuration:** When to alert on service issues ' +
       '\n\n**Troubleshooting workflow:** ' +
       'Service shows "Down" → Check dependency tree → Identify which specific resource(s) failed → Address those resources → Service auto-recovers when dependencies healthy ' +
-      '\n\n**Workflow:** Use "list_services" to find serviceId, then use this tool for complete dependency analysis. ' +
-      '\n\n**Related tools:** "list_services" (find service), "update_service" (modify dependencies), "list_resources" (see health of dependent resources).',
+      '\n\n**Workflow:** Use "list\\_services" to find serviceId, then use this tool for complete dependency analysis. ' +
+      '\n\n**Related tools:** "list\\_services" (find service), "update\\_service" (modify dependencies), "list\\_resources" (see health of dependent resources).',
     annotations: {
       title: 'Get service details',
       readOnlyHint: true,
@@ -4857,7 +4857,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**When to use:** (1) Monitor application-level health (not just infrastructure), (2) Create business-facing dashboards, (3) SLA tracking for customer-facing services, (4) Executive reporting (business view, not technical), (5) Complex dependency modeling. ' +
       '\n\n**Required parameters:** ' +
       '\n- name: Service name (e.g., "E-commerce Website", "Payment API", "Mobile App Backend") ' +
-      '\n- groupId: Service group ID for organization (from "list_service_groups") ' +
+      '\n- groupId: Service group ID for organization (from "list\\_service\\_groups") ' +
       '\n\n**Optional parameters:** ' +
       '\n- description: Service purpose/details ' +
       '\n- resources/devices: Array of resource/device IDs that comprise this service ' +
@@ -4909,8 +4909,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Use service groups:** Organize by department, product, or region ' +
       '\n- **Document SLAs:** Add SLA targets to description ' +
       '\n\n**After creation:** ' +
-      'Service appears in Services view with aggregated health status. Use in dashboards to show business-level health. Use "update_service" to modify membership as infrastructure changes. ' +
-      '\n\n**Related tools:** "list_service_groups" (create groups first), "update_service" (modify), "list_resources" (find resources/devices), "create_service_dashboard" (visualize).',
+      'Service appears in Services view with aggregated health status. Use in dashboards to show business-level health. Use "update\\_service" to modify membership as infrastructure changes. ' +
+      '\n\n**Related tools:** "list\\_service\\_groups" (create groups first), "update\\_service" (modify), "list\\_resources" (find resources/devices), "create\\_service\\_dashboard" (visualize).',
     annotations: {
       title: 'Create service',
       readOnlyHint: false,
@@ -4946,7 +4946,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify service name, description, or member resources/devices. Updates service health calculation when membership changes. ' +
       '\n\n**When to use:** (1) Add/remove resource/device as infrastructure changes, (2) Rename service, (3) Update description/SLA, (4) Reorganize service structure, (5) Reflect architecture changes. ' +
       '\n\n**Required parameters:** ' +
-      '\n- serviceId: Service ID (from "list_services") ' +
+      '\n- serviceId: Service ID (from "list\\_services") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New service name ' +
       '\n- description: Updated description ' +
@@ -4965,10 +4965,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**⚠️ Important:** ' +
       'Updating resource/device array REPLACES all members. Include existing + new resources/devices, or resource/device will be removed from service. ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_service" to see current membership ' +
+      '1. Use "get\\_service" to see current membership ' +
       '2. Update service with complete resource/device list ' +
       '3. Service health recalculates immediately ' +
-      '\n\n**Related tools:** "get_service" (review), "list_services" (find service), "list_resources" (find resources/devices).',
+      '\n\n**Related tools:** "get\\_service" (review), "list\\_services" (find service), "list\\_resources" (find resources/devices).',
     annotations: {
       title: 'Update service',
       readOnlyHint: false,
@@ -5000,7 +5000,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes service. Service disappears from dashboards and Services view. Member resource/device remain unaffected (only service container deleted). ' +
       '\n\n**When to use:** (1) Application/service decommissioned, (2) Service no longer needed, (3) Consolidating duplicate services, (4) Restructuring service hierarchy. ' +
       '\n\n**Required parameters:** ' +
-      '\n- serviceId: Service ID to delete (from "list_services") ' +
+      '\n- serviceId: Service ID to delete (from "list\\_services") ' +
       '\n\n**Impact:** ' +
       '\n- Service removed from all dashboards ' +
       '\n- Service health history deleted ' +
@@ -5015,7 +5015,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '2. Check if service used in alert rules (will break routing) ' +
       '3. Verify service no longer represents active business function ' +
       '\n\n**Best practice:** Update dashboards to remove service widgets BEFORE deleting service. ' +
-      '\n\n**Related tools:** "list_services" (find service), "get_service" (verify before delete), "list_dashboards" (check usage).',
+      '\n\n**Related tools:** "list\\_services" (find service), "get\\_service" (verify before delete), "list\\_dashboards" (check usage).',
     annotations: {
       title: 'Delete service',
       readOnlyHint: false,
@@ -5051,8 +5051,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Group services by SLA tiers ' +
       '\n- Separate internal vs customer-facing services ' +
       '\n- Structure multi-tenant service monitoring ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_services" filtered by groupId to see services in specific folder. ' +
-      '\n\n**Related tools:** "get_service_group" (details), "list_services" (services in group), "create_service_group" (create folder).',
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_services" filtered by groupId to see services in specific folder. ' +
+      '\n\n**Related tools:** "get\\_service\\_group" (details), "list\\_services" (services in group), "create\\_service\\_group" (create folder).',
     annotations: {
       title: 'List service groups',
       readOnlyHint: true,
@@ -5073,8 +5073,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific service group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete service group details: name, full path, parentId, description, number of services (direct and total), number of subgroups. ' +
       '\n\n**When to use:** (1) Get group path for documentation, (2) Check service membership counts, (3) Verify group hierarchy, (4) Review group structure before creating services. ' +
-      '\n\n**Workflow:** Use "list_service_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_service_groups" (find groups), "list_services" (services in group), "create_service_group" (create new).',
+      '\n\n**Workflow:** Use "list\\_service\\_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_service\\_groups" (find groups), "list\\_services" (services in group), "create\\_service\\_group" (create new).',
     annotations: {
       title: 'Get service group details',
       readOnlyHint: true,
@@ -5126,7 +5126,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Organize by how business views applications ' +
       '\n- Keep hierarchy shallow (2-3 levels max) ' +
       '\n\n**After creation:** Use groupId when creating services to place them in appropriate folder. ' +
-      '\n\n**Related tools:** "list_service_groups" (view hierarchy), "create_service" (add services to group), "update_service_group" (modify).',
+      '\n\n**Related tools:** "list\\_service\\_groups" (view hierarchy), "create\\_service" (add services to group), "update\\_service\\_group" (modify).',
     annotations: {
       title: 'Create service group',
       readOnlyHint: false,
@@ -5158,7 +5158,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify group name, description, or parent (move in hierarchy). Does not affect services within group. ' +
       '\n\n**When to use:** (1) Rename group after reorg, (2) Update description, (3) Move group in hierarchy, (4) Reorganize service structure. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Service group ID (from "list_service_groups") ' +
+      '\n- groupId: Service group ID (from "list\\_service\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
@@ -5171,10 +5171,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Update description:** ' +
       '{groupId: 123, description: "Updated to include new microservices"} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list_service_groups" to find group ' +
+      '1. Use "list\\_service\\_groups" to find group ' +
       '2. Update group settings ' +
       '3. Services within group unaffected ' +
-      '\n\n**Related tools:** "list_service_groups" (find group), "get_service_group" (verify), "list_services" (services in group).',
+      '\n\n**Related tools:** "list\\_service\\_groups" (find group), "get\\_service\\_group" (verify), "list\\_services" (services in group).',
     annotations: {
       title: 'Update service group',
       readOnlyHint: false,
@@ -5210,13 +5210,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Removes empty service group folder. Group must have no services and no subgroups. ' +
       '\n\n**When to use:** (1) Cleanup empty groups after reorganization, (2) Remove unused organizational folders, (3) Simplify service hierarchy. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Service group ID to delete (from "list_service_groups") ' +
+      '\n- groupId: Service group ID to delete (from "list\\_service\\_groups") ' +
       '\n\n**Before deleting:** ' +
       '1. Move all services to different group (or delete services) ' +
       '2. Move or delete all subgroups ' +
       '3. Verify group is empty ' +
       '\n\n**Safe deletion workflow:** ' +
-      '1. Use "list_services" to find services in this group ' +
+      '1. Use "list\\_services" to find services in this group ' +
       '2. Move services: update_service(serviceId: X, groupId: NEW_GROUP) ' +
       '3. Check for subgroups in group ' +
       '4. Delete empty subgroups first ' +
@@ -5225,7 +5225,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       'If deletion fails, group likely not empty. Check for: ' +
       '\n- Services still in group ' +
       '\n- Subgroups still under this group ' +
-      '\n\n**Related tools:** "list_services" (check for services), "list_service_groups" (check for subgroups), "update_service" (move services).',
+      '\n\n**Related tools:** "list\\_services" (check for services), "list\\_service\\_groups" (check for subgroups), "update\\_service" (move services).',
     annotations: {
       title: 'Delete service group',
       readOnlyHint: false,
@@ -5261,8 +5261,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Group compliance/audit reports separately ' +
       '\n- Separate internal vs customer-facing reports ' +
       '\n- Structure reports by delivery schedule ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_reports" filtered by groupId to see reports in specific folder. ' +
-      '\n\n**Related tools:** "get_report_group" (details), "list_reports" (reports in group), "create_report_group" (create folder).',
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_reports" filtered by groupId to see reports in specific folder. ' +
+      '\n\n**Related tools:** "get\\_report\\_group" (details), "list\\_reports" (reports in group), "create\\_report\\_group" (create folder).',
     annotations: {
       title: 'List report groups',
       readOnlyHint: true,
@@ -5283,8 +5283,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific report group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete report group details: name, full path, parentId, description, number of reports (direct and total), number of subgroups. ' +
       '\n\n**When to use:** (1) Get group path for documentation, (2) Check report membership counts, (3) Verify group hierarchy, (4) Review group structure before creating reports. ' +
-      '\n\n**Workflow:** Use "list_report_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_report_groups" (find groups), "list_reports" (reports in group), "create_report_group" (create new).',
+      '\n\n**Workflow:** Use "list\\_report\\_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_report\\_groups" (find groups), "list\\_reports" (reports in group), "create\\_report\\_group" (create new).',
     annotations: {
       title: 'Get report group details',
       readOnlyHint: true,
@@ -5322,7 +5322,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Create groups before creating reports ' +
       '\n- Use descriptive names matching business needs ' +
       '\n- Keep hierarchy shallow (2-3 levels max) ' +
-      '\n\n**Related tools:** "list_report_groups" (view hierarchy), "create_report" (add reports), "update_report_group" (modify).',
+      '\n\n**Related tools:** "list\\_report\\_groups" (view hierarchy), "create\\_report" (add reports), "update\\_report\\_group" (modify).',
     annotations: {
       title: 'Create report group',
       readOnlyHint: false,
@@ -5350,12 +5350,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify group name, description, or parent (move in hierarchy). Does not affect reports within group. ' +
       '\n\n**When to use:** (1) Rename group, (2) Update description, (3) Move group in hierarchy, (4) Reorganize report structure. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Report group ID (from "list_report_groups") ' +
+      '\n- groupId: Report group ID (from "list\\_report\\_groups") ' +
       '\n\n**Optional parameters:** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
       '\n- parentId: New parent group (moves group) ' +
-      '\n\n**Related tools:** "list_report_groups" (find group), "get_report_group" (verify), "list_reports" (reports in group).',
+      '\n\n**Related tools:** "list\\_report\\_groups" (find group), "get\\_report\\_group" (verify), "list\\_reports" (reports in group).',
     annotations: {
       title: 'Update report group',
       readOnlyHint: false,
@@ -5388,9 +5388,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Removes empty report group folder. Group must have no reports and no subgroups. ' +
       '\n\n**When to use:** (1) Cleanup empty groups after reorganization, (2) Remove unused organizational folders, (3) Simplify report hierarchy. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Report group ID to delete (from "list_report_groups") ' +
+      '\n- groupId: Report group ID to delete (from "list\\_report\\_groups") ' +
       '\n\n**Before deleting:** Move all reports and subgroups first, then delete empty group. ' +
-      '\n\n**Related tools:** "list_reports" (check for reports), "list_report_groups" (check for subgroups), "update_report" (move reports).',
+      '\n\n**Related tools:** "list\\_reports" (check for reports), "list\\_report\\_groups" (check for subgroups), "update\\_report" (move reports).',
     annotations: {
       title: 'Delete report group',
       readOnlyHint: false,
@@ -5427,8 +5427,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Group collectors by customer or tenant ' +
       '\n- Separate production vs non-production collectors ' +
       '\n- Structure multi-datacenter collector deployments ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_collectors" filtered by groupId to see collectors in specific folder. ' +
-      '\n\n**Related tools:** "get_collector_group" (details), "list_collectors" (collectors in group), "create_collector_group" (create folder).',
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_collectors" filtered by groupId to see collectors in specific folder. ' +
+      '\n\n**Related tools:** "get\\_collector\\_group" (details), "list\\_collectors" (collectors in group), "create\\_collector\\_group" (create folder).',
     annotations: {
       title: 'List collector groups',
       readOnlyHint: true,
@@ -5449,8 +5449,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get detailed information about a specific collector group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete collector group details: name, full path, parentId, description, number of collectors (direct and total), number of subgroups. ' +
       '\n\n**When to use:** (1) Get group path for documentation, (2) Check collector membership counts, (3) Verify group hierarchy, (4) Review group structure before deploying collectors. ' +
-      '\n\n**Workflow:** Use "list_collector_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_collector_groups" (find groups), "list_collectors" (collectors in group), "create_collector_group" (create new).',
+      '\n\n**Workflow:** Use "list\\_collector\\_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list\\_collector\\_groups" (find groups), "list\\_collectors" (collectors in group), "create\\_collector\\_group" (create new).',
     annotations: {
       title: 'Get collector group details',
       readOnlyHint: true,
@@ -5492,8 +5492,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Before bulk update: See current values before changing ' +
       '\n- Troubleshoot authentication: Verify credentials applied to resource/device ' +
       '\n- Document configuration: Export group settings ' +
-      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, then use this tool to see properties, then "update_device_group_property" to modify. ' +
-      '\n\n**Related tools:** "update_device_group_property" (modify property), "get_resource_group" (group details), "list_device_properties" (device-level properties).',
+      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, then use this tool to see properties, then "update\\_device\\_group\\_property" to modify. ' +
+      '\n\n**Related tools:** "update\\_device\\_group\\_property" (modify property), "get\\_resource\\_group" (group details), "list\\_device\\_properties" (device-level properties).',
     annotations: {
       title: 'List resource/device group properties',
       readOnlyHint: true,
@@ -5520,7 +5520,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modifies group-level property inherited by all resource/device in group. Changes immediately affect all member resources/devices. ' +
       '\n\n**When to use:** (1) Update credentials for all resource/device in group, (2) Change environment tags, (3) Update owner/team information, (4) Modify monitoring settings, (5) Bulk property updates. ' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Device group ID (from "list_resource_groups") ' +
+      '\n- groupId: Device group ID (from "list\\_resource\\_groups") ' +
       '\n- name: Property name (e.g., "ssh.user", "env", "owner") ' +
       '\n- value: New property value ' +
       '\n\n**Common update scenarios:** ' +
@@ -5538,11 +5538,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Subgroup resource/device also inherit unless overridden ' +
       '\n- Credential changes affect monitoring immediately ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list_device_group_properties" to see current properties ' +
+      '1. Use "list\\_device\\_group\\_properties" to see current properties ' +
       '2. Update property value ' +
       '3. Changes propagate to all member resource/device immediately ' +
       '4. Test monitoring still works (especially for credential changes) ' +
-      '\n\n**Related tools:** "list_device_group_properties" (view all), "list_device_properties" (device-level view), "get_resource_group" (group details).',
+      '\n\n**Related tools:** "list\\_device\\_group\\_properties" (view all), "list\\_device\\_properties" (device-level view), "get\\_resource\\_group" (group details).',
     annotations: {
       title: 'Update resource/device group property',
       readOnlyHint: false,
@@ -5589,14 +5589,14 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- **Cloud auto-discovery:** Scan AWS account, add all EC2 instances daily ' +
       '\n- **Branch office monitoring:** Scan remote office subnets, discover network resource/device ' +
       '\n- **Dynamic infrastructure:** Auto-discover containers, VMs as they spin up ' +
-      '\n\n**Example netscan configurations:** ' +
+      '\n\n**Example NetScan configurations:** ' +
       '\n- "Production Servers" - Scan 192.168.1.0/24 every 6 hours via nmap ' +
       '\n- "AWS EC2 Discovery" - Query AWS API every hour for new instances ' +
       '\n- "Network resources/Devices" - SNMP walk 10.0.0.0/8 daily for routers/switches ' +
-      '\n\n**Workflow:** Use this tool to review netscans, then "get_netscan" for detailed configuration including filters and resource/device properties. ' +
-      '\n\n**Related tools:** "get_netscan" (configuration details), "create_netscan" (set up auto-discovery), "run_netscan" (trigger manual scan).',
+      '\n\n**Workflow:** Use this tool to review netscans, then "get\\_netscan" for detailed configuration including filters and resource/device properties. ' +
+      '\n\n**Related tools:** "get\\_netscan" (configuration details), "create\\_netscan" (set up auto-discovery), "run\\_netscan" (trigger manual scan).',
     annotations: {
-      title: 'List netscans',
+      title: 'List NetScans',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -5626,10 +5626,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Why resource/device not discovered?" → Check if IP in target range and not excluded by filters ' +
       '\n- "Wrong credentials?" → Verify credential properties configured in netscan ' +
       '\n- "resources/Devices missing properties?" → Check default properties applied by netscan ' +
-      '\n\n**Workflow:** Use "list_netscans" to find netscanId, then use this tool to review complete configuration. ' +
-      '\n\n**Related tools:** "list_netscans" (find netscan), "update_netscan" (modify), "run_netscan" (execute now).',
+      '\n\n**Workflow:** Use "list\\_netscans" to find netscanId, then use this tool to review complete configuration. ' +
+      '\n\n**Related tools:** "list\\_netscans" (find netscan), "update\\_netscan" (modify), "run\\_netscan" (execute now).',
     annotations: {
-      title: 'Get netscan details',
+      title: 'Get NetScan details',
       readOnlyHint: true,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -5653,7 +5653,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**When to use:** (1) Automate resource/device discovery instead of manual adds, (2) Onboard entire subnets, (3) Keep monitoring in sync with dynamic infrastructure (cloud/containers), (4) Continuous discovery for DHCP/dynamic environments, (5) Bulk resource/device onboarding. ' +
       '\n\n**Required parameters:** ' +
       '\n- name: NetScan name (e.g., "Production Network Scan", "AWS EC2 Discovery") ' +
-      '\n- collectorId: Collector to perform scan (from "list_collectors") ' +
+      '\n- collectorId: Collector to perform scan (from "list\\_collectors") ' +
       '\n- targetType: "subnet", "iprange", "script", "awsEC2", "azureVMs", etc. ' +
       '\n- target: What to scan (depends on type - subnet CIDR, IP range, script, etc.) ' +
       '\n\n**Optional parameters:** ' +
@@ -5700,10 +5700,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Schedule during low-traffic hours (scans generate network traffic) ' +
       '\n- Test credentials before scheduling ' +
       '\n- Group resource/device appropriately with deviceGroupId ' +
-      '\n\n**After creation:** NetScan runs on schedule. Use "list_netscans" to view, "get_netscan" for details. Check "list_resources" to see discovered resources/devices. ' +
-      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find deviceGroupId), "update_netscan" (modify), "delete_netscan" (remove).',
+      '\n\n**After creation:** NetScan runs on schedule. Use "list\\_netscans" to view, "get\\_netscan" for details. Check "list\\_resources" to see discovered resources/devices. ' +
+      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_resource\\_groups" (find deviceGroupId), "update\\_netscan" (modify), "delete\\_netscan" (remove).',
     annotations: {
-      title: 'Create netscan',
+      title: 'Create NetScan',
       readOnlyHint: false,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -5745,9 +5745,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify netscan name, target, schedule, credentials, or settings. Changes take effect on next scan run. ' +
       '\n\n**When to use:** (1) Change IP range/subnet scanned, (2) Update scan schedule, (3) Modify credentials, (4) Change destination group for discovered resources/devices, (5) Update exclusion filters. ' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: NetScan ID (from "list_netscans") ' +
+      '\n- netscanId: NetScan ID (from "list\\_netscans") ' +
       '\n\n**Optional parameters (what to change):** ' +
-      '\n- name: New netscan name ' +
+      '\n- name: New NetScan name ' +
       '\n- target: New IP range/subnet ' +
       '\n- schedule: New schedule (daily, weekly, cron) ' +
       '\n- deviceGroupId: New destination group ' +
@@ -5763,12 +5763,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Add exclusions:** ' +
       '{netscanId: 123, excludeFilters: ["192.168.1.0/24", "192.168.2.50-192.168.2.100"]} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_netscan" to review current settings ' +
-      '2. Update netscan configuration ' +
+      '1. Use "get\\_netscan" to review current settings ' +
+      '2. Update NetScan configuration ' +
       '3. Changes apply on next scheduled run ' +
-      '\n\n**Related tools:** "get_netscan" (review), "list_netscans" (find netscan), "delete_netscan" (remove).',
+      '\n\n**Related tools:** "get\\_netscan" (review), "list\\_netscans" (find netscan), "delete\\_netscan" (remove).',
     annotations: {
-      title: 'Update netscan',
+      title: 'Update NetScan',
       readOnlyHint: false,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -5799,10 +5799,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'delete_netscan',
     description: 'Delete a network discovery scan (NetScan) from LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Permanently removes netscan. Stops all future automatic resource/device discovery for this target. Previously discovered resource/device remain in monitoring. ' +
+      '\n\n**What this does:** Permanently removes NetScan. Stops all future automatic resource/device discovery for this target. Previously discovered resource/device remain in monitoring. ' +
       '\n\n**When to use:** (1) Decommissioned network/subnet, (2) Discovery no longer needed (static environment), (3) Consolidating duplicate netscans, (4) Migrating to different discovery method. ' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: NetScan ID to delete (from "list_netscans") ' +
+      '\n- netscanId: NetScan ID to delete (from "list\\_netscans") ' +
       '\n\n**Impact:** ' +
       '\n- NetScan stops running (no more automatic discovery) ' +
       '\n- Previously discovered resource/device remain in monitoring (not deleted) ' +
@@ -5810,9 +5810,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Cannot be undone ' +
       '\n\n**Best practice:** ' +
       'Before deleting, decide if you still need discovery for this network. resources/Devices already discovered remain monitored. ' +
-      '\n\n**Related tools:** "list_netscans" (find netscan), "get_netscan" (verify before delete), "list_resources" (see discovered resources/devices).',
+      '\n\n**Related tools:** "list\\_netscans" (find NetScan), "get\\_netscan" (verify before delete), "list\\_resources" (see discovered resources/devices).',
     annotations: {
-      title: 'Delete netscan',
+      title: 'Delete NetScan',
       readOnlyHint: false,
       serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
@@ -5821,7 +5821,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       properties: {
         netscanId: {
           type: 'number',
-          description: 'The ID of the netscan to delete',
+          description: 'The ID of the NetScan to delete',
         },
       },
       additionalProperties: false,
@@ -5862,7 +5862,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Inactive: Disabled or authentication failed ' +
       '\n- Test: Verify integration by triggering test notification ' +
       '\n\n**Workflow:** Use this tool to find integrations, then use in escalation chains or as webhook recipients for alert delivery. ' +
-      '\n\n**Related tools:** "get_integration" (configuration details), "test_integration" (verify working), "list_escalation_chains" (see usage).',
+      '\n\n**Related tools:** "get\\_integration" (configuration details), "test\\_integration" (verify working), "list\\_escalation\\_chains" (see usage).',
     annotations: {
       title: 'List integrations',
       readOnlyHint: true,
@@ -5893,8 +5893,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Authentication failed: Check API keys/credentials ' +
       '\n- Not receiving notifications: Verify escalation chain configuration ' +
       '\n- Error logs: Review failed notification attempts ' +
-      '\n\n**Workflow:** Use "list_integrations" to find integrationId, then use this tool for detailed configuration and troubleshooting. ' +
-      '\n\n**Related tools:** "list_integrations" (find integrations), "test_integration" (send test), "update_integration" (modify).',
+      '\n\n**Workflow:** Use "list\\_integrations" to find integrationId, then use this tool for detailed configuration and troubleshooting. ' +
+      '\n\n**Related tools:** "list\\_integrations" (find integrations), "test\\_integration" (send test), "update\\_integration" (modify).',
     annotations: {
       title: 'Get integration details',
       readOnlyHint: true,
@@ -5957,7 +5957,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Secure credentials (API keys, passwords) ' +
       '\n- One integration per channel/destination ' +
       '\n- Document integration purpose ' +
-      '\n\n**Related tools:** "list_integrations" (view all), "update_integration" (modify), "delete_integration" (remove), "create_escalation_chain" (use integration).',
+      '\n\n**Related tools:** "list\\_integrations" (view all), "update\\_integration" (modify), "delete\\_integration" (remove), "create\\_escalation\\_chain" (use integration).',
     annotations: {
       title: 'Create integration',
       readOnlyHint: false,
@@ -5993,7 +5993,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Modify integration name, credentials, configuration, or destination. Changes affect future notifications immediately. ' +
       '\n\n**When to use:** (1) Update API keys/credentials, (2) Change Slack/Teams channel, (3) Update ServiceNow/Jira configuration, (4) Modify webhook URL, (5) Rename integration. ' +
       '\n\n**Required parameters:** ' +
-      '\n- integrationId: Integration ID (from "list_integrations") ' +
+      '\n- integrationId: Integration ID (from "list\\_integrations") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New integration name ' +
       '\n- config: Updated configuration (API keys, URLs, channels, etc.) ' +
@@ -6007,10 +6007,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Change webhook URL:** ' +
       '{integrationId: 123, config: {url: "https://new-api.company.com/alerts"}} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get_integration" to see current configuration ' +
+      '1. Use "get\\_integration" to see current configuration ' +
       '2. Update integration ' +
       '3. Test with sample notification ' +
-      '\n\n**Related tools:** "get_integration" (review), "list_integrations" (find integration), "delete_integration" (remove).',
+      '\n\n**Related tools:** "get\\_integration" (review), "list\\_integrations" (find integration), "delete\\_integration" (remove).',
     annotations: {
       title: 'Update integration',
       readOnlyHint: false,
@@ -6050,7 +6050,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**What this does:** Permanently removes integration. Escalation chains referencing this integration lose that notification path. ' +
       '\n\n**When to use:** (1) Integration no longer needed, (2) Platform decommissioned (stopped using Slack/ServiceNow), (3) Consolidating duplicate integrations, (4) Migration to different platform. ' +
       '\n\n**Required parameters:** ' +
-      '\n- integrationId: Integration ID to delete (from "list_integrations") ' +
+      '\n- integrationId: Integration ID to delete (from "list\\_integrations") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
       '1. Find all escalation chains using this integration ' +
       '2. Create replacement integration (if needed) ' +
@@ -6061,13 +6061,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- No error or warning - notifications silently fail ' +
       '\n- Active alerts may skip notification stages ' +
       '\n\n**Safe deletion workflow:** ' +
-      '1. Use "list_escalation_chains" to find chains using this integration ' +
+      '1. Use "list\\_escalation\\_chains" to find chains using this integration ' +
       '2. Create new integration (if replacing) ' +
       '3. Update all escalation chains to use new integration ' +
       '4. Verify updated ' +
       '5. Delete old integration ' +
       '\n\n**Best practice:** Migrate escalation chains to replacement integration BEFORE deleting to prevent notification gaps. ' +
-      '\n\n**Related tools:** "list_escalation_chains" (find usage), "create_integration" (replacement), "update_escalation_chain" (migrate).',
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (find usage), "create\\_integration" (replacement), "update\\_escalation\\_chain" (migrate).',
     annotations: {
       title: 'Delete integration',
       readOnlyHint: false,
@@ -6112,8 +6112,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Use multiple checkpoints for critical services (avoid false positives from single location issues) ' +
       '\n- Mix internal and external checkpoints for comprehensive coverage ' +
       '\n- Consider timezone differences for result interpretation ' +
-      '\n\n**Workflow:** Use this tool to discover available locations, then use those checkpoint IDs when creating website monitors via "create_website". ' +
-      '\n\n**Related tools:** "list_websites" (existing monitors), "create_website" (configure checkpoints), "get_website" (verify checkpoint configuration).',
+      '\n\n**Workflow:** Use this tool to discover available locations, then use those checkpoint IDs when creating website monitors via "create\\_website". ' +
+      '\n\n**Related tools:** "list\\_websites" (existing monitors), "create\\_website" (configure checkpoints), "get\\_website" (verify checkpoint configuration).',
     annotations: {
       title: 'List checkpoint locations',
       readOnlyHint: true,
@@ -6151,7 +6151,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- SNMP: Query resource/device interface tables, ARP tables, routing tables ' +
       '\n- Traceroute: Active probing to discover paths ' +
       '\n- Parent/child relationships: Based on gateway configuration ' +
-      '\n\n**Related tools:** "list_resources" (view resources/devices), "get_resource" (device details including connections).',
+      '\n\n**Related tools:** "list\\_resources" (view resources/devices), "get\\_resource" (device details including connections).',
     annotations: {
       title: 'Get network topology',
       readOnlyHint: true,
@@ -6182,7 +6182,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '1. Use this tool to check available versions ' +
       '2. Review changelog for breaking changes ' +
       '3. Test new version on non-production collector first ' +
-      '4. Use "get_collector" to check current version on your collectors ' +
+      '4. Use "get\\_collector" to check current version on your collectors ' +
       '5. Update collectors via LogicMonitor UI or API ' +
       '6. Monitor collector health after upgrade ' +
       '\n\n**Version numbering:** Format is typically X.Y.Z (e.g., 34.100.0) where: ' +
@@ -6200,7 +6200,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Plan upgrade" → Review changelog, schedule maintenance ' +
       '\n- "Rollback needed" → Find previous stable version ' +
       '\n- "Platform migration" → Verify version supports new OS ' +
-      '\n\n**Related tools:** "get_collector" (check current version on collector), "list_collectors" (find collectors to upgrade).',
+      '\n\n**Related tools:** "get\\_collector" (check current version on collector), "list\\_collectors" (find collectors to upgrade).',
     annotations: {
       title: 'List collector versions',
       readOnlyHint: true,

@@ -369,6 +369,9 @@ if (TRANSPORT === 'stdio') {
   // Create Express app
   const app = express();
 
+  // Disable X-Powered-By header for security
+  app.disable('x-powered-by');
+
   // Request/Response logging middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
