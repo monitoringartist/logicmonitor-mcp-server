@@ -987,16 +987,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Returns:** Array of datasources with: id, name, displayName, description, appliesTo (which resource/device it monitors), collection method, datapoints/metrics collected. ' +
       '\n\n**What are datasources:** Templates that define WHAT to monitor (e.g., CPU, memory, disk), HOW to collect it (SNMP, WMI, API), and WHEN to alert. LogicMonitor has 2000+ pre-built datasources for common technologies. ' +
       '\n\n**When to use:** ' +
-      '\n- Find datasource for specific technology (e.g., "AWS_EC2", "VMware_vCenter")' +
+      '\n- Find datasource for specific technology (e.g., "AWS\\_EC2", "VMware\\_vCenter")' +
       '\n- Discover what can be monitored' +
       '\n- Get datasource IDs for API operations' +
       '\n- Browse monitoring capabilities' +
       '\n\n**Common filter patterns:** ' +
       '\n- By name: filter:"name\\~\\*CPU\\*" or filter:"displayName\\~\\*Memory\\*"' +
       '\n- Cloud providers: filter:"name\\~\\*AWS\\*" or filter:"name\\~\\*Azure\\*"' +
-      '\n- Database: filter:"name\\~\\*MySQL\\*" or filter:"name\\~\\*SQL_Server\\*"' +
+      '\n- Database: filter:"name\\~\\*MySQL\\*" or filter:"name\\~\\*SQL\\_Server\\*"' +
       '\n- Network: filter:"name\\~\\*Cisco\\*" or filter:"name\\~\\*SNMP\\*"' +
-      '\n\n**Examples:** AWS_EC2 (monitors EC2 instances), SNMP_Network_Interfaces (network stats), WinCPU (Windows CPU), Linux_SSH (Linux via SSH). ' +
+      '\n\n**Examples:** AWS\\_EC2 (monitors EC2 instances), SNMP\\_Network\\_Interfaces (network stats), WinCPU (Windows CPU), Linux\\_SSH (Linux via SSH). ' +
       '\n\n**Related tools:** "get\\_datasource" (details), "list\\_resource\\_datasources" (see what\'s applied to specific resource/device).',
     annotations: {
       title: 'List datasources',
@@ -1067,7 +1067,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Get instance IDs for metric retrieval' +
       '\n\n**Example workflow:** ' +
       'Device "web-server-01" has datasource "WinVolumeUsage-" → instances: C:, D:, E: (each disk is an instance) ' +
-      'Device "router-01" has datasource "SNMP_Network_Interfaces" → instances: GigabitEthernet0/1, GigabitEthernet0/2 (each interface is an instance) ' +
+      'Device "router-01" has datasource "SNMP\\_Network\\_Interfaces" → instances: GigabitEthernet0/1, GigabitEthernet0/2 (each interface is an instance) ' +
       '\n\n**Complete workflow to get metrics:** ' +
       '\n- Use "list\\_resource\\_datasources" to get deviceDataSourceId' +
       '\n- Use this tool to list instances and get instanceId' +
@@ -2478,7 +2478,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Returns:** Array of ConfigSources with: id, name, displayName, description, appliesTo logic, collection method. ' +
       '\n\n**What are ConfigSources:** Track configuration file changes for compliance and change management. Similar to datasources, but for configs instead of metrics. Alert when configs change unexpectedly. ' +
       '\n\n**When to use:** ' +
-      '\n- Find ConfigSource for specific resource/device type (e.g., Cisco_IOS_Config)' +
+      '\n- Find ConfigSource for specific resource/device type (e.g., Cisco\\_IOS\\_Config)' +
       '\n- Discover what configs are being tracked' +
       '\n- Get ConfigSource IDs for API operations' +
       '\n- Audit configuration monitoring coverage' +
@@ -2493,10 +2493,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Rollback: Compare current config to previous version' +
       '\n- Audit: "Show all config changes in last 30 days"' +
       '\n\n**Common ConfigSources:** ' +
-      '\n- Cisco_IOS_Config: Cisco router/switch configs' +
-      '\n- F5_LTM_Config: F5 load balancer configs' +
-      '\n- Palo_Alto_Config: Palo Alto firewall rules' +
-      '\n- Linux_Config_Files: Monitor /etc files' +
+      '\n- Cisco\\_IOS\_Config: Cisco router/switch configs' +
+      '\n- F5\\_LTM\\_Config: F5 load balancer configs' +
+      '\n- Palo\\_Alto\\_Config: Palo Alto firewall rules' +
+      '\n- Linux\\_Config\\_Files: Monitor /etc files' +
       '\n\n**Related tools:** "get\\_configsource" (details), "list\\_device\\_configs" (see configs for device).',
     annotations: {
       title: 'List ConfigSources',
@@ -2573,7 +2573,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Property inheritance:** ' +
       'Properties can be set at: Device level (highest priority) → Group level → Parent group (inherited). ' +
       '\n\n**Datasource appliesTo logic uses properties:** ' +
-      'Many datasources check properties to decide if they should monitor device. Example: AWS_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
+      'Many datasources check properties to decide if they should monitor device. Example: AWS\\_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
       '\n\n**Workflow:** Use "list\\_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
       '\n\n**Related tools:** "update\\_device\\_property" (modify), "get\\_resource" (see summary), "list\\_datasources" (see how properties affect monitoring).',
     annotations: {
@@ -3061,7 +3061,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_access_group',
     description: 'Update an existing access group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify access group properties, add/remove resources, or change tenant assignment. Affects all users assigned to this group immediately. ' +
-      '\n\n**When to use:** (1) Add/remove resource/device groups from access scope, (2) Rename access group, (3) Update description, (4) Add new resources after customer growth, (5) Remove decommissioned resources. ' +
+      '\n\n**When to use:**' +
+      '\n- Add/remove resource/device groups from access scope' +
+      '\n- Rename access group' +
+      '\n- Update description' +
+      '\n- Add new resources after customer growth' +
+      '\n- Remove decommissioned resources' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- accessGroupId: Access group ID (from "list\\_access\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -3135,7 +3141,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Cannot be undone - users must be manually reassigned ' +
       '\n- Active user sessions may be terminated ' +
       '\n\n**What this does:** Permanently removes access group. All users assigned to this group lose their resource visibility immediately. ' +
-      '\n\n**When to use:** (1) Customer/client offboarded (MSP), (2) Department dissolved/restructured, (3) Consolidating duplicate access groups, (4) Cleanup unused access groups. ' +
+      '\n\n**When to use:**' +
+      '\n- Customer/client offboarded (MSP)' +
+      '\n- Department dissolved/restructured' +
+      '\n- Consolidating duplicate access groups' +
+      '\n- Cleanup unused access groups' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- accessGroupId: Access group ID to delete (from "list\\_access\\_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -3197,9 +3208,15 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'list_resource_datasources',
     description: 'List datasources applied to a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of datasources actively monitoring this resource/device with: id (deviceDataSourceId), dataSourceName, dataSourceDisplayName, status, alert status, instance count, last poll time. ' +
-      '\n\n**When to use:** (1) See what\'s being monitored on a resource/device, (2) Verify datasource is collecting data, (3) Get deviceDataSourceId for metric retrieval, (4) Troubleshoot missing data, (5) Check datasource health. ' +
+      '\n\n**When to use:**' +
+      '\n- See what\'s being monitored on a resource/device' +
+      '\n- Verify datasource is collecting data' +
+      '\n- Get deviceDataSourceId for metric retrieval' +
+      '\n- Troubleshoot missing data' +
+      '\n- Check datasource health' +
+      '\n' +
       '\n\n**What you discover:** ' +
-      '\n- Which datasources are active (e.g., WinCPU, WinMemory, SNMP_Network_Interfaces) ' +
+      '\n- Which datasources are active (e.g., WinCPU, WinMemory, SNMP\_Network\_Interfaces) ' +
       '\n- How many instances per datasource (e.g., 3 disks, 4 network interfaces) ' +
       '\n- Collection status: Collecting data vs errors ' +
       '\n- Alert status: Any active alerts from this datasource ' +
@@ -3237,7 +3254,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_resource_datasource',
     description: 'Get detailed information about a specific datasource applied to a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete resource/device datasource details: dataSourceName, status, alert status, number of instances, monitoring configuration, stop monitoring flag, custom properties, graphs. ' +
-      '\n\n**When to use:** (1) Check if datasource is collecting data, (2) Review alert status for specific datasource, (3) Verify custom thresholds, (4) Get deviceDataSourceId for instance operations, (5) Troubleshoot data collection issues. ' +
+      '\n\n**When to use:**' +
+      '\n- Check if datasource is collecting data' +
+      '\n- Review alert status for specific datasource' +
+      '\n- Verify custom thresholds' +
+      '\n- Get deviceDataSourceId for instance operations' +
+      '\n- Troubleshoot data collection issues' +
+      '\n' +
       '\n\n**Key fields:** ' +
       '\n- instanceNumber: How many instances (e.g., 4 network interfaces) ' +
       '\n- status: Collection status (normal vs error) ' +
@@ -3271,7 +3294,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_resource_datasource',
     description: 'Update resource/device datasource configuration in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify how a specific datasource monitors a specific resource/device. Control alerting, enable/disable monitoring, or adjust device-specific datasource settings without affecting other resources/devices. ' +
-      '\n\n**When to use:** (1) Disable monitoring for specific datasource on one resource/device, (2) Disable alerting during maintenance, (3) Enable previously disabled datasource, (4) Adjust polling interval for device, (5) Update device-specific thresholds. ' +
+      '\n\n**When to use:**' +
+      '\n- Disable monitoring for specific datasource on one resource/device' +
+      '\n- Disable alerting during maintenance' +
+      '\n- Enable previously disabled datasource' +
+      '\n- Adjust polling interval for device' +
+      '\n- Update device-specific thresholds' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- deviceId: Device ID (from "list\\_resources") ' +
       '\n- deviceDataSourceId: Device datasource ID (from "list\\_device\\_datasources") ' +
@@ -3345,7 +3374,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all EventSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of EventSources with: id, name, displayName, description, appliesTo logic, event collection method. ' +
       '\n\n**What are EventSources:** Collect and process event data (logs, Windows events, syslog, traps). Different from DataSources (metrics) and ConfigSources (configs). Used for log monitoring and event correlation. ' +
-      '\n\n**When to use:** (1) Find EventSource for log monitoring, (2) Discover what events are being collected, (3) Get EventSource IDs for operations, (4) Audit event monitoring coverage. ' +
+      '\n\n**When to use:**' +
+      '\n- Find EventSource for log monitoring' +
+      '\n- Discover what events are being collected' +
+      '\n- Get EventSource IDs for operations' +
+      '\n- Audit event monitoring coverage' +
+      '\n' +
       '\n\n**Event types collected:** ' +
       '\n- Windows Event Logs: Application, Security, System logs ' +
       '\n- Syslog: Linux/Unix system logs, network resource/device logs ' +
@@ -3353,11 +3387,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Application logs: Custom app logs, web server logs ' +
       '\n- Cloud events: CloudWatch logs, Azure events ' +
       '\n\n**Common EventSources:** ' +
-      '\n- Windows_Application_EventLog: Windows application events ' +
-      '\n- Windows_Security_EventLog: Security/audit logs ' +
-      '\n- Linux_Syslog: Linux system logs via syslog ' +
-      '\n- SNMP_Traps: Network resource/device SNMP traps ' +
-      '\n- VMware_Events: vCenter events ' +
+      '\n- Windows\\_Application\\_EventLog: Windows application events ' +
+      '\n- Windows\\_Security\\_EventLog: Security/audit logs ' +
+      '\n- Linux\\_Syslog: Linux system logs via syslog ' +
+      '\n- SNMP\\_Traps: Network resource/device SNMP traps ' +
+      '\n- VMware\\_Events: vCenter events ' +
       '\n\n**Use cases:** ' +
       '\n- Monitor Windows failed login attempts ' +
       '\n- Alert on ERROR/CRITICAL in application logs ' +
@@ -3383,7 +3417,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_eventsource',
     description: 'Get detailed information about a specific EventSource by its ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete EventSource details: name, displayName, description, appliesTo logic, collection method, filter rules, severity mapping, alert settings. ' +
-      '\n\n**When to use:** (1) Understand what events are collected, (2) Review filter rules (which events trigger alerts), (3) Check severity mapping, (4) Troubleshoot event collection, (5) See appliesTo logic. ' +
+      '\n\n**When to use:**' +
+      '\n- Understand what events are collected' +
+      '\n- Review filter rules (which events trigger alerts)' +
+      '\n- Check severity mapping' +
+      '\n- Troubleshoot event collection' +
+      '\n- See appliesTo logic' +
+      '\n' +
       '\n\n**Key information:** ' +
       '\n- appliesTo: Which resources/devicesget event monitoring ' +
       '\n- filters: Rules for parsing/matching events ' +
@@ -3416,7 +3456,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all escalation chains in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of escalation chains with: id, name, description, escalation stages, recipients at each stage, timing/delays, enabled status. ' +
       '\n\n**What are escalation chains:** Define HOW and WHO gets notified when alerts trigger. Multi-stage notification workflows: Stage 1 (notify team lead immediately) → Stage 2 (if still open after 15 min, notify manager) → Stage 3 (if still open after 30 min, page director). ' +
-      '\n\n**When to use:** (1) Audit notification routing, (2) Find escalation chain IDs for alert rule configuration, (3) Review who gets notified for critical alerts, (4) Verify on-call escalation paths. ' +
+      '\n\n**When to use:**' +
+      '\n- Audit notification routing' +
+      '\n- Find escalation chain IDs for alert rule configuration' +
+      '\n- Review who gets notified for critical alerts' +
+      '\n- Verify on-call escalation paths' +
+      '\n' +
       '\n\n**How escalation chains work:** ' +
       'Alert triggers → Alert Rule matches → Routes to Escalation Chain → Stage 1 notifies immediately → Wait X minutes → If still alerting, Stage 2 notifies → Repeat through stages ' +
       '\n\n**Common escalation patterns:** ' +
@@ -3447,7 +3492,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_escalation_chain',
     description: 'Get detailed information about a specific escalation chain by its ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete escalation chain details: name, description, all stages with: recipients at each stage, notification methods (email/SMS/webhook), time delays between stages, rate limiting, business hours restrictions. ' +
-      '\n\n**When to use:** (1) Review detailed notification workflow, (2) Verify who gets notified at each stage, (3) Check timing between escalations, (4) Audit notification methods, (5) Troubleshoot why notifications not received. ' +
+      '\n\n**When to use:**' +
+      '\n- Review detailed notification workflow' +
+      '\n- Verify who gets notified at each stage' +
+      '\n- Check timing between escalations' +
+      '\n- Audit notification methods' +
+      '\n- Troubleshoot why notifications not received' +
+      '\n' +
       '\n\n**Stage details returned:** ' +
       'For each stage: ' +
       '\n- Stage number (1, 2, 3...) ' +
@@ -3483,7 +3534,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_escalation_chain',
     description: 'Create a new escalation chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines multi-stage notification workflow for alerts. Controls WHO gets notified, WHEN they get notified, and HOW notifications escalate if alerts remain unacknowledged. ' +
-      '\n\n**When to use:** (1) Set up on-call rotation notifications, (2) Define critical alert escalation (team → lead → manager), (3) Create business hours vs after-hours notification paths, (4) Configure team-specific alert routing, (5) Establish incident escalation procedures. ' +
+      '\n\n**When to use:**' +
+      '\n- Set up on-call rotation notifications' +
+      '\n- Define critical alert escalation (team → lead → manager)' +
+      '\n- Create business hours vs after-hours notification paths' +
+      '\n- Configure team-specific alert routing' +
+      '\n- Establish incident escalation procedures' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Escalation chain name (e.g., "Critical Production", "Database Team", "Business Hours Only") ' +
       '\n- stages: Array of escalation stages defining notification workflow ' +
@@ -3578,7 +3635,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_escalation_chain',
     description: 'Update an existing escalation chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify escalation chain stages, recipients, timing, or notification methods. Changes affect all alert rules using this chain immediately. ' +
-      '\n\n**When to use:** (1) Update on-call rotation recipients, (2) Adjust escalation timing, (3) Add/remove notification stages, (4) Change notification methods, (5) Update business hours schedules. ' +
+      '\n\n**When to use:**' +
+      '\n- Update on-call rotation recipients' +
+      '\n- Adjust escalation timing' +
+      '\n- Add/remove notification stages' +
+      '\n- Change notification methods' +
+      '\n- Update business hours schedules' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- chainId: Escalation chain ID (from "list\\_escalation\\_chains") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -3644,7 +3707,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Cannot be undone - must recreate chain if needed ' +
       '\n- No alerts will be sent until rules updated to use different chain ' +
       '\n\n**What this does:** Permanently removes escalation chain. Alert rules referencing this chain lose their notification path and stop sending alerts. ' +
-      '\n\n**When to use:** (1) Consolidating duplicate chains, (2) Replacing with better-configured chain, (3) Team/process restructuring, (4) Cleanup unused chains. ' +
+      '\n\n**When to use:**' +
+      '\n- Consolidating duplicate chains' +
+      '\n- Replacing with better-configured chain' +
+      '\n- Team/process restructuring' +
+      '\n- Cleanup unused chains' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- chainId: Escalation chain ID to delete (from "list\\_escalation\\_chains") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -3706,7 +3774,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all alert recipients (individual notification targets) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of recipients with: id, type (email/SMS/webhook), contact information, method (email address, phone number, webhook URL), name, status. ' +
       '\n\n**What are recipients:** Individual notification endpoints used in escalation chains. Can be: email addresses, SMS/phone numbers, webhook URLs, or integration endpoints (Slack, PagerDuty, etc.). ' +
-      '\n\n**When to use:** (1) Find recipient IDs for escalation chain configuration, (2) Audit who can receive alerts, (3) Verify contact information is current, (4) Review notification endpoints before updating escalation chains. ' +
+      '\n\n**When to use:**' +
+      '\n- Find recipient IDs for escalation chain configuration' +
+      '\n- Audit who can receive alerts' +
+      '\n- Verify contact information is current' +
+      '\n- Review notification endpoints before updating escalation chains' +
+      '\n' +
       '\n\n**Recipient types explained:** ' +
       '\n- **Email:** Email address (e.g., oncall@company.com, john.doe@company.com) ' +
       '\n- **SMS:** Mobile phone number (e.g., +1-555-123-4567) ' +
@@ -3741,7 +3814,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_recipient',
     description: 'Get detailed information about a specific recipient by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete recipient details: type, name, contact information (email/phone/URL), notification method, timezone, schedule restrictions, rate limiting settings. ' +
-      '\n\n**When to use:** (1) Verify contact information before escalation, (2) Check notification schedule (business hours vs 24/7), (3) Review rate limiting settings, (4) Audit recipient configuration. ' +
+      '\n\n**When to use:**' +
+      '\n- Verify contact information before escalation' +
+      '\n- Check notification schedule (business hours vs 24/7)' +
+      '\n- Review rate limiting settings' +
+      '\n- Audit recipient configuration' +
+      '\n' +
       '\n\n**Details returned:** ' +
       '\n- Contact info: Exact email/phone/webhook URL ' +
       '\n- Schedule: When notifications are sent (always vs business hours) ' +
@@ -3771,7 +3849,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_recipient',
     description: 'Create a new alert recipient (notification endpoint) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates individual notification target (email address, phone number, webhook URL, etc.) that can receive alert notifications via escalation chains. ' +
-      '\n\n**When to use:** (1) Add new team member to alert notifications, (2) Set up on-call phone numbers, (3) Configure webhook for Slack/Teams integration, (4) Add email distribution lists, (5) Set up SMS alerts for critical issues. ' +
+      '\n\n**When to use:**' +
+      '\n- Add new team member to alert notifications' +
+      '\n- Set up on-call phone numbers' +
+      '\n- Configure webhook for Slack/Teams integration' +
+      '\n- Add email distribution lists' +
+      '\n- Set up SMS alerts for critical issues' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- type: Recipient type - "email", "sms", "voice", "webhook" ' +
       '\n- address: Contact information (email address, phone number, webhook URL) ' +
@@ -3856,7 +3940,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_recipient',
     description: 'Update an existing alert recipient in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify recipient contact information, notification schedule, rate limits, or name. Changes affect all escalation chains using this recipient. ' +
-      '\n\n**When to use:** (1) Update phone number/email after personnel changes, (2) Change notification schedule, (3) Adjust rate limits, (4) Update recipient name, (5) Switch from email to SMS. ' +
+      '\n\n**When to use:**' +
+      '\n- Update phone number/email after personnel changes' +
+      '\n- Change notification schedule' +
+      '\n- Adjust rate limits' +
+      '\n- Update recipient name' +
+      '\n- Switch from email to SMS' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- recipientId: Recipient ID (from "list\\_recipients") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -3916,7 +4006,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- No error shown - notifications just don\'t arrive ' +
       '\n- Cannot be undone ' +
       '\n\n**What this does:** Permanently removes recipient. Escalation chains referencing this recipient lose that notification endpoint. ' +
-      '\n\n**When to use:** (1) Employee left company, (2) Phone number decommissioned, (3) Email no longer valid, (4) Webhook endpoint retired, (5) Consolidating duplicate recipients. ' +
+      '\n\n**When to use:**' +
+      '\n- Employee left company' +
+      '\n- Phone number decommissioned' +
+      '\n- Email no longer valid' +
+      '\n- Webhook endpoint retired' +
+      '\n- Consolidating duplicate recipients' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- recipientId: Recipient ID to delete (from "list\\_recipients") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -3960,7 +4056,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all recipient groups in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of recipient groups with: id, name, description, member count, recipients list. ' +
       '\n\n**What are recipient groups:** Collections of recipients treated as a single notification target. Simplify escalation chains by notifying entire teams at once. Example: "Database Team" group contains 5 team members - notify group = notify all 5. ' +
-      '\n\n**When to use:** (1) Find group IDs for escalation chains, (2) Audit team notification lists, (3) Review group membership before changes, (4) Simplify notification management. ' +
+      '\n\n**When to use:**' +
+      '\n- Find group IDs for escalation chains' +
+      '\n- Audit team notification lists' +
+      '\n- Review group membership before changes' +
+      '\n- Simplify notification management' +
+      '\n' +
       '\n\n**Benefits over individual recipients:** ' +
       '\n- **Easier management:** Update team once, applies to all escalation chains using that group ' +
       '\n- **Team notifications:** Notify entire team simultaneously ' +
@@ -3995,7 +4096,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_recipient_group',
     description: 'Get detailed information about a specific recipient group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete recipient group details: name, description, list of all members (recipients), member contact info, escalation chains using this group. ' +
-      '\n\n**When to use:** (1) Review group membership before modifications, (2) Verify who gets notified through this group, (3) Check which escalation chains use this group, (4) Audit team notification lists. ' +
+      '\n\n**When to use:**' +
+      '\n- Review group membership before modifications' +
+      '\n- Verify who gets notified through this group' +
+      '\n- Check which escalation chains use this group' +
+      '\n- Audit team notification lists' +
+      '\n' +
       '\n\n**Key information returned:** ' +
       '\n- Members: All recipients in group (names, emails, phones) ' +
       '\n- Usage: Which escalation chains reference this group ' +
@@ -4025,7 +4131,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_recipient_group',
     description: 'Create a new recipient group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates collection of recipients treated as single notification target. Simplifies escalation chains by notifying entire teams at once instead of listing individual recipients. ' +
-      '\n\n**When to use:** (1) Set up team notifications (email entire team), (2) Create on-call rotation groups, (3) Organize recipients by department/function, (4) Simplify escalation chain management, (5) Group multiple contact methods for redundancy. ' +
+      '\n\n**When to use:**' +
+      '\n- Set up team notifications (email entire team)' +
+      '\n- Create on-call rotation groups' +
+      '\n- Organize recipients by department/function' +
+      '\n- Simplify escalation chain management' +
+      '\n- Group multiple contact methods for redundancy' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Group name (e.g., "Database Team", "On-Call Engineers", "NOC Team") ' +
       '\n- recipients: Array of recipient IDs to include in group ' +
@@ -4100,7 +4212,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_recipient_group',
     description: 'Update an existing recipient group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify group membership, name, or description. Changes affect all escalation chains using this group immediately. ' +
-      '\n\n**When to use:** (1) Update on-call rotation (swap team members), (2) Add new team members to notifications, (3) Remove departed employees, (4) Reorganize team structure, (5) Rename group. ' +
+      '\n\n**When to use:**' +
+      '\n- Update on-call rotation (swap team members)' +
+      '\n- Add new team members to notifications' +
+      '\n- Remove departed employees' +
+      '\n- Reorganize team structure' +
+      '\n- Rename group' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Recipient group ID (from "list\\_recipient\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -4163,7 +4281,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Notifications silently fail for stages using this group ' +
       '\n- Cannot be undone ' +
       '\n\n**What this does:** Permanently removes recipient group. Escalation chains referencing this group lose that notification path. ' +
-      '\n\n**When to use:** (1) Team dissolved/restructured, (2) Consolidating duplicate groups, (3) Replacing with individual recipients, (4) Cleanup unused groups. ' +
+      '\n\n**When to use:**' +
+      '\n- Team dissolved/restructured' +
+      '\n- Consolidating duplicate groups' +
+      '\n- Replacing with individual recipients' +
+      '\n- Cleanup unused groups' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Recipient group ID to delete (from "list\\_recipient\\_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -4207,7 +4330,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all alert rules in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of alert rules with: id, name, priority, enabled status, matching conditions (device/datasource/severity filters), escalation chain assigned, suppression settings. ' +
       '\n\n**What are alert rules:** The ROUTING LOGIC that determines "which alerts go to which people." Act as traffic directors: "IF alert matches these conditions, THEN send to this escalation chain." Rules are evaluated in priority order (1st match wins). ' +
-      '\n\n**When to use:** (1) Audit who gets notified for different alert types, (2) Understand notification routing logic, (3) Find rule IDs for modifications, (4) Troubleshoot "why didn\'t I get alerted?", (5) Document alert notification policies. ' +
+      '\n\n**When to use:**' +
+      '\n- Audit who gets notified for different alert types' +
+      '\n- Understand notification routing logic' +
+      '\n- Find rule IDs for modifications' +
+      '\n- Troubleshoot "why didn\'t I get alerted?"' +
+      '\n- Document alert notification policies' +
+      '\n' +
       '\n\n**How alert rules work:** ' +
       'Alert triggers → Rules evaluated in priority order → First matching rule wins → Routes alert to that rule\'s escalation chain → Escalation chain notifies recipients ' +
       '\n\n**Common alert rule patterns:** ' +
@@ -4219,7 +4348,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- "Who gets paged for production CPU alerts?" → Find rule matching prod resources/devices+ CPU datasource ' +
       '\n- "Update team notifications" → Modify alert rule to route to different escalation chain ' +
       '\n- "Stop getting low-priority pages" → Check which rule routes those alerts, adjust severity or chain ' +
-      '\n\n**Critical for notification troubleshooting:** If alerts aren\'t reaching people, check: (1) Does alert match any rule? (2) Is matched rule enabled? (3) Is escalation chain configured correctly? ' +
+      '\n\n**Critical for notification troubleshooting:** If alerts aren\'t reaching people, check:' +
+      '\n- Does alert match any rule?' +
+      '\n- Is matched rule enabled?' +
+      '\n- Is escalation chain configured correctly?' +
+      '\n' +
       '\n\n**Related tools:** "get\\_alert\\_rule" (detailed conditions), "list\\_escalation\\_chains" (destination chains), "update\\_alert\\_rule" (modify routing).',
     annotations: {
       title: 'List alert rules',
@@ -4240,10 +4373,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_alert_rule',
     description: 'Get detailed information about a specific alert rule by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete alert rule details: name, priority, enabled status, detailed matching conditions (device groups, datasources, datapoints, instance filters, severity levels), escalation chain assignment, suppression windows, notification settings. ' +
-      '\n\n**When to use:** (1) Review exact matching logic before modifying rule, (2) Troubleshoot why alert matched (or didn\'t match) this rule, (3) Document alert routing policies, (4) Verify suppression settings, (5) Check which escalation chain receives matching alerts. ' +
+      '\n\n**When to use:**' +
+      '\n- Review exact matching logic before modifying rule' +
+      '\n- Troubleshoot why alert matched (or didn\'t match) this rule' +
+      '\n- Document alert routing policies' +
+      '\n- Verify suppression settings' +
+      '\n- Check which escalation chain receives matching alerts' +
+      '\n' +
       '\n\n**Matching conditions explained:** ' +
       '\n- deviceGroups: Which resource/device folders this rule applies to (e.g., */Production/*, */Database Servers/*) ' +
-      '\n- datasources: Which datasources trigger this rule (e.g., *CPU*, *Memory*, AWS_EC2) ' +
+      '\n- datasources: Which datasources trigger this rule (e.g., *CPU*, *Memory*, AWS\_EC2) ' +
       '\n- datapoints: Specific metrics (e.g., CPUBusyPercent, MemoryUsedPercent) ' +
       '\n- instances: Filter by instance name (e.g., C: drive only, eth0 interface only) ' +
       '\n- severity: Alert levels (critical, error, warn) ' +
@@ -4276,7 +4415,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_alert_rule',
     description: 'Create a new alert rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines routing logic determining which alerts go to which escalation chains. Alert rules match alerts by device, datasource, severity, etc., and route to appropriate notification paths. ' +
-      '\n\n**When to use:** (1) Set up alert notifications for new teams, (2) Route critical alerts differently than warnings, (3) Send database alerts to database team, (4) Configure environment-specific routing (prod vs dev), (5) Establish tiered alerting by severity. ' +
+      '\n\n**When to use:**' +
+      '\n- Set up alert notifications for new teams' +
+      '\n- Route critical alerts differently than warnings' +
+      '\n- Send database alerts to database team' +
+      '\n- Configure environment-specific routing (prod vs dev)' +
+      '\n- Establish tiered alerting by severity' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Rule name (e.g., "Critical Production Alerts", "Database Team Alerts") ' +
       '\n- priority: Rule evaluation order (1=highest, evaluated first) ' +
@@ -4372,7 +4517,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_alert_rule',
     description: 'Update an existing alert rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify rule matching conditions, priority, escalation chain, or enable/disable rule. Changes affect how NEW alerts are routed immediately. ' +
-      '\n\n**When to use:** (1) Route alerts to different team, (2) Adjust rule priority, (3) Update matching conditions, (4) Temporarily disable rule, (5) Broaden/narrow alert scope. ' +
+      '\n\n**When to use:**' +
+      '\n- Route alerts to different team' +
+      '\n- Adjust rule priority' +
+      '\n- Update matching conditions' +
+      '\n- Temporarily disable rule' +
+      '\n- Broaden/narrow alert scope' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- ruleId: Alert rule ID (from "list\\_alert\\_rules") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -4456,7 +4607,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- If NO rules match, alerts might not notify anyone ' +
       '\n- Cannot be undone ' +
       '\n\n**What this does:** Permanently removes alert rule from routing logic. Alerts previously matched by this rule will be evaluated by remaining rules. ' +
-      '\n\n**When to use:** (1) Consolidating duplicate rules, (2) Team/function no longer exists, (3) Replacing with better-configured rule, (4) Cleanup after reorganization. ' +
+      '\n\n**When to use:**' +
+      '\n- Consolidating duplicate rules' +
+      '\n- Team/function no longer exists' +
+      '\n- Replacing with better-configured rule' +
+      '\n- Cleanup after reorganization' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- ruleId: Alert rule ID to delete (from "list\\_alert\\_rules") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -4517,7 +4673,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all operational notes (OpsNotes) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of OpsNotes with: id, note text, timestamp (epoch), who created it, tags, scope (applies to which resources/devices/groups), related SDTs. ' +
       '\n\n**What are OpsNotes:** Timestamped operational annotations displayed on graphs and dashboards. Document changes, deployments, maintenance, incidents - anything that might affect metrics. Appear as vertical lines on metric graphs at the time they occurred. ' +
-      '\n\n**When to use:** (1) Correlate metric changes with operational events, (2) Document deployments/changes, (3) Create timeline of incidents and responses, (4) Track maintenance activities, (5) Generate operational reports. ' +
+      '\n\n**When to use:**' +
+      '\n- Correlate metric changes with operational events' +
+      '\n- Document deployments/changes' +
+      '\n- Create timeline of incidents and responses' +
+      '\n- Track maintenance activities' +
+      '\n- Generate operational reports' +
+      '\n' +
       '\n\n**Use cases and examples:** ' +
       '\n\n**Deployments:** ' +
       '\n- "Deployed v2.5.0 to production" (explains CPU spike at deploy time) ' +
@@ -4560,7 +4722,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_opsnote',
     description: 'Get detailed information about a specific operational note by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete OpsNote details: note text, timestamp, creator, tags, scope (resources/devices/groups affected), related SDTs, linked resources. ' +
-      '\n\n**When to use:** (1) Get full note details after finding ID via list, (2) Review what was documented at specific time, (3) Check scope of operational event, (4) Verify linked resources. ' +
+      '\n\n**When to use:**' +
+      '\n- Get full note details after finding ID via list' +
+      '\n- Review what was documented at specific time' +
+      '\n- Check scope of operational event' +
+      '\n- Verify linked resources' +
+      '\n' +
       '\n\n**Workflow:** Use "list\\_opsnotes" to find note ID, then use this tool for complete details. ' +
       '\n\n**Related tools:** "list\\_opsnotes" (find notes), "create\\_opsnote" (add new), "update\\_opsnote" (modify).',
     annotations: {
@@ -4585,7 +4752,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_opsnote',
     description: 'Create a new operational note (OpsNote) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates timestamped annotation displayed on graphs/dashboards at specific time. Documents changes, deployments, incidents, maintenance - anything that might correlate with metric changes. ' +
-      '\n\n**When to use:** (1) Document deployments/releases, (2) Track incident timelines, (3) Note configuration changes, (4) Record maintenance windows, (5) Annotate known events that affect metrics. ' +
+      '\n\n**When to use:**' +
+      '\n- Document deployments/releases' +
+      '\n- Track incident timelines' +
+      '\n- Note configuration changes' +
+      '\n- Record maintenance windows' +
+      '\n- Annotate known events that affect metrics' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- note: The annotation text (what happened) ' +
       '\n- timestamp: When it happened (epoch milliseconds) ' +
@@ -4676,7 +4849,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_opsnote',
     description: 'Update an existing operational note in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify OpsNote text, timestamp, tags, or scope. Useful for correcting mistakes or adding details after initial creation. ' +
-      '\n\n**When to use:** (1) Fix typos in note text, (2) Add more details after investigation, (3) Correct timestamp, (4) Update tags for better organization, (5) Change scope (different device/group). ' +
+      '\n\n**When to use:**' +
+      '\n- Fix typos in note text' +
+      '\n- Add more details after investigation' +
+      '\n- Correct timestamp' +
+      '\n- Update tags for better organization' +
+      '\n- Change scope (different device/group)' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- opsNoteId: OpsNote ID (from "list\\_opsnotes") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -4736,7 +4915,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'delete_opsnote',
     description: 'Delete an operational note from LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Permanently removes OpsNote. Annotation disappears from graphs and dashboards immediately. ' +
-      '\n\n**When to use:** (1) Created note by mistake, (2) Note contains incorrect information, (3) Note is no longer relevant, (4) Cleanup old test notes. ' +
+      '\n\n**When to use:**' +
+      '\n- Created note by mistake' +
+      '\n- Note contains incorrect information' +
+      '\n- Note is no longer relevant' +
+      '\n- Cleanup old test notes' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- opsNoteId: OpsNote ID to delete (from "list\\_opsnotes") ' +
       '\n\n**Impact:** ' +
@@ -4780,7 +4964,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all business services in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of services with: id, name, description, health status, dependencies, monitored resources, service level objectives (SLOs), availability percentage. ' +
       '\n\n**What are services:** Business-level monitoring constructs that aggregate multiple resources/devices/resources into a single health status. Represent customer-facing services, applications, or business processes. Example: "E-Commerce Platform" service includes web servers, databases, load balancers, and APIs - one health indicator for entire platform. ' +
-      '\n\n**When to use:** (1) Monitor business service health vs individual resource/device health, (2) Track SLA compliance for customer-facing services, (3) Understand service dependencies, (4) Create business-level dashboards, (5) Report on application availability. ' +
+      '\n\n**When to use:**' +
+      '\n- Monitor business service health vs individual resource/device health' +
+      '\n- Track SLA compliance for customer-facing services' +
+      '\n- Understand service dependencies' +
+      '\n- Create business-level dashboards' +
+      '\n- Report on application availability' +
+      '\n' +
       '\n\n**Service health calculation:** ' +
       'Service health = Aggregate of all dependent resources. If critical resource fails, service status = down. Allows stakeholders to see "Is the application working?" instead of "Is server X working?" ' +
       '\n\n**Use cases and examples:** ' +
@@ -4821,7 +5011,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_service',
     description: 'Get detailed information about a specific service by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete service details: name, description, health status, dependency tree (all resources comprising service), SLA/SLO configuration, availability statistics, alert rules, service group. ' +
-      '\n\n**When to use:** (1) Review service dependencies (what resources are included), (2) Check current health status and root cause, (3) Verify SLA/SLO configuration, (4) Troubleshoot service downtime, (5) Understand service architecture. ' +
+      '\n\n**When to use:**' +
+      '\n- Review service dependencies (what resources are included)' +
+      '\n- Check current health status and root cause' +
+      '\n- Verify SLA/SLO configuration' +
+      '\n- Troubleshoot service downtime' +
+      '\n- Understand service architecture' +
+      '\n' +
       '\n\n**Key information returned:** ' +
       '\n- **Dependency tree:** All resources/devices/resources that comprise this service ' +
       '\n- **Health calculation:** How service status is determined (e.g., "If ANY web server is down, service is degraded") ' +
@@ -4854,7 +5050,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_service',
     description: 'Create a new business service in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates business-level service aggregating multiple resources into single health status. Think "E-commerce Website" service composed of web servers, databases, load balancers, etc. Service health calculated from member resource/device health. ' +
-      '\n\n**When to use:** (1) Monitor application-level health (not just infrastructure), (2) Create business-facing dashboards, (3) SLA tracking for customer-facing services, (4) Executive reporting (business view, not technical), (5) Complex dependency modeling. ' +
+      '\n\n**When to use:**' +
+      '\n- Monitor application-level health (not just infrastructure)' +
+      '\n- Create business-facing dashboards' +
+      '\n- SLA tracking for customer-facing services' +
+      '\n- Executive reporting (business view, not technical)' +
+      '\n- Complex dependency modeling' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Service name (e.g., "E-commerce Website", "Payment API", "Mobile App Backend") ' +
       '\n- groupId: Service group ID for organization (from "list\\_service\\_groups") ' +
@@ -4944,7 +5146,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_service',
     description: 'Update an existing business service in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify service name, description, or member resources/devices. Updates service health calculation when membership changes. ' +
-      '\n\n**When to use:** (1) Add/remove resource/device as infrastructure changes, (2) Rename service, (3) Update description/SLA, (4) Reorganize service structure, (5) Reflect architecture changes. ' +
+      '\n\n**When to use:**' +
+      '\n- Add/remove resource/device as infrastructure changes' +
+      '\n- Rename service' +
+      '\n- Update description/SLA' +
+      '\n- Reorganize service structure' +
+      '\n- Reflect architecture changes' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- serviceId: Service ID (from "list\\_services") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -4998,7 +5206,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'delete_service',
     description: 'Delete a business service from LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Permanently removes service. Service disappears from dashboards and Services view. Member resource/device remain unaffected (only service container deleted). ' +
-      '\n\n**When to use:** (1) Application/service decommissioned, (2) Service no longer needed, (3) Consolidating duplicate services, (4) Restructuring service hierarchy. ' +
+      '\n\n**When to use:**' +
+      '\n- Application/service decommissioned' +
+      '\n- Service no longer needed' +
+      '\n- Consolidating duplicate services' +
+      '\n- Restructuring service hierarchy' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- serviceId: Service ID to delete (from "list\\_services") ' +
       '\n\n**Impact:** ' +
@@ -5040,7 +5253,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all service groups (folders) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of service groups with: id, name, parentId, full path, description, number of services, number of subgroups. ' +
       '\n\n**What are service groups:** Organizational folders for business services, similar to resource/device groups for resources/devices. Used to categorize services by business unit, region, customer, or application stack. ' +
-      '\n\n**When to use:** (1) Browse service organization before creating services, (2) Find group IDs for service operations, (3) Understand service hierarchy, (4) Navigate to specific service folders. ' +
+      '\n\n**When to use:**' +
+      '\n- Browse service organization before creating services' +
+      '\n- Find group IDs for service operations' +
+      '\n- Understand service hierarchy' +
+      '\n- Navigate to specific service folders' +
+      '\n' +
       '\n\n**Common organization patterns:** ' +
       '\n- By business unit: "E-Commerce", "Marketing Platform", "Internal IT" ' +
       '\n- By customer: "Customer A Services", "Customer B Services" (MSP environments) ' +
@@ -5072,7 +5290,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_service_group',
     description: 'Get detailed information about a specific service group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete service group details: name, full path, parentId, description, number of services (direct and total), number of subgroups. ' +
-      '\n\n**When to use:** (1) Get group path for documentation, (2) Check service membership counts, (3) Verify group hierarchy, (4) Review group structure before creating services. ' +
+      '\n\n**When to use:**' +
+      '\n- Get group path for documentation' +
+      '\n- Check service membership counts' +
+      '\n- Verify group hierarchy' +
+      '\n- Review group structure before creating services' +
+      '\n' +
       '\n\n**Workflow:** Use "list\\_service\\_groups" to find groupId, then use this tool for complete details. ' +
       '\n\n**Related tools:** "list\\_service\\_groups" (find groups), "list\\_services" (services in group), "create\\_service\\_group" (create new).',
     annotations: {
@@ -5097,7 +5320,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_service_group',
     description: 'Create a new service group (folder) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates organizational folder for business services. Like resource/device groups for resources/devices, service groups organize services by team, product, region, or function. ' +
-      '\n\n**When to use:** (1) Organize services before creating them, (2) Group services by department/team, (3) Separate services by product line, (4) Organize by region/environment, (5) Create service hierarchy. ' +
+      '\n\n**When to use:**' +
+      '\n- Organize services before creating them' +
+      '\n- Group services by department/team' +
+      '\n- Separate services by product line' +
+      '\n- Organize by region/environment' +
+      '\n- Create service hierarchy' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Group name (e.g., "E-commerce Services", "Payment Services", "Mobile App Services") ' +
       '\n\n**Optional parameters:** ' +
@@ -5156,7 +5385,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_service_group',
     description: 'Update an existing service group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify group name, description, or parent (move in hierarchy). Does not affect services within group. ' +
-      '\n\n**When to use:** (1) Rename group after reorg, (2) Update description, (3) Move group in hierarchy, (4) Reorganize service structure. ' +
+      '\n\n**When to use:**' +
+      '\n- Rename group after reorg' +
+      '\n- Update description' +
+      '\n- Move group in hierarchy' +
+      '\n- Reorganize service structure' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Service group ID (from "list\\_service\\_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -5208,7 +5442,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Cannot delete group containing subgroups ' +
       '\n- Must be empty to delete ' +
       '\n\n**What this does:** Removes empty service group folder. Group must have no services and no subgroups. ' +
-      '\n\n**When to use:** (1) Cleanup empty groups after reorganization, (2) Remove unused organizational folders, (3) Simplify service hierarchy. ' +
+      '\n\n**When to use:**' +
+      '\n- Cleanup empty groups after reorganization' +
+      '\n- Remove unused organizational folders' +
+      '\n- Simplify service hierarchy' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Service group ID to delete (from "list\\_service\\_groups") ' +
       '\n\n**Before deleting:** ' +
@@ -5250,7 +5488,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all report groups (folders) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of report groups with: id, name, parentId, full path, description, number of reports, number of subgroups. ' +
       '\n\n**What are report groups:** Organizational folders for reports, like directories for files. Used to categorize reports by audience, frequency, purpose, or department. ' +
-      '\n\n**When to use:** (1) Browse report organization before creating reports, (2) Find group IDs for report operations, (3) Understand report hierarchy, (4) Navigate to specific report folders. ' +
+      '\n\n**When to use:**' +
+      '\n- Browse report organization before creating reports' +
+      '\n- Find group IDs for report operations' +
+      '\n- Understand report hierarchy' +
+      '\n- Navigate to specific report folders' +
+      '\n' +
       '\n\n**Common organization patterns:** ' +
       '\n- By audience: "Executive Reports", "Operations Reports", "Customer Reports" ' +
       '\n- By frequency: "Daily Reports", "Weekly Reports", "Monthly Reports" ' +
@@ -5282,7 +5525,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_report_group',
     description: 'Get detailed information about a specific report group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete report group details: name, full path, parentId, description, number of reports (direct and total), number of subgroups. ' +
-      '\n\n**When to use:** (1) Get group path for documentation, (2) Check report membership counts, (3) Verify group hierarchy, (4) Review group structure before creating reports. ' +
+      '\n\n**When to use:**' +
+      '\n- Get group path for documentation' +
+      '\n- Check report membership counts' +
+      '\n- Verify group hierarchy' +
+      '\n- Review group structure before creating reports' +
+      '\n' +
       '\n\n**Workflow:** Use "list\\_report\\_groups" to find groupId, then use this tool for complete details. ' +
       '\n\n**Related tools:** "list\\_report\\_groups" (find groups), "list\\_reports" (reports in group), "create\\_report\\_group" (create new).',
     annotations: {
@@ -5307,7 +5555,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_report_group',
     description: 'Create a new report group (folder) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates organizational folder for reports. Organize reports by team, report type, schedule, or purpose. ' +
-      '\n\n**When to use:** (1) Organize reports before creating them, (2) Group by department/team, (3) Separate by report frequency (daily/weekly/monthly), (4) Organize by purpose (compliance/executive/operational). ' +
+      '\n\n**When to use:**' +
+      '\n- Organize reports before creating them' +
+      '\n- Group by department/team' +
+      '\n- Separate by report frequency (daily/weekly/monthly)' +
+      '\n- Organize by purpose (compliance/executive/operational)' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Group name (e.g., "Executive Reports", "Compliance Reports", "Daily Operations") ' +
       '\n\n**Optional parameters:** ' +
@@ -5348,7 +5601,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_report_group',
     description: 'Update an existing report group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify group name, description, or parent (move in hierarchy). Does not affect reports within group. ' +
-      '\n\n**When to use:** (1) Rename group, (2) Update description, (3) Move group in hierarchy, (4) Reorganize report structure. ' +
+      '\n\n**When to use:**' +
+      '\n- Rename group' +
+      '\n- Update description' +
+      '\n- Move group in hierarchy' +
+      '\n- Reorganize report structure' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Report group ID (from "list\\_report\\_groups") ' +
       '\n\n**Optional parameters:** ' +
@@ -5386,7 +5644,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Delete a report group from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot delete group containing reports or subgroups. Must be empty to delete. ' +
       '\n\n**What this does:** Removes empty report group folder. Group must have no reports and no subgroups. ' +
-      '\n\n**When to use:** (1) Cleanup empty groups after reorganization, (2) Remove unused organizational folders, (3) Simplify report hierarchy. ' +
+      '\n\n**When to use:**' +
+      '\n- Cleanup empty groups after reorganization' +
+      '\n- Remove unused organizational folders' +
+      '\n- Simplify report hierarchy' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Report group ID to delete (from "list\\_report\\_groups") ' +
       '\n\n**Before deleting:** Move all reports and subgroups first, then delete empty group. ' +
@@ -5415,7 +5677,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all collector groups (folders) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of collector groups with: id, name, parentId, full path, description, number of collectors, number of subgroups. ' +
       '\n\n**What are collector groups:** Organizational folders for collectors (monitoring agents), similar to resource/device groups. Used to categorize collectors by location, function, or customer. ' +
-      '\n\n**When to use:** (1) Browse collector organization, (2) Find group IDs for collector operations, (3) Understand collector deployment structure, (4) Navigate to specific collector folders. ' +
+      '\n\n**When to use:**' +
+      '\n- Browse collector organization' +
+      '\n- Find group IDs for collector operations' +
+      '\n- Understand collector deployment structure' +
+      '\n- Navigate to specific collector folders' +
+      '\n' +
       '\n\n**Common organization patterns:** ' +
       '\n- By location: "US-West Collectors", "EU Collectors", "APAC Collectors" ' +
       '\n- By environment: "Production Collectors", "Dev/Test Collectors" ' +
@@ -5448,7 +5715,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_collector_group',
     description: 'Get detailed information about a specific collector group by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete collector group details: name, full path, parentId, description, number of collectors (direct and total), number of subgroups. ' +
-      '\n\n**When to use:** (1) Get group path for documentation, (2) Check collector membership counts, (3) Verify group hierarchy, (4) Review group structure before deploying collectors. ' +
+      '\n\n**When to use:**' +
+      '\n- Get group path for documentation' +
+      '\n- Check collector membership counts' +
+      '\n- Verify group hierarchy' +
+      '\n- Review group structure before deploying collectors' +
+      '\n' +
       '\n\n**Workflow:** Use "list\\_collector\\_groups" to find groupId, then use this tool for complete details. ' +
       '\n\n**Related tools:** "list\\_collector\\_groups" (find groups), "list\\_collectors" (collectors in group), "create\\_collector\\_group" (create new).',
     annotations: {
@@ -5475,7 +5747,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'list_resource_group_properties',
     description: 'List all custom properties for a specific resource/device group in LogicMonitor (LM) monitoring. Properties set at group level are inherited by all resource/device in the group. ' +
       '\n\n**Returns:** Array of properties with: name, value, type (custom vs system), and inheritance source. ' +
-      '\n\n**When to use:** (1) Review properties before bulk updates, (2) Audit credentials/settings applied to resource/device group, (3) Verify property inheritance from parent groups, (4) Check which properties resource/device will inherit when added to group, (5) Document group configuration. ' +
+      '\n\n**When to use:**' +
+      '\n- Review properties before bulk updates' +
+      '\n- Audit credentials/settings applied to resource/device group' +
+      '\n- Verify property inheritance from parent groups' +
+      '\n- Check which properties resource/device will inherit when added to group' +
+      '\n- Document group configuration' +
+      '\n' +
       '\n\n**What are group properties:** Key-value pairs set at group level that ALL resource/device in the group inherit. Common uses: credentials (SSH/SNMP), environment tags, owner/team info, monitoring settings. ' +
       '\n\n**Property inheritance:** ' +
       '\n- Properties set on group apply to ALL resource/device in group ' +
@@ -5518,7 +5796,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_resource_group_property',
     description: 'Update a custom property value for a resource/device group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies group-level property inherited by all resource/device in group. Changes immediately affect all member resources/devices. ' +
-      '\n\n**When to use:** (1) Update credentials for all resource/device in group, (2) Change environment tags, (3) Update owner/team information, (4) Modify monitoring settings, (5) Bulk property updates. ' +
+      '\n\n**When to use:**' +
+      '\n- Update credentials for all resource/device in group' +
+      '\n- Change environment tags' +
+      '\n- Update owner/team information' +
+      '\n- Modify monitoring settings' +
+      '\n- Bulk property updates' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- groupId: Device group ID (from "list\\_resource\\_groups") ' +
       '\n- name: Property name (e.g., "ssh.user", "env", "owner") ' +
@@ -5575,7 +5859,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all network discovery scans (NetScans) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of netscans with: id, name, description, scan method (nmap/script/ICMP/SNMP), schedule, target networks (IP ranges/subnets), collector, last run time, resource/device discovered. ' +
       '\n\n**What are netscans:** Automated network discovery that finds resource/device on your network and adds them to monitoring. Instead of manually adding resource/device one-by-one, netscan automatically discovers and onboards resource/device based on IP ranges or subnets. ' +
-      '\n\n**When to use:** (1) Audit existing discovery configurations, (2) Check which networks are being scanned, (3) Review netscan schedules, (4) Troubleshoot why resource/device not auto-discovered, (5) Find netscan IDs for modifications. ' +
+      '\n\n**When to use:**' +
+      '\n- Audit existing discovery configurations' +
+      '\n- Check which networks are being scanned' +
+      '\n- Review netscan schedules' +
+      '\n- Troubleshoot why resource/device not auto-discovered' +
+      '\n- Find netscan IDs for modifications' +
+      '\n' +
       '\n\n**How netscans work:** ' +
       'Scheduled job → Scan network range (e.g., 192.168.1.0/24) → Find live resource/device → Check if already monitored → If new, add to LogicMonitor → Apply resource/device properties and datasources → Begin monitoring ' +
       '\n\n**NetScan methods:** ' +
@@ -5614,7 +5904,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_netscan',
     description: 'Get detailed information about a specific netscan by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete netscan details: name, description, scan method, schedule, target networks/IPs, credentials, filters (include/exclude rules), resource/device properties to apply, collector assignment, duplicate detection settings, last execution results. ' +
-      '\n\n**When to use:** (1) Review netscan configuration before running, (2) Troubleshoot why certain resource/device not discovered, (3) Check credentials and filters, (4) Verify resource/device properties applied to discovered resources/devices, (5) Understand duplicate detection logic. ' +
+      '\n\n**When to use:**' +
+      '\n- Review netscan configuration before running' +
+      '\n- Troubleshoot why certain resource/device not discovered' +
+      '\n- Check credentials and filters' +
+      '\n- Verify resource/device properties applied to discovered resources/devices' +
+      '\n- Understand duplicate detection logic' +
+      '\n' +
       '\n\n**Configuration details returned:** ' +
       '\n- **Targets:** IP ranges, subnets, or cloud filters (e.g., "192.168.1.0/24", "All EC2 with tag:Environment=prod") ' +
       '\n- **Schedule:** How often scan runs (hourly, daily, weekly, on-demand) ' +
@@ -5650,7 +5946,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_netscan',
     description: 'Create a new network discovery scan (NetScan) in LogicMonitor (LM) monitoring to automatically discover and add resources/devices. ' +
       '\n\n**What this does:** Creates automated network scanner that discovers resource/device by IP range/subnet and adds them to monitoring. Runs on schedule to continuously discover new infrastructure. ' +
-      '\n\n**When to use:** (1) Automate resource/device discovery instead of manual adds, (2) Onboard entire subnets, (3) Keep monitoring in sync with dynamic infrastructure (cloud/containers), (4) Continuous discovery for DHCP/dynamic environments, (5) Bulk resource/device onboarding. ' +
+      '\n\n**When to use:**' +
+      '\n- Automate resource/device discovery instead of manual adds' +
+      '\n- Onboard entire subnets' +
+      '\n- Keep monitoring in sync with dynamic infrastructure (cloud/containers)' +
+      '\n- Continuous discovery for DHCP/dynamic environments' +
+      '\n- Bulk resource/device onboarding' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: NetScan name (e.g., "Production Network Scan", "AWS EC2 Discovery") ' +
       '\n- collectorId: Collector to perform scan (from "list\\_collectors") ' +
@@ -5743,7 +6045,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_netscan',
     description: 'Update an existing network discovery scan (NetScan) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify netscan name, target, schedule, credentials, or settings. Changes take effect on next scan run. ' +
-      '\n\n**When to use:** (1) Change IP range/subnet scanned, (2) Update scan schedule, (3) Modify credentials, (4) Change destination group for discovered resources/devices, (5) Update exclusion filters. ' +
+      '\n\n**When to use:**' +
+      '\n- Change IP range/subnet scanned' +
+      '\n- Update scan schedule' +
+      '\n- Modify credentials' +
+      '\n- Change destination group for discovered resources/devices' +
+      '\n- Update exclusion filters' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- netscanId: NetScan ID (from "list\\_netscans") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -5800,7 +6108,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'delete_netscan',
     description: 'Delete a network discovery scan (NetScan) from LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Permanently removes NetScan. Stops all future automatic resource/device discovery for this target. Previously discovered resource/device remain in monitoring. ' +
-      '\n\n**When to use:** (1) Decommissioned network/subnet, (2) Discovery no longer needed (static environment), (3) Consolidating duplicate netscans, (4) Migrating to different discovery method. ' +
+      '\n\n**When to use:**' +
+      '\n- Decommissioned network/subnet' +
+      '\n- Discovery no longer needed (static environment)' +
+      '\n- Consolidating duplicate netscans' +
+      '\n- Migrating to different discovery method' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- netscanId: NetScan ID to delete (from "list\\_netscans") ' +
       '\n\n**Impact:** ' +
@@ -5835,7 +6148,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List all third-party integrations configured in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of integrations with: id, name, type (Slack/PagerDuty/ServiceNow/Jira/etc), status (active/inactive), configuration summary, authentication status. ' +
       '\n\n**What are integrations:** Connections to external platforms for alert notifications, ticket creation, chat messages, incident management. Extend LogicMonitor alerting beyond email/SMS. ' +
-      '\n\n**When to use:** (1) Find integration IDs for escalation chains, (2) Verify integrations are working, (3) Audit external connections, (4) Check authentication status, (5) Review available integration options. ' +
+      '\n\n**When to use:**' +
+      '\n- Find integration IDs for escalation chains' +
+      '\n- Verify integrations are working' +
+      '\n- Audit external connections' +
+      '\n- Check authentication status' +
+      '\n- Review available integration options' +
+      '\n' +
       '\n\n**Popular integrations:** ' +
       '\n\n**Incident Management:** ' +
       '\n- **PagerDuty:** Page on-call engineers for critical alerts ' +
@@ -5882,7 +6201,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'get_integration',
     description: 'Get detailed information about a specific integration by ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Complete integration details: name, type, configuration (API keys, webhooks, URLs), authentication status, last successful notification, error logs, which escalation chains use it. ' +
-      '\n\n**When to use:** (1) Troubleshoot integration not working, (2) Review configuration before updates, (3) Check API keys/authentication, (4) See last successful notification time, (5) Audit integration settings. ' +
+      '\n\n**When to use:**' +
+      '\n- Troubleshoot integration not working' +
+      '\n- Review configuration before updates' +
+      '\n- Check API keys/authentication' +
+      '\n- See last successful notification time' +
+      '\n- Audit integration settings' +
+      '\n' +
       '\n\n**Configuration details by type:** ' +
       '\n- **Slack:** Webhook URL, channel names, mention settings ' +
       '\n- **PagerDuty:** Integration key, service mappings ' +
@@ -5917,7 +6242,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'create_integration',
     description: 'Create a new third-party integration in LogicMonitor (LM) monitoring to send alerts/data to external platforms. ' +
       '\n\n**What this does:** Connects LogicMonitor to external platforms (Slack, PagerDuty, ServiceNow, Jira, Teams, etc.) for alert notifications, ticket creation, and data export. ' +
-      '\n\n**When to use:** (1) Send alerts to Slack/Teams channels, (2) Create tickets in ServiceNow/Jira automatically, (3) Page on-call via PagerDuty/Opsgenie, (4) Export data to analytics platforms, (5) Integrate with ITSM workflows. ' +
+      '\n\n**When to use:**' +
+      '\n- Send alerts to Slack/Teams channels' +
+      '\n- Create tickets in ServiceNow/Jira automatically' +
+      '\n- Page on-call via PagerDuty/Opsgenie' +
+      '\n- Export data to analytics platforms' +
+      '\n- Integrate with ITSM workflows' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- type: Integration type ("slack", "pagerduty", "servicenow", "jira", "teams", "webhook", etc.) ' +
       '\n- name: Integration name (e.g., "DevOps Slack Channel", "ServiceNow Production") ' +
@@ -5991,7 +6322,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     name: 'update_integration',
     description: 'Update an existing third-party integration in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modify integration name, credentials, configuration, or destination. Changes affect future notifications immediately. ' +
-      '\n\n**When to use:** (1) Update API keys/credentials, (2) Change Slack/Teams channel, (3) Update ServiceNow/Jira configuration, (4) Modify webhook URL, (5) Rename integration. ' +
+      '\n\n**When to use:**' +
+      '\n- Update API keys/credentials' +
+      '\n- Change Slack/Teams channel' +
+      '\n- Update ServiceNow/Jira configuration' +
+      '\n- Modify webhook URL' +
+      '\n- Rename integration' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- integrationId: Integration ID (from "list\\_integrations") ' +
       '\n\n**Optional parameters (what to change):** ' +
@@ -6048,7 +6385,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- No error shown - notifications silently fail ' +
       '\n- Cannot be undone ' +
       '\n\n**What this does:** Permanently removes integration. Escalation chains referencing this integration lose that notification path. ' +
-      '\n\n**When to use:** (1) Integration no longer needed, (2) Platform decommissioned (stopped using Slack/ServiceNow), (3) Consolidating duplicate integrations, (4) Migration to different platform. ' +
+      '\n\n**When to use:**' +
+      '\n- Integration no longer needed' +
+      '\n- Platform decommissioned (stopped using Slack/ServiceNow)' +
+      '\n- Consolidating duplicate integrations' +
+      '\n- Migration to different platform' +
+      '\n' +
       '\n\n**Required parameters:** ' +
       '\n- integrationId: Integration ID to delete (from "list\\_integrations") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
@@ -6092,7 +6434,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List available checkpoint locations for website monitoring in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of checkpoint locations with: id, name, geographic region, status, type (internal/external). ' +
       '\n\n**What are checkpoints:** Global testing locations from which LogicMonitor runs synthetic website checks. Think "test my website from New York, London, Tokyo" - checkpoints are those global vantage points. ' +
-      '\n\n**When to use:** (1) Check available checkpoint locations before creating website monitors, (2) Verify geographic coverage for multi-region testing, (3) Select appropriate locations for SLA monitoring, (4) Plan website monitoring strategy. ' +
+      '\n\n**When to use:**' +
+      '\n- Check available checkpoint locations before creating website monitors' +
+      '\n- Verify geographic coverage for multi-region testing' +
+      '\n- Select appropriate locations for SLA monitoring' +
+      '\n- Plan website monitoring strategy' +
+      '\n' +
       '\n\n**Checkpoint types:** ' +
       '\n- **External (Cloud):** LogicMonitor-managed locations around the world (US-East, EU-West, Asia-Pacific, etc.) ' +
       '\n- **Internal (Collector-based):** Tests run from your own collectors (test internal apps, VPNs, private networks) ' +
@@ -6134,7 +6481,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'Get network topology information in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Network topology data with: resource/device relationships, network connections, parent-child hierarchies, Layer 2/Layer 3 connectivity maps. ' +
       '\n\n**What is topology:** Automatically discovered network relationship map showing how resource/device connect to each other. LogicMonitor uses SNMP, CDP (Cisco Discovery Protocol), LLDP (Link Layer Discovery Protocol), and other methods to build network topology maps. ' +
-      '\n\n**When to use:** (1) Understand network architecture and resource/device relationships, (2) Visualize network connectivity, (3) Plan network changes, (4) Troubleshoot connectivity issues, (5) Document network infrastructure. ' +
+      '\n\n**When to use:**' +
+      '\n- Understand network architecture and resource/device relationships' +
+      '\n- Visualize network connectivity' +
+      '\n- Plan network changes' +
+      '\n- Troubleshoot connectivity issues' +
+      '\n- Document network infrastructure' +
+      '\n' +
       '\n\n**Topology information includes:** ' +
       '\n- **Physical connections:** Which resource/device are physically connected (switch ports, router interfaces) ' +
       '\n- **Logical relationships:** Parent-child relationships (gateway → firewall → switches → servers) ' +
@@ -6172,7 +6525,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     description: 'List available collector versions in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of collector versions with: version number, release date, stability level (GA/EA/RC), changelog summary, download size, platform support (Windows/Linux), mandatory/recommended flag. ' +
       '\n\n**What are collector versions:** Software releases for LogicMonitor collector agents. Collectors are installed on your infrastructure to gather monitoring data. Staying current ensures latest features, bug fixes, and security patches. ' +
-      '\n\n**When to use:** (1) Check for collector updates, (2) Review changelog before upgrading, (3) Find specific version for rollback, (4) Verify platform compatibility, (5) Plan maintenance windows for collector upgrades. ' +
+      '\n\n**When to use:**' +
+      '\n- Check for collector updates' +
+      '\n- Review changelog before upgrading' +
+      '\n- Find specific version for rollback' +
+      '\n- Verify platform compatibility' +
+      '\n- Plan maintenance windows for collector upgrades' +
+      '\n' +
       '\n\n**Version types:** ' +
       '\n- **GA (Generally Available):** Production-ready, stable, recommended ' +
       '\n- **EA (Early Adopter):** Beta, new features, use in non-production first ' +
