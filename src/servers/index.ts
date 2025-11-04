@@ -492,48 +492,70 @@ if (TRANSPORT === 'stdio') {
           }, requestId);
 
           if (validationResult.errorCode === 'invalid_audience') {
-            const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
-            const wwwAuthenticateValue = [
-              `Bearer realm="${BASE_URL}"`,
-              'error="invalid_token"',
-              'error_description="Token audience mismatch"',
-              `resource_metadata="${resourceMetadataUrl}"`,
-              'scope="mcp:tools"',
-            ].join(', ');
+            // Only include OAuth metadata if OAuth is configured
+            if (oauthConfig) {
+              const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+              const wwwAuthenticateValue = [
+                `Bearer realm="${BASE_URL}"`,
+                'error="invalid_token"',
+                'error_description="Token audience mismatch"',
+                `resource_metadata="${resourceMetadataUrl}"`,
+                'scope="mcp:tools"',
+              ].join(', ');
 
-            res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
-            return res.status(401).json({
-              error: 'invalid_token',
-              error_description: 'Token audience mismatch',
-              resource_metadata: resourceMetadataUrl,
-              authorization_endpoint: `${BASE_URL}/auth/login`,
-              scope: 'mcp:tools',
-            });
+              res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+              return res.status(401).json({
+                error: 'invalid_token',
+                error_description: 'Token audience mismatch',
+                resource_metadata: resourceMetadataUrl,
+                authorization_endpoint: `${BASE_URL}/auth/login`,
+                scope: 'mcp:tools',
+              });
+            } else {
+              // Simple 401 response when OAuth is not configured
+              res.setHeader('WWW-Authenticate', 'Bearer');
+              return res.status(401).json({
+                error: 'invalid_token',
+                error_description: 'Token audience mismatch',
+              });
+            }
           }
         }
       }
     }
 
     // Return 401 Unauthorized
-    const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
-    const wwwAuthenticateValue = [
-      `Bearer realm="${BASE_URL}"`,
-      `resource_metadata="${resourceMetadataUrl}"`,
-      'scope="mcp:tools"',
-      'error="invalid_token"',
-      'error_description="The access token is missing, expired, or invalid"',
-    ].join(', ');
+    // Only include OAuth metadata if OAuth is configured
+    if (oauthConfig) {
+      const resourceMetadataUrl = `${BASE_URL}/.well-known/oauth-protected-resource`;
+      const wwwAuthenticateValue = [
+        `Bearer realm="${BASE_URL}"`,
+        `resource_metadata="${resourceMetadataUrl}"`,
+        'scope="mcp:tools"',
+        'error="invalid_token"',
+        'error_description="The access token is missing, expired, or invalid"',
+      ].join(', ');
 
-    log('debug', 'Sending 401 Unauthorized', { resource_metadata: resourceMetadataUrl }, requestId);
+      log('debug', 'Sending 401 Unauthorized', { resource_metadata: resourceMetadataUrl }, requestId);
 
-    res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
-    res.status(401).json({
-      error: 'invalid_token',
-      error_description: 'The access token is missing, expired, or invalid',
-      resource_metadata: resourceMetadataUrl,
-      authorization_endpoint: `${BASE_URL}/auth/login`,
-      scope: 'mcp:tools',
-    });
+      res.setHeader('WWW-Authenticate', wwwAuthenticateValue);
+      res.status(401).json({
+        error: 'invalid_token',
+        error_description: 'The access token is missing, expired, or invalid',
+        resource_metadata: resourceMetadataUrl,
+        authorization_endpoint: `${BASE_URL}/auth/login`,
+        scope: 'mcp:tools',
+      });
+    } else {
+      // Simple 401 response when OAuth is not configured
+      log('debug', 'Sending 401 Unauthorized (no OAuth)', undefined, requestId);
+
+      res.setHeader('WWW-Authenticate', 'Bearer');
+      res.status(401).json({
+        error: 'unauthorized',
+        error_description: 'The access token is missing, expired, or invalid',
+      });
+    }
   }
 
   // Initialize LogicMonitor client and handlers

@@ -60,5 +60,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Default command (can be overridden)
-CMD ["node", "build/servers/stdio-server.js"]
+CMD ["node", "build/servers/index.js"]
 
