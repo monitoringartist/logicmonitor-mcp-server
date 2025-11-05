@@ -217,16 +217,17 @@ if (TRANSPORT === 'stdio') {
           content: {
             type: 'text' as const,
             text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-              'I\'ll use the search_resources or list_resources tool to find this resource, ' +
+              'I\'ll use the search_resources tool to find this resource, ' +
+              'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
               'list_alerts tool to find any alerts for this resource, ' +
-              'generate_resource link to create direct link to LogicMonitor, ' +
-              'list_resource_datasources to find available datasources for this resource, ' +
-              'list_resource_instances to find available instances for this resource, ' +
-              'get_resource_instance_data to get data for this resource, ' +
-              'get_resource_group to get the group for this resource, ' +
-              'get_collector to get the collector for this resource, ' +
-              'get_collector_group to get the collector group for this resource. ' +
-              'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/memory/network), ' +
+              'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
+              'list_resource_datasources tool to find available datasources for this resource, ' +
+              'list_resource_instances tool to find available instances for this resource, ' +
+              'get_resource_instance_data tool to get data for this resource, ' +
+              'get_resource_group tool to get the group for this resource, ' +
+              'get_collector tool to get the collector for this resource, ' +
+              'get_collector_group tool to get the collector group for this resource. ' +
+              'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
               'full group paths for all resource groups where is resource assigned. ',
           },
         },
@@ -974,7 +975,18 @@ if (TRANSPORT === 'stdio') {
             content: {
               type: 'text' as const,
               text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                'I\'ll use the search_resources or list_resources tool to find this device.',
+                'I\'ll use the search_resources tool to find this resource, ' +
+                'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
+                'list_alerts tool to find any alerts for this resource, ' +
+                'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
+                'list_resource_datasources tool to find available datasources for this resource, ' +
+                'list_resource_instances tool to find available instances for this resource, ' +
+                'get_resource_instance_data tool to get data for this resource, ' +
+                'get_resource_group tool to get the group for this resource, ' +
+                'get_collector tool to get the collector for this resource, ' +
+                'get_collector_group tool to get the collector group for this resource. ' +
+                'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
+                'full group paths for all resource groups where is resource assigned. ',
             },
           },
         ];
@@ -1594,7 +1606,18 @@ if (TRANSPORT === 'stdio') {
                   content: {
                     type: 'text',
                     text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                      'I\'ll use the search_resources or list_resources tool to find this device.',
+                      'I\'ll use the search_resources tool to find this resource, ' +
+                      'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
+                      'list_alerts tool to find any alerts for this resource, ' +
+                      'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
+                      'list_resource_datasources tool to find available datasources for this resource, ' +
+                      'list_resource_instances tool to find available instances for this resource, ' +
+                      'get_resource_instance_data tool to get data for this resource, ' +
+                      'get_resource_group tool to get the group for this resource, ' +
+                      'get_collector tool to get the collector for this resource, ' +
+                      'get_collector_group tool to get the collector group for this resource. ' +
+                      'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
+                      'full group paths for all resource groups where is resource assigned. ',
                   },
                 },
               ];

@@ -26,7 +26,7 @@ export const LM_PROMPTS: LMPrompt[] = [
     name: 'resource_check',
     description: 'Interactive health check for a LogicMonitor resource/device. ' +
       'Searches for a resource by name or custom filter, allows selection if multiple matches, ' +
-      'then displays comprehensive health information including device details, location, ' +
+      'then displays comprehensive health information including resource details, location, ' +
       'collector assignment, and current metrics (CPU, memory, network) in a formatted table.',
     arguments: [
       {
