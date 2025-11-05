@@ -103,15 +103,13 @@ export class InputSanitizer {
     let sanitized = name;
     
     // Remove all < and > characters to prevent any HTML/script tags
+    // This makes event handlers impossible since they require HTML attributes
     sanitized = sanitized.replace(/</g, '').replace(/>/g, '');
     
     // Remove dangerous protocol patterns (defense in depth)
     sanitized = sanitized.replace(/javascript\s*:/gi, '');
     sanitized = sanitized.replace(/data\s*:/gi, '');
     sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    
-    // Remove event handler patterns (defense in depth)
-    sanitized = sanitized.replace(/\s*on\w+\s*=/gi, '');
     
     return sanitized.trim().substring(0, 255);
   }

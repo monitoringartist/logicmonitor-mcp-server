@@ -357,6 +357,17 @@ if (TRANSPORT === 'stdio') {
     }
   }
 
+  // HTML escape utility to prevent XSS attacks
+  function escapeHtml(unsafe: string): string {
+    if (!unsafe) return '';
+    return String(unsafe)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   // Log startup configuration
   log('info', 'Server configuration', {
     port: PORT,
@@ -445,6 +456,18 @@ if (TRANSPORT === 'stdio') {
   app.use(express.json());
   app.use(express.text({ type: 'application/json' }));
 
+  // Global rate limiter for all endpoints
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500, // Generous limit for general use
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many requests from this IP, please try again later.',
+  });
+
+  // Apply global rate limiter to all routes
+  app.use(globalLimiter);
+
   // Rate limiting for authentication endpoints
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -461,6 +484,15 @@ if (TRANSPORT === 'stdio') {
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many login attempts, please try again later.',
+  });
+
+  // Rate limiting for health check endpoints
+  const healthLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 60, // Allow health checks every second
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many health check requests, please try again later.',
   });
 
   // Session configuration (if OAuth is enabled)
@@ -811,6 +843,10 @@ if (TRANSPORT === 'stdio') {
   // Home page
   app.get('/', (req: Request, res: Response) => {
     const isAuthenticated = typeof req.isAuthenticated === 'function' && req.isAuthenticated();
+    const username = escapeHtml((req.user as any)?.username || 'unknown');
+    const providerName = oauthConfig ? escapeHtml(oauthConfig.provider) : '';
+    const providerDisplayName = providerName ? escapeHtml(providerName.charAt(0).toUpperCase() + providerName.slice(1)) : '';
+
     res.send(`
       <!DOCTYPE html>
       <html>
@@ -830,7 +866,7 @@ if (TRANSPORT === 'stdio') {
         
         ${isAuthenticated ? `
           <div class="status authenticated">
-            ✅ <strong>Authenticated</strong> as ${(req.user as any)?.username || 'unknown'}
+            ✅ <strong>Authenticated</strong> as ${username}
             <br><br>
             ${oauthConfig ? '<a href="/logout">Logout</a>' : ''}
           </div>
@@ -842,7 +878,7 @@ if (TRANSPORT === 'stdio') {
             ⚠️ <strong>Not Authenticated</strong>
             <br><br>
             ${oauthConfig
-    ? `<a href="/auth/login">Login with ${oauthConfig.provider.charAt(0).toUpperCase() + oauthConfig.provider.slice(1)}</a>`
+    ? `<a href="/auth/login">Login with ${providerDisplayName}</a>`
     : 'Use Bearer token authentication'
 }
           </div>
@@ -864,7 +900,7 @@ if (TRANSPORT === 'stdio') {
         
         <h2>Configuration</h2>
         <p><strong>Transport:</strong> ${TRANSPORT}</p>
-        ${oauthConfig ? `<p><strong>OAuth:</strong> ${oauthConfig.provider}</p>` : ''}
+        ${oauthConfig ? `<p><strong>OAuth:</strong> ${providerName}</p>` : ''}
         ${MCP_BEARER_TOKEN ? '<p><strong>Auth:</strong> Static Bearer Token</p>' : ''}
         <p><strong>Tools:</strong> ${TOOLS.length}${ONLY_READONLY_TOOLS ? ' (read-only)' : ''}</p>
       </body>
@@ -909,19 +945,19 @@ if (TRANSPORT === 'stdio') {
       },
     );
 
-    app.get('/logout', (req: Request, res: Response) => {
+    app.get('/logout', authLimiter, (req: Request, res: Response) => {
       req.logout(() => {
         res.redirect('/');
       });
     });
   }
 
-  // Health check endpoints
-  app.get('/healthz', (req: Request, res: Response) => {
+  // Health check endpoints (with rate limiting)
+  app.get('/healthz', healthLimiter, (req: Request, res: Response) => {
     res.status(200).send('ok');
   });
 
-  app.get('/health', (req: Request, res: Response) => {
+  app.get('/health', healthLimiter, (req: Request, res: Response) => {
     const memoryUsage = process.memoryUsage();
 
     res.json({
@@ -948,8 +984,8 @@ if (TRANSPORT === 'stdio') {
     });
   });
 
-  // Status endpoint
-  app.get('/status', (req: Request, res: Response) => {
+  // Status endpoint (with rate limiting)
+  app.get('/status', healthLimiter, (req: Request, res: Response) => {
     const isAuthenticated = typeof req.isAuthenticated === 'function' && req.isAuthenticated();
     res.json({
       authenticated: isAuthenticated,
