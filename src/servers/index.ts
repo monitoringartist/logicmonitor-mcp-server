@@ -17,6 +17,7 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  SetLevelRequestSchema,
   Tool,
   JSONRPCMessage,
 } from '@modelcontextprotocol/sdk/types.js';
@@ -128,6 +129,7 @@ if (TRANSPORT === 'stdio') {
     {
       capabilities: {
         tools: {},
+        logging: {},
       },
     },
   );
@@ -137,6 +139,13 @@ if (TRANSPORT === 'stdio') {
     return {
       tools: TOOLS,
     };
+  });
+
+  // Handle logging/setLevel requests (STDIO doesn't use dynamic logging, so this is a no-op)
+  server.setRequestHandler(SetLevelRequestSchema, async (request) => {
+    const { level } = request.params;
+    console.error(`[LogicMonitor MCP] Logging level set to: ${level}`);
+    return {};
   });
 
   // Handle tool execution requests
@@ -497,6 +506,10 @@ if (TRANSPORT === 'stdio') {
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    // Expose Mcp-Session-Id header for browser-based MCP clients (streamable-http transport)
+    exposedHeaders: ['Mcp-Session-Id'],
+    // Allow Mcp-Session-Id header in requests
+    allowedHeaders: ['Content-Type', 'Authorization', 'mcp-session-id'],
   }));
 
   app.use(express.json());
@@ -791,6 +804,13 @@ if (TRANSPORT === 'stdio') {
       return { tools: TOOLS };
     });
 
+    // Handle logging/setLevel requests
+    server.setRequestHandler(SetLevelRequestSchema, async (request) => {
+      const { level } = request.params;
+      log('info', `Logging level set to: ${level}`, { level });
+      return {};
+    });
+
     // Handle tool execution
     server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
@@ -958,7 +978,10 @@ if (TRANSPORT === 'stdio') {
           <li><code>GET /healthz</code> - Health check</li>
           <li><code>GET /health</code> - Detailed health</li>
           <li><code>GET ${MCP_ENDPOINT_PATH}/sse</code> - MCP SSE endpoint</li>
-          ${TRANSPORT_MODE !== 'sse-only' ? `<li><code>POST ${MCP_ENDPOINT_PATH}</code> - MCP HTTP endpoint</li>` : ''}
+          ${TRANSPORT_MODE !== 'sse-only' ? `
+          <li><code>POST ${MCP_ENDPOINT_PATH}</code> - MCP HTTP endpoint</li>
+          <li><code>DELETE ${MCP_ENDPOINT_PATH}</code> - Terminate MCP HTTP session</li>
+          ` : ''}
         </ul>
         
         <h2>Configuration</h2>
@@ -1099,7 +1122,14 @@ if (TRANSPORT === 'stdio') {
   if (TRANSPORT_MODE !== 'sse-only') {
     app.post(MCP_ENDPOINT_PATH, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
       const username = (req.user as any)?.username;
-      const sessionId = (req.session as any)?.id || (req as any).requestId;
+      // Get session ID from Mcp-Session-Id header or create a new one
+      let sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+      // If no session ID provided, create a new session
+      if (!sessionId) {
+        sessionId = crypto.randomBytes(16).toString('hex');
+        log('debug', 'Creating new MCP HTTP session', { username, sessionId });
+      }
 
       log('debug', 'MCP HTTP request', { username, sessionId });
 
@@ -1117,7 +1147,7 @@ if (TRANSPORT === 'stdio') {
         // Handle the message through the MCP message handler
         const response = await handleMCPMessage(sessionInfo.server, message);
 
-        // Set session header for client
+        // Set session header for client (always return the session ID)
         res.setHeader('Mcp-Session-Id', sessionId);
 
         // For notifications (null response), return 200 OK
@@ -1128,6 +1158,7 @@ if (TRANSPORT === 'stdio') {
         }
       } catch (error) {
         log('error', 'Error handling MCP HTTP request', { error: error instanceof Error ? error.message : String(error) });
+        res.setHeader('Mcp-Session-Id', sessionId);
         res.status(200).json({
           jsonrpc: '2.0',
           error: {
@@ -1138,6 +1169,48 @@ if (TRANSPORT === 'stdio') {
           id: null,
         });
       }
+    });
+
+    // MCP HTTP session termination endpoint (DELETE)
+    app.delete(MCP_ENDPOINT_PATH, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
+      const username = (req.user as any)?.username;
+      // Get session ID from Mcp-Session-Id header (as per MCP streamable-http spec)
+      const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+      if (!sessionId) {
+        log('warn', 'DELETE request missing Mcp-Session-Id header', { username });
+        res.status(400).json({
+          error: 'invalid_request',
+          error_description: 'Missing Mcp-Session-Id header',
+        });
+        return;
+      }
+
+      log('debug', 'MCP HTTP session termination request', { username, sessionId });
+
+      // Check if session exists
+      const sessionInfo = httpSessions.get(sessionId);
+
+      if (!sessionInfo) {
+        log('warn', 'Attempted to terminate non-existent session', { sessionId });
+        res.status(404).json({
+          error: 'session_not_found',
+          error_description: 'The specified session does not exist or has already been terminated',
+        });
+        return;
+      }
+
+      // Clean up session
+      httpSessions.delete(sessionId);
+      sessionBearerTokens.delete(sessionId);
+      sessionScopes.delete(sessionId);
+
+      log('info', 'MCP HTTP session terminated', { username, sessionId });
+
+      res.status(200).json({
+        success: true,
+        message: 'Session terminated successfully',
+      });
     });
   }
 
@@ -1201,6 +1274,15 @@ if (TRANSPORT === 'stdio') {
             resolve({
               jsonrpc: '2.0',
               result: { tools: TOOLS },
+              id: messageId,
+            });
+          } else if (message.method === 'logging/setLevel') {
+            const params = message.params as any;
+            const level = params?.level || 'info';
+            log('info', `Logging level set to: ${level}`, { level });
+            resolve({
+              jsonrpc: '2.0',
+              result: {},
               id: messageId,
             });
           } else if (message.method === 'tools/call') {

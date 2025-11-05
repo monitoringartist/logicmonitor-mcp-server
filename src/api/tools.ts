@@ -62,6 +62,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By name: filter:"displayName\\~\\*prod\\*" (wildcard search) ' +
       '\n- By status: filter:"hostStatus:alive" or filter:"hostStatus:dead" ' +
       '\n- By type: filter:"systemProperties.name:system.devicetype,value:server" ' +
+      '\n- By custom property: filter:"customProperties.name:company.team,customProperties.value:teamA" ' +
       '\n- By collector: filter:"preferredCollectorId:123" ' +
       '\n- Multiple conditions: filter:"hostStatus:alive,displayName\\~\\*web\\*" (comma = AND) ' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
@@ -2698,6 +2699,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- query:"displayName~\\*prod\\*" → wildcard matching' +
       '\n- query:"displayName~\\*web\\*,hostStatus:alive" → combine filters (AND)' +
       '\n\n**Common use cases:** ' +
+      '\n- "Find all devices with custom property" → query:"customProperties.name:company.team,customProperties.value:teamA" ' +
       '\n- "Find all production web servers" → query:"production web" or query:"displayName~\\*prod-web\\*"' +
       '\n- "Find resource/device by IP" → query:"192.168.1.100"' +
       '\n- "Find all database servers" → query:"database" or query:"db"' +
