@@ -26,6 +26,8 @@ import passport from 'passport';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import lusca from 'lusca';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
@@ -269,8 +271,27 @@ if (TRANSPORT === 'stdio') {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL];
   }
 
+  /**
+   * Sanitizes sensitive data before logging to prevent exposure of credentials,
+   * tokens, and other sensitive information in logs.
+   *
+   * This function recursively processes objects and arrays to redact sensitive fields
+   * matching known patterns (tokens, passwords, secrets, API keys, etc.).
+   *
+   * @param data - The data to sanitize for logging
+   * @returns Sanitized data with sensitive fields redacted
+   */
   function sanitizeForLogging(data: any): any {
-    if (!data || typeof data !== 'object') {
+    // Handle primitives (strings, numbers, booleans, null, undefined)
+    if (data === null || data === undefined) {
+      return data;
+    }
+
+    if (typeof data !== 'object') {
+      // If it's a string, check if it looks like a token/secret (long alphanumeric string)
+      if (typeof data === 'string' && data.length > 32 && /^[A-Za-z0-9_\-+=/.]+$/.test(data)) {
+        return `${data.substring(0, 4)}...[REDACTED]`;
+      }
       return data;
     }
 
@@ -279,29 +300,50 @@ if (TRANSPORT === 'stdio') {
       return data.map(item => sanitizeForLogging(item));
     }
 
+    // Handle objects - redact sensitive fields
     const sanitized: Record<string, any> = {};
+
+    // Comprehensive list of sensitive field patterns
     const sensitiveFields = [
+      // OAuth and authentication
       'state', 'code', 'code_verifier', 'code_challenge',
-      'authorization', 'client_secret', 'access_token',
-      'refresh_token', 'password', 'secret', 'token',
-      'clientSecret', 'sessionSecret', 'bearerToken',
-      'clientId', 'apiKey', 'apiSecret',
+      'authorization', 'auth',
+      // Tokens
+      'access_token', 'accesstoken', 'refresh_token', 'refreshtoken',
+      'bearer_token', 'bearertoken', 'id_token', 'idtoken',
+      'token', 'jwt',
+      // Secrets and keys
+      'password', 'passwd', 'pwd',
+      'secret', 'client_secret', 'clientsecret', 'session_secret', 'sessionsecret',
+      'api_key', 'apikey', 'api_secret', 'apisecret',
+      'private_key', 'privatekey', 'public_key', 'publickey',
+      // Credentials
+      'credential', 'credentials',
+      'client_id', 'clientid',
+      // Additional sensitive patterns
+      'cookie', 'csrf', 'nonce',
     ];
 
     for (const [key, value] of Object.entries(data)) {
-      // Check if this field is sensitive
+      // Normalize key for comparison (lowercase, remove underscores/hyphens)
+      const normalizedKey = key.toLowerCase().replace(/[_-]/g, '');
+
+      // Check if this field matches any sensitive pattern
       const isSensitive = sensitiveFields.some(field =>
-        key.toLowerCase().includes(field.toLowerCase()),
+        normalizedKey.includes(field.replace(/[_-]/g, '')),
       );
 
       if (isSensitive) {
-        if (typeof value === 'string') {
-          sanitized[key] = value.length > 4 ? `${value.substring(0, 4)}...` : '***';
+        // Redact sensitive fields completely
+        if (typeof value === 'string' && value.length > 0) {
+          sanitized[key] = value.length > 4 ? `${value.substring(0, 4)}...[REDACTED]` : '[REDACTED]';
+        } else if (value !== null && value !== undefined) {
+          sanitized[key] = '[REDACTED]';
         } else {
-          sanitized[key] = '***';
+          sanitized[key] = value;
         }
       } else if (typeof value === 'object' && value !== null) {
-        // Recursively sanitize nested objects
+        // Recursively sanitize nested objects and arrays
         sanitized[key] = sanitizeForLogging(value);
       } else {
         sanitized[key] = value;
@@ -325,6 +367,8 @@ if (TRANSPORT === 'stdio') {
     };
 
     if (LOG_FORMAT === 'json') {
+      // Security: All sensitive data is sanitized via sanitizeForLogging() before logging
+      // This prevents credentials, tokens, and secrets from being exposed in logs
       console.log(JSON.stringify(entry));
     } else {
       const emoji = {
@@ -353,6 +397,7 @@ if (TRANSPORT === 'stdio') {
         output += `\n${JSON.stringify(sanitizeForLogging(data), null, 2)}`;
       }
 
+      // Security: All sensitive data is sanitized via sanitizeForLogging() before logging
       console.log(output);
     }
   }
@@ -456,6 +501,9 @@ if (TRANSPORT === 'stdio') {
   app.use(express.json());
   app.use(express.text({ type: 'application/json' }));
 
+  // Cookie parser middleware (required for CSRF protection)
+  app.use(cookieParser());
+
   // Global rate limiter for all endpoints
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -513,6 +561,11 @@ if (TRANSPORT === 'stdio') {
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    // CSRF protection for session-based authentication
+    // This protects against Cross-Site Request Forgery attacks
+    // Uses cookie-based CSRF tokens for better security
+    app.use(lusca.csrf());
   }
 
   // Authentication middleware (optional if hasAuthentication is false)
@@ -948,6 +1001,14 @@ if (TRANSPORT === 'stdio') {
     app.get('/logout', authLimiter, (req: Request, res: Response) => {
       req.logout(() => {
         res.redirect('/');
+      });
+    });
+
+    // CSRF token endpoint - provides the token to authenticated clients
+    app.get('/csrf-token', authLimiter, ensureAuthenticated, (req: Request, res: Response) => {
+      // The CSRF token is automatically available in res.locals._csrf by lusca
+      res.json({
+        csrfToken: res.locals._csrf || (req as any).csrfToken?.() || null,
       });
     });
   }

@@ -15,6 +15,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE for web clients, HTTP for integrations
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
+- **CSRF Protection**: Automatic CSRF protection for session-based authentication
 - **Read-Only Mode**: Safe monitoring without modification capabilities (enabled by default)
 - **Flexible Configuration**: CLI flags, environment variables, or `.env` file
 - **Debug Logging**: JSON or human-readable formats with detailed request/response logging
@@ -699,11 +700,13 @@ export MCP_BEARER_TOKEN=$(openssl rand -base64 32)
 - Use VPN or bastion hosts for sensitive environments
 - Enable audit logging (`--log-format json --log-level info`)
 
+
 ### Security Checklist for Production
 
 - [ ] Read-only mode enabled (`MCP_READ_ONLY=true`)
 - [ ] HTTPS/TLS configured (`MCP_TLS_CERT_FILE`, `MCP_TLS_KEY_FILE`)
 - [ ] Authentication enabled (`MCP_BEARER_TOKEN` or OAuth configured)
+- [ ] CSRF protection enabled (automatic with OAuth)
 - [ ] LogicMonitor API token rotated recently
 - [ ] `.env` file not in version control
 - [ ] Firewall rules restrict access to authorized IPs
