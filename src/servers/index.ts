@@ -225,7 +225,7 @@ if (TRANSPORT === 'stdio') {
               'get_resource_instance_data to get data for this resource, ' +
               'get_resource_group to get the group for this resource, ' +
               'get_collector to get the collector for this resource, ' +
-              'get_collector_group to get the collector group for this resource.' +
+              'get_collector_group to get the collector group for this resource. ' +
               'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/memory/network), ' +
               'full group paths for all resource groups where is resource assigned. ',
           },
