@@ -97,14 +97,23 @@ export class InputSanitizer {
     }
 
     // Remove HTML tags and script injections but allow most characters
-    return name
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<[^>]+>/g, '')
-      .replace(/javascript:/gi, '')
-      .replace(/data:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .trim()
-      .substring(0, 255);
+    // Using multiple passes to handle nested/malformed tags
+    let sanitized = name;
+    
+    // Remove all script tags (including malformed ones)
+    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<\/script>/gi, '');
+    
+    // Remove all HTML tags
+    sanitized = sanitized.replace(/<[^>]+>/g, '');
+    
+    // Remove dangerous protocols
+    sanitized = sanitized.replace(/javascript:/gi, '');
+    sanitized = sanitized.replace(/data:/gi, '');
+    sanitized = sanitized.replace(/vbscript:/gi, '');
+    
+    return sanitized.trim().substring(0, 255);
   }
 
   /**
@@ -120,14 +129,23 @@ export class InputSanitizer {
     }
 
     // Remove script tags and dangerous protocols
-    return description
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/javascript:/gi, '')
-      .replace(/data:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .replace(/on\w+\s*=/gi, '') // Remove event handlers (onclick, onerror, etc.)
-      .trim()
-      .substring(0, 10000); // Larger limit for descriptions
+    let sanitized = description;
+    
+    // Remove all script tags (including malformed ones) - multiple passes
+    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<\/script>/gi, '');
+    
+    // Remove dangerous protocols
+    sanitized = sanitized.replace(/javascript:/gi, '');
+    sanitized = sanitized.replace(/data:/gi, '');
+    sanitized = sanitized.replace(/vbscript:/gi, '');
+    
+    // Remove event handlers (onclick, onerror, etc.) - multiple passes for nested attempts
+    sanitized = sanitized.replace(/on\w+\s*=/gi, '');
+    sanitized = sanitized.replace(/on\s*\w+\s*=/gi, '');
+    
+    return sanitized.trim().substring(0, 10000); // Larger limit for descriptions
   }
 
   /**
@@ -218,14 +236,20 @@ export class InputSanitizer {
 
     const strValue = String(value);
 
-    // Remove script injections but allow most characters
-    return strValue
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/javascript:/gi, '')
-      .replace(/data:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .trim()
-      .substring(0, 10000);
+    // Remove script injections but allow most characters - multiple passes
+    let sanitized = strValue;
+    
+    // Remove all script tags (including malformed ones)
+    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
+    sanitized = sanitized.replace(/<\/script>/gi, '');
+    
+    // Remove dangerous protocols
+    sanitized = sanitized.replace(/javascript:/gi, '');
+    sanitized = sanitized.replace(/data:/gi, '');
+    sanitized = sanitized.replace(/vbscript:/gi, '');
+    
+    return sanitized.trim().substring(0, 10000);
   }
 
   /**

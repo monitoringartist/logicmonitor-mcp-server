@@ -76,6 +76,11 @@ export class BatchProcessor {
         const actualIndex = i + chunkIndex;
 
         try {
+          // Validate index is a safe integer within bounds
+          if (!Number.isSafeInteger(actualIndex) || actualIndex < 0 || actualIndex >= items.length) {
+            throw new Error(`Invalid index: ${actualIndex}`);
+          }
+
           let result: TOutput;
 
           if (retryOnRateLimit) {
@@ -95,11 +100,14 @@ export class BatchProcessor {
           };
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
-          results[actualIndex] = {
-            index: actualIndex,
-            success: false,
-            error: errorMessage,
-          };
+          // Validate index before assignment
+          if (Number.isSafeInteger(actualIndex) && actualIndex >= 0 && actualIndex < items.length) {
+            results[actualIndex] = {
+              index: actualIndex,
+              success: false,
+              error: errorMessage,
+            };
+          }
 
           if (!continueOnError) {
             throw error;

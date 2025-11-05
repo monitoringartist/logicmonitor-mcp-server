@@ -23,11 +23,13 @@ import {
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import passport from 'passport';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
@@ -272,22 +274,37 @@ if (TRANSPORT === 'stdio') {
       return data;
     }
 
-    const sanitized = { ...data };
+    // Handle arrays
+    if (Array.isArray(data)) {
+      return data.map(item => sanitizeForLogging(item));
+    }
+
+    const sanitized: Record<string, any> = {};
     const sensitiveFields = [
       'state', 'code', 'code_verifier', 'code_challenge',
       'authorization', 'client_secret', 'access_token',
       'refresh_token', 'password', 'secret', 'token',
+      'clientSecret', 'sessionSecret', 'bearerToken',
+      'clientId', 'apiKey', 'apiSecret',
     ];
 
-    for (const field of sensitiveFields) {
-      if (field in sanitized) {
-        if (typeof sanitized[field] === 'string') {
-          sanitized[field] = sanitized[field].length > 4
-            ? `${sanitized[field].substring(0, 4)}...`
-            : '***';
+    for (const [key, value] of Object.entries(data)) {
+      // Check if this field is sensitive
+      const isSensitive = sensitiveFields.some(field =>
+        key.toLowerCase().includes(field.toLowerCase()),
+      );
+
+      if (isSensitive) {
+        if (typeof value === 'string') {
+          sanitized[key] = value.length > 4 ? `${value.substring(0, 4)}...` : '***';
         } else {
-          sanitized[field] = '***';
+          sanitized[key] = '***';
         }
+      } else if (typeof value === 'object' && value !== null) {
+        // Recursively sanitize nested objects
+        sanitized[key] = sanitizeForLogging(value);
+      } else {
+        sanitized[key] = value;
       }
     }
 
@@ -375,7 +392,7 @@ if (TRANSPORT === 'stdio') {
   // Request/Response logging middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
-    const requestId = Math.random().toString(36).substring(7);
+    const requestId = crypto.randomBytes(8).toString('hex');
     (req as any).requestId = requestId;
 
     log('debug', 'Incoming request', {
@@ -408,6 +425,24 @@ if (TRANSPORT === 'stdio') {
   app.use(express.json());
   app.use(express.text({ type: 'application/json' }));
 
+  // Rate limiting for authentication endpoints
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many requests from this IP, please try again later.',
+  });
+
+  // Stricter rate limiting for login endpoints
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login attempts per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many login attempts, please try again later.',
+  });
+
   // Session configuration (if OAuth is enabled)
   if (oauthConfig) {
     app.use(
@@ -417,6 +452,8 @@ if (TRANSPORT === 'stdio') {
         saveUninitialized: false,
         cookie: {
           secure: process.env.NODE_ENV === 'production',
+          httpOnly: true,
+          sameSite: 'lax',
           maxAge: 24 * 60 * 60 * 1000,
         },
       }),
@@ -818,7 +855,7 @@ if (TRANSPORT === 'stdio') {
   // OAuth routes (if configured)
   if (oauthConfig) {
     const scopeArray = oauthConfig.scope ? oauthConfig.scope.split(',') : undefined;
-    app.get('/auth/login', passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { scope: scopeArray }));
+    app.get('/auth/login', loginLimiter, passport.authenticate(oauthConfig.provider === 'custom' ? 'oauth2' : oauthConfig.provider, { scope: scopeArray }));
 
     app.get(
       '/auth/callback',
@@ -905,11 +942,11 @@ if (TRANSPORT === 'stdio') {
 
   // MCP SSE endpoint
   if (TRANSPORT_MODE !== 'http-only') {
-    app.get(`${MCP_ENDPOINT_PATH}/sse`, ensureAuthenticated, async (req: Request, res: Response) => {
+    app.get(`${MCP_ENDPOINT_PATH}/sse`, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
       const username = (req.user as any)?.username;
       log('info', 'New MCP SSE connection', { username });
 
-      const sessionId = (req.session as any)?.id || Math.random().toString(36).substring(7);
+      const sessionId = (req.session as any)?.id || crypto.randomBytes(8).toString('hex');
       let server = mcpServers.get(sessionId);
 
       if (!server) {
@@ -933,7 +970,7 @@ if (TRANSPORT === 'stdio') {
 
   // MCP HTTP endpoint (streamable-http)
   if (TRANSPORT_MODE !== 'sse-only') {
-    app.post(MCP_ENDPOINT_PATH, ensureAuthenticated, async (req: Request, res: Response) => {
+    app.post(MCP_ENDPOINT_PATH, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
       const username = (req.user as any)?.username;
       const sessionId = (req.session as any)?.id || (req as any).requestId;
 
