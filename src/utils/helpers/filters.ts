@@ -25,8 +25,9 @@ export function formatLogicMonitorFilter(filter: string | undefined): string | u
   if (!filter) return filter;
 
   // Split on logical operators (, for AND, || for OR) while preserving them
-  // Using a non-backtracking pattern to avoid polynomial complexity
-  const parts = filter.split(/( *(?:,|\|\|) *)/);
+  // Using a bounded pattern to avoid polynomial complexity (ReDoS)
+  // Match up to 10 spaces before/after operators to prevent exponential backtracking
+  const parts = filter.split(/( {0,10}(?:,|\|\|) {0,10})/);
 
   const formattedParts = parts.map((part) => {
     // Skip logical operators
@@ -47,8 +48,9 @@ export function formatLogicMonitorFilter(filter: string | undefined): string | u
 function formatFilterCondition(condition: string): string {
   // Handle LogicMonitor operators: :, !:, >, <, >:, <:, ~, !~
   // Match pattern: property<operator>value(s)
-  // Using possessive quantifier equivalent to avoid backtracking
-  const operatorMatch = condition.match(/^([^:!><~]+?)([:!><~]+)(.*)$/);
+  // Using atomic grouping pattern to avoid backtracking (ReDoS)
+  // Match property (non-operator chars), then operator (1-3 chars), then value
+  const operatorMatch = condition.match(/^([^:!><~]+)([:!><~]{1,3})(.*)$/);
 
   if (!operatorMatch) {
     return condition; // Return as-is if not recognized pattern

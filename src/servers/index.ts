@@ -417,8 +417,28 @@ if (TRANSPORT === 'stdio') {
     next();
   });
 
+  // CORS configuration - restrict origins in production
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
   app.use(cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // If no allowed origins configured, allow all (dev mode)
+      if (allowedOrigins.length === 0) {
+        return callback(null, true);
+      }
+
+      // Check if origin is allowed
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+
+      // Reject other origins
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }));
 

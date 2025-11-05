@@ -97,21 +97,27 @@ export class InputSanitizer {
     }
 
     // Remove HTML tags and script injections but allow most characters
-    // Using multiple passes to handle nested/malformed tags
+    // Using multiple passes to handle nested/malformed tags and prevent XSS
     let sanitized = name;
     
-    // Remove all script tags (including malformed ones)
-    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<\/script>/gi, '');
+    // Multi-pass script tag removal to handle all variants including malformed ones
+    for (let i = 0; i < 3; i++) {
+      sanitized = sanitized.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/<script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/< *script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/< *\/ *script\s*>/gi, '');
+    }
     
     // Remove all HTML tags
     sanitized = sanitized.replace(/<[^>]+>/g, '');
     
-    // Remove dangerous protocols
-    sanitized = sanitized.replace(/javascript:/gi, '');
-    sanitized = sanitized.replace(/data:/gi, '');
-    sanitized = sanitized.replace(/vbscript:/gi, '');
+    // Remove dangerous protocols with multiple passes
+    for (let i = 0; i < 2; i++) {
+      sanitized = sanitized.replace(/javascript\s*:/gi, '');
+      sanitized = sanitized.replace(/data\s*:/gi, '');
+      sanitized = sanitized.replace(/vbscript\s*:/gi, '');
+    }
     
     return sanitized.trim().substring(0, 255);
   }
@@ -131,19 +137,28 @@ export class InputSanitizer {
     // Remove script tags and dangerous protocols
     let sanitized = description;
     
-    // Remove all script tags (including malformed ones) - multiple passes
-    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<\/script>/gi, '');
+    // Multi-pass script tag removal to handle all variants including malformed ones
+    for (let i = 0; i < 3; i++) {
+      sanitized = sanitized.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/<script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/< *script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/< *\/ *script\s*>/gi, '');
+    }
     
-    // Remove dangerous protocols
-    sanitized = sanitized.replace(/javascript:/gi, '');
-    sanitized = sanitized.replace(/data:/gi, '');
-    sanitized = sanitized.replace(/vbscript:/gi, '');
+    // Remove dangerous protocols with multiple passes
+    for (let i = 0; i < 2; i++) {
+      sanitized = sanitized.replace(/javascript\s*:/gi, '');
+      sanitized = sanitized.replace(/data\s*:/gi, '');
+      sanitized = sanitized.replace(/vbscript\s*:/gi, '');
+    }
     
     // Remove event handlers (onclick, onerror, etc.) - multiple passes for nested attempts
-    sanitized = sanitized.replace(/on\w+\s*=/gi, '');
-    sanitized = sanitized.replace(/on\s*\w+\s*=/gi, '');
+    for (let i = 0; i < 2; i++) {
+      sanitized = sanitized.replace(/on\w+\s*=/gi, '');
+      sanitized = sanitized.replace(/on\s*\w+\s*=/gi, '');
+      sanitized = sanitized.replace(/ *on\w+\s*=/gi, '');
+    }
     
     return sanitized.trim().substring(0, 10000); // Larger limit for descriptions
   }
@@ -239,10 +254,14 @@ export class InputSanitizer {
     // Remove script injections but allow most characters - multiple passes
     let sanitized = strValue;
     
-    // Remove all script tags (including malformed ones)
-    sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
-    sanitized = sanitized.replace(/<\/script>/gi, '');
+    // Multi-pass script tag removal to handle all variants including malformed ones
+    for (let i = 0; i < 3; i++) {
+      sanitized = sanitized.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/<script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/<\/script\s*>/gi, '');
+      sanitized = sanitized.replace(/< *script\b[^>]*>/gi, '');
+      sanitized = sanitized.replace(/< *\/ *script\s*>/gi, '');
+    }
     
     // Remove dangerous protocols
     sanitized = sanitized.replace(/javascript:/gi, '');

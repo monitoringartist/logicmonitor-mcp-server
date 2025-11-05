@@ -83,6 +83,11 @@ export class BatchProcessor {
 
           let result: TOutput;
 
+          // Validate index before use to prevent property injection
+          if (!Number.isSafeInteger(actualIndex) || actualIndex < 0 || actualIndex >= items.length) {
+            throw new Error(`Invalid index: ${actualIndex}`);
+          }
+
           if (retryOnRateLimit) {
             result = await this.executeWithRetry(
               () => processor(item, actualIndex),
