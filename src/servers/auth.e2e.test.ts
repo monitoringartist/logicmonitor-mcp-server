@@ -152,8 +152,9 @@ async function makeRequest(
         let body = '';
         let timeoutId: NodeJS.Timeout | null = null;
 
-        // For SSE endpoints, we just want to verify the connection is established
-        if (isSSE) {
+        // For SSE endpoints with successful connection (200), we just want to verify the connection is established
+        // For error responses (401, 403, etc.), treat as normal HTTP to get full response
+        if (isSSE && res.statusCode === 200) {
           // Wait for first chunk or timeout
           timeoutId = setTimeout(() => {
             req.destroy();

@@ -1,6 +1,6 @@
 /**
  * Input Sanitization Utility
- * 
+ *
  * Provides methods to sanitize and validate user inputs to prevent injection attacks
  * and ensure data integrity when interacting with the LogicMonitor API.
  */
@@ -14,10 +14,10 @@ export class InputSanitizer {
   /**
    * Sanitize filter strings to prevent filter injection attacks
    * Removes dangerous characters and validates basic syntax
-   * 
+   *
    * @param filter - The filter string to sanitize
    * @returns Sanitized filter string
-   * 
+   *
    * @example
    * ```typescript
    * const sanitizer = new InputSanitizer();
@@ -43,10 +43,10 @@ export class InputSanitizer {
   /**
    * Sanitize device names to prevent special characters that might cause issues
    * Allows alphanumeric characters, spaces, hyphens, underscores, and periods
-   * 
+   *
    * @param name - The device name to sanitize
    * @returns Sanitized device name
-   * 
+   *
    * @example
    * ```typescript
    * const sanitizer = new InputSanitizer();
@@ -68,7 +68,7 @@ export class InputSanitizer {
   /**
    * Sanitize group names
    * Similar to device names but allows forward slashes for path hierarchy
-   * 
+   *
    * @param name - The group name to sanitize
    * @returns Sanitized group name
    */
@@ -89,7 +89,7 @@ export class InputSanitizer {
   /**
    * Sanitize display names (for users, alerts, etc.)
    * More permissive than device names but still prevents injection
-   * 
+   *
    * @param name - The display name to sanitize
    * @returns Sanitized display name
    */
@@ -101,23 +101,23 @@ export class InputSanitizer {
     // Remove ALL HTML by removing angle brackets - simple and secure approach
     // This is the recommended fix from CodeQL to avoid regex bypasses
     let sanitized = name;
-    
+
     // Remove all < and > characters to prevent any HTML/script tags
     // This makes event handlers impossible since they require HTML attributes
     sanitized = sanitized.replace(/</g, '').replace(/>/g, '');
-    
+
     // Remove dangerous protocol patterns (defense in depth)
     sanitized = sanitized.replace(/javascript\s*:/gi, '');
     sanitized = sanitized.replace(/data\s*:/gi, '');
     sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    
+
     return sanitized.trim().substring(0, 255);
   }
 
   /**
    * Sanitize description text
    * Uses sanitize-html library to allow safe HTML while removing dangerous content
-   * 
+   *
    * @param description - The description text to sanitize
    * @returns Sanitized description
    */
@@ -137,19 +137,19 @@ export class InputSanitizer {
       disallowedTagsMode: 'discard',
       allowProtocolRelative: false,
     });
-    
+
     // Remove dangerous protocols (defense in depth)
     sanitized = sanitized.replace(/javascript\s*:/gi, '');
     sanitized = sanitized.replace(/data\s*:/gi, '');
     sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    
+
     return sanitized.trim().substring(0, 10000); // Larger limit for descriptions
   }
 
   /**
    * Sanitize IP addresses
    * Validates and sanitizes IPv4 and IPv6 addresses
-   * 
+   *
    * @param ip - The IP address to sanitize
    * @returns Sanitized IP address or empty string if invalid
    */
@@ -184,7 +184,7 @@ export class InputSanitizer {
   /**
    * Sanitize hostname
    * Validates and sanitizes domain names and hostnames
-   * 
+   *
    * @param hostname - The hostname to sanitize
    * @returns Sanitized hostname
    */
@@ -193,10 +193,11 @@ export class InputSanitizer {
       return '';
     }
 
-    // Allow alphanumeric, hyphens, and periods (standard hostname format)
+    // Allow alphanumeric, hyphens, underscores, and periods (standard hostname format)
+    // CodeQL fix: Place hyphen at the end of character class to avoid ambiguity
     return hostname
       .toLowerCase()
-      .replace(/[^a-z0-9\-_.]/g, '')
+      .replace(/[^a-z0-9._-]/g, '')
       .replace(/\.\.+/g, '.') // Prevent multiple consecutive dots
       .replace(/^\.+|\.+$/g, '') // Remove leading/trailing dots
       .trim()
@@ -205,7 +206,7 @@ export class InputSanitizer {
 
   /**
    * Sanitize property names (for custom properties)
-   * 
+   *
    * @param name - The property name to sanitize
    * @returns Sanitized property name
    */
@@ -224,7 +225,7 @@ export class InputSanitizer {
   /**
    * Sanitize property values (for custom properties)
    * Simple character removal for property values (no HTML allowed)
-   * 
+   *
    * @param value - The property value to sanitize
    * @returns Sanitized property value
    */
@@ -238,19 +239,19 @@ export class InputSanitizer {
     // Remove angle brackets to prevent HTML/script tags
     // This is the recommended fix from CodeQL to avoid regex bypasses
     let sanitized = strValue.replace(/</g, '').replace(/>/g, '');
-    
+
     // Remove dangerous protocol patterns (defense in depth)
     sanitized = sanitized.replace(/javascript\s*:/gi, '');
     sanitized = sanitized.replace(/data\s*:/gi, '');
     sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    
+
     return sanitized.trim().substring(0, 10000);
   }
 
   /**
    * Sanitize numeric ID
    * Ensures the input is a valid positive integer
-   * 
+   *
    * @param id - The ID to sanitize (string or number)
    * @returns Sanitized numeric ID or 0 if invalid
    */
@@ -270,7 +271,7 @@ export class InputSanitizer {
   /**
    * Sanitize sort field names
    * Prevents injection through sort parameters
-   * 
+   *
    * @param field - The field name to sanitize
    * @returns Sanitized field name
    */
@@ -293,7 +294,7 @@ export class InputSanitizer {
 
   /**
    * Validate and sanitize offset/limit pagination parameters
-   * 
+   *
    * @param value - The pagination value to sanitize
    * @param defaultValue - Default value if invalid (default: 0)
    * @param max - Maximum allowed value (default: 1000)
