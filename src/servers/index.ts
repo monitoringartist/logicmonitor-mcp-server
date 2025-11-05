@@ -17,6 +17,10 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
   SetLevelRequestSchema,
   Tool,
   JSONRPCMessage,
@@ -37,6 +41,8 @@ import { fileURLToPath } from 'url';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import { listLMResources, readLMResource } from '../api/resources.js';
+import { listLMPrompts, getLMPrompt } from '../api/prompts.js';
 import {
   registerSession,
   registerRefreshCallback,
@@ -129,6 +135,8 @@ if (TRANSPORT === 'stdio') {
     {
       capabilities: {
         tools: {},
+        resources: {},
+        prompts: {},
         logging: {},
       },
     },
@@ -139,6 +147,98 @@ if (TRANSPORT === 'stdio') {
     return {
       tools: TOOLS,
     };
+  });
+
+  // Handle resource listing requests
+  server.setRequestHandler(ListResourcesRequestSchema, async () => {
+    const resources = listLMResources();
+    return {
+      resources: resources.map(r => ({
+        uri: r.uri,
+        name: r.name,
+        description: r.description,
+        mimeType: r.mimeType,
+      })),
+    };
+  });
+
+  // Handle resource read requests
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    const { uri } = request.params;
+    try {
+      const result = await readLMResource(uri);
+      return result;
+    } catch (error) {
+      console.error(`[LogicMonitor MCP] Error reading resource ${uri}:`, error);
+      throw error;
+    }
+  });
+
+  // Handle prompt listing requests
+  server.setRequestHandler(ListPromptsRequestSchema, async () => {
+    const prompts = listLMPrompts();
+    return {
+      prompts: prompts.map(p => ({
+        name: p.name,
+        description: p.description,
+        arguments: p.arguments,
+      })),
+    };
+  });
+
+  // Handle get prompt requests
+  server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    const prompt = getLMPrompt(name);
+
+    if (!prompt) {
+      throw new Error(`Prompt not found: ${name}`);
+    }
+
+    // Generate the prompt message based on the prompt type
+    if (name === 'resource_check') {
+      const resourceName = args?.resourceName as string;
+
+      if (!resourceName) {
+        throw new Error('Missing required argument: resourceName');
+      }
+
+      // Build the interactive prompt workflow
+      const messages = [
+        {
+          role: 'user' as const,
+          content: {
+            type: 'text' as const,
+            text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
+          },
+        },
+        {
+          role: 'assistant' as const,
+          content: {
+            type: 'text' as const,
+            text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
+              'I\'ll use the search_resources or list_resources tool to find this resource, ' +
+              'list_alerts tool to find any alerts for this resource, ' +
+              'generate_resource link to create direct link to LogicMonitor, ' +
+              'list_resource_datasources to find available datasources for this resource, ' +
+              'list_resource_instances to find available instances for this resource, ' +
+              'get_resource_instance_data to get data for this resource, ' +
+              'get_resource_group to get the group for this resource, ' +
+              'get_collector to get the collector for this resource, ' +
+              'get_collector_group to get the collector group for this resource.' +
+              'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/memory/network), ' +
+              'full group paths for all resource groups where is resource assigned. ',
+          },
+        },
+      ];
+
+      return {
+        description: `Health check workflow for resource: ${resourceName}`,
+        messages,
+      };
+    }
+
+    throw new Error(`Unknown prompt: ${name}`);
   });
 
   // Handle logging/setLevel requests (STDIO doesn't use dynamic logging, so this is a no-op)
@@ -792,6 +892,8 @@ if (TRANSPORT === 'stdio') {
       {
         capabilities: {
           tools: {},
+          resources: {},
+          prompts: {},
           logging: {},
         },
       },
@@ -802,6 +904,88 @@ if (TRANSPORT === 'stdio') {
     // Handle tool listing
     server.setRequestHandler(ListToolsRequestSchema, async () => {
       return { tools: TOOLS };
+    });
+
+    // Handle resource listing
+    server.setRequestHandler(ListResourcesRequestSchema, async () => {
+      const resources = listLMResources();
+      return {
+        resources: resources.map(r => ({
+          uri: r.uri,
+          name: r.name,
+          description: r.description,
+          mimeType: r.mimeType,
+        })),
+      };
+    });
+
+    // Handle resource read requests
+    server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      const { uri } = request.params;
+      try {
+        const result = await readLMResource(uri);
+        return result;
+      } catch (error) {
+        log('error', 'Error reading resource', { uri, error: error instanceof Error ? error.message : String(error) });
+        throw error;
+      }
+    });
+
+    // Handle prompt listing
+    server.setRequestHandler(ListPromptsRequestSchema, async () => {
+      const prompts = listLMPrompts();
+      return {
+        prompts: prompts.map(p => ({
+          name: p.name,
+          description: p.description,
+          arguments: p.arguments,
+        })),
+      };
+    });
+
+    // Handle get prompt requests
+    server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+      const { name, arguments: args } = request.params;
+      const prompt = getLMPrompt(name);
+
+      if (!prompt) {
+        throw new Error(`Prompt not found: ${name}`);
+      }
+
+      // Generate the prompt message based on the prompt type
+      if (name === 'resource_check') {
+        const resourceName = args?.resourceName as string;
+
+        if (!resourceName) {
+          throw new Error('Missing required argument: resourceName');
+        }
+
+        // Build the interactive prompt workflow
+        const messages = [
+          {
+            role: 'user' as const,
+            content: {
+              type: 'text' as const,
+              text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
+            },
+          },
+          {
+            role: 'assistant' as const,
+            content: {
+              type: 'text' as const,
+              text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
+                'I\'ll use the search_resources or list_resources tool to find this device.',
+            },
+          },
+        ];
+
+        return {
+          description: `Health check workflow for resource: ${resourceName}`,
+          messages,
+        };
+      }
+
+      throw new Error(`Unknown prompt: ${name}`);
     });
 
     // Handle logging/setLevel requests
@@ -1255,6 +1439,8 @@ if (TRANSPORT === 'stdio') {
                 protocolVersion: '2024-11-05',
                 capabilities: {
                   tools: {},
+                  resources: {},
+                  prompts: {},
                   logging: {},
                 },
                 serverInfo: {
@@ -1276,6 +1462,162 @@ if (TRANSPORT === 'stdio') {
               result: { tools: TOOLS },
               id: messageId,
             });
+          } else if (message.method === 'resources/list') {
+            const resources = listLMResources();
+            resolve({
+              jsonrpc: '2.0',
+              result: {
+                resources: resources.map(r => ({
+                  uri: r.uri,
+                  name: r.name,
+                  description: r.description,
+                  mimeType: r.mimeType,
+                })),
+              },
+              id: messageId,
+            });
+          } else if (message.method === 'resources/read') {
+            const params = message.params as any;
+
+            if (!params || !params.uri) {
+              resolve({
+                jsonrpc: '2.0',
+                error: {
+                  code: -32602,
+                  message: 'Invalid params',
+                  data: 'Missing required parameter: uri',
+                },
+                id: messageId,
+              });
+              return;
+            }
+
+            // Handle resource read
+            (async () => {
+              try {
+                const result = await readLMResource(params.uri);
+
+                resolve({
+                  jsonrpc: '2.0',
+                  result,
+                  id: messageId,
+                });
+              } catch (error: any) {
+                log('error', 'Error reading resource', {
+                  uri: params.uri,
+                  error: error.message || String(error),
+                });
+
+                resolve({
+                  jsonrpc: '2.0',
+                  error: {
+                    code: -32603,
+                    message: 'Internal error',
+                    data: error.message || 'Failed to read resource',
+                  },
+                  id: messageId,
+                });
+              }
+            })();
+          } else if (message.method === 'prompts/list') {
+            const prompts = listLMPrompts();
+            resolve({
+              jsonrpc: '2.0',
+              result: {
+                prompts: prompts.map(p => ({
+                  name: p.name,
+                  description: p.description,
+                  arguments: p.arguments,
+                })),
+              },
+              id: messageId,
+            });
+          } else if (message.method === 'prompts/get') {
+            const params = message.params as any;
+
+            if (!params || !params.name) {
+              resolve({
+                jsonrpc: '2.0',
+                error: {
+                  code: -32602,
+                  message: 'Invalid params',
+                  data: 'Missing required parameter: name',
+                },
+                id: messageId,
+              });
+              return;
+            }
+
+            const prompt = getLMPrompt(params.name);
+
+            if (!prompt) {
+              resolve({
+                jsonrpc: '2.0',
+                error: {
+                  code: -32602,
+                  message: 'Invalid params',
+                  data: `Prompt not found: ${params.name}`,
+                },
+                id: messageId,
+              });
+              return;
+            }
+
+            // Generate the prompt message based on the prompt type
+            if (params.name === 'resource_check') {
+              const resourceName = params.arguments?.resourceName as string;
+
+              if (!resourceName) {
+                resolve({
+                  jsonrpc: '2.0',
+                  error: {
+                    code: -32602,
+                    message: 'Invalid params',
+                    data: 'Missing required argument: resourceName',
+                  },
+                  id: messageId,
+                });
+                return;
+              }
+
+              // Build the interactive prompt workflow
+              const messages = [
+                {
+                  role: 'user',
+                  content: {
+                    type: 'text',
+                    text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
+                  },
+                },
+                {
+                  role: 'assistant',
+                  content: {
+                    type: 'text',
+                    text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
+                      'I\'ll use the search_resources or list_resources tool to find this device.',
+                  },
+                },
+              ];
+
+              resolve({
+                jsonrpc: '2.0',
+                result: {
+                  description: `Health check workflow for resource: ${resourceName}`,
+                  messages,
+                },
+                id: messageId,
+              });
+            } else {
+              resolve({
+                jsonrpc: '2.0',
+                error: {
+                  code: -32603,
+                  message: 'Internal error',
+                  data: `Unknown prompt: ${params.name}`,
+                },
+                id: messageId,
+              });
+            }
           } else if (message.method === 'logging/setLevel') {
             const params = message.params as any;
             const level = params?.level || 'info';

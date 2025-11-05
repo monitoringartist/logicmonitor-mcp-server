@@ -4383,8 +4383,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Check which escalation chain receives matching alerts' +
       '\n' +
       '\n\n**Matching conditions explained:** ' +
-      '\n- deviceGroups: Which resource/device folders this rule applies to (e.g., */Production/*, */Database Servers/*) ' +
-      '\n- datasources: Which datasources trigger this rule (e.g., *CPU*, *Memory*, AWS\_EC2) ' +
+      '\n- deviceGroups: Which resource/device folders this rule applies to (e.g., /Production/, /Database Servers/) ' +
+      '\n- datasources: Which datasources trigger this rule (e.g., CPU, Memory, AWS\_EC2) ' +
       '\n- datapoints: Specific metrics (e.g., CPUBusyPercent, MemoryUsedPercent) ' +
       '\n- instances: Filter by instance name (e.g., C: drive only, eth0 interface only) ' +
       '\n- severity: Alert levels (critical, error, warn) ' +
@@ -4429,8 +4429,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- priority: Rule evaluation order (1=highest, evaluated first) ' +
       '\n- escalationChainId: Which escalation chain receives matching alerts ' +
       '\n\n**Optional parameters (matching conditions):** ' +
-      '\n- deviceGroups: Device folders to match (e.g., "*/Production/*") ' +
-      '\n- datasources: DataSource names to match (e.g., "*CPU*", "*Memory*") ' +
+      '\n- deviceGroups: Device folders to match (e.g., "/Production/") ' +
+      '\n- datasources: DataSource names to match (e.g., "CPU", "Memory") ' +
       '\n- instances: Instance names to match ' +
       '\n- datapoints: Specific metrics ' +
       '\n- severity: Alert levels (critical, error, warn) ' +
@@ -4443,13 +4443,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Catch-all rules need HIGHER priority numbers (evaluated last) ' +
       '\n\n**Common alert rule patterns:** ' +
       '\n\n**Critical production alerts (Priority 1):** ' +
-      '{name: "Critical Production", priority: 1, deviceGroups: "*/Production/*", severity: "critical", escalationChainId: 10} ' +
+      '{name: "Critical Production", priority: 1, deviceGroups: "/Production/", severity: "critical", escalationChainId: 10} ' +
       '// Critical alerts from production resources/devices→ On-call chain ' +
       '\n\n**Database team alerts (Priority 2):** ' +
-      '{name: "Database Team", priority: 2, datasources: "*MySQL*,*PostgreSQL*,*Oracle*", escalationChainId: 20} ' +
+      '{name: "Database Team", priority: 2, datasources: "MySQL,PostgreSQL,Oracle", escalationChainId: 20} ' +
       '// Any database datasource → Database team chain ' +
       '\n\n**Network team alerts (Priority 3):** ' +
-      '{name: "Network Team", priority: 3, deviceGroups: "*/Network resources/Devices/*", escalationChainId: 30} ' +
+      '{name: "Network Team", priority: 3, deviceGroups: "/Network resources/Devices/", escalationChainId: 30} ' +
       '// Network resource/device → Network team chain ' +
       '\n\n**Business hours only (Priority 4):** ' +
       '{name: "Non-Critical Warnings", priority: 4, severity: "warn", escalationChainId: 40} ' +
@@ -4458,13 +4458,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '{name: "Default - All Alerts", priority: 99, escalationChainId: 50} ' +
       '// Everything else → Default NOC chain ' +
       '\n\n**DeviceGroups filter examples:** ' +
-      '\n- "*/Production/*" - Any resource/device in Production folder ' +
-      '\n- "*/Production/Web Servers/*" - Only production web servers ' +
-      '\n- "*" - All resource/device (catch-all) ' +
+      '\n- "/Production/" - Any resource/device in Production folder ' +
+      '\n- "/Production/Web Servers/" - Only production web servers ' +
+      '\n- "\*" - All resource/device (catch-all) ' +
       '\n\n**Datasources filter examples:** ' +
-      '\n- "*CPU*" - Any datasource with CPU in name ' +
+      '\n- "CPU" - Any datasource with CPU in name ' +
       '\n- "WinCPU,LinuxCPU" - Specific datasources (comma-separated) ' +
-      '\n- "*Memory*,*Disk*" - Memory or Disk datasources ' +
+      '\n- "Memory,Disk" - Memory or Disk datasources ' +
       '\n\n**Severity options:** ' +
       '\n- "critical" - Critical alerts only ' +
       '\n- "error" - Error and critical ' +
@@ -4544,7 +4544,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n\n**Temporarily disable rule:** ' +
       '{ruleId: 123, enabled: false} // During team transition ' +
       '\n\n**Broaden scope:** ' +
-      '{ruleId: 123, deviceGroups: "*/Production/*,*/Staging/*"} // Add staging resource/device ' +
+      '{ruleId: 123, deviceGroups: "/Production/,/Staging/"} // Add staging resource/device ' +
       '\n\n**Narrow scope:** ' +
       '{ruleId: 123, severity: "critical"} // Only critical, not warnings ' +
       '\n\n**⚠️ Important - Immediate Impact:** ' +
@@ -4554,8 +4554,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Priority changes affect which rule wins for overlapping conditions ' +
       '\n\n**Priority update considerations:** ' +
       'If two rules match same alert, LOWER priority number wins. Example: ' +
-      '\n- Rule A (priority 1): deviceGroups="*/Production/*" ' +
-      '\n- Rule B (priority 2): datasources="*CPU*" ' +
+      '\n- Rule A (priority 1): deviceGroups="/Production/" ' +
+      '\n- Rule B (priority 2): datasources="CPU" ' +
       '\n- Alert from Production resource/device with CPU datasource → Rule A wins (priority 1) ' +
       '\n\n**Best practice workflow:** ' +
       '1. Use "get\\_alert\\_rule" to review current configuration ' +
