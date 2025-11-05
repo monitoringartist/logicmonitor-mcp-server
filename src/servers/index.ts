@@ -289,7 +289,8 @@ if (TRANSPORT === 'stdio') {
 
     if (typeof data !== 'object') {
       // If it's a string, check if it looks like a token/secret (long alphanumeric string)
-      if (typeof data === 'string' && data.length > 32 && /^[A-Za-z0-9_\-+=/.]+$/.test(data)) {
+      // CodeQL fix: Place hyphen at the end of character class to avoid ambiguity
+      if (typeof data === 'string' && data.length > 32 && /^[A-Za-z0-9_+=\/.-]+$/.test(data)) {
         return `${data.substring(0, 4)}...[REDACTED]`;
       }
       return data;
@@ -565,7 +566,16 @@ if (TRANSPORT === 'stdio') {
     // CSRF protection for session-based authentication
     // This protects against Cross-Site Request Forgery attacks
     // Uses cookie-based CSRF tokens for better security
-    app.use(lusca.csrf());
+    // Exclude MCP endpoints from CSRF protection as they use Bearer token authentication
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      // Skip CSRF for MCP endpoints and API routes that use Bearer tokens
+      if (req.path.startsWith('/mcp') || req.path.startsWith('/.well-known/') ||
+          req.path === '/healthz' || req.path === '/health' || req.path === '/') {
+        return next();
+      }
+      // Apply CSRF protection to other routes
+      lusca.csrf()(req, res, next);
+    });
   }
 
   // Authentication middleware (optional if hasAuthentication is false)

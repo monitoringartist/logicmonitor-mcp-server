@@ -19,6 +19,14 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { spawn, ChildProcess } from 'child_process';
 import http from 'http';
 import { once } from 'events';
+import { existsSync } from 'fs';
+import { join } from 'path';
+
+// Check if build directory exists before running tests
+const buildPath = join(process.cwd(), 'build', 'servers', 'index.js');
+if (!existsSync(buildPath)) {
+  throw new Error('Build directory not found. Please run "npm run build" before running e2e tests.');
+}
 
 interface ServerProcess {
   process: ChildProcess;
