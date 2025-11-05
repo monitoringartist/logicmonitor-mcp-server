@@ -7,12 +7,38 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
-  build-and-release:
-    name: Build and Release
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
-    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  release:
+    name: Create Release
+    needs: test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,79 +50,81 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          if [ -z "$PREV_TAG" ]; then
+            echo "First release"
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            echo "Changes since $PREV_TAG"
+            CHANGELOG=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # Save to file for multiline handling
+          echo "$CHANGELOG" > changelog.txt
+          echo "CHANGELOG_FILE=changelog.txt" >> $GITHUB_OUTPUT
+
+      - name: Create release archive
+        run: |
+          mkdir -p release
+          cp -r build package.json package-lock.json README.md LICENSE env.example release/
+          cd release
+          tar -czf ../logicmonitor-mcp-server-v${{ steps.version.outputs.VERSION }}.tar.gz .
+          cd ..
+          zip -r logicmonitor-mcp-server-v${{ steps.version.outputs.VERSION }}.zip release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.version.outputs.VERSION }}
+          body_path: changelog.txt
+          files: |
+            logicmonitor-mcp-server-v${{ steps.version.outputs.VERSION }}.tar.gz
+            logicmonitor-mcp-server-v${{ steps.version.outputs.VERSION }}.zip
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to NPM
+    needs: test
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
-        run: npm run lint
-
       - name: Build
         run: npm run build
 
-      - name: Run tests
-        run: npm test
-        env:
-          LM_COMPANY: test-company
-          LM_BEARER_TOKEN: test-token-dummy-value-for-ci
-          MCP_READ_ONLY: true
-
-      - name: Create tarball
-        run: |
-          npm pack
-          mv *.tgz logicmonitor-mcp-server.tgz
-
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          if git tag --list 'v*.*.*' | tail -n 2 | head -n 1 > /dev/null 2>&1; then
-            PREV_TAG=$(git tag --list 'v*.*.*' | tail -n 2 | head -n 1)
-            echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-            git log $PREV_TAG..${{ steps.get_version.outputs.TAG }} --pretty=format:"- %s (%h)" >> $GITHUB_OUTPUT
-            echo "" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "CHANGELOG=Initial release" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.get_version.outputs.TAG }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
-          body: |
-            ## LogicMonitor MCP Server ${{ steps.get_version.outputs.VERSION }}
-            
-            ### Changes
-            ${{ steps.changelog.outputs.CHANGELOG }}
-            
-            ### Installation
-            ```bash
-            npm install logicmonitor-mcp-server@${{ steps.get_version.outputs.VERSION }}
-            ```
-            
-            ### Docker
-            ```bash
-            docker pull ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
-            ```
-          files: |
-            logicmonitor-mcp-server.tgz
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to npm (optional)
-        run: npm publish --access public
-        continue-on-error: true
+      - name: Publish to NPM
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

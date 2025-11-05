@@ -2,7 +2,10 @@
 
 Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants like Claude to interact with your LogicMonitor infrastructure.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/monitoringartist/logicmonitor-mcp-server/workflows/CI/badge.svg)](https://github.com/monitoringartist/logicmonitor-mcp-server/actions)
+[![Release](https://github.com/monitoringartist/logicmonitor-mcp-server/workflows/Release/badge.svg)](https://github.com/monitoringartist/logicmonitor-mcp-server/releases)
+[![npm version](https://badge.fury.io/js/logicmonitor-mcp-server.svg)](https://www.npmjs.com/package/logicmonitor-mcp-server)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org/)
 
@@ -35,7 +38,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/logicmonitor-mcp-server.git
+git clone https://github.com/monitoringartist/logicmonitor-mcp-server.git
 cd logicmonitor-mcp-server
 
 # Install dependencies
@@ -49,7 +52,7 @@ npm run build
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/logicmonitor-mcp-server.git
+git clone https://github.com/monitoringartist/logicmonitor-mcp-server.git
 cd logicmonitor-mcp-server
 
 # Build Docker image
@@ -789,7 +792,7 @@ Contributions are welcome! Please:
 
 ## Support
 
-- 🐛 [Issue Tracker](https://github.com/yourusername/logicmonitor-mcp-server/issues)
+- 🐛 [Issue Tracker](https://github.com/monitoringartist/logicmonitor-mcp-server/issues)
 
 ## Related Projects
 

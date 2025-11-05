@@ -7,6 +7,23 @@
     "bin": {
         "logicmonitor-mcp-server": "build/servers/index.js"
     },
+    "files": [
+        "build/**/*",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "env.example"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/monitoringartist/logicmonitor-mcp-server.git"
+    },
+    "bugs": {
+        "url": "https://github.com/monitoringartist/logicmonitor-mcp-server/issues"
+    },
+    "homepage": "https://github.com/monitoringartist/logicmonitor-mcp-server#readme",
+    "author": "Monitoring Artist",
+    "license": "AGPL-3.0-or-later",
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
@@ -18,11 +35,22 @@
         "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
         "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
         "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/servers/index.js",
-        "lint": "eslint src/**/*.ts"
+        "lint": "eslint src/**/*.ts",
+        "prepublishOnly": "npm run build && npm test",
+        "version": "npm run build && git add -A",
+        "postversion": "git push && git push --tags"
     },
     "keywords": [
         "mcp",
-        "model-context-protocol"
+        "model-context-protocol",
+        "logicmonitor",
+        "monitoring",
+        "observability",
+        "ai",
+        "claude",
+        "api-server",
+        "infrastructure",
+        "devops"
     ],
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.0.4",
