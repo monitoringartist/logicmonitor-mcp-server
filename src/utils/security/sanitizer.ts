@@ -5,6 +5,8 @@
  * and ensure data integrity when interacting with the LogicMonitor API.
  */
 
+import sanitizeHtml from 'sanitize-html';
+
 /**
  * InputSanitizer class for sanitizing various types of user inputs
  */
@@ -96,41 +98,27 @@ export class InputSanitizer {
       return '';
     }
 
-    // Remove HTML tags and script injections but allow most characters
-    // Using multiple passes to handle nested/malformed tags and prevent XSS
+    // Remove ALL HTML by removing angle brackets - simple and secure approach
+    // This is the recommended fix from CodeQL to avoid regex bypasses
     let sanitized = name;
     
-    // Multi-pass script tag removal to handle all variants including malformed ones
-    // Using comprehensive patterns that match any whitespace and attributes in closing tags
-    for (let i = 0; i < 5; i++) {
-      // Match script tags with any content and closing tags with whitespace/attributes
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\b[^>]*>/gi, '');
-      // Remove any remaining opening script tags
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>/gi, '');
-      // Remove any remaining closing script tags with any attributes
-      sanitized = sanitized.replace(/<\s*\/\s*script\b[^>]*>/gi, '');
-    }
+    // Remove all < and > characters to prevent any HTML/script tags
+    sanitized = sanitized.replace(/</g, '').replace(/>/g, '');
     
-    // Remove all HTML tags (including malformed ones)
-    for (let i = 0; i < 2; i++) {
-      sanitized = sanitized.replace(/<[^>]*>/g, '');
-      sanitized = sanitized.replace(/</g, '&lt;');
-      sanitized = sanitized.replace(/>/g, '&gt;');
-    }
+    // Remove dangerous protocol patterns (defense in depth)
+    sanitized = sanitized.replace(/javascript\s*:/gi, '');
+    sanitized = sanitized.replace(/data\s*:/gi, '');
+    sanitized = sanitized.replace(/vbscript\s*:/gi, '');
     
-    // Remove dangerous protocols with multiple passes
-    for (let i = 0; i < 3; i++) {
-      sanitized = sanitized.replace(/javascript\s*:/gi, '');
-      sanitized = sanitized.replace(/data\s*:/gi, '');
-      sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    }
+    // Remove event handler patterns (defense in depth)
+    sanitized = sanitized.replace(/\s*on\w+\s*=/gi, '');
     
     return sanitized.trim().substring(0, 255);
   }
 
   /**
    * Sanitize description text
-   * Allows more characters than names but prevents script injection
+   * Uses sanitize-html library to allow safe HTML while removing dangerous content
    * 
    * @param description - The description text to sanitize
    * @returns Sanitized description
@@ -140,32 +128,22 @@ export class InputSanitizer {
       return '';
     }
 
-    // Remove script tags and dangerous protocols
-    let sanitized = description;
+    // Use sanitize-html library for robust HTML sanitization
+    // This is a recommended fix from CodeQL to avoid regex bypasses
+    let sanitized = sanitizeHtml(description, {
+      allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'code', 'pre'],
+      allowedAttributes: {
+        'a': ['href', 'title'],
+      },
+      allowedSchemes: ['http', 'https', 'mailto'],
+      disallowedTagsMode: 'discard',
+      allowProtocolRelative: false,
+    });
     
-    // Multi-pass script tag removal to handle all variants including malformed ones
-    // Using comprehensive patterns that match any whitespace and attributes in closing tags
-    for (let i = 0; i < 5; i++) {
-      // Match script tags with any content and closing tags with whitespace/attributes
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\b[^>]*>/gi, '');
-      // Remove any remaining opening script tags
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>/gi, '');
-      // Remove any remaining closing script tags with any attributes
-      sanitized = sanitized.replace(/<\s*\/\s*script\b[^>]*>/gi, '');
-    }
-    
-    // Remove dangerous protocols with multiple passes
-    for (let i = 0; i < 3; i++) {
-      sanitized = sanitized.replace(/javascript\s*:/gi, '');
-      sanitized = sanitized.replace(/data\s*:/gi, '');
-      sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    }
-    
-    // Remove event handlers (onclick, onerror, etc.) - multiple passes for nested attempts
-    for (let i = 0; i < 3; i++) {
-      sanitized = sanitized.replace(/\s*on\w+\s*=/gi, '');
-      sanitized = sanitized.replace(/\s*on\s+\w+\s*=/gi, '');
-    }
+    // Remove dangerous protocols (defense in depth)
+    sanitized = sanitized.replace(/javascript\s*:/gi, '');
+    sanitized = sanitized.replace(/data\s*:/gi, '');
+    sanitized = sanitized.replace(/vbscript\s*:/gi, '');
     
     return sanitized.trim().substring(0, 10000); // Larger limit for descriptions
   }
@@ -247,6 +225,7 @@ export class InputSanitizer {
 
   /**
    * Sanitize property values (for custom properties)
+   * Simple character removal for property values (no HTML allowed)
    * 
    * @param value - The property value to sanitize
    * @returns Sanitized property value
@@ -258,26 +237,14 @@ export class InputSanitizer {
 
     const strValue = String(value);
 
-    // Remove script injections but allow most characters - multiple passes
-    let sanitized = strValue;
+    // Remove angle brackets to prevent HTML/script tags
+    // This is the recommended fix from CodeQL to avoid regex bypasses
+    let sanitized = strValue.replace(/</g, '').replace(/>/g, '');
     
-    // Multi-pass script tag removal to handle all variants including malformed ones
-    // Using comprehensive patterns that match any whitespace and attributes in closing tags
-    for (let i = 0; i < 5; i++) {
-      // Match script tags with any content and closing tags with whitespace/attributes
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\b[^>]*>/gi, '');
-      // Remove any remaining opening script tags
-      sanitized = sanitized.replace(/<\s*script\b[^>]*>/gi, '');
-      // Remove any remaining closing script tags with any attributes
-      sanitized = sanitized.replace(/<\s*\/\s*script\b[^>]*>/gi, '');
-    }
-    
-    // Remove dangerous protocols with multiple passes
-    for (let i = 0; i < 3; i++) {
-      sanitized = sanitized.replace(/javascript\s*:/gi, '');
-      sanitized = sanitized.replace(/data\s*:/gi, '');
-      sanitized = sanitized.replace(/vbscript\s*:/gi, '');
-    }
+    // Remove dangerous protocol patterns (defense in depth)
+    sanitized = sanitized.replace(/javascript\s*:/gi, '');
+    sanitized = sanitized.replace(/data\s*:/gi, '');
+    sanitized = sanitized.replace(/vbscript\s*:/gi, '');
     
     return sanitized.trim().substring(0, 10000);
   }

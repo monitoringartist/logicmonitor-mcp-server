@@ -137,13 +137,19 @@ describe('InputSanitizer', () => {
       const input = 'John <script>alert(1)</script> Doe';
       const result = inputSanitizer.sanitizeDisplayName(input);
       expect(result).not.toContain('<script>');
-      expect(result).toBe('John  Doe');
+      expect(result).not.toContain('<');
+      expect(result).not.toContain('>');
+      // Angle brackets removed, tag names remain
+      expect(result).toBe('John scriptalert(1)/script Doe');
     });
 
     it('should remove HTML tags', () => {
       const input = 'John <b>Doe</b>';
       const result = inputSanitizer.sanitizeDisplayName(input);
-      expect(result).toBe('John Doe');
+      // Angle brackets removed, tag names remain
+      expect(result).not.toContain('<');
+      expect(result).not.toContain('>');
+      expect(result).toBe('John bDoe/b');
     });
 
     it('should remove dangerous protocols', () => {
