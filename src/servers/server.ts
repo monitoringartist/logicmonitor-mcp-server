@@ -183,7 +183,7 @@ export function createServer(config: ServerConfig): ServerInstance {
   });
 
   // Handle tool execution requests
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const { name, arguments: args, _meta } = request.params;
     const progressToken = _meta?.progressToken;
 
@@ -202,7 +202,7 @@ export function createServer(config: ServerConfig): ServerInstance {
               progress,
               total,
             },
-          });
+          }, { relatedRequestId: extra.requestId });
         } catch (err) {
           // Silently ignore notification errors
           console.error('[LogicMonitor MCP] Progress notification error:', err);
