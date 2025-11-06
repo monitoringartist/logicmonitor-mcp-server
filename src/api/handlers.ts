@@ -1531,4 +1531,75 @@ export class LogicMonitorHandlers {
   formatResponse(data: any): string {
     return JSON.stringify(data, null, 2);
   }
+
+  /**
+   * Handles completion requests for prompt arguments
+   *
+   * @param ref Reference to the prompt or resource
+   * @param argument The argument being completed
+   * @returns Completion suggestions
+   */
+  async handleCompletion(
+    ref: { type: string; name?: string; uri?: string },
+    argument: { name: string; value: string },
+  ): Promise<{ values: string[]; total?: number; hasMore?: boolean }> {
+    // Only support prompt completions for now
+    if (ref.type === 'ref/prompt' && ref.name === 'resource_check') {
+      // Only support resourceName argument
+      if (argument.name === 'resourceName') {
+        const searchValue = argument.value || '';
+
+        // Build OR filter to search across name, displayName, and IP
+        // Using OR (||) to find resources matching any of these fields
+        let filter = '';
+        if (searchValue) {
+          const filters = [
+            `name~"${searchValue}"`,
+            `displayName~"${searchValue}"`,
+            `name:"${searchValue}"`, // Exact IP match
+          ];
+          filter = filters.join('||');
+        }
+
+        try {
+          // Search for resources with a limit of 100 (max per MCP spec)
+          const result = await this.client.listResources({
+            size: 100,
+            offset: 0,
+            filter,
+            fields: 'displayName,name', // Only need displayName and name
+          });
+
+          const items = result.items || [];
+          const total = result.total || items.length;
+
+          // Extract displayNames for completion suggestions
+          const values = items
+            .map((item: any) => item.displayName || item.name)
+            .filter((name: string) => name); // Remove any null/undefined
+
+          return {
+            values,
+            total,
+            hasMore: total > values.length,
+          };
+        } catch (error) {
+          // On error, return empty suggestions
+          console.error('[LogicMonitor MCP] Completion error:', error);
+          return {
+            values: [],
+            total: 0,
+            hasMore: false,
+          };
+        }
+      }
+    }
+
+    // Unsupported completion - return empty
+    return {
+      values: [],
+      total: 0,
+      hasMore: false,
+    };
+  }
 }

@@ -23,6 +23,7 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
   SetLevelRequestSchema,
+  CompleteRequestSchema,
   Tool,
   JSONRPCMessage,
 } from '@modelcontextprotocol/sdk/types.js';
@@ -136,6 +137,7 @@ if (TRANSPORT === 'stdio') {
         resources: {},
         prompts: {},
         logging: {},
+        completions: {},
       },
     },
   );
@@ -206,6 +208,27 @@ if (TRANSPORT === 'stdio') {
     const { level } = request.params;
     console.error(`[LogicMonitor MCP] Logging level set to: ${level}`);
     return {};
+  });
+
+  // Handle completion requests
+  server.setRequestHandler(CompleteRequestSchema, async (request) => {
+    const { ref, argument } = request.params;
+
+    if (!lmHandlers) {
+      return {
+        completion: {
+          values: [],
+          total: 0,
+          hasMore: false,
+        },
+      };
+    }
+
+    const completion = await lmHandlers.handleCompletion(ref, argument);
+
+    return {
+      completion,
+    };
   });
 
   // Handle tool execution requests
@@ -870,6 +893,7 @@ if (TRANSPORT === 'stdio') {
           resources: {},
           prompts: {},
           logging: {},
+          completions: {},
         },
       },
     );
@@ -939,6 +963,27 @@ if (TRANSPORT === 'stdio') {
       const { level } = request.params;
       log('info', `Logging level set to: ${level}`, { level });
       return {};
+    });
+
+    // Handle completion requests
+    server.setRequestHandler(CompleteRequestSchema, async (request) => {
+      const { ref, argument } = request.params;
+
+      if (!lmHandlers) {
+        return {
+          completion: {
+            values: [],
+            total: 0,
+            hasMore: false,
+          },
+        };
+      }
+
+      const completion = await lmHandlers.handleCompletion(ref, argument);
+
+      return {
+        completion,
+      };
     });
 
     // Handle tool execution
@@ -1550,6 +1595,61 @@ if (TRANSPORT === 'stdio') {
                 id: messageId,
               });
             }
+          } else if (message.method === 'completion/complete') {
+            const params = message.params as any;
+
+            if (!params || !params.ref || !params.argument) {
+              resolve({
+                jsonrpc: '2.0',
+                error: {
+                  code: -32602,
+                  message: 'Invalid params',
+                  data: 'Missing required parameters: ref and argument',
+                },
+                id: messageId,
+              });
+              return;
+            }
+
+            // Handle completion
+            (async () => {
+              try {
+                if (!lmHandlers) {
+                  resolve({
+                    jsonrpc: '2.0',
+                    result: {
+                      completion: {
+                        values: [],
+                        total: 0,
+                        hasMore: false,
+                      },
+                    },
+                    id: messageId,
+                  });
+                  return;
+                }
+
+                const completion = await lmHandlers.handleCompletion(params.ref, params.argument);
+
+                resolve({
+                  jsonrpc: '2.0',
+                  result: {
+                    completion,
+                  },
+                  id: messageId,
+                });
+              } catch (error) {
+                resolve({
+                  jsonrpc: '2.0',
+                  error: {
+                    code: -32603,
+                    message: 'Internal error',
+                    data: error instanceof Error ? error.message : 'An error occurred',
+                  },
+                  id: messageId,
+                });
+              }
+            })();
           } else if (message.method === 'logging/setLevel') {
             const params = message.params as any;
             const level = params?.level || 'info';

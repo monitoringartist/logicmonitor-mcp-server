@@ -24,10 +24,10 @@ export interface LMPrompt {
 export const LM_PROMPTS: LMPrompt[] = [
   {
     name: 'resource_check',
-    description: 'Interactive health check for a LogicMonitor resource/device. ' +
+    description: 'Interactive resource check for a LogicMonitor resource/device. ' +
       'Searches for a resource by name or custom filter, allows selection if multiple matches, ' +
-      'then displays comprehensive health information including resource details, location, ' +
-      'collector assignment, and current metrics (CPU, memory, network) in a formatted table.',
+      'then displays comprehensive information including resource details, groups, ' +
+      'collector assignment, and current metrics (CPU, memory, network, ping, etc.) in a formatted table for selected resource.',
     arguments: [
       {
         name: 'resourceName',
@@ -89,7 +89,7 @@ export function generatePromptMessages(name: string, args?: Record<string, any>)
           type: 'text' as const,
           text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
             'I\'ll use the list_resources tool with query parameter to find this resource, ' +
-            'eventually ask user to select one resource from the list if there is multiple resources matching search condition, ' +
+            'eventually ask user to select one particular resource from the list if there is multiple resources matching search condition, ' +
             'list_alerts tool to find any alerts for this resource, ' +
             'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
             'list_resource_datasources tool to find available datasources for this resource, ' +

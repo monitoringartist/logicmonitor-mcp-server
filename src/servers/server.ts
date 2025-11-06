@@ -14,6 +14,7 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
   SetLevelRequestSchema,
+  CompleteRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { LogicMonitorClient } from '../api/client.js';
@@ -63,6 +64,7 @@ export function createServer(config: ServerConfig): ServerInstance {
         resources: {},
         prompts: {},
         logging: {},
+        completions: {},
       },
     },
   );
@@ -132,6 +134,28 @@ export function createServer(config: ServerConfig): ServerInstance {
     // Logging level is typically set at startup, so this is informational
     console.error(`[LogicMonitor MCP] Logging level set to: ${level}`);
     return {};
+  });
+
+  // Handle completion requests
+  server.setRequestHandler(CompleteRequestSchema, async (request) => {
+    const { ref, argument } = request.params;
+
+    if (!lmHandlers) {
+      // Return empty completions if no credentials configured
+      return {
+        completion: {
+          values: [],
+          total: 0,
+          hasMore: false,
+        },
+      };
+    }
+
+    const completion = await lmHandlers.handleCompletion(ref, argument);
+
+    return {
+      completion,
+    };
   });
 
   // Handle tool execution requests
