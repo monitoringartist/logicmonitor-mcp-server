@@ -23,6 +23,8 @@ import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { listLMResources, readLMResource } from '../api/resources.js';
 import { listLMPrompts, getLMPrompt, generatePromptMessages } from '../api/prompts.js';
+import { readFileSync } from 'fs';
+import path from 'path';
 
 export interface ServerConfig {
   version: string;
@@ -56,10 +58,13 @@ export function createServer(config: ServerConfig): ServerInstance {
     userScope = 'mcp:tools',
   } = config;
 
+  const instructions = readFileSync(path.join(__dirname, 'instructions.md'), 'utf8');
+
   // Create the server instance
   const server = new Server(
     {
       name: 'logicmonitor-mcp-server',
+      title: 'LogicMonitor MCP Server',
       version,
     },
     {
@@ -70,6 +75,7 @@ export function createServer(config: ServerConfig): ServerInstance {
         logging: {},
         completions: {},
       },
+      instructions,
     },
   );
 
