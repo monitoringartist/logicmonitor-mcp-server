@@ -14,6 +14,7 @@ import { ServerConfig } from './server.js';
 export interface HTTPSession {
   server: Server;
   sessionId: string;
+  cleanup: () => Promise<void>;
 }
 
 /**
@@ -43,11 +44,11 @@ export async function handleHTTPRequest(
   let session = sessions.get(sessionId);
 
   if (!session) {
-    const { server } = createServer({
+    const { server, cleanup } = createServer({
       ...config,
       sessionId,
     });
-    session = { server, sessionId };
+    session = { server, sessionId, cleanup };
     sessions.set(sessionId, session);
   }
 
@@ -113,6 +114,9 @@ export async function handleHTTPDelete(
     });
     return;
   }
+
+  // Call cleanup before deleting session
+  await session.cleanup();
 
   // Clean up session
   sessions.delete(sessionId);

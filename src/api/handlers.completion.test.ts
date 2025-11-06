@@ -108,6 +108,9 @@ describe('LogicMonitorHandlers - Completion', () => {
     });
 
     it('should return empty completions on API error', async () => {
+      // Mock console.error to suppress expected error output in tests
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
       mockClient.listResources.mockRejectedValue(new Error('API Error'));
 
       const result = await handlers.handleCompletion(
@@ -118,6 +121,9 @@ describe('LogicMonitorHandlers - Completion', () => {
       expect(result.values).toEqual([]);
       expect(result.total).toBe(0);
       expect(result.hasMore).toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[LogicMonitor MCP] Completion error:', expect.any(Error));
+
+      consoleErrorSpy.mockRestore();
     });
 
     it('should return empty completions for unsupported prompt', async () => {

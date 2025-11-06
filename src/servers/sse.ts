@@ -36,13 +36,15 @@ export async function handleSSEConnection(
 
   // Get or create server for this session
   let session = sessions.get(sessionId);
+  let cleanup: (() => Promise<void>) | undefined;
 
   if (!session) {
-    const { server } = createServer({
+    const serverInstance = createServer({
       ...config,
       sessionId,
     });
-    session = { server, sessionId };
+    session = { server: serverInstance.server, sessionId };
+    cleanup = serverInstance.cleanup;
     sessions.set(sessionId, session);
   }
 
@@ -51,8 +53,14 @@ export async function handleSSEConnection(
   await session.server.connect(transport);
 
   // Handle connection close
-  req.on('close', () => {
+  req.on('close', async () => {
     sessions.delete(sessionId);
+
+    // Call cleanup before notifying onClose
+    if (cleanup) {
+      await cleanup();
+    }
+
     if (onClose) {
       onClose(sessionId);
     }

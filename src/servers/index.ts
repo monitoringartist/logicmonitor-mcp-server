@@ -752,7 +752,7 @@ if (TRANSPORT === 'stdio') {
     }
 
     // Add custom CallToolRequestSchema handler with scope validation and session-specific tokens
-    server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
       const { name, arguments: args, _meta } = request.params;
       const progressToken = _meta?.progressToken;
 
@@ -814,7 +814,7 @@ if (TRANSPORT === 'stdio') {
                   progress,
                   total,
                 },
-              });
+              }, { relatedRequestId: extra.requestId });
             } catch (err) {
               // Silently ignore notification errors
               log('debug', 'Progress notification error', { error: err });

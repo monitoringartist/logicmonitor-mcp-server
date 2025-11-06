@@ -65,7 +65,7 @@ export async function startStdioTransport(config: StdioConfig): Promise<void> {
   }
 
   // Create server instance using factory
-  const { server } = createServer({
+  const { server, cleanup } = createServer({
     version,
     tools,
     lmClient,
@@ -73,6 +73,19 @@ export async function startStdioTransport(config: StdioConfig): Promise<void> {
   });
 
   console.error(`✅ Server initialized with ${tools.length} tools${readOnly ? ' (read-only mode)' : ''}`);
+
+  // Handle graceful shutdown
+  process.on('SIGINT', async () => {
+    console.error('\n🛑 Received SIGINT, shutting down gracefully...');
+    await cleanup();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    console.error('\n🛑 Received SIGTERM, shutting down gracefully...');
+    await cleanup();
+    process.exit(0);
+  });
 
   // Connect to STDIO transport
   const transport = new StdioServerTransport();

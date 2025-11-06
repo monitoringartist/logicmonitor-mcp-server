@@ -23,8 +23,6 @@ import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { listLMResources, readLMResource } from '../api/resources.js';
 import { listLMPrompts, getLMPrompt, generatePromptMessages } from '../api/prompts.js';
-import { readFileSync } from 'fs';
-import path from 'path';
 
 export interface ServerConfig {
   version: string;
@@ -58,7 +56,13 @@ export function createServer(config: ServerConfig): ServerInstance {
     userScope = 'mcp:tools',
   } = config;
 
-  const instructions = readFileSync(path.join(__dirname, 'instructions.md'), 'utf8');
+  const instructions = `
+  # LogicMonitor MCP Server
+
+  This is a MCP server for LogicMonitor (acronym LM). It allows you to interact with your LogicMonitor monitoring tool using MCP protocol.
+  You can use this server to check the status of your resources, find alerts, metric data and more.
+
+  For full documentation, see: https://github.com/monitoringartist/logicmonitor-mcp-server/`;
 
   // Create the server instance
   const server = new Server(
