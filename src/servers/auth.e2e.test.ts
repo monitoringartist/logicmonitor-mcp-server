@@ -336,6 +336,25 @@ describe('Authentication E2E Tests', () => {
       // SSE endpoint should return text/event-stream
       expect(response.headers['content-type']).toContain('text/event-stream');
     });
+
+    it('should respond to ping request without authentication (200)', async () => {
+      const response = await makeRequest(server.port, '/mcp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'ping',
+          id: 'ping-test-1',
+        }),
+      });
+      expect(response.status).toBe(200);
+      const result = JSON.parse(response.body);
+      expect(result.jsonrpc).toBe('2.0');
+      expect(result.id).toBe('ping-test-1');
+      expect(result.result).toEqual({});
+    });
   });
 
   describe('Scenario 2: Bearer Token Authentication', () => {
@@ -449,6 +468,41 @@ describe('Authentication E2E Tests', () => {
       });
       expect(response.status).toBe(200);
       expect(response.headers['content-type']).toContain('text/event-stream');
+    });
+
+    it('should respond to ping request with valid bearer token (200)', async () => {
+      const response = await makeRequest(server.port, '/mcp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'ping',
+          id: 'ping-test-2',
+        }),
+      });
+      expect(response.status).toBe(200);
+      const result = JSON.parse(response.body);
+      expect(result.jsonrpc).toBe('2.0');
+      expect(result.id).toBe('ping-test-2');
+      expect(result.result).toEqual({});
+    });
+
+    it('should deny ping request without bearer token (401)', async () => {
+      const response = await makeRequest(server.port, '/mcp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'ping',
+          id: 'ping-test-3',
+        }),
+      });
+      expect(response.status).toBe(401);
     });
   });
 
@@ -622,6 +676,26 @@ describe('Authentication E2E Tests', () => {
         },
       });
       expect(response.status).toBe(200);
+    });
+
+    it('should respond to ping request with valid bearer token (200)', async () => {
+      const response = await makeRequest(server.port, '/mcp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'ping',
+          id: 'ping-test-4',
+        }),
+      });
+      expect(response.status).toBe(200);
+      const result = JSON.parse(response.body);
+      expect(result.jsonrpc).toBe('2.0');
+      expect(result.id).toBe('ping-test-4');
+      expect(result.result).toEqual({});
     });
   });
 });

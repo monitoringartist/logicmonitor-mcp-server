@@ -58,6 +58,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Find specific resource/device by name/IP/property' +
       '\n- Check resource/device health status' +
       '\n- Get resource/device IDs for other operations' +
+      '\n\n**Two search modes:** ' +
+      '\n- **Simple search:** Use query parameter with free text (e.g., query:"production", query:"web-server") - automatically searches displayName, description, and name fields' +
+      '\n- **Advanced filtering:** Use filter parameter with LM filter syntax (e.g., filter:"hostStatus:alive,displayName~\\*web\\*") for precise control' +
       '\n\n**Common filter patterns:** ' +
       '\n- By name: filter:"displayName\\~\\*prod\\*" (wildcard search) ' +
       '\n- By status: filter:"hostStatus:alive" or filter:"hostStatus:dead" ' +
@@ -65,8 +68,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By custom property: filter:"customProperties.name:company.team,customProperties.value:teamA" ' +
       '\n- By collector: filter:"preferredCollectorId:123" ' +
       '\n- Multiple conditions: filter:"hostStatus:alive,displayName\\~\\*web\\*" (comma = AND) ' +
+      '\n\n**Query vs Filter:** ' +
+      '\n- query: Simplified search across displayName, description, name (OR logic). Use for quick lookups: query:"prod-web-01"' +
+      '\n- filter: Precise LM filter syntax with any field. Use for complex conditions: filter:"hostStatus:alive,displayName~\\*prod\\*"' +
+      '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
-      '\n\n**Related tools:** "get\\_resource" (details), "search\\_resources" (simpler text search), "generate\\_resource\\_link" (get UI link).',
+      '\n\n**Related tools:** "get\\_resource" (details), "generate\\_resource\\_link" (get UI link).',
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
@@ -75,6 +82,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
+        query: {
+          type: 'string',
+          description: 'Simple search query. Free text (e.g., "production", "web-server", "192.168.1.100") automatically searches across displayName, description, and name fields. Can also use filter syntax (e.g., "hostStatus:alive") which gets formatted automatically.',
+        },
         ...paginationSchema,
         ...filterSchema,
         ...fieldsSchema,
@@ -727,6 +738,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Monitor specific service health' +
       '\n- Check CPU/memory alerts' +
       '\n- Generate alert reports' +
+      '\n\n**Two search modes:** ' +
+      '\n- **Simple search:** Use query parameter with free text (e.g., query:"prod-web-01") - searches by resource/device name (monitorObjectName field)' +
+      '\n- **Advanced filtering:** Use filter parameter with LM filter syntax (e.g., filter:"severity:critical,acked:false") for precise control' +
       '\n\n**Common filter patterns:** ' +
       '\n- Critical alerts: filter:"severity:critical"' +
       '\n- Unacknowledged: filter:"acked:false"' +
@@ -734,8 +748,12 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- CPU alerts: filter:"resourceTemplateName\\~\\*CPU\\*"' +
       '\n- Recent alerts: filter:"startEpoch>1730851200" (epoch seconds)' +
       '\n- Combined: filter:"severity:critical,acked:false" (AND logic)' +
+      '\n\n**Query vs Filter:** ' +
+      '\n- query: Simple text search by resource/device name only (e.g., query:"production", query:"k8s-cluster")' +
+      '\n- filter: Precise LM filter syntax with any alert field. Use for severity, acked status, etc.' +
+      '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Important:** Alert API does NOT support OR operator (||). Use comma for AND only. For complex queries, make multiple calls. ' +
-      '\n\n**Related tools:** "get\\_alert" (full details), "acknowledge\\_alert" (acknowledge), "add\\_alert\\_note" (add notes), "search\\_alerts" (text search), "generate\\_alert\\_link" (get URL).',
+      '\n\n**Related tools:** "get\\_alert" (full details), "acknowledge\\_alert" (acknowledge), "add\\_alert\\_note" (add notes), "generate\\_alert\\_link" (get URL).',
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
@@ -744,6 +762,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
+        query: {
+          type: 'string',
+          description: 'Simple search query. Free text (e.g., "prod-web-01", "k8s-cluster") searches by resource/device name (monitorObjectName). Can also use filter syntax (e.g., "severity:critical") which gets formatted automatically.',
+        },
         ...paginationSchema,
         ...filterSchema,
         ...fieldsSchema,
@@ -2671,110 +2693,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
 
-  // Search Tools
-  {
-    name: 'search_resources',
-    description: 'Search for resources/devices in LogicMonitor (LM) monitoring with simplified search syntax. ' +
-      '\n\n**Returns:** Array of matching resource/device with id, displayName, name (IP), hostStatus, deviceType. ' +
-      '\n\n**When to use:** ' +
-      '\n- Find resource/device by partial name (don\'t know exact name)' +
-      '\n- Quick resource/device lookup without complex filter syntax' +
-      '\n- Search by IP address pattern' +
-      '\n- Find resource/device when you know name but not filter syntax' +
-      '\n- Discover resource/device matching keywords' +
-      '\n\n**Two search modes:** ' +
-      '\n- **Free-text search:** Simple queries (e.g., "production", "web-server", "192.168.1.100") automatically search across displayName, description, and name fields' +
-      '\n- **Filter syntax:** Precise queries (e.g., "hostStatus:alive") for exact field matching' +
-      '\n\n**Choose the right tool:** ' +
-      '\n- Use "search\\_resources" for quick name-based searches (simplest)' +
-      '\n- Use "list\\_resources" with filter parameter for complex multi-field filtering (most powerful)' +
-      '\n- Use this tool when you know resource/device name but not exact filter syntax' +
-      '\n\n**Free-text examples:** ' +
-      '\n- query:"production" → finds all resource/device with "production" in name or description' +
-      '\n- query:"web" → finds web-01, web-server, webhost, etc.' +
-      '\n- query:"192.168.1" → finds resource/device with this IP pattern' +
-      '\n- query:"k8s" → finds Kubernetes-related resource/device' +
-      '\n\n**Filter syntax examples:** ' +
-      '\n- query:"hostStatus:alive" → only alive/online resource/device' +
-      '\n- query:"displayName~\\*prod\\*" → wildcard matching' +
-      '\n- query:"displayName~\\*web\\*,hostStatus:alive" → combine filters (AND)' +
-      '\n\n**Common use cases:** ' +
-      '\n- "Find all devices with custom property" → query:"customProperties.name:company.team,customProperties.value:teamA" ' +
-      '\n- "Find all production web servers" → query:"production web" or query:"displayName~\\*prod-web\\*"' +
-      '\n- "Find resource/device by IP" → query:"192.168.1.100"' +
-      '\n- "Find all database servers" → query:"database" or query:"db"' +
-      '\n- "Find alive resource/device in subnet" → query:"192.168.1,hostStatus:alive"' +
-      '\n\n**Related tools:** "list\\_resources" (complex filtering), "get\\_resource" (get details), "generate\\_resource\\_link" (get URL).',
-    annotations: {
-      title: 'Search resources/devices',
-      readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        query: {
-          type: 'string',
-          description: 'Search query. Use free text (e.g., "server") or filter syntax (e.g., "hostStatus:alive"). Free text automatically searches displayName, description, and name fields.',
-        },
-        ...paginationSchema,
-      },
-      additionalProperties: false,
-      required: ['query'],
-    },
-  },
-  {
-    name: 'search_alerts',
-    description: 'Search for alerts in LogicMonitor (LM) monitoring with simplified search syntax. ' +
-      '\n\n**Returns:** Array of matching alerts with alertId, severity, resource name, datasource, datapoint, alert message. ' +
-      '\n\n**When to use:** ' +
-      '\n- Find alerts on specific resource/device/cluster by name' +
-      '\n- Quick alert lookup without complex filter syntax' +
-      '\n- Search alerts when you know resource/device name but not exact filter' +
-      '\n- Discover alerts matching keywords' +
-      '\n- Find alerts for partially-known resource/device names' +
-      '\n\n**Two search modes:** ' +
-      '\n- **Free-text search:** Simple device/resource name queries (e.g., "prod-web-01", "k8s-cluster")' +
-      '\n- **Filter syntax:** Precise alert filtering (e.g., "severity:critical", "acked:false")' +
-      '\n\n**Choose the right tool:** ' +
-      '\n- Use "search\\_alerts" for quick resource/device name searches' +
-      '\n- Use "list\\_alerts" with filter parameter for complex multi-field filtering (recommended for most cases)' +
-      '\n\n**Free-text examples:** ' +
-      '\n- query:"production" → finds alerts on resource/device with "production" in name' +
-      '\n- query:"k8s-prod-cluster" → finds all alerts for this cluster' +
-      '\n- query:"web-server" → finds alerts on web servers' +
-      '\n- query:"database" → finds alerts on database hosts' +
-      '\n\n**Filter syntax examples:** ' +
-      '\n- query:"severity:critical" → only critical alerts' +
-      '\n- query:"resourceTemplateName~\\*CPU\\*" → CPU-related alerts' +
-      '\n- query:"acked:false" → unacknowledged alerts needing attention' +
-      '\n- query:"severity:critical,acked:false" → critical unacked alerts (AND logic)' +
-      '\n\n**Common use cases:** ' +
-      '\n- "Find all alerts for production cluster" → query:"prod-cluster"' +
-      '\n- "Find critical unacked alerts" → query:"severity:critical,acked:false"' +
-      '\n- "Find CPU alerts" → query:"resourceTemplateName~\\*CPU\\*"' +
-      '\n- "Find alerts on web servers" → query:"web-server"' +
-      '\n\n**Important limitation:** Alert API does NOT support OR operator (||). Use comma for AND only. For OR logic, make multiple separate calls. ' +
-      '\n\n**Related tools:** "list\\_alerts" (structured filtering), "get\\_alert" (details), "generate\\_alert\\_link" (get URL), "acknowledge\\_alert" (ack alerts).',
-    annotations: {
-      title: 'Search alerts',
-      readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        query: {
-          type: 'string',
-          description: 'Search query. Free text (e.g., "production") searches by resource/device name. Use filter syntax for specific fields: "severity:critical", "resourceTemplateName~*CPU*", "acked:false". Combine with comma for AND: "severity:critical,acked:false".',
-        },
-        ...paginationSchema,
-      },
-      additionalProperties: false,
-      required: ['query'],
-    },
-  },
-
   // Audit Logs Tools
   {
     name: 'list_audit_logs',
@@ -2787,6 +2705,9 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- Compliance audits: Export log history for specific time periods' +
       '\n- Security investigation: Track login attempts, IP addresses, suspicious activities' +
       '\n- Troubleshooting: "Who changed this alert rule?" → filter:"description~\\*AlertRule\\*"' +
+      '\n\n**Two search modes:** ' +
+      '\n- **Simple search:** Use query parameter with free text (e.g., query:"john.doe", query:"device") - searches across username, description, and IP fields' +
+      '\n- **Advanced filtering:** Use filter parameter with LM filter syntax (e.g., filter:"username:admin,happenedOn>1640995200") for precise control' +
       '\n\n**Common filter patterns:** ' +
       '\n- By user: filter:"username:john.doe"' +
       '\n- By time: filter:"happenedOn>1640995200" (IMPORTANT: epoch SECONDS, not milliseconds!)' +
@@ -2794,12 +2715,16 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- By resource: filter:"description~\\*device\\*" or filter:"description~\\*dashboard\\*"' +
       '\n- By IP: filter:"ip:192.168.1.100"' +
       '\n- Combined (AND): filter:"username:admin,happenedOn>1640995200,description~\\*device\\*"' +
+      '\n\n**Query vs Filter:** ' +
+      '\n- query: Simple text search across username, description, IP (OR logic). Use for quick lookups: query:"john.doe", query:"device"' +
+      '\n- filter: Precise LM filter syntax with any field. Use for time ranges, exact matches: filter:"happenedOn>1640995200"' +
+      '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Critical notes:** ' +
       '\n- Time uses epoch SECONDS (not milliseconds like other LM APIs)' +
       '\n- Cannot use OR operator (||) in audit logs, only AND (comma)' +
       '\n- Use autoPaginate:true for complete history (may take time for large datasets)' +
       `\n\n**Web UI access:** https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs (Settings → Audit Logs) ` +
-      '\n\n**Related tools:** "get\\_audit\\_log" (details of specific entry), "search\\_audit\\_logs" (free-text search).',
+      '\n\n**Related tools:** "get\\_audit\\_log" (details of specific entry).',
     annotations: {
       title: 'List audit logs',
       readOnlyHint: true,
@@ -2809,6 +2734,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
+        query: {
+          type: 'string',
+          description: 'Simple search query. Free text (e.g., "john.doe", "device", "192.168.1.100") automatically searches across username, description, and IP fields. Can also use filter syntax (e.g., "username:admin") which gets formatted automatically.',
+        },
         ...paginationSchema,
         ...filterSchema,
         ...fieldsSchema,
@@ -2843,46 +2772,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       },
       additionalProperties: false,
       required: ['auditLogId'],
-    },
-  },
-  {
-    name: 'search_audit_logs',
-    description: 'Search audit logs in LogicMonitor (LM) monitoring with free-text or advanced filter syntax. ' +
-      '\n\n**Two search modes:** ' +
-      '\n- **Free-text search:** Simple queries (e.g., "production", "device", "john") automatically search across username, description, and IP fields' +
-      '\n- **Filter syntax:** Precise queries (e.g., "username:john.doe", "happenedOn>1640995200") for exact field matching' +
-      '\n\n**When to use:** ' +
-      '\n- Use free-text when you know general terms but not exact field names' +
-      '\n- Use filter syntax when you need precise filtering by specific fields' +
-      '\n- Use "list\\_audit\\_logs" when you need complex AND/OR logic across multiple fields' +
-      '\n\n**Free-text examples:** ' +
-      '\n- query:"device" → finds all logs mentioning "device" in any field' +
-      '\n- query:"192.168.1.100" → finds logs from this IP or mentioning this IP' +
-      '\n- query:"john" → finds logs by user john or mentioning john in description' +
-      '\n\n**Filter syntax examples:** ' +
-      '\n- query:"username:john.doe" → exact username match' +
-      '\n- query:"happenedOn>1640995200" → logs after this time (epoch SECONDS)' +
-      '\n- query:"description~\\*device\\*" → description contains "device"' +
-      '\n- query:"ip:192.168.1.\\*" → IP address wildcard match' +
-      '\n- query:"username:admin,happenedOn>1640995200" → combine with comma (AND)' +
-      '\n\n**Related tools:** "list\\_audit\\_logs" (structured filtering), "get\\_audit\\_log" (get details).',
-    annotations: {
-      title: 'Search audit logs',
-      readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
-      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        query: {
-          type: 'string',
-          description: 'Search query. Free text searches username, description, and IP. Use filter syntax for specific fields: "username:john.doe", "happenedOn>1640995200" (epoch seconds), "description~*device*", "ip:192.168.1.*". Combine with comma for AND.',
-        },
-        ...paginationSchema,
-      },
-      additionalProperties: false,
-      required: ['query'],
     },
   },
 

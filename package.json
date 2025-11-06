@@ -53,7 +53,7 @@
         "devops"
     ],
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.0.4",
+        "@modelcontextprotocol/sdk": "^1.21.0",
         "@types/jsonwebtoken": "^9.0.10",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",

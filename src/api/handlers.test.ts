@@ -1172,34 +1172,34 @@ describe('LogicMonitorHandlers', () => {
     });
   });
 
-  describe('Search Tools', () => {
-    it('should search devices', async () => {
+  describe('Query Parameter in List Tools', () => {
+    it('should list devices with query parameter', async () => {
       const mockResponse = { items: [], total: 0 };
       mockClient.listResources.mockResolvedValue(mockResponse);
 
-      await handlers.handleToolCall('search_resources', {
+      await handlers.handleToolCall('list_resources', {
         query: 'server',
       });
 
       expect(mockClient.listResources).toHaveBeenCalled();
     });
 
-    it('should search alerts', async () => {
+    it('should list alerts with query parameter', async () => {
       const mockResponse = { items: [], total: 0 };
       mockClient.listAlerts.mockResolvedValue(mockResponse);
 
-      await handlers.handleToolCall('search_alerts', {
+      await handlers.handleToolCall('list_alerts', {
         query: 'critical',
       });
 
       expect(mockClient.listAlerts).toHaveBeenCalled();
     });
 
-    it('should search audit logs', async () => {
+    it('should list audit logs with query parameter', async () => {
       const mockResponse = { items: [], total: 0 };
       mockClient.listAuditLogs.mockResolvedValue(mockResponse);
 
-      await handlers.handleToolCall('search_audit_logs', {
+      await handlers.handleToolCall('list_audit_logs', {
         query: 'user',
       });
 

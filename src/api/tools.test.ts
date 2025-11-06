@@ -231,23 +231,27 @@ describe('getLogicMonitorTools', () => {
       });
     });
 
-    describe('Search Tools', () => {
-      it('should include search tools', () => {
+    describe('List Tools with Query Parameter', () => {
+      it('should have query parameter in list tools', () => {
         const tools = getLogicMonitorTools(false);
-        const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('search_resources');
-        expect(toolNames).toContain('search_alerts');
+        const listResources = tools.find(t => t.name === 'list_resources');
+        const listAlerts = tools.find(t => t.name === 'list_alerts');
+        const listAuditLogs = tools.find(t => t.name === 'list_audit_logs');
+
+        expect(listResources?.inputSchema?.properties).toHaveProperty('query');
+        expect(listAlerts?.inputSchema?.properties).toHaveProperty('query');
+        expect(listAuditLogs?.inputSchema?.properties).toHaveProperty('query');
       });
 
-      it('should mark search tools as read-only', () => {
+      it('should mark list tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
 
-        const searchDevices = tools.find(t => t.name === 'search_resources');
-        const searchAlerts = tools.find(t => t.name === 'search_alerts');
+        const listResources = tools.find(t => t.name === 'list_resources');
+        const listAlerts = tools.find(t => t.name === 'list_alerts');
 
-        expect(searchDevices?.annotations?.readOnlyHint).toBe(true);
-        expect(searchAlerts?.annotations?.readOnlyHint).toBe(true);
+        expect(listResources?.annotations?.readOnlyHint).toBe(true);
+        expect(listAlerts?.annotations?.readOnlyHint).toBe(true);
       });
     });
 

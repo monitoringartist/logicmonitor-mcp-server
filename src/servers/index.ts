@@ -14,6 +14,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -98,16 +99,13 @@ if (TRANSPORT === 'stdio') {
     console.error('⚠️  Please set environment variables to use the tools');
   }
 
+  // Store client capabilities (will be set after initialization)
+  // Note: In future versions, this can be used to dynamically adjust features
+  // based on client capabilities (roots, sampling, experimental, etc.)
+  let _clientCapabilities: any = undefined;
+
   // Get filtered tools
   let TOOLS = getLogicMonitorTools(ONLY_READONLY_TOOLS);
-
-  // Filter out search tools if disabled
-  if (appConfig.disableSearch) {
-    const searchTools = ['search_resources', 'search_alerts', 'search_audit_logs'];
-    const originalCount = TOOLS.length;
-    TOOLS = TOOLS.filter(tool => !searchTools.includes(tool.name));
-    console.error(`ℹ️  Search tools disabled: ${originalCount} -> ${TOOLS.length} tools`);
-  }
 
   // Filter by enabled tools if specified
   if (appConfig.enabledTools && appConfig.enabledTools.length > 0) {
@@ -141,6 +139,10 @@ if (TRANSPORT === 'stdio') {
       },
     },
   );
+
+  // Note: Client capabilities are automatically handled by the SDK during initialization
+  // We can access them through server methods after the connection is established
+  // For now, we log capabilities when they're likely to be available (after first request)
 
   // Handle tool listing requests
   server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -217,7 +219,7 @@ if (TRANSPORT === 'stdio') {
           content: {
             type: 'text' as const,
             text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-              'I\'ll use the search_resources tool to find this resource, ' +
+              'I\'ll use the list_resources tool with query parameter to find this resource, ' +
               'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
               'list_alerts tool to find any alerts for this resource, ' +
               'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
@@ -251,16 +253,36 @@ if (TRANSPORT === 'stdio') {
 
   // Handle tool execution requests
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const { name, arguments: args } = request.params;
+    const { name, arguments: args, _meta } = request.params;
+    const progressToken = _meta?.progressToken;
 
     try {
-      console.error(`[LogicMonitor MCP] Executing tool: ${name}`);
+      console.error(`[LogicMonitor MCP] Executing tool: ${name}${progressToken !== undefined ? ' (with progress tracking)' : ''}`);
 
       if (!lmHandlers) {
         throw new Error('LogicMonitor credentials not configured. Please set LM_COMPANY and LM_BEARER_TOKEN environment variables.');
       }
 
-      const result = await lmHandlers.handleToolCall(name, args || {});
+      // Create progress callback if progress token is provided
+      const progressCallback = progressToken !== undefined
+        ? async (progress: number, total: number) => {
+          try {
+            await server.notification({
+              method: 'notifications/progress',
+              params: {
+                progressToken,
+                progress,
+                total,
+              },
+            });
+          } catch (err) {
+            // Silently ignore notification errors
+            console.error('[LogicMonitor MCP] Progress notification error:', err);
+          }
+        }
+        : undefined;
+
+      const result = await lmHandlers.handleToolCall(name, args || {}, progressCallback);
 
       return {
         content: [
@@ -846,17 +868,6 @@ if (TRANSPORT === 'stdio') {
   // Get filtered tools
   let TOOLS: Tool[] = getLogicMonitorTools(ONLY_READONLY_TOOLS);
 
-  // Filter out search tools if disabled
-  if (appConfig.disableSearch) {
-    const searchTools = ['search_resources', 'search_alerts', 'search_audit_logs'];
-    const originalCount = TOOLS.length;
-    TOOLS = TOOLS.filter(tool => !searchTools.includes(tool.name));
-    log('info', 'Search tools disabled', {
-      original_count: originalCount,
-      filtered_count: TOOLS.length,
-    });
-  }
-
   // Filter by enabled tools if specified
   if (appConfig.enabledTools && appConfig.enabledTools.length > 0) {
     const originalCount = TOOLS.length;
@@ -882,6 +893,12 @@ if (TRANSPORT === 'stdio') {
   const httpSessions = new Map<string, { server: Server; sessionId: string }>();
   const sessionBearerTokens = new Map<string, string>();
   const sessionScopes = new Map<string, string>();
+  const sessionClientCapabilities = new Map<string, any>();
+
+  // Event store for potential StreamableHTTP resumability support
+  // This provides infrastructure for future event replay and session recovery features
+  // Prefixed with _ to indicate it's available for future use
+  const _eventStore = new InMemoryEventStore();
 
   // Create MCP server instance
   function createMCPServer(sessionId?: string): Server {
@@ -901,6 +918,9 @@ if (TRANSPORT === 'stdio') {
     );
 
     (server as any).currentUserScope = sessionId ? sessionScopes.get(sessionId) || 'mcp:tools' : 'mcp:tools';
+
+    // Note: Client capabilities are automatically handled by the SDK during initialization
+    // They can be accessed through server methods after the connection is established
 
     // Handle tool listing
     server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -975,7 +995,7 @@ if (TRANSPORT === 'stdio') {
             content: {
               type: 'text' as const,
               text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                'I\'ll use the search_resources tool to find this resource, ' +
+                'I\'ll use the list_resources tool with query parameter to find this resource, ' +
                 'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
                 'list_alerts tool to find any alerts for this resource, ' +
                 'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
@@ -1009,7 +1029,8 @@ if (TRANSPORT === 'stdio') {
 
     // Handle tool execution
     server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
+      const { name, arguments: args, _meta } = request.params;
+      const progressToken = _meta?.progressToken;
 
       try {
         const userScope = (server as any).currentUserScope;
@@ -1058,8 +1079,27 @@ if (TRANSPORT === 'stdio') {
           throw new Error('LogicMonitor credentials not configured.');
         }
 
-        log('debug', 'Executing tool', { tool: name });
-        const result = await handlers!.handleToolCall(name, args || {});
+        // Create progress callback if progress token is provided
+        const progressCallback = progressToken !== undefined
+          ? async (progress: number, total: number) => {
+            try {
+              await server.notification({
+                method: 'notifications/progress',
+                params: {
+                  progressToken,
+                  progress,
+                  total,
+                },
+              });
+            } catch (err) {
+              // Silently ignore notification errors
+              log('debug', 'Progress notification error', { error: err });
+            }
+          }
+          : undefined;
+
+        log('debug', 'Executing tool', { tool: name, withProgress: progressToken !== undefined });
+        const result = await handlers!.handleToolCall(name, args || {}, progressCallback);
 
         return {
           content: [
@@ -1306,6 +1346,7 @@ if (TRANSPORT === 'stdio') {
       req.on('close', () => {
         log('info', 'MCP SSE connection closed', { username });
         mcpServers.delete(sessionId);
+        sessionClientCapabilities.delete(sessionId);
       });
     });
 
@@ -1400,6 +1441,7 @@ if (TRANSPORT === 'stdio') {
       httpSessions.delete(sessionId);
       sessionBearerTokens.delete(sessionId);
       sessionScopes.delete(sessionId);
+      sessionClientCapabilities.delete(sessionId);
 
       log('info', 'MCP HTTP session terminated', { username, sessionId });
 
@@ -1606,7 +1648,7 @@ if (TRANSPORT === 'stdio') {
                   content: {
                     type: 'text',
                     text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                      'I\'ll use the search_resources tool to find this resource, ' +
+                      'I\'ll use the list_resources tool with query parameter to find this resource, ' +
                       'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
                       'list_alerts tool to find any alerts for this resource, ' +
                       'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +

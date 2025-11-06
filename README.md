@@ -132,7 +132,6 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 |------|---------------------|---------|-------------|
 | `--enabled-tools <list>` | `MCP_ENABLED_TOOLS` | all | Comma-separated list of enabled tools |
 | `--read-only` | `MCP_READ_ONLY` | `true` | Enable only read-only tools (safer). Set `MCP_READ_ONLY=false` to enable write operations |
-| `--disable-search` | `MCP_DISABLE_SEARCH=true` | `false` | Disable search tools |
 
 ### LogicMonitor API (Required)
 
@@ -359,14 +358,13 @@ npm run start:http
 
 ## Available Tools
 
-The server provides 125 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
+The server provides 122 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
 ### Resource/Device Management
 
 **Read-Only:**
-- `list_resources` - List all monitored resources/devices with filtering
+- `list_resources` - List all monitored resources/devices with filtering (supports simple search via `query` parameter or advanced filtering via `filter` parameter)
 - `get_resource` - Get detailed device information by ID
-- `search_resources` - Search devices by name or description
 - `generate_resource_link` - Generate direct link to device in LM UI
 
 **Write Operations:**
@@ -388,9 +386,8 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 ### Alert Management
 
 **Read-Only:**
-- `list_alerts` - List active alerts with filtering
+- `list_alerts` - List active alerts with filtering (supports simple search via `query` parameter or advanced filtering via `filter` parameter)
 - `get_alert` - Get detailed alert information
-- `search_alerts` - Search alerts by criteria
 - `generate_alert_link` - Generate direct link to alert in LM UI
 - `list_alert_rules` - List alert routing rules
 - `get_alert_rule` - Get alert rule details
@@ -570,15 +567,14 @@ The server provides 125 tools for comprehensive LogicMonitor operations. Tools a
 ### Audit & Compliance
 
 **Read-Only:**
-- `list_audit_logs` - List audit trail logs
+- `list_audit_logs` - List audit trail logs (supports simple search via `query` parameter or advanced filtering via `filter` parameter)
 - `get_audit_log` - Get audit log entry details
-- `search_audit_logs` - Search audit logs by user/action
 
 ### Summary
 
-- **73 read-only tools** - Safe for production monitoring
+- **70 read-only tools** - Safe for production monitoring
 - **52 write tools** - Require caution (disabled by default with `--read-only`)
-- **125 total tools**
+- **122 total tools**
 
 For detailed tool descriptions and parameters, see the [API documentation](src/README.md).
 

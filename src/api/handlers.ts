@@ -115,18 +115,33 @@ function filterFields<T extends Record<string, any>>(obj: T, fields: string[]): 
   return filtered;
 }
 
+// Type for progress notification callback
+type ProgressCallback = (progress: number, total: number) => Promise<void>;
+
 export class LogicMonitorHandlers {
   constructor(private client: LogicMonitorClient) {}
 
-  async handleToolCall(name: string, args: any): Promise<any> {
+  async handleToolCall(
+    name: string,
+    args: any,
+    progressCallback?: ProgressCallback,
+  ): Promise<any> {
     try {
       switch (name) {
         // Resource Management
         case 'list_resources': {
+          // Handle query parameter - convert to filter
+          let filter = args.filter;
+          if (args.query) {
+            const queryFilter = autoFormatFilter(args.query, SEARCH_FIELDS.devices);
+            // Combine with existing filter using AND logic
+            filter = filter ? `${queryFilter},${filter}` : queryFilter;
+          }
+
           const result = await this.client.listResources({
             size: args.size,
             offset: args.offset,
-            filter: args.filter,
+            filter: filter,
             fields: args.fields,
             autoPaginate: args.autoPaginate,
           });
@@ -177,6 +192,12 @@ export class LogicMonitorHandlers {
                 maxConcurrent: batchOptions.maxConcurrent || 5,
                 continueOnError: batchOptions.continueOnError ?? true,
                 retryOnRateLimit: true,
+                onProgress: progressCallback ? (completed, total) => {
+                  // Send progress notification if callback provided
+                  progressCallback(completed, total).catch(() => {
+                    // Ignore errors in progress notifications
+                  });
+                } : undefined,
               },
             );
 
@@ -223,6 +244,9 @@ export class LogicMonitorHandlers {
                 maxConcurrent: batchOptions.maxConcurrent || 5,
                 continueOnError: batchOptions.continueOnError ?? true,
                 retryOnRateLimit: true,
+                onProgress: progressCallback ? (completed, total) => {
+                  progressCallback(completed, total).catch(() => {});
+                } : undefined,
               },
             );
 
@@ -262,6 +286,9 @@ export class LogicMonitorHandlers {
                 maxConcurrent: batchOptions.maxConcurrent || 5,
                 continueOnError: batchOptions.continueOnError ?? true,
                 retryOnRateLimit: true,
+                onProgress: progressCallback ? (completed, total) => {
+                  progressCallback(completed, total).catch(() => {});
+                } : undefined,
               },
             );
 
@@ -335,10 +362,25 @@ export class LogicMonitorHandlers {
 
         // Alerts
         case 'list_alerts': {
+          // Handle query parameter - convert to filter
+          let filter = args.filter;
+          if (args.query) {
+            // Alert API doesn't support OR (||) operator, so handle differently
+            if (args.query.includes(':') || args.query.includes('~')) {
+              // User provided filter syntax - format it
+              const queryFilter = autoFormatFilter(args.query);
+              filter = filter ? `${queryFilter},${filter}` : queryFilter;
+            } else {
+              // Free text search - use only monitorObjectName (most relevant field for alerts)
+              const queryFilter = autoFormatFilter(args.query, ['monitorObjectName']);
+              filter = filter ? `${queryFilter},${filter}` : queryFilter;
+            }
+          }
+
           const result = await this.client.listAlerts({
             size: args.size,
             offset: args.offset,
-            filter: args.filter,
+            filter: filter,
             fields: args.fields,
             needMessage: args.needMessage,
             autoPaginate: args.autoPaginate,
@@ -808,42 +850,20 @@ export class LogicMonitorHandlers {
             args.value,
           );
 
-        // Search Tools (aliases with specific filters)
-        case 'search_resources': {
-          return await this.client.listResources({
-            size: args.size,
-            offset: args.offset,
-            filter: autoFormatFilter(args.query, SEARCH_FIELDS.devices),
-            autoPaginate: args.autoPaginate,
-          });
-        }
-
-        case 'search_alerts': {
-          // Alert API doesn't support OR (||) operator, so handle differently
-          let filter: string | undefined;
-          if (args.query.includes(':') || args.query.includes('~')) {
-            // User provided filter syntax - format it
-            filter = autoFormatFilter(args.query);
-          } else {
-            // Free text search - use only monitorObjectName (most relevant field for alerts)
-            // This is the resource/device name where the alert occurred
-            filter = autoFormatFilter(args.query, ['monitorObjectName']);
-          }
-
-          return await this.client.listAlerts({
-            size: args.size,
-            offset: args.offset,
-            filter: filter,
-            autoPaginate: args.autoPaginate,
-          });
-        }
-
         // Audit Logs
         case 'list_audit_logs': {
+          // Handle query parameter - convert to filter
+          let filter = args.filter;
+          if (args.query) {
+            const queryFilter = autoFormatFilter(args.query, SEARCH_FIELDS.auditLogs);
+            // Combine with existing filter using AND logic
+            filter = filter ? `${queryFilter},${filter}` : queryFilter;
+          }
+
           const result = await this.client.listAuditLogs({
             size: args.size,
             offset: args.offset,
-            filter: args.filter,
+            filter: filter,
             fields: args.fields,
             autoPaginate: args.autoPaginate,
           });
@@ -864,15 +884,6 @@ export class LogicMonitorHandlers {
           return await this.client.getAuditLog(args.auditLogId, {
             fields: args.fields,
           });
-
-        case 'search_audit_logs': {
-          return await this.client.listAuditLogs({
-            size: args.size,
-            offset: args.offset,
-            filter: autoFormatFilter(args.query, SEARCH_FIELDS.auditLogs),
-            autoPaginate: args.autoPaginate,
-          });
-        }
 
         // Access Groups
         case 'list_access_groups': {
