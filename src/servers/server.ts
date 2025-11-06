@@ -15,6 +15,8 @@ import {
   GetPromptRequestSchema,
   SetLevelRequestSchema,
   CompleteRequestSchema,
+  SubscribeRequestSchema,
+  UnsubscribeRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { LogicMonitorClient } from '../api/client.js';
@@ -29,11 +31,13 @@ export interface ServerConfig {
   lmHandlers?: LogicMonitorHandlers;
   sessionId?: string;
   userScope?: string;
+  enablePeriodicUpdates?: boolean;
 }
 
 export interface ServerInstance {
   server: Server;
-  cleanup?: () => Promise<void>;
+  cleanup: () => Promise<void>;
+  startNotificationIntervals?: (sessionId?: string) => void;
 }
 
 /**
@@ -61,7 +65,7 @@ export function createServer(config: ServerConfig): ServerInstance {
     {
       capabilities: {
         tools: {},
-        resources: {},
+        resources: { subscribe: true },
         prompts: {},
         logging: {},
         completions: {},
@@ -74,6 +78,10 @@ export function createServer(config: ServerConfig): ServerInstance {
   if (sessionId) {
     (server as any).sessionId = sessionId;
   }
+
+  // Track subscriptions and intervals
+  const intervals: NodeJS.Timeout[] = [];
+  const subscriptions = new Set<string>();
 
   // ===========================
   // Request Handlers
@@ -101,6 +109,22 @@ export function createServer(config: ServerConfig): ServerInstance {
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const { uri } = request.params;
     return await readLMResource(uri);
+  });
+
+  // Handle resource subscription requests
+  server.setRequestHandler(SubscribeRequestSchema, async (request) => {
+    const { uri } = request.params;
+    subscriptions.add(uri);
+    console.error(`[LogicMonitor MCP] Subscribed to resource: ${uri}`);
+    return {};
+  });
+
+  // Handle resource unsubscribe requests
+  server.setRequestHandler(UnsubscribeRequestSchema, async (request) => {
+    const { uri } = request.params;
+    subscriptions.delete(uri);
+    console.error(`[LogicMonitor MCP] Unsubscribed from resource: ${uri}`);
+    return {};
   });
 
   // Handle prompt listing
@@ -198,15 +222,41 @@ export function createServer(config: ServerConfig): ServerInstance {
     };
   });
 
-  // Cleanup function (optional, for future use)
+  // Start notification intervals for subscribed resources
+  const startNotificationIntervals = (_sessionId?: string) => {
+    // Optional: Add periodic tasks for resource updates
+    if (config.enablePeriodicUpdates) {
+      console.error('[LogicMonitor MCP] Starting periodic resource update notifications');
+      const interval = setInterval(async () => {
+        for (const uri of subscriptions) {
+          try {
+            await server.notification({
+              method: 'notifications/resources/updated',
+              params: { uri },
+            });
+            console.error(`[LogicMonitor MCP] Sent update notification for resource: ${uri}`);
+          } catch (err) {
+            // Silently ignore notification errors
+            console.error('[LogicMonitor MCP] Resource notification error:', err);
+          }
+        }
+      }, 10000); // Send notifications every 10 seconds
+      intervals.push(interval);
+    }
+  };
+
+  // Cleanup function - clear all intervals
   const cleanup = async () => {
-    // Any cleanup needed when server is disposed
-    // For example: disconnect from databases, clear intervals, etc.
+    console.error('[LogicMonitor MCP] Cleaning up server resources');
+    intervals.forEach(clearInterval);
+    intervals.length = 0;
+    subscriptions.clear();
   };
 
   return {
     server,
     cleanup,
+    startNotificationIntervals,
   };
 }
 

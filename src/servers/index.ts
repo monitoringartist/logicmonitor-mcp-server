@@ -17,13 +17,6 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
-  ListResourcesRequestSchema,
-  ReadResourceRequestSchema,
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
-  SetLevelRequestSchema,
-  CompleteRequestSchema,
   Tool,
   JSONRPCMessage,
 } from '@modelcontextprotocol/sdk/types.js';
@@ -56,6 +49,7 @@ import { configureOAuthStrategy, getRefreshTokenFunction, OAuthUser } from '../u
 import { getJWTValidator, isJWT } from '../utils/core/jwt-validator.js';
 import { ScopeManager } from '../utils/core/scope-manager.js';
 import { isMCPError, formatErrorForUser } from '../utils/core/error-handler.js';
+import { createServer } from './server.js';
 
 // Load environment variables
 dotenv.config();
@@ -84,8 +78,8 @@ if (TRANSPORT === 'stdio') {
   console.error('🚀 Starting LogicMonitor MCP Server in STDIO mode...');
 
   // Initialize LogicMonitor client and handlers
-  let lmClient: LogicMonitorClient | null = null;
-  let lmHandlers: LogicMonitorHandlers | null = null;
+  let lmClient: LogicMonitorClient | undefined = undefined;
+  let lmHandlers: LogicMonitorHandlers | undefined = undefined;
 
   if (LM_COMPANY && LM_BEARER_TOKEN) {
     lmClient = new LogicMonitorClient({
@@ -99,11 +93,6 @@ if (TRANSPORT === 'stdio') {
     console.error('⚠️  Tools will be listed but will fail when executed');
     console.error('⚠️  Please set environment variables to use the tools');
   }
-
-  // Store client capabilities (will be set after initialization)
-  // Note: In future versions, this can be used to dynamically adjust features
-  // based on client capabilities (roots, sampling, experimental, etc.)
-  let _clientCapabilities: any = undefined;
 
   // Get filtered tools
   let TOOLS = getLogicMonitorTools(ONLY_READONLY_TOOLS);
@@ -125,198 +114,44 @@ if (TRANSPORT === 'stdio') {
     }
   }
 
-  // Create the MCP server instance
-  const server = new Server(
-    {
-      name: 'logicmonitor-mcp-server',
-      version: SERVER_VERSION,
-    },
-    {
-      capabilities: {
-        tools: {},
-        resources: {},
-        prompts: {},
-        logging: {},
-        completions: {},
-      },
-    },
-  );
-
-  // Note: Client capabilities are automatically handled by the SDK during initialization
-  // We can access them through server methods after the connection is established
-  // For now, we log capabilities when they're likely to be available (after first request)
-
-  // Handle tool listing requests
-  server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return {
-      tools: TOOLS,
-    };
-  });
-
-  // Handle resource listing requests
-  server.setRequestHandler(ListResourcesRequestSchema, async () => {
-    const resources = listLMResources();
-    return {
-      resources: resources.map(r => ({
-        uri: r.uri,
-        name: r.name,
-        description: r.description,
-        mimeType: r.mimeType,
-      })),
-    };
-  });
-
-  // Handle resource read requests
-  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-    const { uri } = request.params;
-    try {
-      const result = await readLMResource(uri);
-      return result;
-    } catch (error) {
-      console.error(`[LogicMonitor MCP] Error reading resource ${uri}:`, error);
-      throw error;
-    }
-  });
-
-  // Handle prompt listing requests
-  server.setRequestHandler(ListPromptsRequestSchema, async () => {
-    const prompts = listLMPrompts();
-    return {
-      prompts: prompts.map(p => ({
-        name: p.name,
-        description: p.description,
-        arguments: p.arguments,
-      })),
-    };
-  });
-
-  // Handle get prompt requests
-  server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-    const { name, arguments: args } = request.params;
-    const prompt = getLMPrompt(name);
-
-    if (!prompt) {
-      throw new Error(`Prompt not found: ${name}`);
-    }
-
-    // Generate the prompt messages using centralized logic
-    return generatePromptMessages(name, args);
-  });
-
-  // Handle logging/setLevel requests (STDIO doesn't use dynamic logging, so this is a no-op)
-  server.setRequestHandler(SetLevelRequestSchema, async (request) => {
-    const { level } = request.params;
-    console.error(`[LogicMonitor MCP] Logging level set to: ${level}`);
-    return {};
-  });
-
-  // Handle completion requests
-  server.setRequestHandler(CompleteRequestSchema, async (request) => {
-    const { ref, argument } = request.params;
-
-    if (!lmHandlers) {
-      return {
-        completion: {
-          values: [],
-          total: 0,
-          hasMore: false,
-        },
-      };
-    }
-
-    const completion = await lmHandlers.handleCompletion(ref, argument);
-
-    return {
-      completion,
-    };
-  });
-
-  // Handle tool execution requests
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const { name, arguments: args, _meta } = request.params;
-    const progressToken = _meta?.progressToken;
-
-    try {
-      console.error(`[LogicMonitor MCP] Executing tool: ${name}${progressToken !== undefined ? ' (with progress tracking)' : ''}`);
-
-      if (!lmHandlers) {
-        throw new Error('LogicMonitor credentials not configured. Please set LM_COMPANY and LM_BEARER_TOKEN environment variables.');
-      }
-
-      // Create progress callback if progress token is provided
-      const progressCallback = progressToken !== undefined
-        ? async (progress: number, total: number) => {
-          try {
-            await server.notification({
-              method: 'notifications/progress',
-              params: {
-                progressToken,
-                progress,
-                total,
-              },
-            });
-          } catch (err) {
-            // Silently ignore notification errors
-            console.error('[LogicMonitor MCP] Progress notification error:', err);
-          }
-        }
-        : undefined;
-
-      const result = await lmHandlers.handleToolCall(name, args || {}, progressCallback);
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: lmHandlers.formatResponse(result),
-          },
-        ],
-      };
-    } catch (error) {
-      let errorResponse: any = {
-        error: 'Unknown error occurred',
-        tool: name,
-      };
-
-      if (error instanceof Error) {
-        const lmError = (error as any).lmError;
-        if (lmError) {
-          errorResponse = {
-            error: error.message,
-            tool: name,
-            details: lmError,
-          };
-          console.error(`[LogicMonitor MCP] LM API Error executing tool ${name}:`, lmError);
-        } else {
-          errorResponse.error = error.message;
-          console.error(`[LogicMonitor MCP] Error executing tool ${name}:`, error.message);
-        }
-      } else {
-        console.error(`[LogicMonitor MCP] Unknown error executing tool ${name}:`, error);
-      }
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(errorResponse, null, 2),
-          },
-        ],
-        isError: true,
-      };
-    }
+  // Create server instance using factory pattern
+  const { server, cleanup, startNotificationIntervals } = createServer({
+    version: SERVER_VERSION,
+    tools: TOOLS,
+    lmClient,
+    lmHandlers,
+    enablePeriodicUpdates: false, // Disable periodic updates for STDIO
   });
 
   // Start the STDIO server
   async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
+
+    // Start notification intervals if enabled
+    if (startNotificationIntervals) {
+      startNotificationIntervals();
+    }
+
     console.error(`LogicMonitor MCP Server v${SERVER_VERSION} running on stdio`);
     if (LM_COMPANY && LM_BEARER_TOKEN) {
-      console.error(`LogicMonitor credentials configured for company:: ${LM_COMPANY}`);
+      console.error(`LogicMonitor credentials configured for company: ${LM_COMPANY}`);
     }
     console.error(`Available tools: ${TOOLS.length}${ONLY_READONLY_TOOLS ? ' (read-only mode)' : ''}`);
   }
+
+  // Handle graceful shutdown
+  process.on('SIGINT', async () => {
+    console.error('\n🛑 Received SIGINT, shutting down gracefully...');
+    await cleanup();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    console.error('\n🛑 Received SIGTERM, shutting down gracefully...');
+    await cleanup();
+    process.exit(0);
+  });
 
   main().catch((error) => {
     console.error('Server error:', error);
@@ -830,8 +665,8 @@ if (TRANSPORT === 'stdio') {
   }
 
   // Initialize LogicMonitor client and handlers
-  let lmClient: LogicMonitorClient | null = null;
-  let lmHandlers: LogicMonitorHandlers | null = null;
+  let lmClient: LogicMonitorClient | undefined = undefined;
+  let lmHandlers: LogicMonitorHandlers | undefined = undefined;
 
   if (LM_COMPANY && LM_BEARER_TOKEN) {
     lmClient = new LogicMonitorClient({
@@ -869,8 +704,8 @@ if (TRANSPORT === 'stdio') {
   }
 
   // Store active MCP servers and sessions
-  const mcpServers = new Map<string, Server>();
-  const httpSessions = new Map<string, { server: Server; sessionId: string }>();
+  const mcpServers = new Map<string, { serverInstance: any; cleanup: () => Promise<void> }>();
+  const httpSessions = new Map<string, { serverInstance: any; sessionId: string; cleanup: () => Promise<void> }>();
   const sessionBearerTokens = new Map<string, string>();
   const sessionScopes = new Map<string, string>();
   const sessionClientCapabilities = new Map<string, any>();
@@ -880,119 +715,48 @@ if (TRANSPORT === 'stdio') {
   // Prefixed with _ to indicate it's available for future use
   const _eventStore = new InMemoryEventStore();
 
-  // Create MCP server instance
+  // Create MCP server instance using factory pattern
   function createMCPServer(sessionId?: string): Server {
-    const server = new Server(
-      {
-        name: 'logicmonitor-mcp-server',
-        version: SERVER_VERSION,
-      },
-      {
-        capabilities: {
-          tools: {},
-          resources: {},
-          prompts: {},
-          logging: {},
-          completions: {},
-        },
-      },
-    );
+    // Determine handlers - use custom token if available for this session
+    const customToken = sessionId ? sessionBearerTokens.get(sessionId) : undefined;
+    let handlers = lmHandlers;
+    let client = lmClient;
 
-    (server as any).currentUserScope = sessionId ? sessionScopes.get(sessionId) || 'mcp:tools' : 'mcp:tools';
+    if (customToken) {
+      log('debug', 'Using custom LM bearer token from session', { sessionId });
+      client = new LogicMonitorClient({
+        company: LM_COMPANY,
+        bearerToken: customToken,
+        logger: log,
+      });
+      handlers = new LogicMonitorHandlers(client);
+    }
 
-    // Note: Client capabilities are automatically handled by the SDK during initialization
-    // They can be accessed through server methods after the connection is established
+    // Get user scope for this session
+    const userScope = sessionId ? sessionScopes.get(sessionId) || 'mcp:tools' : 'mcp:tools';
 
-    // Handle tool listing
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
-      return { tools: TOOLS };
+    // Create server using factory
+    const { server, cleanup, startNotificationIntervals } = createServer({
+      version: SERVER_VERSION,
+      tools: TOOLS,
+      lmClient: client,
+      lmHandlers: handlers,
+      sessionId,
+      userScope,
+      enablePeriodicUpdates: false, // Disable for network transports
     });
 
-    // Handle resource listing
-    server.setRequestHandler(ListResourcesRequestSchema, async () => {
-      const resources = listLMResources();
-      return {
-        resources: resources.map(r => ({
-          uri: r.uri,
-          name: r.name,
-          description: r.description,
-          mimeType: r.mimeType,
-        })),
-      };
-    });
+    // Store cleanup function
+    if (sessionId) {
+      mcpServers.set(sessionId, { serverInstance: { server, cleanup, startNotificationIntervals }, cleanup });
+    }
 
-    // Handle resource read requests
-    server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-      const { uri } = request.params;
-      try {
-        const result = await readLMResource(uri);
-        return result;
-      } catch (error) {
-        log('error', 'Error reading resource', { uri, error: error instanceof Error ? error.message : String(error) });
-        throw error;
-      }
-    });
-
-    // Handle prompt listing
-    server.setRequestHandler(ListPromptsRequestSchema, async () => {
-      const prompts = listLMPrompts();
-      return {
-        prompts: prompts.map(p => ({
-          name: p.name,
-          description: p.description,
-          arguments: p.arguments,
-        })),
-      };
-    });
-
-    // Handle get prompt requests
-    server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
-      const prompt = getLMPrompt(name);
-
-      if (!prompt) {
-        throw new Error(`Prompt not found: ${name}`);
-      }
-
-      // Generate the prompt messages using centralized logic
-      return generatePromptMessages(name, args);
-    });
-
-    // Handle logging/setLevel requests
-    server.setRequestHandler(SetLevelRequestSchema, async (request) => {
-      const { level } = request.params;
-      log('info', `Logging level set to: ${level}`, { level });
-      return {};
-    });
-
-    // Handle completion requests
-    server.setRequestHandler(CompleteRequestSchema, async (request) => {
-      const { ref, argument } = request.params;
-
-      if (!lmHandlers) {
-        return {
-          completion: {
-            values: [],
-            total: 0,
-            hasMore: false,
-          },
-        };
-      }
-
-      const completion = await lmHandlers.handleCompletion(ref, argument);
-
-      return {
-        completion,
-      };
-    });
-
-    // Handle tool execution
+    // Add custom CallToolRequestSchema handler with scope validation and session-specific tokens
     server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args, _meta } = request.params;
       const progressToken = _meta?.progressToken;
 
       try {
-        const userScope = (server as any).currentUserScope;
         const scopeValidation = ScopeManager.validateToolScopes(name, userScope);
 
         if (!scopeValidation.valid) {
@@ -1023,18 +787,19 @@ if (TRANSPORT === 'stdio') {
           };
         }
 
-        let handlers = lmHandlers;
-        const customToken = sessionId ? sessionBearerTokens.get(sessionId) : undefined;
+        // Re-check for custom token in case it was added after server creation
+        let currentHandlers = handlers;
+        const currentCustomToken = sessionId ? sessionBearerTokens.get(sessionId) : undefined;
 
-        if (customToken) {
-          log('debug', 'Using custom LM bearer token from session', { sessionId });
+        if (currentCustomToken && currentCustomToken !== customToken) {
+          log('debug', 'Using updated custom LM bearer token from session', { sessionId });
           const customClient = new LogicMonitorClient({
             company: LM_COMPANY,
-            bearerToken: customToken,
+            bearerToken: currentCustomToken,
             logger: log,
           });
-          handlers = new LogicMonitorHandlers(customClient);
-        } else if (!lmHandlers) {
+          currentHandlers = new LogicMonitorHandlers(customClient);
+        } else if (!currentHandlers) {
           throw new Error('LogicMonitor credentials not configured.');
         }
 
@@ -1058,13 +823,13 @@ if (TRANSPORT === 'stdio') {
           : undefined;
 
         log('debug', 'Executing tool', { tool: name, withProgress: progressToken !== undefined });
-        const result = await handlers!.handleToolCall(name, args || {}, progressCallback);
+        const result = await currentHandlers!.handleToolCall(name, args || {}, progressCallback);
 
         return {
           content: [
             {
               type: 'text',
-              text: handlers!.formatResponse(result),
+              text: currentHandlers!.formatResponse(result),
             },
           ],
         };
@@ -1292,20 +1057,33 @@ if (TRANSPORT === 'stdio') {
       log('info', 'New MCP SSE connection', { username });
 
       const sessionId = (req.session as any)?.id || crypto.randomBytes(8).toString('hex');
-      let server = mcpServers.get(sessionId);
+      let serverInfo = mcpServers.get(sessionId);
 
-      if (!server) {
-        server = createMCPServer(sessionId);
-        mcpServers.set(sessionId, server);
+      if (!serverInfo) {
+        createMCPServer(sessionId);
+        // The cleanup function is already stored in mcpServers by createMCPServer
+        serverInfo = mcpServers.get(sessionId);
       }
 
+      const server = serverInfo!.serverInstance.server;
       const transport = new SSEServerTransport('/mcp/message', res);
       await server.connect(transport);
 
-      req.on('close', () => {
+      // Start notification intervals if available
+      if (serverInfo!.serverInstance.startNotificationIntervals) {
+        serverInfo!.serverInstance.startNotificationIntervals(sessionId);
+      }
+
+      req.on('close', async () => {
         log('info', 'MCP SSE connection closed', { username });
+        // Call cleanup before removing from map
+        if (serverInfo && serverInfo.cleanup) {
+          await serverInfo.cleanup();
+        }
         mcpServers.delete(sessionId);
         sessionClientCapabilities.delete(sessionId);
+        sessionScopes.delete(sessionId);
+        sessionBearerTokens.delete(sessionId);
       });
     });
 
@@ -1333,15 +1111,31 @@ if (TRANSPORT === 'stdio') {
 
       if (!sessionInfo) {
         const server = createMCPServer(sessionId);
-        sessionInfo = { server, sessionId };
-        httpSessions.set(sessionId, sessionInfo);
+        // Get the stored server info from mcpServers
+        const storedInfo = mcpServers.get(sessionId);
+        if (storedInfo) {
+          sessionInfo = {
+            serverInstance: storedInfo.serverInstance.server,
+            sessionId,
+            cleanup: storedInfo.cleanup,
+          };
+          httpSessions.set(sessionId, sessionInfo);
+        } else {
+          // Fallback if not stored
+          sessionInfo = {
+            serverInstance: server,
+            sessionId,
+            cleanup: async () => {},
+          };
+          httpSessions.set(sessionId, sessionInfo);
+        }
       }
 
       try {
         const message: JSONRPCMessage = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
         // Handle the message through the MCP message handler
-        const response = await handleMCPMessage(sessionInfo.server, message);
+        const response = await handleMCPMessage(sessionInfo.serverInstance, message);
 
         // Set session header for client (always return the session ID)
         res.setHeader('Mcp-Session-Id', sessionId);
@@ -1396,8 +1190,14 @@ if (TRANSPORT === 'stdio') {
         return;
       }
 
+      // Call cleanup before deleting
+      if (sessionInfo.cleanup) {
+        await sessionInfo.cleanup();
+      }
+
       // Clean up session
       httpSessions.delete(sessionId);
+      mcpServers.delete(sessionId);
       sessionBearerTokens.delete(sessionId);
       sessionScopes.delete(sessionId);
       sessionClientCapabilities.delete(sessionId);
