@@ -43,7 +43,7 @@ import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
 import { listLMResources, readLMResource } from '../api/resources.js';
-import { listLMPrompts, getLMPrompt } from '../api/prompts.js';
+import { listLMPrompts, getLMPrompt, generatePromptMessages } from '../api/prompts.js';
 import {
   registerSession,
   registerRefreshCallback,
@@ -197,51 +197,8 @@ if (TRANSPORT === 'stdio') {
       throw new Error(`Prompt not found: ${name}`);
     }
 
-    // Generate the prompt message based on the prompt type
-    if (name === 'resource_check') {
-      const resourceName = args?.resourceName as string;
-
-      if (!resourceName) {
-        throw new Error('Missing required argument: resourceName');
-      }
-
-      // Build the interactive prompt workflow
-      const messages = [
-        {
-          role: 'user' as const,
-          content: {
-            type: 'text' as const,
-            text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
-          },
-        },
-        {
-          role: 'assistant' as const,
-          content: {
-            type: 'text' as const,
-            text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-              'I\'ll use the list_resources tool with query parameter to find this resource, ' +
-              'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
-              'list_alerts tool to find any alerts for this resource, ' +
-              'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
-              'list_resource_datasources tool to find available datasources for this resource, ' +
-              'list_resource_instances tool to find available instances for this resource, ' +
-              'get_resource_instance_data tool to get data for this resource, ' +
-              'get_resource_group tool to get the group for this resource, ' +
-              'get_collector tool to get the collector for this resource, ' +
-              'get_collector_group tool to get the collector group for this resource. ' +
-              'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
-              'full group paths for all resource groups where is resource assigned. ',
-          },
-        },
-      ];
-
-      return {
-        description: `Health check workflow for resource: ${resourceName}`,
-        messages,
-      };
-    }
-
-    throw new Error(`Unknown prompt: ${name}`);
+    // Generate the prompt messages using centralized logic
+    return generatePromptMessages(name, args);
   });
 
   // Handle logging/setLevel requests (STDIO doesn't use dynamic logging, so this is a no-op)
@@ -973,51 +930,8 @@ if (TRANSPORT === 'stdio') {
         throw new Error(`Prompt not found: ${name}`);
       }
 
-      // Generate the prompt message based on the prompt type
-      if (name === 'resource_check') {
-        const resourceName = args?.resourceName as string;
-
-        if (!resourceName) {
-          throw new Error('Missing required argument: resourceName');
-        }
-
-        // Build the interactive prompt workflow
-        const messages = [
-          {
-            role: 'user' as const,
-            content: {
-              type: 'text' as const,
-              text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
-            },
-          },
-          {
-            role: 'assistant' as const,
-            content: {
-              type: 'text' as const,
-              text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                'I\'ll use the list_resources tool with query parameter to find this resource, ' +
-                'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
-                'list_alerts tool to find any alerts for this resource, ' +
-                'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
-                'list_resource_datasources tool to find available datasources for this resource, ' +
-                'list_resource_instances tool to find available instances for this resource, ' +
-                'get_resource_instance_data tool to get data for this resource, ' +
-                'get_resource_group tool to get the group for this resource, ' +
-                'get_collector tool to get the collector for this resource, ' +
-                'get_collector_group tool to get the collector group for this resource. ' +
-                'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
-                'full group paths for all resource groups where is resource assigned. ',
-            },
-          },
-        ];
-
-        return {
-          description: `Health check workflow for resource: ${resourceName}`,
-          messages,
-        };
-      }
-
-      throw new Error(`Unknown prompt: ${name}`);
+      // Generate the prompt messages using centralized logic
+      return generatePromptMessages(name, args);
     });
 
     // Handle logging/setLevel requests
@@ -1617,68 +1531,21 @@ if (TRANSPORT === 'stdio') {
               return;
             }
 
-            // Generate the prompt message based on the prompt type
-            if (params.name === 'resource_check') {
-              const resourceName = params.arguments?.resourceName as string;
-
-              if (!resourceName) {
-                resolve({
-                  jsonrpc: '2.0',
-                  error: {
-                    code: -32602,
-                    message: 'Invalid params',
-                    data: 'Missing required argument: resourceName',
-                  },
-                  id: messageId,
-                });
-                return;
-              }
-
-              // Build the interactive prompt workflow
-              const messages = [
-                {
-                  role: 'user',
-                  content: {
-                    type: 'text',
-                    text: `I need to check the health of a LogicMonitor resource: "${resourceName}"`,
-                  },
-                },
-                {
-                  role: 'assistant',
-                  content: {
-                    type: 'text',
-                    text: `I'll help you check the health of the resource "${resourceName}". Let me search for it first.\n\n` +
-                      'I\'ll use the list_resources tool with query parameter to find this resource, ' +
-                      'eventually I ask you to select one resource if there is multiple resources matching search condition, ' +
-                      'list_alerts tool to find any alerts for this resource, ' +
-                      'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
-                      'list_resource_datasources tool to find available datasources for this resource, ' +
-                      'list_resource_instances tool to find available instances for this resource, ' +
-                      'get_resource_instance_data tool to get data for this resource, ' +
-                      'get_resource_group tool to get the group for this resource, ' +
-                      'get_collector tool to get the collector for this resource, ' +
-                      'get_collector_group tool to get the collector group for this resource. ' +
-                      'Result will be table summary with display name, name, ip, status, current alerts and current main metrics (CPU/Memory/network/Ping), ' +
-                      'full group paths for all resource groups where is resource assigned. ',
-                  },
-                },
-              ];
-
+            // Generate the prompt message using centralized logic
+            try {
+              const result = generatePromptMessages(params.name, params.arguments);
               resolve({
                 jsonrpc: '2.0',
-                result: {
-                  description: `Health check workflow for resource: ${resourceName}`,
-                  messages,
-                },
+                result,
                 id: messageId,
               });
-            } else {
+            } catch (error) {
               resolve({
                 jsonrpc: '2.0',
                 error: {
-                  code: -32603,
-                  message: 'Internal error',
-                  data: `Unknown prompt: ${params.name}`,
+                  code: error instanceof Error && error.message.includes('Unknown prompt') ? -32603 : -32602,
+                  message: error instanceof Error && error.message.includes('Unknown prompt') ? 'Internal error' : 'Invalid params',
+                  data: error instanceof Error ? error.message : 'An error occurred',
                 },
                 id: messageId,
               });
