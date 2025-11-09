@@ -8,57 +8,53 @@ import { Request, Response } from 'express';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
 import crypto from 'crypto';
-import { createServer } from './server.js';
-import { ServerConfig } from './server.js';
 
-export interface HTTPSession {
-  server: Server;
+export interface HTTPSessionInfo {
+  serverInstance: Server;
   sessionId: string;
   cleanup: () => Promise<void>;
 }
 
+export interface HTTPSessionCallbacks {
+  getOrCreateSession: (sessionId: string) => HTTPSessionInfo;
+  handleMessage: (server: Server, message: JSONRPCMessage) => Promise<any>;
+  onError?: (error: Error, sessionId: string) => void;
+}
+
+export interface HTTPDeleteCallbacks {
+  getSession: (sessionId: string) => HTTPSessionInfo | undefined;
+  onClose: (sessionId: string) => void | Promise<void>;
+  onError?: (error: Error, sessionId: string) => void;
+}
+
 /**
- * Handles HTTP POST requests for MCP messages
+ * Handles HTTP POST requests for MCP messages with flexible session management
  *
- * @param config Server configuration
  * @param req Express request
  * @param res Express response
- * @param sessions Map to store active sessions
- * @param handleMessage Function to handle MCP messages
+ * @param callbacks Callbacks for session management
  */
 export async function handleHTTPRequest(
-  config: ServerConfig,
   req: Request,
   res: Response,
-  sessions: Map<string, HTTPSession>,
-  handleMessage: (server: Server, message: JSONRPCMessage) => Promise<any>,
+  callbacks: HTTPSessionCallbacks,
 ): Promise<void> {
+  // Get or create session ID
   let sessionId = req.headers['mcp-session-id'] as string | undefined;
-
-  // Create new session if needed
   if (!sessionId) {
     sessionId = crypto.randomBytes(16).toString('hex');
   }
 
-  // Get or create server for this session
-  let session = sessions.get(sessionId);
-
-  if (!session) {
-    const { server, cleanup } = createServer({
-      ...config,
-      sessionId,
-    });
-    session = { server, sessionId, cleanup };
-    sessions.set(sessionId, session);
-  }
+  // Get or create session using callback
+  const sessionInfo = callbacks.getOrCreateSession(sessionId);
 
   try {
     const message: JSONRPCMessage = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
-    // Handle the message
-    const response = await handleMessage(session.server, message);
+    // Handle the message using callback
+    const response = await callbacks.handleMessage(sessionInfo.serverInstance, message);
 
-    // Set session header
+    // Set session header (always return the session ID)
     res.setHeader('Mcp-Session-Id', sessionId);
 
     // For notifications (null response), return 200 OK
@@ -68,6 +64,11 @@ export async function handleHTTPRequest(
       res.json(response);
     }
   } catch (error) {
+    // Notify error callback if provided
+    if (callbacks.onError && error instanceof Error) {
+      callbacks.onError(error, sessionId);
+    }
+
     res.setHeader('Mcp-Session-Id', sessionId);
     res.status(200).json({
       jsonrpc: '2.0',
@@ -86,14 +87,12 @@ export async function handleHTTPRequest(
  *
  * @param req Express request
  * @param res Express response
- * @param sessions Map to store active sessions
- * @param onClose Callback when session closes
+ * @param callbacks Callbacks for session management
  */
 export async function handleHTTPDelete(
   req: Request,
   res: Response,
-  sessions: Map<string, HTTPSession>,
-  onClose?: (sessionId: string) => void,
+  callbacks: HTTPDeleteCallbacks,
 ): Promise<void> {
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
@@ -105,9 +104,10 @@ export async function handleHTTPDelete(
     return;
   }
 
-  const session = sessions.get(sessionId);
+  // Get session using callback
+  const sessionInfo = callbacks.getSession(sessionId);
 
-  if (!session) {
+  if (!sessionInfo) {
     res.status(404).json({
       error: 'session_not_found',
       error_description: 'The specified session does not exist or has already been terminated',
@@ -115,18 +115,27 @@ export async function handleHTTPDelete(
     return;
   }
 
-  // Call cleanup before deleting session
-  await session.cleanup();
+  try {
+    // Call cleanup before deleting session
+    await sessionInfo.cleanup();
 
-  // Clean up session
-  sessions.delete(sessionId);
-  if (onClose) {
-    onClose(sessionId);
+    // Call onClose callback
+    await callbacks.onClose(sessionId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Session terminated successfully',
+    });
+  } catch (error) {
+    // Notify error callback if provided
+    if (callbacks.onError && error instanceof Error) {
+      callbacks.onError(error, sessionId);
+    }
+
+    res.status(500).json({
+      error: 'internal_error',
+      error_description: 'Failed to terminate session',
+    });
   }
-
-  res.status(200).json({
-    success: true,
-    message: 'Session terminated successfully',
-  });
 }
 

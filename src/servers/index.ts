@@ -13,8 +13,9 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
+import { handleSSEConnection } from './sse.js';
+import { handleHTTPRequest, handleHTTPDelete } from './streamable-http.js';
 import {
   CallToolRequestSchema,
   Tool,
@@ -1056,34 +1057,27 @@ if (TRANSPORT === 'stdio') {
       const username = (req.user as any)?.username;
       log('info', 'New MCP SSE connection', { username });
 
-      const sessionId = (req.session as any)?.id || crypto.randomBytes(8).toString('hex');
-      let serverInfo = mcpServers.get(sessionId);
-
-      if (!serverInfo) {
-        createMCPServer(sessionId);
-        // The cleanup function is already stored in mcpServers by createMCPServer
-        serverInfo = mcpServers.get(sessionId);
-      }
-
-      const server = serverInfo!.serverInstance.server;
-      const transport = new SSEServerTransport('/mcp/message', res);
-      await server.connect(transport);
-
-      // Start notification intervals if available
-      if (serverInfo!.serverInstance.startNotificationIntervals) {
-        serverInfo!.serverInstance.startNotificationIntervals(sessionId);
-      }
-
-      req.on('close', async () => {
-        log('info', 'MCP SSE connection closed', { username });
-        // Call cleanup before removing from map
-        if (serverInfo && serverInfo.cleanup) {
-          await serverInfo.cleanup();
-        }
-        mcpServers.delete(sessionId);
-        sessionClientCapabilities.delete(sessionId);
-        sessionScopes.delete(sessionId);
-        sessionBearerTokens.delete(sessionId);
+      await handleSSEConnection(req, res, {
+        getSessionId: (req) => (req.session as any)?.id || crypto.randomBytes(8).toString('hex'),
+        getOrCreateServer: (sessionId) => {
+          let serverInfo = mcpServers.get(sessionId);
+          if (!serverInfo) {
+            createMCPServer(sessionId);
+            serverInfo = mcpServers.get(sessionId)!;
+          }
+          return {
+            server: serverInfo.serverInstance.server,
+            cleanup: serverInfo.cleanup,
+            startNotificationIntervals: serverInfo.serverInstance.startNotificationIntervals,
+          };
+        },
+        onClose: async (sessionId) => {
+          log('info', 'MCP SSE connection closed', { username, sessionId });
+          mcpServers.delete(sessionId);
+          sessionClientCapabilities.delete(sessionId);
+          sessionScopes.delete(sessionId);
+          sessionBearerTokens.delete(sessionId);
+        },
       });
     });
 
@@ -1096,117 +1090,70 @@ if (TRANSPORT === 'stdio') {
   if (TRANSPORT_MODE !== 'sse-only') {
     app.post(MCP_ENDPOINT_PATH, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
       const username = (req.user as any)?.username;
-      // Get session ID from Mcp-Session-Id header or create a new one
-      let sessionId = req.headers['mcp-session-id'] as string | undefined;
+      log('debug', 'MCP HTTP request', { username });
 
-      // If no session ID provided, create a new session
-      if (!sessionId) {
-        sessionId = crypto.randomBytes(16).toString('hex');
-        log('debug', 'Creating new MCP HTTP session', { username, sessionId });
-      }
+      await handleHTTPRequest(req, res, {
+        getOrCreateSession: (sessionId) => {
+          let sessionInfo = httpSessions.get(sessionId);
 
-      log('debug', 'MCP HTTP request', { username, sessionId });
+          if (!sessionInfo) {
+            log('debug', 'Creating new MCP HTTP session', { username, sessionId });
+            const server = createMCPServer(sessionId);
+            const storedInfo = mcpServers.get(sessionId);
 
-      let sessionInfo = httpSessions.get(sessionId);
+            if (storedInfo) {
+              sessionInfo = {
+                serverInstance: storedInfo.serverInstance.server,
+                sessionId,
+                cleanup: storedInfo.cleanup,
+              };
+              httpSessions.set(sessionId, sessionInfo);
+            } else {
+              // Fallback if not stored
+              sessionInfo = {
+                serverInstance: server,
+                sessionId,
+                cleanup: async () => {},
+              };
+              httpSessions.set(sessionId, sessionInfo);
+            }
+          }
 
-      if (!sessionInfo) {
-        const server = createMCPServer(sessionId);
-        // Get the stored server info from mcpServers
-        const storedInfo = mcpServers.get(sessionId);
-        if (storedInfo) {
-          sessionInfo = {
-            serverInstance: storedInfo.serverInstance.server,
+          return sessionInfo;
+        },
+        handleMessage: handleMCPMessage,
+        onError: (error, sessionId) => {
+          log('error', 'Error handling MCP HTTP request', {
+            error: error.message,
             sessionId,
-            cleanup: storedInfo.cleanup,
-          };
-          httpSessions.set(sessionId, sessionInfo);
-        } else {
-          // Fallback if not stored
-          sessionInfo = {
-            serverInstance: server,
-            sessionId,
-            cleanup: async () => {},
-          };
-          httpSessions.set(sessionId, sessionInfo);
-        }
-      }
-
-      try {
-        const message: JSONRPCMessage = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-
-        // Handle the message through the MCP message handler
-        const response = await handleMCPMessage(sessionInfo.serverInstance, message);
-
-        // Set session header for client (always return the session ID)
-        res.setHeader('Mcp-Session-Id', sessionId);
-
-        // For notifications (null response), return 200 OK
-        if (response === null) {
-          res.status(200).send();
-        } else {
-          res.json(response);
-        }
-      } catch (error) {
-        log('error', 'Error handling MCP HTTP request', { error: error instanceof Error ? error.message : String(error) });
-        res.setHeader('Mcp-Session-Id', sessionId);
-        res.status(200).json({
-          jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: 'Internal error',
-            data: error instanceof Error ? error.message : 'An unexpected error occurred',
-          },
-          id: null,
-        });
-      }
+            username,
+          });
+        },
+      });
     });
 
     // MCP HTTP session termination endpoint (DELETE)
     app.delete(MCP_ENDPOINT_PATH, authLimiter, ensureAuthenticated, async (req: Request, res: Response) => {
       const username = (req.user as any)?.username;
-      // Get session ID from Mcp-Session-Id header (as per MCP streamable-http spec)
-      const sessionId = req.headers['mcp-session-id'] as string | undefined;
+      log('debug', 'MCP HTTP session termination request', { username });
 
-      if (!sessionId) {
-        log('warn', 'DELETE request missing Mcp-Session-Id header', { username });
-        res.status(400).json({
-          error: 'invalid_request',
-          error_description: 'Missing Mcp-Session-Id header',
-        });
-        return;
-      }
-
-      log('debug', 'MCP HTTP session termination request', { username, sessionId });
-
-      // Check if session exists
-      const sessionInfo = httpSessions.get(sessionId);
-
-      if (!sessionInfo) {
-        log('warn', 'Attempted to terminate non-existent session', { sessionId });
-        res.status(404).json({
-          error: 'session_not_found',
-          error_description: 'The specified session does not exist or has already been terminated',
-        });
-        return;
-      }
-
-      // Call cleanup before deleting
-      if (sessionInfo.cleanup) {
-        await sessionInfo.cleanup();
-      }
-
-      // Clean up session
-      httpSessions.delete(sessionId);
-      mcpServers.delete(sessionId);
-      sessionBearerTokens.delete(sessionId);
-      sessionScopes.delete(sessionId);
-      sessionClientCapabilities.delete(sessionId);
-
-      log('info', 'MCP HTTP session terminated', { username, sessionId });
-
-      res.status(200).json({
-        success: true,
-        message: 'Session terminated successfully',
+      await handleHTTPDelete(req, res, {
+        getSession: (sessionId) => httpSessions.get(sessionId),
+        onClose: async (sessionId) => {
+          log('info', 'MCP HTTP session terminated', { username, sessionId });
+          httpSessions.delete(sessionId);
+          mcpServers.delete(sessionId);
+          sessionBearerTokens.delete(sessionId);
+          sessionScopes.delete(sessionId);
+          sessionClientCapabilities.delete(sessionId);
+        },
+        onError: (error, sessionId) => {
+          log('error', 'Error terminating MCP HTTP session', {
+            error: error.message,
+            sessionId,
+            username,
+          });
+        },
       });
     });
   }
