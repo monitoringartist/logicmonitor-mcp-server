@@ -59,7 +59,8 @@ jobs:
       - name: Get new version
         id: version
         run: |
-          echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+          version=$(node -p "require('./package.json').version")
+          echo "VERSION=$version" >> "$GITHUB_OUTPUT"
 
       - name: Create release summary
         run: |
