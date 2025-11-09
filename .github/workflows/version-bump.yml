@@ -1,5 +1,7 @@
 name: Version Bump
 
+# This workflow ONLY runs manually via workflow_dispatch
+# It does NOT run on push, pull_request, or any automatic triggers
 on:
   workflow_dispatch:
     inputs:
@@ -46,7 +48,8 @@ jobs:
         run: npm test
 
       - name: Bump version
-        run: npm version ${{ github.event.inputs.version }} -m "chore: bump version to %s"
+        run: |
+          npm version ${{ inputs.version }} -m "chore: bump version to %s"
 
       - name: Push changes
         run: |
@@ -55,11 +58,12 @@ jobs:
 
       - name: Get new version
         id: version
-        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        run: |
+          echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
 
       - name: Create release summary
         run: |
           echo "## Version Bump: v${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
-          echo "Type: ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Type: ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "Tag will trigger automatic release workflow" >> $GITHUB_STEP_SUMMARY
 
