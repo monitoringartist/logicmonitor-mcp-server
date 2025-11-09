@@ -84,7 +84,7 @@
         "@types/passport-oauth2": "^1.4.17",
         "@types/sanitize-html": "^2.16.0",
         "@typescript-eslint/eslint-plugin": "^8.0.0",
-        "@typescript-eslint/parser": "^8.0.0",
+        "@typescript-eslint/parser": "^8.46.3",
         "eslint": "^9.0.0",
         "jest": "^30.2.0",
         "ts-jest": "^29.4.5",
