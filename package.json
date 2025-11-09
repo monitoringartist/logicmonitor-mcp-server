@@ -1,6 +1,6 @@
 {
     "name": "logicmonitor-mcp-server",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "LogicMonitor Model Context Protocol Server",
     "type": "module",
     "main": "build/servers/index.js",
