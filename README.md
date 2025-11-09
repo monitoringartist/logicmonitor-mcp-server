@@ -81,6 +81,13 @@ docker run -d -p 3000:3000 \
   -e OAUTH_PROVIDER=none \
   monitoringartist/logicmonitor-mcp-server
 
+# Available container images
+
+| Registry | Pull command | Notes |
+| --- | --- | --- |
+| GitHub Container Registry | `docker pull ghcr.io/monitoringartist/logicmonitor-mcp-server:<tag>` | Tags include `latest`, `vX.Y.Z`, `X.Y`, and `X`. |
+| Docker Hub | `docker pull monitoringartist/logicmonitor-mcp-server:<tag>` | Mirrors the same tags as GHCR. |
+
 # Or use Docker Compose for production
 curl -o docker-compose.yml https://raw.githubusercontent.com/monitoringartist/logicmonitor-mcp-server/main/docker-compose.yml
 cp env.example .env  # Configure your credentials
