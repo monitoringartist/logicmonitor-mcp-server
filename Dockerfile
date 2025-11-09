@@ -10,14 +10,12 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies (including dev dependencies for build)
-RUN npm ci
-
-# Copy source code
+# Copy source code (needed before npm ci because prepare script runs build)
 COPY src ./src
 
-# Build TypeScript code
-RUN npm run build
+# Install dependencies (including dev dependencies for build)
+# The prepare script will automatically run npm run build
+RUN npm ci
 
 # Remove dev dependencies
 RUN npm prune --production
