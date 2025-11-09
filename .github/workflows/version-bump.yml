@@ -24,10 +24,19 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Ensure release token is present
+        run: |
+          if [ -z "$RELEASE_PAT" ]; then
+            echo "RELEASE_PAT secret is not set. Please add it in repository secrets." >&2
+            exit 1
+          fi
+        env:
+          RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PAT }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -52,6 +61,8 @@ jobs:
           npm version ${{ inputs.version }} -m "chore: bump version to %s"
 
       - name: Push changes
+        env:
+          RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
         run: |
           git push origin HEAD:${{ github.ref_name }}
           git push --tags
