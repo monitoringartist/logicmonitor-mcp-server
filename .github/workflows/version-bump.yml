@@ -1,5 +1,7 @@
 name: Version Bump
 
+# This workflow only runs manually via workflow_dispatch
+# It does NOT run on push to avoid conflicts with automatic versioning
 on:
   workflow_dispatch:
     inputs:
