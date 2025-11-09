@@ -1,22 +1,29 @@
 {
     "mcpServers": {
-        "comnpany.logicmonitor.com": {
+        "company.logicmonitor.com-nodejs": {
             "command": "node",
             "args": [
                 "/path/to/logicmonitor-mcp-server/build/index.js"
             ],
             "env": {
-                "LM_COMPANY": "your-company",
+                "LM_COMPANY": "your-lm-company",
                 "LM_BEARER_TOKEN": "your-lm-bearer-token"
             }
         },
-        "logicmonitor-mcp-server-remote": {
-            "comment": "Connect to remote MCP server via HTTP",
-            "url": "http://localhost:3000/mcp",
-            "transport": "http",
-            "headers": {
-                "X-LM-BEARER-TOKEN": "use X-LM-BEARER-TOKEN header if you want to override the default bearer token"
+        "company.logicmonitor.com-npx": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "logicmonitor-mcp-server"
+            ],
+            "env": {
+                "LM_COMPANY": "your-lm-company",
+                "LM_BEARER_TOKEN": "your-lm-bearer-token"
             }
+        },
+        "company.logicmonitor.com-remote-http": {
+            "url": "http://localhost:3000/mcp",
+            "transport": "http"
         }
     }
 }

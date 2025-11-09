@@ -31,6 +31,8 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 
 Run LogicMonitor MCP Server locally with STDIO transport for Claude Desktop:
 
+[![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22LM_COMPANY%22%2C%22-e%22%2C%22LM_BEARER_TOKEN%22%2C%22ghcr.io%2Fmonitoringartist%2Flogicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
+[![Install with npx in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22logicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
 [![npm](https://img.shields.io/npm/v/logicmonitor-mcp-server?logo=npm)](https://www.npmjs.com/package/logicmonitor-mcp-server)
 [![Claude Desktop](https://img.shields.io/badge/Claude-Desktop-8A6FFF)](https://claude.ai/download)
 
@@ -67,8 +69,7 @@ logicmonitor-mcp-server
 
 Run LogicMonitor MCP Server remotely with SSE or HTTP transport for web-based access:
 
-
-[![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=complany.logicmonitor.com&inputs%3D%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20%28subdomain%29%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D%26config%3D%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22LM_COMPANY%22%2C%22-e%22%2C%22LM_BEARER_TOKEN%22%2C%22ghcr.io%2Fmonitoringartist%2Flogicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
+[![Install as remote MCP in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&config=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%3A3000%2Fmcp%22%2C%22transport%22%3A%22http%22%7D)
 
 
 ```bash
