@@ -1,0 +1,57 @@
+# Source files (TypeScript)
+src/
+
+# Tests
+**/*.test.ts
+**/*.test.js
+coverage/
+.nyc_output/
+
+# Development files
+.github/
+.vscode/
+*.tsbuildinfo
+tsconfig.json
+jest.config.js
+eslint.config.js
+
+# Documentation (except essential ones)
+RELEASING.md
+CONTRIBUTING.md
+E2E-AUTH-TESTS.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node modules (should be installed by user)
+node_modules/
+
+# Build cache
+.cache/
+

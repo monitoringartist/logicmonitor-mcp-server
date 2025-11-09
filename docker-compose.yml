@@ -1,0 +1,403 @@
+# ========================================
+# LogicMonitor MCP Server - Docker Compose
+# ========================================
+# Unified server supporting all transport modes via MCP_TRANSPORT environment variable
+#
+# Usage:
+#   1. Copy env.example to .env and configure your settings
+#   2. Choose a service below based on your use case
+#   3. Run: docker-compose up -d <service-name>
+#
+# Services:
+#   - logicmonitor-mcp-dev:        Development server (SSE, no auth)
+#   - logicmonitor-mcp-production: Production server (SSE, bearer token)
+#   - logicmonitor-mcp-oauth:      Production server (SSE, OAuth)
+
+services:
+  # ========================================
+  # Development Server (SSE, No Authentication)
+  # ========================================
+  # Use case: Local development, testing
+  # Transport: SSE (Server-Sent Events)
+  # Authentication: None (unauthenticated access)
+  # WARNING: Not secure - use only in trusted environments
+  
+  logicmonitor-mcp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logicmonitor-mcp-dev
+    command: node build/servers/index.js
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    environment:
+      # LogicMonitor API credentials
+      LM_COMPANY: ${LM_COMPANY}
+      LM_BEARER_TOKEN: ${LM_BEARER_TOKEN}
+      
+      # Transport configuration
+      MCP_TRANSPORT: sse
+      MCP_ADDRESS: 0.0.0.0:3000
+      MCP_ENDPOINT_PATH: /mcp
+      
+      # Authentication (disabled for development)
+      OAUTH_PROVIDER: none
+      # MCP_BEARER_TOKEN not set - unauthenticated access
+      
+      # Logging
+      MCP_DEBUG: "true"
+      MCP_LOG_FORMAT: human
+      MCP_LOG_LEVEL: debug
+      
+      # Tool configuration
+      MCP_READ_ONLY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - logicmonitor-network
+
+  # ========================================
+  # Production Server (SSE, Bearer Token)
+  # ========================================
+  # Use case: Production deployment with API clients
+  # Transport: SSE (Server-Sent Events)
+  # Authentication: Static bearer token
+  # Security: Requires MCP_BEARER_TOKEN in .env file
+  
+  logicmonitor-mcp-production:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logicmonitor-mcp-production
+    command: node build/servers/index.js
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    environment:
+      # LogicMonitor API credentials
+      LM_COMPANY: ${LM_COMPANY}
+      LM_BEARER_TOKEN: ${LM_BEARER_TOKEN}
+      
+      # Transport configuration
+      MCP_TRANSPORT: sse
+      MCP_ADDRESS: 0.0.0.0:3000
+      MCP_ENDPOINT_PATH: /mcp
+      
+      # Authentication (bearer token - set in .env)
+      OAUTH_PROVIDER: none
+      MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN}
+      
+      # Production settings
+      NODE_ENV: production
+      MCP_LOG_FORMAT: json
+      MCP_LOG_LEVEL: info
+      
+      # Tool configuration
+      MCP_READ_ONLY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - logicmonitor-network
+    # Uncomment for TLS/HTTPS support
+    # volumes:
+    #   - ./certs/cert.pem:/app/certs/cert.pem:ro
+    #   - ./certs/key.pem:/app/certs/key.pem:ro
+    # environment:
+    #   MCP_TLS_CERT_FILE: /app/certs/cert.pem
+    #   MCP_TLS_KEY_FILE: /app/certs/key.pem
+
+  # ========================================
+  # Production Server (SSE, OAuth)
+  # ========================================
+  # Use case: Production deployment with web users
+  # Transport: SSE (Server-Sent Events)
+  # Authentication: OAuth/OIDC
+  # Security: Requires OAuth configuration in .env file
+  
+  logicmonitor-mcp-oauth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logicmonitor-mcp-oauth
+    command: node build/servers/index.js
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    environment:
+      # LogicMonitor API credentials
+      LM_COMPANY: ${LM_COMPANY}
+      LM_BEARER_TOKEN: ${LM_BEARER_TOKEN}
+      
+      # Transport configuration
+      MCP_TRANSPORT: sse
+      MCP_ADDRESS: 0.0.0.0:3000
+      MCP_ENDPOINT_PATH: /mcp
+      
+      # OAuth Authentication (configure in .env)
+      OAUTH_PROVIDER: ${OAUTH_PROVIDER}
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
+      OAUTH_SESSION_SECRET: ${OAUTH_SESSION_SECRET}
+      OAUTH_CALLBACK_URL: ${OAUTH_CALLBACK_URL}
+      OAUTH_SCOPE: ${OAUTH_SCOPE}
+      
+      # Production settings
+      NODE_ENV: production
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
+      MCP_LOG_FORMAT: json
+      MCP_LOG_LEVEL: info
+      
+      # Tool configuration
+      MCP_READ_ONLY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - logicmonitor-network
+    # Uncomment for TLS/HTTPS support
+    # volumes:
+    #   - ./certs/cert.pem:/app/certs/cert.pem:ro
+    #   - ./certs/key.pem:/app/certs/key.pem:ro
+    # environment:
+    #   MCP_TLS_CERT_FILE: /app/certs/cert.pem
+    #   MCP_TLS_KEY_FILE: /app/certs/key.pem
+
+  # ========================================
+  # Production Server (SSE, Combined Auth)
+  # ========================================
+  # Use case: Flexible production deployment
+  # Transport: SSE (Server-Sent Events)
+  # Authentication: Both OAuth and Bearer Token
+  # Users can authenticate via OAuth (web) or Bearer token (API)
+  
+  logicmonitor-mcp-combined:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logicmonitor-mcp-combined
+    command: node build/servers/index.js
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    environment:
+      # LogicMonitor API credentials
+      LM_COMPANY: ${LM_COMPANY}
+      LM_BEARER_TOKEN: ${LM_BEARER_TOKEN}
+      
+      # Transport configuration
+      MCP_TRANSPORT: sse
+      MCP_ADDRESS: 0.0.0.0:3000
+      MCP_ENDPOINT_PATH: /mcp
+      
+      # Combined Authentication
+      # OAuth for web users
+      OAUTH_PROVIDER: ${OAUTH_PROVIDER}
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
+      OAUTH_SESSION_SECRET: ${OAUTH_SESSION_SECRET}
+      OAUTH_CALLBACK_URL: ${OAUTH_CALLBACK_URL}
+      # Bearer token for API clients
+      MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN}
+      
+      # Production settings
+      NODE_ENV: production
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
+      MCP_LOG_FORMAT: json
+      MCP_LOG_LEVEL: info
+      
+      # Tool configuration
+      MCP_READ_ONLY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - logicmonitor-network
+
+  # ========================================
+  # HTTP Transport (Alternative)
+  # ========================================
+  # Use case: RESTful HTTP integrations
+  # Transport: Streamable HTTP
+  # Authentication: Bearer token
+  
+  logicmonitor-mcp-http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logicmonitor-mcp-http
+    command: node build/servers/index.js
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    environment:
+      # LogicMonitor API credentials
+      LM_COMPANY: ${LM_COMPANY}
+      LM_BEARER_TOKEN: ${LM_BEARER_TOKEN}
+      
+      # Transport configuration
+      MCP_TRANSPORT: streamable-http
+      MCP_ADDRESS: 0.0.0.0:3000
+      MCP_ENDPOINT_PATH: /mcp
+      TRANSPORT_MODE: http-only
+      
+      # Authentication
+      OAUTH_PROVIDER: none
+      MCP_BEARER_TOKEN: ${MCP_BEARER_TOKEN}
+      
+      # Production settings
+      NODE_ENV: production
+      MCP_LOG_FORMAT: json
+      MCP_LOG_LEVEL: info
+      
+      # Tool configuration
+      MCP_READ_ONLY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - logicmonitor-network
+
+networks:
+  logicmonitor-network:
+    driver: bridge
+
+# ========================================
+# USAGE EXAMPLES
+# ========================================
+
+# Development (no authentication):
+#   docker-compose up -d logicmonitor-mcp-dev
+#   Access: http://localhost:3000
+#   Warning: Unauthenticated access - use only in trusted environments
+
+# Production with Bearer Token:
+#   1. Set MCP_BEARER_TOKEN in .env file:
+#      MCP_BEARER_TOKEN=$(openssl rand -base64 32)
+#   2. docker-compose up -d logicmonitor-mcp-production
+#   3. Access: http://localhost:3000
+#   4. Authenticate: Authorization: Bearer <token>
+
+# Production with OAuth:
+#   1. Configure OAuth in .env file:
+#      OAUTH_PROVIDER=github
+#      OAUTH_CLIENT_ID=...
+#      OAUTH_CLIENT_SECRET=...
+#      OAUTH_SESSION_SECRET=$(openssl rand -hex 32)
+#   2. docker-compose up -d logicmonitor-mcp-oauth
+#   3. Access: http://localhost:3000
+#   4. Login: http://localhost:3000/auth/login
+
+# Production with Combined Auth:
+#   1. Configure both OAuth and bearer token in .env
+#   2. docker-compose up -d logicmonitor-mcp-combined
+#   3. Web users: OAuth login at /auth/login
+#   4. API clients: Bearer token in Authorization header
+
+# HTTP Transport:
+#   docker-compose up -d logicmonitor-mcp-http
+
+# View logs:
+#   docker-compose logs -f <service-name>
+
+# Stop service:
+#   docker-compose down <service-name>
+
+# Restart service:
+#   docker-compose restart <service-name>
+
+# Health check:
+#   curl http://localhost:3000/healthz
+#   curl http://localhost:3000/health
+
+# ========================================
+# TLS/HTTPS CONFIGURATION
+# ========================================
+
+# To enable TLS/HTTPS:
+# 1. Generate or obtain SSL certificates:
+#    mkdir -p certs
+#    openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -days 365 -nodes -subj "/CN=localhost"
+#
+# 2. Uncomment the volumes section in the service above
+#
+# 3. Add to .env file:
+#    MCP_TLS_CERT_FILE=/app/certs/cert.pem
+#    MCP_TLS_KEY_FILE=/app/certs/key.pem
+#
+# 4. Update port mapping for HTTPS:
+#    ports:
+#      - "443:3000"
+#
+# 5. Access via HTTPS:
+#    https://localhost
+
+# ========================================
+# SECURITY NOTES
+# ========================================
+
+# Development:
+#   - Use logicmonitor-mcp-dev for local testing only
+#   - Never expose to the internet without authentication
+#   - Unauthenticated access is a security risk
+
+# Production:
+#   - Always use logicmonitor-mcp-production, logicmonitor-mcp-oauth, or logicmonitor-mcp-combined
+#   - Always enable TLS/HTTPS in production
+#   - Use strong tokens (32+ bytes): openssl rand -base64 32
+#   - Rotate tokens regularly (monthly recommended)
+#   - Use MCP_READ_ONLY=true unless write operations are required
+#   - Configure firewall rules to restrict access
+#   - Monitor logs and health endpoints
+#   - Never commit .env file to version control
+
+# ========================================
+# TROUBLESHOOTING
+# ========================================
+
+# Service won't start:
+#   - Check .env file exists and contains required variables
+#   - View logs: docker-compose logs <service-name>
+#   - Verify port 3000 is not already in use
+
+# Health check failing:
+#   - Wait for start_period to complete (10s)
+#   - Check logs for startup errors
+#   - Verify MCP_TRANSPORT is set correctly
+
+# Authentication not working:
+#   - For bearer token: Verify MCP_BEARER_TOKEN is set in .env
+#   - For OAuth: Verify all OAUTH_* variables are set correctly
+#   - Check logs for authentication errors
+
+# Can't connect to LogicMonitor:
+#   - Verify LM_COMPANY and LM_BEARER_TOKEN are correct
+#   - Check network connectivity from container
+#   - Review LogicMonitor API token permissions

@@ -1,0 +1,29 @@
+{
+    "mcpServers": {
+        "company.logicmonitor.com-nodejs": {
+            "command": "node",
+            "args": [
+                "/path/to/logicmonitor-mcp-server/build/index.js"
+            ],
+            "env": {
+                "LM_COMPANY": "your-lm-company",
+                "LM_BEARER_TOKEN": "your-lm-bearer-token"
+            }
+        },
+        "company.logicmonitor.com-npx": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "logicmonitor-mcp-server"
+            ],
+            "env": {
+                "LM_COMPANY": "your-lm-company",
+                "LM_BEARER_TOKEN": "your-lm-bearer-token"
+            }
+        },
+        "company.logicmonitor.com-remote-http": {
+            "url": "http://localhost:3000/mcp",
+            "transport": "http"
+        }
+    }
+}
