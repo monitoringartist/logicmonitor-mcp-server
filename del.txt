@@ -1,0 +1,1 @@
+{"id":"lm_bearer_token","type":"promptString","description":"LogicMonitor API Bearer Token","password":true}

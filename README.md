@@ -25,6 +25,69 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 - **Smart Batching**: Adaptive concurrency that automatically adjusts to API rate limits
 - **TLS/HTTPS Support**: Optional TLS for secure remote access
 
+## Installation Options
+
+### Local LogicMonitor MCP Server
+
+Run LogicMonitor MCP Server locally with STDIO transport for Claude Desktop:
+
+[![npm](https://img.shields.io/npm/v/logicmonitor-mcp-server?logo=npm)](https://www.npmjs.com/package/logicmonitor-mcp-server)
+[![Claude Desktop](https://img.shields.io/badge/Claude-Desktop-8A6FFF)](https://claude.ai/download)
+
+```bash
+# Quick start with npx (no installation needed)
+npx logicmonitor-mcp-server
+
+# Or install globally
+npm install -g logicmonitor-mcp-server
+logicmonitor-mcp-server
+```
+
+**Add to Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "logicmonitor": {
+      "command": "npx",
+      "args": ["-y", "logicmonitor-mcp-server"],
+      "env": {
+        "LM_COMPANY": "mycompany",
+        "LM_BEARER_TOKEN": "your-bearer-token-here"
+      }
+    }
+  }
+}
+```
+
+**Best for**: Personal use, Claude Desktop integration, local development
+
+
+### Example remote LogicMonitor MCP Server
+
+Run LogicMonitor MCP Server remotely with SSE or HTTP transport for web-based access:
+
+
+[![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=complany.logicmonitor.com&inputs%3D%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20%28subdomain%29%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D%26config%3D%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22LM_COMPANY%22%2C%22-e%22%2C%22LM_BEARER_TOKEN%22%2C%22ghcr.io%2Fmonitoringartist%2Flogicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
+
+
+```bash
+# Quick start with Docker
+docker run -d -p 3000:3000 \
+  -e LM_COMPANY=mycompany \
+  -e LM_BEARER_TOKEN=your-token \
+  -e MCP_TRANSPORT=streamable-http \
+  -e OAUTH_PROVIDER=none \
+  monitoringartist/logicmonitor-mcp-server
+
+# Or use Docker Compose for production
+curl -o docker-compose.yml https://raw.githubusercontent.com/monitoringartist/logicmonitor-mcp-server/main/docker-compose.yml
+cp env.example .env  # Configure your credentials
+docker-compose up -d logicmonitor-mcp-http
+```
+
+**Best for**: Web applications, remote access, multiple users, enterprise deployments, where admin controls access.
+
 ## Quick Start
 
 ### Prerequisites

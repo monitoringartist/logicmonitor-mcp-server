@@ -1,15 +1,13 @@
 {
     "mcpServers": {
-        "logicmonitor-mcp-server-local": {
-            "comment": "Run MCP server locally using Node.js",
+        "comnpany.logicmonitor.com": {
             "command": "node",
             "args": [
                 "/path/to/logicmonitor-mcp-server/build/index.js"
             ],
             "env": {
                 "LM_COMPANY": "your-company",
-                "LM_ACCESS_ID": "your-access-id",
-                "LM_ACCESS_KEY": "your-access-key"
+                "LM_BEARER_TOKEN": "your-lm-bearer-token"
             }
         },
         "logicmonitor-mcp-server-remote": {

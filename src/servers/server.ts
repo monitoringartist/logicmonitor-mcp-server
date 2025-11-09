@@ -74,7 +74,7 @@ export function createServer(config: ServerConfig): ServerInstance {
     {
       capabilities: {
         tools: {},
-        resources: { subscribe: true },
+        resources: {},
         prompts: {},
         logging: {},
         completions: {},
