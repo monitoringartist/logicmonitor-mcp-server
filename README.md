@@ -1,6 +1,6 @@
 # LogicMonitor MCP Server
 
-Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants like Claude to interact with your LogicMonitor infrastructure.
+Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to interact with your LogicMonitor.
 
 [![CI](https://github.com/monitoringartist/logicmonitor-mcp-server/workflows/CI/badge.svg)](https://github.com/monitoringartist/logicmonitor-mcp-server/actions)
 [![Release](https://github.com/monitoringartist/logicmonitor-mcp-server/workflows/Release/badge.svg)](https://github.com/monitoringartist/logicmonitor-mcp-server/releases)
@@ -13,7 +13,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 
 - **125 MCP Tools** for comprehensive LogicMonitor operations (73 read-only, 52 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
-- **Multiple Transport Modes**: STDIO for local use, SSE for web clients, HTTP for integrations
+- **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
 - **CSRF Protection**: Automatic CSRF protection for session-based authentication
 - **Read-Only Mode**: Safe monitoring without modification capabilities (enabled by default)
@@ -25,14 +25,44 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants lik
 - **Smart Batching**: Adaptive concurrency that automatically adjusts to API rate limits
 - **TLS/HTTPS Support**: Optional TLS for secure remote access
 
+## Images
+
+### Cursor Prompt - Resource Check Demo
+
+*High‑level demonstration of using the LogicMonitor MCP server in Cursor, showing how to execute a
+LogicMonitor resource check using an MCP prompt with the argument "www.google.com" (a resource in LogicMonitor).
+The agent has knowledge about available MCP tools and uses them in a self‑correcting way:*
+
+![Cursor Prompt Resource Check](doc/cursor-prompt-resource-check.gif)
+
+### Cursor Tools
+
+*Screenshot showing the available LogicMonitor MCP tools within Cursor:*
+
+![Cursor Tools](doc/cursor-tools.png)
+
+### Grafana Assistant Tools
+
+*Screenshot showing the available LogicMonitor MCP tools within Grafana Assistant:*
+
+![Grafana Assistant Tools](doc/grafana-assistant-tools.png)
+
+### VS Code Tools
+
+*Screenshot showing the available LogicMonitor MCP tools within Visual Studio Code:*
+
+![VS Code Tools](doc/vscode-tools.png)
+
 ## Installation Options
 
-### Local LogicMonitor MCP Server
+### Local LogicMonitor MCP server
 
 Run LogicMonitor MCP Server locally with STDIO transport for Claude Desktop:
 
 [![Install with Docker in VS Code](https://img.shields.io/badge/VS%20Code-Install%20with%20Docker-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22LM_COMPANY%22%2C%22-e%22%2C%22LM_BEARER_TOKEN%22%2C%22ghcr.io%2Fmonitoringartist%2Flogicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
 [![Install with npx in VS Code](https://img.shields.io/badge/VS%20Code-Install%20with%20npx-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22logicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%7D%7D)
+[![Install with Docker in WSL in VS Code](https://img.shields.io/badge/VS%20Code-Install%20with%20Docker%20in%20WSL-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22wsl.exe%22%2C%22args%22%3A%5B%22docker%22%2C%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22LM_COMPANY%22%2C%22-e%22%2C%22LM_BEARER_TOKEN%22%2C%22ghcr.io%2Fmonitoringartist%2Flogicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%2C%22WSLENV%22%3A%22LM_COMPANY%3ALM_BEARER_TOKEN%22%7D%7D)
+[![Install with npx in WSL in VS Code](https://img.shields.io/badge/VS%20Code-Install%20with%20npx%20in%20WSL-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=company.logicmonitor.com&inputs=%5B%7B%22id%22%3A%22lm_company%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20company%2Faccount%20name%20(subdomain)%22%2C%22password%22%3Afalse%7D%2C%7B%22id%22%3A%22lm_bearer_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22LogicMonitor%20API%20Bearer%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22wsl.exe%22%2C%22args%22%3A%5B%22npx%22%2C%22-y%22%2C%22logicmonitor-mcp-server%22%5D%2C%22env%22%3A%7B%22LM_COMPANY%22%3A%22%24%7Binput%3Alm_company%7D%22%2C%22LM_BEARER_TOKEN%22%3A%22%24%7Binput%3Alm_bearer_token%7D%22%2C%22WSLENV%22%3A%22LM_COMPANY%3ALM_BEARER_TOKEN%22%7D%7D)
 [![npm](https://img.shields.io/npm/v/logicmonitor-mcp-server?logo=npm)](https://www.npmjs.com/package/logicmonitor-mcp-server)
 [![Claude Desktop](https://img.shields.io/badge/Claude-Desktop-8A6FFF)](https://claude.ai/download)
 
@@ -65,7 +95,7 @@ logicmonitor-mcp-server
 **Best for**: Personal use, Claude Desktop integration, local development
 
 
-### Example remote LogicMonitor MCP Server
+### Example Remote LogicMonitor MCP server
 
 Run LogicMonitor MCP Server remotely with SSE or HTTP transport for web-based access:
 
@@ -135,8 +165,6 @@ cp env.example .env
 # Edit .env with your credentials
 docker-compose up -d logicmonitor-mcp-http
 ```
-
-See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
 
 ### Configuration
 
@@ -320,7 +348,7 @@ These endpoints can be used by:
 - CI/CD health checks
 - APM and observability tools
 
-Note: Health check endpoints are not available with STDIO transport.
+**Note:** Health check endpoints are not available when using the STDIO transport.
 
 ### HTTPS/TLS Configuration (Secure Transport)
 
@@ -647,8 +675,6 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - **52 write tools** - Require caution (disabled by default with `--read-only`)
 - **122 total tools**
 
-For detailed tool descriptions and parameters, see the [API documentation](src/README.md).
-
 ## Security Considerations
 
 ### Authentication by Transport Mode
@@ -859,19 +885,3 @@ Contributions are welcome! Please:
 3. Make your changes
 4. Run `npm run lint` and `npm run build`
 5. Submit a pull request
-
-## Support
-
-- 🐛 [Issue Tracker](https://github.com/monitoringartist/logicmonitor-mcp-server/issues)
-
-## Related Projects
-
-- [Model Context Protocol](https://modelcontextprotocol.io/)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [LogicMonitor API Documentation](https://www.logicmonitor.com/support/rest-api-developers-guide)
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history.
-
----
