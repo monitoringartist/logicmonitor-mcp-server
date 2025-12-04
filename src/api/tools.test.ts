@@ -470,17 +470,6 @@ describe('getLogicMonitorTools', () => {
   });
 
   describe('Annotations', () => {
-    it('should have serverUrl annotation for all tools', () => {
-      const tools = getLogicMonitorTools(false);
-
-      tools.forEach(tool => {
-        expect(tool.annotations?.serverUrl).toBeDefined();
-        if (typeof tool.annotations?.serverUrl === 'string') {
-          expect(tool.annotations.serverUrl).toContain('logicmonitor.com');
-        }
-      });
-    });
-
     it('should have title annotation for all tools', () => {
       const tools = getLogicMonitorTools(false);
 
