@@ -90,7 +90,8 @@ logicmonitor-mcp-server
       "env": {
         "LM_COMPANY": "mycompany",
         "LM_BEARER_TOKEN": "your-bearer-token-here"
-      }
+      },
+      "type": "stdio"
     }
   }
 }

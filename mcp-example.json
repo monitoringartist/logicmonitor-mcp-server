@@ -1,6 +1,7 @@
 {
     "mcpServers": {
         "company.logicmonitor.com-nodejs": {
+            "transport": "stdio",
             "command": "node",
             "args": [
                 "/path/to/logicmonitor-mcp-server/build/index.js"
@@ -11,6 +12,7 @@
             }
         },
         "company.logicmonitor.com-npx": {
+            "transport": "stdio",
             "command": "npx",
             "args": [
                 "-y",
@@ -22,8 +24,8 @@
             }
         },
         "company.logicmonitor.com-remote-http": {
-            "url": "http://localhost:3000/mcp",
-            "transport": "http"
+            "transport": "http",
+            "url": "http://localhost:3000/mcp"
         }
     }
 }
