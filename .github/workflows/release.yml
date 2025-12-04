@@ -64,20 +64,106 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          DATE=$(date +%Y-%m-%d)
+          
           # Get the previous tag
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           
           if [ -z "$PREV_TAG" ]; then
             echo "First release"
-            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+            COMMITS=$(git log --pretty=format:"%s|%h" --no-merges)
           else
             echo "Changes since $PREV_TAG"
-            CHANGELOG=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+            COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s|%h" --no-merges)
           fi
           
-          # Save to file for multiline handling
-          echo "$CHANGELOG" > changelog.txt
+          # Generate categorized changelog
+          {
+            echo "## [v${VERSION}] - ${DATE}"
+            echo ""
+            
+            # Features
+            FEATURES=$(echo "$COMMITS" | grep -i "^feat" | sed 's/|/ (/;s/$/)/' | sed 's/^/- /' || true)
+            if [ -n "$FEATURES" ]; then
+              echo "### ✨ Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+            
+            # Bug Fixes
+            FIXES=$(echo "$COMMITS" | grep -i "^fix" | sed 's/|/ (/;s/$/)/' | sed 's/^/- /' || true)
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+            
+            # Documentation
+            DOCS=$(echo "$COMMITS" | grep -i "^docs" | sed 's/|/ (/;s/$/)/' | sed 's/^/- /' || true)
+            if [ -n "$DOCS" ]; then
+              echo "### 📚 Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+            
+            # Refactoring
+            REFACTOR=$(echo "$COMMITS" | grep -i "^refactor" | sed 's/|/ (/;s/$/)/' | sed 's/^/- /' || true)
+            if [ -n "$REFACTOR" ]; then
+              echo "### ♻️ Refactoring"
+              echo "$REFACTOR"
+              echo ""
+            fi
+            
+            # Other changes (not matching conventional commits)
+            OTHER=$(echo "$COMMITS" | grep -iv "^feat\|^fix\|^docs\|^refactor\|^chore\|^test\|^ci\|^style" | sed 's/|/ (/;s/$/)/' | sed 's/^/- /' || true)
+            if [ -n "$OTHER" ]; then
+              echo "### 📦 Other Changes"
+              echo "$OTHER"
+              echo ""
+            fi
+          } > changelog.txt
+          
           echo "CHANGELOG_FILE=changelog.txt" >> $GITHUB_OUTPUT
+          
+          # Display generated changelog
+          echo "Generated changelog:"
+          cat changelog.txt
+
+      - name: Update CHANGELOG.md
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          
+          # Create or prepend to CHANGELOG.md
+          if [ -f CHANGELOG.md ]; then
+            # Prepend new release to existing changelog
+            {
+              echo "# Changelog"
+              echo ""
+              cat changelog.txt
+              echo ""
+              # Remove the header from existing file and append
+              tail -n +3 CHANGELOG.md
+            } > CHANGELOG.new.md
+            mv CHANGELOG.new.md CHANGELOG.md
+          else
+            # Create new changelog
+            {
+              echo "# Changelog"
+              echo ""
+              echo "All notable changes to this project will be documented in this file."
+              echo ""
+              cat changelog.txt
+            } > CHANGELOG.md
+          fi
+
+      - name: Commit CHANGELOG.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "docs: update CHANGELOG.md for v${{ steps.version.outputs.VERSION }}"
+          git push origin HEAD:main || echo "Could not push to main, changelog will be in release only"
 
       - name: Create release archive
         run: |
