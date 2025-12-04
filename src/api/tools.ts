@@ -77,7 +77,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -107,7 +106,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get resource/device details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -154,7 +152,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Add resource/device(s)',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -270,7 +267,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update resource/device(s)',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -391,7 +387,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete resource/device(s)',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -457,7 +452,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List resource/device groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -495,7 +489,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get resource/device group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -558,7 +551,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create resource/device group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -635,7 +627,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update resource/device group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -708,7 +699,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete resource/device group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -757,7 +747,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -792,7 +781,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get alert details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -850,7 +838,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Acknowledge alert',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -914,7 +901,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Add alert note',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -954,7 +940,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List collectors',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -987,7 +972,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get collector details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1024,7 +1008,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List datasources',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1061,7 +1044,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get datasource details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1099,7 +1081,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List datasource instances',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1146,7 +1127,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get time-series metric data',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1205,7 +1185,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List dashboards',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1242,7 +1221,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get dashboard details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1307,7 +1285,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create dashboard',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1372,7 +1349,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update dashboard',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1431,7 +1407,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete dashboard',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1462,7 +1437,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Generate dashboard link',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1491,7 +1465,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Generate resource/device link',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1520,7 +1493,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Generate alert link',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1587,7 +1559,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Generate website monitor link',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1621,7 +1592,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List dashboard groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1647,7 +1617,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get dashboard group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1697,7 +1666,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List reports',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1730,7 +1698,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get report details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1770,7 +1737,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List website monitors',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1810,7 +1776,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get website monitor details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1885,7 +1850,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create website monitor',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -1958,7 +1922,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update website monitor',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2018,7 +1981,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete website monitor',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2060,7 +2022,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List website groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2086,7 +2047,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get website group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2123,7 +2083,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List users',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2161,7 +2120,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get user details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2203,7 +2161,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List roles',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2242,7 +2199,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get role details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2295,7 +2251,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get API tokens',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2341,7 +2296,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get Scheduled Down Times',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2372,7 +2326,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get Scheduled Down Time details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2417,7 +2370,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Schedule maintenance window',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2479,7 +2431,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete Scheduled Down Time',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2524,7 +2475,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List ConfigSources',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2555,7 +2505,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get ConfigSource details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2602,7 +2551,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List resource/device properties',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2670,7 +2618,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update resource/device properties',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2728,8 +2675,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List audit logs',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
-      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -2758,8 +2703,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get audit details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
-      logicmonitorUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs`,
     },
     inputSchema: {
       type: 'object',
@@ -2809,7 +2752,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List access groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2844,7 +2786,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get access group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2926,7 +2867,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create access group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -2997,7 +2937,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update access group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3079,7 +3018,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete access group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3124,7 +3062,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List resource/device datasources',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3162,7 +3099,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get resource/device datasource details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3232,7 +3168,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update resource/device datasource',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3292,7 +3227,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List EventSources',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3325,7 +3259,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get EventSource details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3367,7 +3300,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List escalation chains',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3406,7 +3338,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get escalation chain details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3500,7 +3431,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create escalation chain',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3563,7 +3493,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update escalation chain',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3644,7 +3573,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete escalation chain',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3689,7 +3617,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List alert recipients',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3721,7 +3648,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get recipient details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3801,7 +3727,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create recipient',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3862,7 +3787,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update recipient',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3926,7 +3850,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete recipient',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -3971,7 +3894,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List recipient groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4003,7 +3925,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get recipient group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4077,7 +3998,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create recipient group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4137,7 +4057,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update recipient group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4200,7 +4119,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete recipient group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4248,7 +4166,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List alert rules',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4287,7 +4204,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get alert rule details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4374,7 +4290,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create alert rule',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4455,7 +4370,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update alert rule',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4543,7 +4457,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete alert rule',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4597,7 +4510,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List OpsNotes',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4624,7 +4536,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get OpsNote details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4710,7 +4621,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create OpsNote',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4776,7 +4686,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update OpsNote',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4834,7 +4743,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete OpsNote',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4886,7 +4794,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List services',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -4922,7 +4829,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get service details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5007,7 +4913,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create service',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5071,7 +4976,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update service',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5123,7 +5027,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete service',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5165,7 +5068,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List service groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5192,7 +5094,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get service group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5250,7 +5151,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create service group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5303,7 +5203,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update service group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5358,7 +5257,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete service group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5400,7 +5298,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List report groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5427,7 +5324,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get report group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5470,7 +5366,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create report group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5508,7 +5403,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update report group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5547,7 +5441,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete report group',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5590,7 +5483,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List collector groups',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5617,7 +5509,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get collector group details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5666,7 +5557,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List resource/device group properties',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5721,7 +5611,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update resource/device group property',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5779,7 +5668,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List NetScans',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5818,7 +5706,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get NetScan details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5898,7 +5785,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create NetScan',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -5969,7 +5855,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update NetScan',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6018,7 +5903,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete NetScan',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6076,7 +5960,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List integrations',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6114,7 +5997,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get integration details',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6183,7 +6065,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Create integration',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6242,7 +6123,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Update integration',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6304,7 +6184,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Delete integration',
       readOnlyHint: false,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6355,7 +6234,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List checkpoint locations',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6399,7 +6277,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'Get network topology',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
@@ -6454,7 +6331,6 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     annotations: {
       title: 'List collector versions',
       readOnlyHint: true,
-      serverUrl: `https://${process.env.LM_COMPANY}.logicmonitor.com`,
     },
     inputSchema: {
       type: 'object',
