@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.0] - 2025-12-04
+
+### 📦 Other Changes
+- Update changelog before release (71a4007)
+- Add important pagination note to API tool documentation (a72cb91)
+- Update modelcontextprotocol/sdk to 12.4.2 (d207e47)
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
