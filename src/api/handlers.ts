@@ -936,6 +936,261 @@ export class LogicMonitorHandlers {
             args.value,
           );
 
+        case 'create_resource_property':
+          return await this.client.createDeviceProperty(args.deviceId, args.name, args.value);
+
+        case 'delete_resource_property':
+          return await this.client.deleteDeviceProperty(args.deviceId, args.propertyName);
+
+        // Device DataSource Instance write operations
+        case 'create_resource_instance':
+          return await this.client.createDeviceDataSourceInstance(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.config || {},
+          );
+
+        case 'update_resource_instance':
+          return await this.client.updateDeviceDataSourceInstance(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            args.config || {},
+            { opType: args.opType },
+          );
+
+        case 'delete_resource_instance':
+          return await this.client.deleteDeviceDataSourceInstance(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+          );
+
+        case 'get_instance_graph_data':
+          return await this.client.getDeviceDataSourceInstanceGraphData(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            args.graphId,
+            { start: args.start, end: args.end, format: args.format },
+          );
+
+        case 'get_resource_datasource_data':
+          return await this.client.getDeviceDataSourceData(
+            args.deviceId,
+            args.deviceDataSourceId,
+            {
+              period: args.period,
+              start: args.start,
+              end: args.end,
+              datapoints: args.datapoints,
+              format: args.format,
+              aggregate: args.aggregate,
+            },
+          );
+
+        // Device DataSource Instance Groups
+        case 'list_resource_instance_groups':
+          return await this.client.listDeviceDataSourceInstanceGroups(
+            args.deviceId,
+            args.deviceDataSourceId,
+            { size: args.size, offset: args.offset, filter: args.filter, fields: args.fields },
+          );
+
+        case 'get_resource_instance_group':
+          return await this.client.getDeviceDataSourceInstanceGroup(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceGroupId,
+            { fields: args.fields },
+          );
+
+        case 'create_resource_instance_group':
+          return await this.client.createDeviceDataSourceInstanceGroup(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.config || {},
+          );
+
+        case 'update_resource_instance_group':
+          return await this.client.updateDeviceDataSourceInstanceGroup(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceGroupId,
+            args.config || {},
+          );
+
+        case 'update_instance_group_alert_threshold':
+          return await this.client.updateInstanceGroupAlertThreshold(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceGroupId,
+            args.datapointId,
+            args.config || {},
+          );
+
+        case 'get_instance_group_overview_graph_data':
+          return await this.client.getDeviceDataSourceInstanceGroupOverviewGraphData(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceGroupId,
+            args.overviewGraphId,
+            { start: args.start, end: args.end, format: args.format },
+          );
+
+        // Device alert settings
+        case 'list_resource_alert_settings':
+          return await this.client.listDeviceAlertSettings(args.deviceId, {
+            start: args.start,
+            end: args.end,
+            size: args.size,
+            offset: args.offset,
+          });
+
+        case 'list_instance_alert_settings':
+          return await this.client.listDeviceInstanceAlertSettings(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            { size: args.size, offset: args.offset },
+          );
+
+        case 'get_instance_alert_setting':
+          return await this.client.getDeviceInstanceAlertSetting(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            args.alertSettingId,
+            { fields: args.fields },
+          );
+
+        case 'update_instance_alert_setting':
+          return await this.client.updateDeviceInstanceAlertSetting(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            args.alertSettingId,
+            args.config || {},
+          );
+
+        // Device ConfigSource collected configs
+        case 'list_resource_instance_configs':
+          return await this.client.listDeviceInstanceConfigs(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            { size: args.size, offset: args.offset, filter: args.filter, fields: args.fields },
+          );
+
+        case 'get_resource_instance_config':
+          return await this.client.getDeviceInstanceConfig(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            args.configId,
+            { format: args.format, startEpoch: args.startEpoch, fields: args.fields },
+          );
+
+        case 'collect_resource_instance_config':
+          return await this.client.collectDeviceInstanceConfig(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+          );
+
+        // NetFlow
+        case 'list_resource_netflow_flows':
+          return await this.client.listNetflowFlows(args.deviceId, {
+            start: args.start,
+            end: args.end,
+            netflowFilter: args.netflowFilter,
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'list_resource_netflow_ports':
+          return await this.client.listNetflowPorts(args.deviceId, {
+            ip: args.ip,
+            start: args.start,
+            end: args.end,
+            netflowFilter: args.netflowFilter,
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'list_resource_netflow_endpoints':
+          return await this.client.listNetflowEndpoints(args.deviceId, {
+            port: args.port,
+            start: args.start,
+            end: args.end,
+            netflowFilter: args.netflowFilter,
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'get_resource_top_talkers_graph':
+          return await this.client.getDeviceTopTalkersGraph(args.deviceId, {
+            start: args.start,
+            end: args.end,
+            netflowFilter: args.netflowFilter,
+            format: args.format,
+            keyword: args.keyword,
+          });
+
+        // SDT history
+        case 'get_resource_sdt_history':
+          return await this.client.getDeviceSDTHistory(args.deviceId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'get_resource_datasource_sdt_history':
+          return await this.client.getDeviceDataSourceSDTHistory(
+            args.deviceId,
+            args.deviceDataSourceId,
+            { size: args.size, offset: args.offset, filter: args.filter, fields: args.fields },
+          );
+
+        case 'get_instance_sdt_history':
+          return await this.client.getDeviceInstanceSDTHistory(
+            args.deviceId,
+            args.deviceDataSourceId,
+            args.instanceId,
+            { size: args.size, offset: args.offset, filter: args.filter, fields: args.fields },
+          );
+
+        // Device alerts / eventsources / discovery / delta
+        case 'list_resource_alerts':
+          return await this.client.listDeviceAlerts(args.deviceId, {
+            start: args.start,
+            end: args.end,
+            needMessage: args.needMessage,
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'list_resource_eventsources':
+          return await this.client.listDeviceEventSources(args.deviceId);
+
+        case 'schedule_resource_auto_discovery':
+          return await this.client.scheduleDeviceAutoDiscovery(args.deviceId);
+
+        case 'get_resources_delta_id':
+          return await this.client.getDevicesDeltaId({ deltaId: args.deltaId });
+
+        case 'get_resources_delta':
+          return await this.client.getDevicesDelta(args.deltaId);
+
         // Audit Logs
         case 'list_audit_logs': {
           // Handle query parameter - convert to filter

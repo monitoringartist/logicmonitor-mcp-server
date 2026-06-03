@@ -695,6 +695,382 @@ export class LogicMonitorClient {
     );
   }
 
+  // Device DataSource Instances - write operations
+  async createDeviceDataSourceInstance(deviceId: number, deviceDataSourceId: number, instance: any) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances`,
+      instance,
+    );
+  }
+
+  async updateDeviceDataSourceInstance(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    instance: any,
+    params?: { opType?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}`,
+      instance,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async deleteDeviceDataSourceInstance(deviceId: number, deviceDataSourceId: number, instanceId: number) {
+    return this.request<LMResponse<any>>(
+      'DELETE',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}`,
+    );
+  }
+
+  async getDeviceDataSourceInstanceGraphData(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    graphId: number,
+    params?: { start?: number; end?: number; format?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/graphs/${graphId}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceDataSourceData(
+    deviceId: number,
+    deviceDataSourceId: number,
+    params?: {
+      period?: number;
+      start?: number;
+      end?: number;
+      datapoints?: string;
+      format?: string;
+      aggregate?: string;
+    },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  // Device DataSource Instance Groups
+  async listDeviceDataSourceInstanceGroups(
+    deviceId: number,
+    deviceDataSourceId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups`;
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getDeviceDataSourceInstanceGroup(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceGroupId: number,
+    params?: { fields?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups/${instanceGroupId}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async createDeviceDataSourceInstanceGroup(deviceId: number, deviceDataSourceId: number, group: any) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups`,
+      group,
+    );
+  }
+
+  async updateDeviceDataSourceInstanceGroup(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceGroupId: number,
+    group: any,
+  ) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups/${instanceGroupId}`,
+      group,
+    );
+  }
+
+  async updateInstanceGroupAlertThreshold(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceGroupId: number,
+    datapointId: number,
+    config: any,
+  ) {
+    return this.request<LMResponse<any>>(
+      'PUT',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups/${instanceGroupId}/datapoints/${datapointId}/alertconfig`,
+      config,
+    );
+  }
+
+  async getDeviceDataSourceInstanceGroupOverviewGraphData(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceGroupId: number,
+    overviewGraphId: number,
+    params?: { start?: number; end?: number; format?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/groups/${instanceGroupId}/graphs/${overviewGraphId}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  // Device DataSource Instance Alert Settings
+  async listDeviceAlertSettings(
+    deviceId: number,
+    params?: { start?: number; end?: number; size?: number; offset?: number },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/alertsettings`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async listDeviceInstanceAlertSettings(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    params?: { size?: number; offset?: number },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/alertsettings`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceInstanceAlertSetting(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    alertSettingId: number,
+    params?: { fields?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/alertsettings/${alertSettingId}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async updateDeviceInstanceAlertSetting(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    alertSettingId: number,
+    setting: any,
+  ) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/alertsettings/${alertSettingId}`,
+      setting,
+    );
+  }
+
+  // Device ConfigSource collected configs
+  async listDeviceInstanceConfigs(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/config`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceInstanceConfig(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    configId: string,
+    params?: { format?: string; startEpoch?: number; fields?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/config/${encodeURIComponent(configId)}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async collectDeviceInstanceConfig(deviceId: number, deviceDataSourceId: number, instanceId: number) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/config/configCollection`,
+    );
+  }
+
+  // Netflow
+  async listNetflowFlows(
+    deviceId: number,
+    params?: { start?: number; end?: number; netflowFilter?: string; size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/flows`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async listNetflowPorts(
+    deviceId: number,
+    params?: { ip?: string; start?: number; end?: number; netflowFilter?: string; size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/ports`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async listNetflowEndpoints(
+    deviceId: number,
+    params?: { port?: string; start?: number; end?: number; netflowFilter?: string; size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/endpoints`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceTopTalkersGraph(
+    deviceId: number,
+    params?: { start?: number; end?: number; netflowFilter?: string; format?: string; keyword?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/topTalkersGraph`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  // SDT history
+  async getDeviceSDTHistory(
+    deviceId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/historysdts`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceDataSourceSDTHistory(
+    deviceId: number,
+    deviceDataSourceId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/historysdts`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getDeviceInstanceSDTHistory(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}/historysdts`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  // Device properties (write)
+  async createDeviceProperty(deviceId: number, name: string, value: string) {
+    return this.request<LMResponse<any>>('POST', `/device/devices/${deviceId}/properties`, { name, value });
+  }
+
+  async deleteDeviceProperty(deviceId: number, propertyName: string) {
+    return this.request<LMResponse<any>>(
+      'DELETE',
+      `/device/devices/${deviceId}/properties/${encodeURIComponent(propertyName)}`,
+    );
+  }
+
+  // Device alerts / eventsources / discovery / delta
+  async listDeviceAlerts(
+    deviceId: number,
+    params?: {
+      start?: number;
+      end?: number;
+      needMessage?: boolean;
+      size?: number;
+      offset?: number;
+      filter?: string;
+      fields?: string;
+    },
+  ) {
+    return this.request<LMListResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/alerts`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async listDeviceEventSources(deviceId: number) {
+    return this.request<LMListResponse<any>>('GET', `/device/devices/${deviceId}/deviceeventsources`);
+  }
+
+  async scheduleDeviceAutoDiscovery(deviceId: number) {
+    return this.request<LMResponse<any>>('POST', `/device/devices/${deviceId}/scheduleAutoDiscovery`);
+  }
+
+  async getDevicesDeltaId(params?: { deltaId?: string }) {
+    return this.request<LMResponse<any>>('GET', '/device/devices/delta', undefined, this.cleanParams(params || {}));
+  }
+
+  async getDevicesDelta(deltaId: string) {
+    return this.request<LMResponse<any>>('GET', `/device/devices/delta/${encodeURIComponent(deltaId)}`);
+  }
+
   // Dashboards
   async listDashboards(params?: {
     size?: number;

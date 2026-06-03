@@ -1,556 +1,689 @@
 # LogicMonitor API Coverage Analysis
 
-**Analysis Date:** November 1, 2025  
-**API Specification:** [LogicMonitor Swagger v3](https://www.logicmonitor.com/swagger-ui-master/api-v3/dist/swagger.json)
+**API Specification:** [LogicMonitor Swagger v3](https://www.logicmonitor.com/swagger-ui-master/api-v3/dist/swagger.json)  
+**Method:** Every operation in the Swagger spec is mapped to an implemented MCP tool (by endpoint + HTTP verb). "Missing" rows below are the exact operations still needed for 100% coverage.
 
 ## Executive Summary
 
 | Metric | Value |
 |--------|-------|
-| **Total API Operations** | 336 |
-| **Implemented Tools** | 155 |
-| **Coverage** | **46%** |
-| **Custom Enhancements** | 4 link tools |
+| **Total API Operations** | 393 |
+| **Operations Covered** | 190 |
+| **Operations Missing** | 203 |
+| **Coverage** | **48%** |
+| **Implemented MCP Tools** | 184 (+4 custom link tools) |
+
+> **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
 ---
 
-## ✅ Well-Covered Areas
+## 📊 Coverage at a Glance
 
-### Devices/Resources ⭐ COMPLETE
-**Status:** Fully implemented with custom enhancements
-
-**Implemented:**
-- ✅ List, Get, Create, Update, Delete devices
-- ✅ Device Groups (List, Get, Create, Update, Delete)
-- ✅ Device Properties (List, Update)
-- ✅ Device DataSources (List, Get, Update)
-- ✅ Device Instances (List, Get Data)
-- ✅ Search devices
-- ✅ **Generate resource links** (custom addition)
-
-**Tools:** `list_resources`, `get_resource`, `create_resource`, `update_resource`, `delete_resource`, `list_resource_groups`, `get_resource_group`, `create_resource_group`, `update_resource_group`, `delete_resource_group`, `list_resource_properties`, `update_resource_property`, `list_resource_datasources`, `get_resource_datasource`, `update_resource_datasource`, `list_resource_instances`, `get_resource_instance_data`, `search_resources`, `generate_resource_link`
-
----
-
-### Alerts ⭐ COMPLETE
-**Status:** Fully implemented with custom enhancements
-
-**Implemented:**
-- ✅ List, Get alerts
-- ✅ Acknowledge alerts, Add notes
-- ✅ Alert Rules (List, Get, Create, Update, Delete)
-- ✅ Search alerts
-- ✅ **Generate alert links** (custom addition)
-
-**Tools:** `list_alerts`, `get_alert`, `acknowledge_alert`, `add_alert_note`, `list_alert_rules`, `get_alert_rule`, `create_alert_rule`, `update_alert_rule`, `delete_alert_rule`, `search_alerts`, `generate_alert_link`
-
----
-
-### Dashboards ⭐ COMPLETE
-**Status:** Core features and widget operations implemented
-
-**Implemented:**
-- ✅ List, Get, Create, Update, Delete dashboards
-- ✅ Dashboard Groups (List, Get)
-- ✅ **Generate dashboard links** (custom addition)
-- ✅ Widget operations
-  - `getWidgetList` → `list_widgets`
-  - `getWidgetListByDashboardId` → `list_dashboard_widgets`
-  - `getWidgetById` → `get_widget`
-  - `getWidgetDataById` → `get_widget_data`
-  - `addWidget` → `create_widget`
-  - `updateWidgetById` / `patchWidgetById` → `update_widget`
-  - `deleteWidgetById` → `delete_widget`
-
-**Tools:** `list_dashboards`, `get_dashboard`, `create_dashboard`, `update_dashboard`, `delete_dashboard`, `list_dashboard_groups`, `get_dashboard_group`, `generate_dashboard_link`, `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data`, `create_widget`, `update_widget`, `delete_widget`
-
----
-
-### Collectors ⭐ COMPLETE
-**Status:** Read and core write operations implemented
-
-**Implemented:**
-- ✅ List, Get collectors
-- ✅ Add, Update/Patch, Delete collectors
-- ✅ Get collector installer (returns authenticated download URL)
-- ✅ Acknowledge collector down alert
-- ✅ Collector Groups (List, Get)
-- ✅ Collector Versions (List)
-
-**Tools:** `list_collectors`, `get_collector`, `create_collector`, `update_collector`, `delete_collector`, `get_collector_installer`, `acknowledge_collector_down_alert`, `list_collector_groups`, `get_collector_group`, `list_collector_versions`
+| Category | Covered | Total | Status |
+|----------|:-------:|:-----:|:------:|
+| Alert Automation — Action Chains & Rules | 0 | 14 | ❌ None |
+| Log Pipelines / Log Alerts | 0 | 13 | ❌ None |
+| Log Query Groups | 0 | 9 | ❌ None |
+| DiagnosticSources | 0 | 8 | ❌ None |
+| Job Monitors (BatchJobs) | 0 | 8 | ❌ None |
+| Log Partitions | 0 | 8 | ❌ None |
+| AppliesTo Functions | 0 | 7 | ❌ None |
+| LogSources | 0 | 7 | ❌ None |
+| PropertySources / Property Rules | 0 | 7 | ❌ None |
+| RemediationSources | 0 | 7 | ❌ None |
+| SNMP OIDs | 0 | 7 | ❌ None |
+| Tracked Query Groups | 0 | 6 | ❌ None |
+| AWS Cloud Onboarding | 0 | 4 | ❌ None |
+| Azure Cloud Onboarding | 0 | 3 | ❌ None |
+| Collector Debug Commands | 0 | 2 | ❌ None |
+| Default Dashboard (user data) | 0 | 2 | ❌ None |
+| Diagnostic Remediation | 0 | 2 | ❌ None |
+| Metrics (Push/Usage) | 0 | 2 | ❌ None |
+| API Usage Stats | 0 | 1 | ❌ None |
+| Bulk Instance Data Fetch | 0 | 1 | ❌ None |
+| Contract / Usage Info | 0 | 1 | ❌ None |
+| DNS Mappings | 0 | 1 | ❌ None |
+| GCP Cloud Onboarding | 0 | 1 | ❌ None |
+| Instance Graph Data (by instance id) | 0 | 1 | ❌ None |
+| Integration Audit Logs | 0 | 1 | ❌ None |
+| LogicModule Metadata | 0 | 1 | ❌ None |
+| SaaS Account | 0 | 1 | ❌ None |
+| Unmonitored Devices | 0 | 1 | ❌ None |
+| Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
+| Collector Groups & Agent Log Levels | 11 | 21 | 🟡 Partial |
+| DataSource Management (write/import) | 2 | 12 | 🟡 Partial |
+| Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
+| Website Groups (write) | 2 | 9 | 🟡 Partial |
+| Dashboard Groups (write) | 2 | 7 | 🟡 Partial |
+| TopologySources (write) | 2 | 7 | 🟡 Partial |
+| Roles (write) | 2 | 6 | 🟡 Partial |
+| ConfigSource extras | 7 | 9 | 🟡 Partial |
+| Report Execution | 6 | 8 | 🟡 Partial |
+| Website extras | 11 | 13 | 🟡 Partial |
+| Access Group Module Mapping | 6 | 7 | 🟡 Partial |
+| Alerts | 4 | 5 | 🟡 Partial |
+| EventSource extras | 7 | 8 | 🟡 Partial |
+| Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
+| Audit / Access Logs | 2 | 2 | ✅ Full |
+| Cost Optimization | 3 | 3 | ✅ Full |
+| Dashboard Widgets | 7 | 7 | ✅ Full |
+| Dashboards | 7 | 7 | ✅ Full |
+| Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
+| NetScans | 6 | 6 | ✅ Full |
+| Ops Notes | 6 | 6 | ✅ Full |
+| Recipient Groups | 6 | 6 | ✅ Full |
+| Report Groups | 6 | 6 | ✅ Full |
+| Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
+| Website Checkpoints | 1 | 1 | ✅ Full |
 
 ---
 
-### Websites ⭐ COMPLETE
-**Status:** Fully implemented with custom enhancements
+## 🔴 What's Still Missing (Prioritized)
 
-**Implemented:**
-- ✅ List, Get, Create, Update, Delete websites
-- ✅ Website Groups (List, Get)
-- ✅ Website Checkpoints (List)
-- ✅ Get checkpoint data
-- ✅ Get website graph data
-- ✅ **Generate website links** (custom addition)
+Grouped by impact. Each item links to its detailed operation list below.
 
-**Tools:** `list_websites`, `get_website`, `create_website`, `update_website`, `delete_website`, `list_website_groups`, `get_website_group`, `list_website_checkpoints`, `get_website_checkpoint_data`, `get_website_graph_data`, `generate_website_link`
+### 🔴 HIGH Priority — 62 operations
 
----
+*Core monitoring & configuration management — highest user value*
 
-### Configuration Management ⭐ COMPLETE
-**Status:** Fully implemented
+- **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
+- **Alert Automation — Action Chains & Rules** — 14 missing. Tools to add: action-chain and action-rule CRUD + status tools
+- **DataSource Management (write/import)** — 10 missing. Tools to add: datasource CRUD, import (xml/json), ographs, associated devices tools
+- **PropertySources / Property Rules** — 7 missing. Tools to add: property-rule CRUD + import tools
+- **LogSources** — 7 missing. Tools to add: logsource CRUD + import tools
+- **Dashboard Groups (write)** — 5 missing. Tools to add: `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
 
-**Implemented:**
-- ✅ Users (List, Get)
-- ✅ Roles (List, Get)
-- ✅ API Tokens (List)
-- ✅ Access Groups (List, Get, Create, Update, Delete)
-- ✅ Escalation Chains (List, Get, Create, Update, Delete)
-- ✅ Recipients & Recipient Groups (full CRUD)
+### 🟡 MEDIUM Priority — 77 operations
 
-**Tools:** `list_users`, `get_user`, `list_roles`, `get_role`, `list_api_tokens`, `list_access_groups`, `get_access_group`, `create_access_group`, `update_access_group`, `delete_access_group`, `list_escalation_chains`, `get_escalation_chain`, `create_escalation_chain`, `update_escalation_chain`, `delete_escalation_chain`, `list_recipients`, `get_recipient`, `create_recipient`, `update_recipient`, `delete_recipient`, `list_recipient_groups`, `get_recipient_group`, `create_recipient_group`, `update_recipient_group`, `delete_recipient_group`
+*Administration, automation modules, and infrastructure completeness*
 
----
+- **Collector Groups & Agent Log Levels** — 10 missing. Tools to add: collector-group CRUD, agent-log-level, events/status tools
+- **Job Monitors (BatchJobs)** — 8 missing. Tools to add: job-monitor CRUD + import tools
+- **DiagnosticSources** — 8 missing. Tools to add: diagnostic-source CRUD + import + execute tools
+- **Users & API Tokens (write)** — 8 missing. Tools to add: admin CRUD and API-token CRUD tools
+- **AppliesTo Functions** — 7 missing. Tools to add: applies-to-function CRUD + import tools
+- **SNMP OIDs** — 7 missing. Tools to add: oid CRUD + import tools
+- **RemediationSources** — 7 missing. Tools to add: remediation-source CRUD + execute tools
+- **Website Groups (write)** — 7 missing. Tools to add: website-group CRUD + SDT-list tools
+- **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
+- **Roles (write)** — 4 missing. Tools to add: `create_role`, `update_role`, `delete_role`
+- **Report Execution** — 2 missing. Tools to add: `generate_report`, `get_report_task_result`
+- **Collector Debug Commands** — 2 missing. Tools to add: `execute_debug_command`, `get_debug_command_result`
+- **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
+- **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
 
-### DataSources ⚠️ BASIC
-**Status:** Read-only, management operations missing
+### 🟢 LOW Priority — 64 operations
 
-**Implemented:**
-- ✅ List, Get datasources
+*Niche, cloud-onboarding, and rarely-scripted endpoints*
 
-**Missing:**
-- ❌ Add, Update, Patch, Delete datasources (4 operations)
-- ❌ Import/Export datasources (XML/JSON) (2 operations)
-- ❌ Get overview graphs (2 operations)
-- ❌ Get associated devices (1 operation)
-- ❌ Get update reasons (1 operation)
-
-**Tools:** `list_datasources`, `get_datasource`
-
----
-
-### Monitoring Resources ⭐ COMPLETE
-**Status:** Read and write operations implemented
-
-**Implemented:**
-- ✅ ConfigSources (List, Get, Add, Update, Delete, Import JSON/XML)
-- ✅ EventSources (List, Get, Add, Update, Delete, Import JSON/XML)
-- ✅ SDTs (List, Get, Create Device SDT, Create any-type SDT, Update, Delete)
-
-**Notes:**
-- "Export" is served by `get_configsource` / `get_eventsource`, which return the full module definition (there is no dedicated export endpoint in the API).
-
-**Tools:** `list_configsources`, `get_configsource`, `create_configsource`, `update_configsource`, `delete_configsource`, `import_configsource`, `list_eventsources`, `get_eventsource`, `create_eventsource`, `update_eventsource`, `delete_eventsource`, `import_eventsource`, `list_sdts`, `get_sdt`, `create_resource_sdt`, `create_sdt`, `update_sdt`, `delete_sdt`
-
----
-
-### Reports ⭐ COMPLETE
-**Status:** Read and write operations implemented
-
-**Implemented:**
-- ✅ List, Get, Create, Update, Delete reports
-- ✅ Report Groups (List, Get, Create, Update, Delete)
-
-**Tools:** `list_reports`, `get_report`, `create_report`, `update_report`, `delete_report`, `list_report_groups`, `get_report_group`, `create_report_group`, `update_report_group`, `delete_report_group`
+- **Log Pipelines / Log Alerts** — 13 missing. Tools to add: log-alert and log-alert-group CRUD tools
+- **Log Query Groups** — 9 missing. Tools to add: log query group CRUD tools
+- **Log Partitions** — 8 missing. Tools to add: log partition CRUD tools
+- **Tracked Query Groups** — 6 missing. Tools to add: tracked-query-group CRUD tools
+- **AWS Cloud Onboarding** — 4 missing. Tools to add: cloud account test/verify tools
+- **Azure Cloud Onboarding** — 3 missing. Tools to add: cloud account test/verify tools
+- **ConfigSource extras** — 2 missing. Tools to add: `get_configsource_update_reasons`, `import_configsource_json`
+- **Website extras** — 2 missing. Tools to add: `get_website_sdt_history`, `get_website_graph_by_name`
+- **Diagnostic Remediation** — 2 missing. Tools to add: diagnostic remediation listing tools
+- **Metrics (Push/Usage)** — 2 missing. Tools to add: `get_metrics_summary`, `get_metrics_usage`
+- **Default Dashboard (user data)** — 2 missing. Tools to add: `update_default_dashboard`
+- **Alerts** — 1 missing. Tools to add: `escalate_alert`
+- **Access Group Module Mapping** — 1 missing. Tools to add: `map_unmap_module_to_access_group`
+- **Integration Audit Logs** — 1 missing. Tools to add: `get_integration_audit_logs`
+- **GCP Cloud Onboarding** — 1 missing. Tools to add: `test_gcp_account`
+- **API Usage Stats** — 1 missing. Tools to add: `get_external_api_stats`
+- **LogicModule Metadata** — 1 missing. Tools to add: `get_logicmodule_metadata`
+- **Unmonitored Devices** — 1 missing. Tools to add: `list_unmonitored_devices`
+- **EventSource extras** — 1 missing. Tools to add: `import_eventsource_json`
+- **Contract / Usage Info** — 1 missing. Tools to add: `get_contract_info`
+- **DNS Mappings** — 1 missing. Tools to add: `add_dns_mapping`
+- **SaaS Account** — 1 missing. Tools to add: `test_saas_account`
 
 ---
 
-### Services & Business Logic ⭐ COMPLETE
-**Status:** Fully implemented
+## 🔍 Gap Detail by Category
 
-**Implemented:**
-- ✅ Services (List, Get, Create, Update, Delete)
-- ✅ Service Groups (List, Get, Create, Update, Delete)
+Only operations **not yet implemented** are listed. Categories that are 100% covered are in [Fully Covered Areas](#-fully-covered-areas).
 
-**Tools:** `list_services`, `get_service`, `create_service`, `update_service`, `delete_service`, `list_service_groups`, `get_service_group`, `create_service_group`, `update_service_group`, `delete_service_group`
+### 🔴 Device Groups — datasource alert settings, cluster, properties
+
+**Coverage:** 10/29 operations.  **Proposed tools:** group datasource/alert-setting, cluster-alert, property CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
+| `DELETE` | `deleteDeviceGroupPropertyByName` | `/device/groups/{gid}/properties/{name}` |
+| `GET` | `getAlertListByDeviceGroupId` | `/device/groups/{id}/alerts` |
+| `GET` | `getDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
+| `GET` | `getDeviceGroupClusterAlertConfList` | `/device/groups/{deviceGroupId}/clusterAlertConf` |
+| `GET` | `getDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
+| `GET` | `getDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
+| `GET` | `getDeviceGroupDatasourceList` | `/device/groups/{deviceGroupId}/datasources` |
+| `GET` | `getDeviceGroupSDTList` | `/device/groups/{id}/sdts` |
+| `GET` | `getSDTHistoryByDeviceGroupId` | `/device/groups/{id}/historysdts` |
+| `PATCH` | `patchDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
+| `PATCH` | `patchDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
+| `PATCH` | `patchDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
+| `PATCH` | `patchDeviceGroupPropertyByName` | `/device/groups/{gid}/properties/{name}` |
+| `POST` | `addDeviceGroupClusterAlertConf` | `/device/groups/{deviceGroupId}/clusterAlertConf` |
+| `POST` | `addDeviceGroupProperty` | `/device/groups/{gid}/properties` |
+| `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
+| `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
+| `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
+
+### 🔴 Alert Automation — Action Chains & Rules
+
+**Coverage:** 0/14 operations.  **Proposed tools:** action-chain and action-rule CRUD + status tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteActionChainById` | `/setting/action/chains/{id}` |
+| `DELETE` | `deleteActionRuleById` | `/setting/action/rules/{id}` |
+| `GET` | `getActionChainById` | `/setting/action/chains/{id}` |
+| `GET` | `getActionChainsList` | `/setting/action/chains` |
+| `GET` | `getActionRuleById` | `/setting/action/rules/{id}` |
+| `GET` | `getActionRulesList` | `/setting/action/rules` |
+| `PATCH` | `patchActionChainById` | `/setting/action/chains/{id}` |
+| `PATCH` | `patchActionRuleById` | `/setting/action/rules/{id}` |
+| `PATCH` | `patchActionRuleStatusById` | `/setting/action/rules/{id}/status` |
+| `POST` | `addActionChain` | `/setting/action/chains` |
+| `POST` | `addActionRule` | `/setting/action/rules` |
+| `PUT` | `updateActionChainById` | `/setting/action/chains/{id}` |
+| `PUT` | `updateActionRuleById` | `/setting/action/rules/{id}` |
+| `PUT` | `updateActionRuleStatusById` | `/setting/action/rules/{id}/status` |
+
+### 🔴 DataSource Management (write/import)
+
+**Coverage:** 2/12 operations.  **Proposed tools:** datasource CRUD, import (xml/json), ographs, associated devices tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteDatasourceById` | `/setting/datasources/{id}` |
+| `GET` | `getAssociatedDeviceListByDataSourceId` | `/setting/datasources/{id}/devices` |
+| `GET` | `getDataSourceOverviewGraphById` | `/setting/datasources/{dsId}/ographs/{id}` |
+| `GET` | `getDataSourceOverviewGraphList` | `/setting/datasources/{dsId}/ographs` |
+| `GET` | `getUpdateReasonListByDataSourceId` | `/setting/datasources/{id}/updatereasons` |
+| `PATCH` | `patchDatasourceById` | `/setting/datasources/{id}` |
+| `POST` | `addDatasourceById` | `/setting/datasources` |
+| `POST` | `importDataSource` | `/setting/datasources/importxml` |
+| `POST` | `importDataSourceJson` | `/setting/datasources/importjson` |
+| `PUT` | `updateDatasourceById` | `/setting/datasources/{id}` |
+
+### 🔴 PropertySources / Property Rules
+
+**Coverage:** 0/7 operations.  **Proposed tools:** property-rule CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deletePropertyRule` | `/setting/propertyrules/{id}` |
+| `GET` | `getPropertyRulesById` | `/setting/propertyrules/{id}` |
+| `GET` | `getPropertyRulesList` | `/setting/propertyrules` |
+| `PATCH` | `patchPropertyRule` | `/setting/propertyrules/{id}` |
+| `POST` | `addPropertyRule` | `/setting/propertyrules` |
+| `POST` | `importPropertySourceJson` | `/setting/propertyrules/importjson` |
+| `PUT` | `updatePropertyRule` | `/setting/propertyrules/{id}` |
+
+### 🔴 LogSources
+
+**Coverage:** 0/7 operations.  **Proposed tools:** logsource CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteLogSource` | `/setting/logsources/{id}` |
+| `GET` | `getLogSourceById` | `/setting/logsources/{id}` |
+| `GET` | `getLogSourceList` | `/setting/logsources` |
+| `PATCH` | `patchLogSource` | `/setting/logsources/{id}` |
+| `POST` | `addLogSource` | `/setting/logsources` |
+| `POST` | `importLogSourceJson` | `/setting/logsources/importjson` |
+| `PUT` | `updateLogSource` | `/setting/logsources/{id}` |
+
+### 🔴 Dashboard Groups (write)
+
+**Coverage:** 2/7 operations.  **Proposed tools:** `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteDashboardGroupById` | `/dashboard/groups/{id}` |
+| `PATCH` | `patchDashboardGroupById` | `/dashboard/groups/{id}` |
+| `POST` | `addDashboardGroup` | `/dashboard/groups` |
+| `POST` | `addDashboardGroupAsynchronously` | `/dashboard/groups/{id}/asyncclone` |
+| `PUT` | `updateDashboardGroupById` | `/dashboard/groups/{id}` |
+
+### 🟡 Collector Groups & Agent Log Levels
+
+**Coverage:** 11/21 operations.  **Proposed tools:** collector-group CRUD, agent-log-level, events/status tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteCollectorGroupById` | `/setting/collector/groups/{id}` |
+| `GET` | `getCollectorAgentLogLevelByComponent` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
+| `GET` | `getCollectorAgentLogLevels` | `/setting/collector/collectors/{id}/agentloglevels` |
+| `GET` | `getCollectorEvents` | `/setting/collector/collectors/{collectorId}/events` |
+| `GET` | `getCollectorStatusCheck` | `/setting/collector/collectors/{collectorId}/services/getStatusCheck` |
+| `PATCH` | `patchCollectorAgentLogLevel` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
+| `PATCH` | `patchCollectorGroupById` | `/setting/collector/groups/{id}` |
+| `POST` | `addCollectorGroup` | `/setting/collector/groups` |
+| `PUT` | `updateCollectorAgentLogLevel` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
+| `PUT` | `updateCollectorGroupById` | `/setting/collector/groups/{id}` |
+
+### 🟡 Job Monitors (BatchJobs)
+
+**Coverage:** 0/8 operations.  **Proposed tools:** job-monitor CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteJobMonitor` | `/setting/batchjobs/{id}` |
+| `GET` | `getJobMonitorById` | `/setting/batchjobs/{id}` |
+| `GET` | `getJobMonitorList` | `/setting/batchjobs` |
+| `PATCH` | `patchJobMonitor` | `/setting/batchjobs/{id}` |
+| `POST` | `addJobMonitor` | `/setting/batchjobs` |
+| `POST` | `importBatchJob` | `/setting/batchjobs/importxml` |
+| `POST` | `importJobMonitorJson` | `/setting/batchjobs/importjson` |
+| `PUT` | `updateJobMonitor` | `/setting/batchjobs/{id}` |
+
+### 🟡 DiagnosticSources
+
+**Coverage:** 0/8 operations.  **Proposed tools:** diagnostic-source CRUD + import + execute tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
+| `GET` | `getDiagnosticSourcesById` | `/setting/diagnosticsources/{id}` |
+| `GET` | `getDiagnosticSourcesList` | `/setting/diagnosticsources` |
+| `PATCH` | `patchDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
+| `POST` | `addDiagnosticSource` | `/setting/diagnosticsources` |
+| `POST` | `executeDiagnosticsManually` | `/setting/diagnosticsources/executemanually` |
+| `POST` | `importDiagnosticSourceJson` | `/setting/diagnosticsources/importjson` |
+| `PUT` | `updateDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
+
+### 🟡 Users & API Tokens (write)
+
+**Coverage:** 4/12 operations.  **Proposed tools:** admin CRUD and API-token CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteAdminById` | `/setting/admins/{id}` |
+| `DELETE` | `deleteApiTokenById` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
+| `PATCH` | `patchAdminById` | `/setting/admins/{id}` |
+| `PATCH` | `patchApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
+| `POST` | `addAdmin` | `/setting/admins` |
+| `POST` | `addApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens` |
+| `PUT` | `updateAdminById` | `/setting/admins/{id}` |
+| `PUT` | `updateApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
+
+### 🟡 AppliesTo Functions
+
+**Coverage:** 0/7 operations.  **Proposed tools:** applies-to-function CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteAppliesToFunctionById` | `/setting/functions/{id}` |
+| `GET` | `getAppliesToFunctionById` | `/setting/functions/{id}` |
+| `GET` | `getAppliesToFunctionList` | `/setting/functions` |
+| `PATCH` | `patchAppliesToFunction` | `/setting/functions/{id}` |
+| `POST` | `addAppliesToFunction` | `/setting/functions` |
+| `POST` | `importAppliesToFunctionJson` | `/setting/functions/importjson` |
+| `PUT` | `updateAppliesToFunction` | `/setting/functions/{id}` |
+
+### 🟡 SNMP OIDs
+
+**Coverage:** 0/7 operations.  **Proposed tools:** oid CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteOID` | `/setting/oids/{id}` |
+| `GET` | `getOIDList` | `/setting/oids` |
+| `GET` | `getOidById` | `/setting/oids/{id}` |
+| `PATCH` | `patchOID` | `/setting/oids/{id}` |
+| `POST` | `addOid` | `/setting/oids` |
+| `POST` | `importOidJson` | `/setting/oids/importjson` |
+| `PUT` | `updateOID` | `/setting/oids/{id}` |
+
+### 🟡 RemediationSources
+
+**Coverage:** 0/7 operations.  **Proposed tools:** remediation-source CRUD + execute tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteRemediationSourceById` | `/setting/remediationsources/{id}` |
+| `GET` | `getRemediationSourcesById` | `/setting/remediationsources/{id}` |
+| `GET` | `getRemediationSourcesList` | `/setting/remediationsources` |
+| `PATCH` | `patchRemediationSourceById` | `/setting/remediationsources/{id}` |
+| `POST` | `addRemediationSource` | `/setting/remediationsources` |
+| `POST` | `executeRemediationManually` | `/setting/remediationsources/executemanually` |
+| `PUT` | `updateRemediationSourceById` | `/setting/remediationsources/{id}` |
+
+### 🟡 Website Groups (write)
+
+**Coverage:** 2/9 operations.  **Proposed tools:** website-group CRUD + SDT-list tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteWebsiteGroupById` | `/website/groups/{id}` |
+| `GET` | `getAllSDTListByWebsiteGroupId` | `/website/groups/{id}/sdts` |
+| `GET` | `getImmediateWebsiteListByWebsiteGroupId` | `/website/groups/{id}/websites` |
+| `GET` | `getSDTHistoryByWebsiteGroupId` | `/website/groups/{id}/historysdts` |
+| `PATCH` | `patchWebsiteGroupById` | `/website/groups/{id}` |
+| `POST` | `addWebsiteGroup` | `/website/groups` |
+| `PUT` | `updateWebsiteGroupById` | `/website/groups/{id}` |
+
+### 🟡 TopologySources (write)
+
+**Coverage:** 2/7 operations.  **Proposed tools:** topology-source CRUD + import tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteTopologySource` | `/setting/topologysources/{id}` |
+| `PATCH` | `patchTopologySource` | `/setting/topologysources/{id}` |
+| `POST` | `addTopologySource` | `/setting/topologysources` |
+| `POST` | `importTopologySourceJson` | `/setting/topologysources/importjson` |
+| `PUT` | `updateTopologySource` | `/setting/topologysources/{id}` |
+
+### 🟡 Roles (write)
+
+**Coverage:** 2/6 operations.  **Proposed tools:** `create_role`, `update_role`, `delete_role`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteRoleById` | `/setting/roles/{id}` |
+| `PATCH` | `patchRoleById` | `/setting/roles/{id}` |
+| `POST` | `addRole` | `/setting/roles` |
+| `PUT` | `updateRoleById` | `/setting/roles/{id}` |
+
+### 🟡 Report Execution
+
+**Coverage:** 6/8 operations.  **Proposed tools:** `generate_report`, `get_report_task_result`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `fetchReportUsingTaskId` | `/report/reports/{id}/tasks/{taskId}` |
+| `POST` | `generateReportById` | `/report/reports/{id}/executions` |
+
+### 🟡 Collector Debug Commands
+
+**Coverage:** 0/2 operations.  **Proposed tools:** `execute_debug_command`, `get_debug_command_result`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getDebugCommandResult` | `/debug/{id}` |
+| `POST` | `executeDebugCommand` | `/debug` |
+
+### 🟡 Bulk Instance Data Fetch
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `fetch_instances_data`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `fetchDeviceInstancesData` | `/device/instances/datafetch` |
+
+### 🟡 Instance Graph Data (by instance id)
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `get_instance_graph_data`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getDeviceInstanceGraphDataOnlyByInstanceId` | `/device/devicedatasourceinstances/{instanceId}/graphs/{graphId}/data` |
+
+### 🟢 Log Pipelines / Log Alerts
+
+**Coverage:** 0/13 operations.  **Proposed tools:** log-alert and log-alert-group CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteLogAlertGroup` | `/logpipelines/{pipelineId}` |
+| `DELETE` | `deleteLogAlertsById` | `/logpipelines/processors/{processorId}` |
+| `GET` | `getLogAlertGroupById` | `/logpipelines/{pipelineId}` |
+| `GET` | `getLogAlertGroupsList` | `/logpipelines` |
+| `GET` | `getLogAlerts` | `/logpipelines/processors` |
+| `GET` | `getLogAlertsById` | `/logpipelines/processors/{processorId}` |
+| `PATCH` | `patchLogAlertGroup` | `/logpipelines/{pipelineId}` |
+| `PATCH` | `patchLogAlerts` | `/logpipelines/processors/{processorId}` |
+| `POST` | `addLogAlertGroup` | `/logpipelines` |
+| `POST` | `addLogAlerts` | `/logpipelines/processors` |
+| `PUT` | `updateDisableLogAlerts` | `/logpipelines/processors/{processorId}/{action}` |
+| `PUT` | `updateLogAlertGroup` | `/logpipelines/{pipelineId}` |
+| `PUT` | `updateLogAlerts` | `/logpipelines/processors/{processorId}` |
+
+### 🟢 Log Query Groups
+
+**Coverage:** 0/9 operations.  **Proposed tools:** log query group CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteLogQueryGroup` | `/log/logquerygroups/{id}` |
+| `GET` | `getLogQueriesByGroupId` | `/log/logquerygroups/{id}/logqueries` |
+| `GET` | `getLogQueryGroupById` | `/log/logquerygroups/{id}` |
+| `GET` | `getLogQueryGroupList` | `/log/logquerygroups` |
+| `GET` | `getLogQueryGroupListByGroupType` | `/log/logquerygroups/grouptype/{groupType}` |
+| `PATCH` | `patchLogQueryGroup` | `/log/logquerygroups/{id}` |
+| `POST` | `addLogQueryGroup` | `/log/logquerygroups` |
+| `POST` | `moveLogQueries` | `/log/logquerygroups/{id}/move` |
+| `PUT` | `updateLogQueryGroup` | `/log/logquerygroups/{id}` |
+
+### 🟢 Log Partitions
+
+**Coverage:** 0/8 operations.  **Proposed tools:** log partition CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteLogPartitionById` | `/log/partitions/{id}` |
+| `GET` | `getAllLogPartitions` | `/log/partitions` |
+| `GET` | `getPartitionById` | `/log/partitions/{id}` |
+| `GET` | `getRetentionList` | `/log/partitions/retentions` |
+| `PATCH` | `patchLogPartition` | `/log/partitions/{id}` |
+| `POST` | `createLogPartition` | `/log/partitions` |
+| `POST` | `partitionAction` | `/log/partitions/{id}/{action}` |
+| `PUT` | `updateLogPartition` | `/log/partitions/{id}` |
+
+### 🟢 Tracked Query Groups
+
+**Coverage:** 0/6 operations.  **Proposed tools:** tracked-query-group CRUD tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `DELETE` | `deleteTrackedQueryGroup` | `/trackedquerygroups/{id}` |
+| `GET` | `getTrackedQueryGroupById` | `/trackedquerygroups/{id}` |
+| `GET` | `getTrackedQueryGroupList` | `/trackedquerygroups` |
+| `PATCH` | `patchTrackedQueryGroup` | `/trackedquerygroups/{id}` |
+| `POST` | `createTrackedQueryGroup` | `/trackedquerygroups` |
+| `PUT` | `updateTrackedQueryGroup` | `/trackedquerygroups/{id}` |
+
+### 🟢 AWS Cloud Onboarding
+
+**Coverage:** 0/4 operations.  **Proposed tools:** cloud account test/verify tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getAwsAccountId` | `/aws/accountId` |
+| `GET` | `getAwsExternalId` | `/aws/externalId` |
+| `POST` | `testAWSAccount` | `/aws/functions/testAccount` |
+| `POST` | `verifyAWSBillingPermissions` | `/aws/functions/verifyBillingPermissions` |
+
+### 🟢 Azure Cloud Onboarding
+
+**Coverage:** 0/3 operations.  **Proposed tools:** cloud account test/verify tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `discoverSubscriptions` | `/azure/functions/discoverSubscriptions` |
+| `POST` | `testAzureAccount` | `/azure/functions/testAccount` |
+| `POST` | `verifyStorageAccountsPermissions` | `/azure/functions/verifyStorageAccountsPermissions` |
+
+### 🟢 ConfigSource extras
+
+**Coverage:** 7/9 operations.  **Proposed tools:** `get_configsource_update_reasons`, `import_configsource_json`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getUpdateReasonListByConfigSourceId` | `/setting/configsources/{id}/updatereasons` |
+| `POST` | `importConfigSourceJson` | `/setting/configsources/importjson` |
+
+### 🟢 Website extras
+
+**Coverage:** 11/13 operations.  **Proposed tools:** `get_website_sdt_history`, `get_website_graph_by_name`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getSDTHistoryByWebsiteId` | `/website/websites/{id}/historysdts` |
+| `GET` | `getWebsiteDataByGraphName` | `/website/websites/{id}/graphs/{graphName}/data` |
+
+### 🟢 Diagnostic Remediation
+
+**Coverage:** 0/2 operations.  **Proposed tools:** diagnostic remediation listing tools
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getDiagnosticRemediationAssignedSources` | `/setting/diagnosticRemediation/list` |
+| `GET` | `getDiagnosticRemediationExecutionResults` | `/setting/diagnosticRemediation/executionResults` |
+
+### 🟢 Metrics (Push/Usage)
+
+**Coverage:** 0/2 operations.  **Proposed tools:** `get_metrics_summary`, `get_metrics_usage`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getMetricsSummary` | `/metrics/summary` |
+| `GET` | `getMetricsUsage` | `/metrics/usage` |
+
+### 🟢 Default Dashboard (user data)
+
+**Coverage:** 0/2 operations.  **Proposed tools:** `update_default_dashboard`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `PATCH` | `patchDefaultDashboard` | `/setting/userdata/{id}` |
+| `PUT` | `updateDefaultDashboard` | `/setting/userdata/{id}` |
+
+### 🟢 Alerts
+
+**Coverage:** 4/5 operations.  **Proposed tools:** `escalate_alert`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `escalatedAlertById` | `/alert/alerts/{id}/escalate` |
+
+### 🟢 Access Group Module Mapping
+
+**Coverage:** 6/7 operations.  **Proposed tools:** `map_unmap_module_to_access_group`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `mapUnMapModuleToAccessGroup` | `/setting/accessgroup/mapunmap/modules` |
+
+### 🟢 Integration Audit Logs
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `get_integration_audit_logs`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getIntegrationAuditLogs` | `/setting/integrations/auditlogs` |
+
+### 🟢 GCP Cloud Onboarding
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `test_gcp_account`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `testGCPAccount` | `/gcp/functions/testAccount` |
+
+### 🟢 API Usage Stats
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `get_external_api_stats`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getExternalApiStats` | `/apiStats/externalApis` |
+
+### 🟢 LogicModule Metadata
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `get_logicmodule_metadata`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getV4Metadata` | `/setting/logicmodules/metadata` |
+
+### 🟢 Unmonitored Devices
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `list_unmonitored_devices`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getUnmonitoredDeviceList` | `/device/unmonitoreddevices` |
+
+### 🟢 EventSource extras
+
+**Coverage:** 7/8 operations.  **Proposed tools:** `import_eventsource_json`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `importEventSourceJson` | `/setting/eventsources/importjson` |
+
+### 🟢 Contract / Usage Info
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `get_contract_info`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `GET` | `getContractInfoByCompany` | `/usage/contractInfo` |
+
+### 🟢 DNS Mappings
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `add_dns_mapping`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `addDNSMapping` | `/setting/dnsmappings` |
+
+### 🟢 SaaS Account
+
+**Coverage:** 0/1 operations.  **Proposed tools:** `test_saas_account`
+
+| Method | Operation | Endpoint |
+|--------|-----------|----------|
+| `POST` | `testSaaSAccount` | `/saas/functions/testAccount` |
 
 ---
 
-### Operations & Maintenance ⭐ COMPLETE
-**Status:** Fully implemented
+## ✅ Fully Covered Areas
 
-**Implemented:**
-- ✅ OpsNotes (List, Get, Create, Update, Delete)
-- ✅ Netscans (List, Get, Create, Update, Delete)
-- ✅ Integrations (List, Get, Create, Update, Delete)
-- ✅ Audit Logs (List, Get, Search)
+These categories have every Swagger operation backed by an MCP tool:
 
-**Tools:** `list_opsnotes`, `get_opsnote`, `create_opsnote`, `update_opsnote`, `delete_opsnote`, `list_netscans`, `get_netscan`, `create_netscan`, `update_netscan`, `delete_netscan`, `list_integrations`, `get_integration`, `create_integration`, `update_integration`, `delete_integration`, `list_audit_logs`, `get_audit_log`, `search_audit_logs`
+- **Alert Rules & Escalation Chains** (12/12)
+- **Audit / Access Logs** (2/2)
+- **Cost Optimization** (3/3)
+- **Dashboard Widgets** (7/7)
+- **Dashboards** (7/7)
+- **Devices — instances, alert settings, config & netflow** (52/52)
+- **NetScans** (6/6)
+- **Ops Notes** (6/6)
+- **Recipient Groups** (6/6)
+- **Report Groups** (6/6)
+- **Scheduled Down Time (SDT)** (6/6)
+- **Website Checkpoints** (1/1)
 
----
+### Custom Enhancements (not in the official API)
 
-### Miscellaneous ⭐ GOOD
-**Status:** Partial implementation
-
-**Implemented:**
-- ✅ Topology (Get)
-- ✅ Device Group Properties (List, Update)
-
-**Tools:** `get_topology`, `list_resource_group_properties`, `update_resource_group_property`
-
----
-
-## ❌ Missing Major Features
-
-### 1. 🔴 Widgets (7 operations) - NOT IMPLEMENTED
-**Priority:** HIGH - Essential for dashboard management
-
-```
-API Operations:
-- addWidget                    POST   /dashboard/widgets
-- getWidgetList                GET    /dashboard/dashboards/{id}/widgets
-- getWidgetById                GET    /dashboard/widgets/{id}
-- updateWidgetById             PUT    /dashboard/widgets/{id}
-- patchWidgetById              PATCH  /dashboard/widgets/{id}
-- deleteWidgetById             DELETE /dashboard/widgets/{id}
-- getWidgetDataById            GET    /dashboard/widgets/{id}/data
-```
-
-**Use Cases:**
-- Create custom dashboard widgets
-- Modify existing widget configurations
-- Retrieve widget data for analysis
+Four link-generation helpers prevent AI assistants from guessing URLs:
+`generate_dashboard_link`, `generate_resource_link`, `generate_alert_link`, `generate_website_link`.
 
 ---
 
-### 2. 🔴 Data/Metrics APIs (9 operations) - NOT IMPLEMENTED
-**Priority:** HIGH - Essential for retrieving monitoring data
+## 🗺️ Roadmap to 100% Coverage
 
-```
-API Operations:
-- getDeviceDatasourceInstanceData              GET /device/devices/{deviceId}/devicedatasources/{hdsId}/instances/{id}/data
-- getDeviceDatasourceInstanceGraphData         GET /device/devices/{deviceId}/devicedatasources/{hdsId}/instances/{id}/graphs/{graphId}/data
-- getDeviceInstanceGraphDataOnlyByInstanceId   GET /device/devicedatasourceinstances/{instanceId}/graphs/{graphId}/data
-- getDeviceDatasourceInstanceGroupOverviewGraphData GET /device/devices/{deviceId}/devicedatasources/{deviceDsId}/groups/{dsigId}/graphs/{ographId}/data
-- getWebsiteGraphData                          GET /website/websites/{websiteId}/checkpoints/{checkpointId}/graphs/{graphName}/data
-- getWebsiteCheckpointDataById                 GET /website/websites/{srvId}/checkpoints/{checkId}/data
-- getDeviceConfigSourceConfigById              GET /device/devices/{deviceId}/devicedatasources/{hdsId}/instances/{instanceId}/config/{id}
-- getDeviceConfigSourceConfigList              GET /device/devices/{deviceId}/devicedatasources/{hdsId}/instances/{instanceId}/config
-- fetchDeviceInstancesData                     POST /device/instances/datafetch
-```
-
-**Use Cases:**
-- Retrieve time-series metric data
-- Get graph data for visualization
-- Fetch configuration data
-- Batch data retrieval
-
-**Note:** We have `get_resource_instance_data` but it may not cover all these scenarios.
+| Phase | Focus | Operations to add | Cumulative coverage |
+|-------|-------|:-----------------:|:-------------------:|
+| Current | — | — | 48% |
+| Phase 1 (HIGH) | Core monitoring & config mgmt | +62 | 64% |
+| Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
+| Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
 
 ---
 
-### 3. 🟡 LogSources (7 operations) - NOT IMPLEMENTED
-**Priority:** MEDIUM - Important for log monitoring
+## 🔬 Methodology
 
-```
-API Operations:
-- addLogSource                 POST   /setting/logsources
-- getLogSourceList             GET    /setting/logsources
-- getLogSourceById             GET    /setting/logsources/{id}
-- updateLogSourceById          PUT    /setting/logsources/{id}
-- patchLogSourceById           PATCH  /setting/logsources/{id}
-- deleteLogSourceById          DELETE /setting/logsources/{id}
-- importLogSourceJson          POST   /setting/logsources/importjson
-```
+1. Parsed all operations from the LogicMonitor Swagger v3 spec.
+2. Mapped each implemented MCP tool to its underlying endpoint + HTTP verb.
+3. Marked every Swagger operation as covered/missing and grouped by resource category.
+4. Assigned priority tiers by user value and scripting frequency.
 
-**Use Cases:**
-- Manage log collection configurations
-- Configure log parsing and alerting
-
----
-
-### 4. 🟡 Collector Management (Write Ops) - NOT IMPLEMENTED
-**Priority:** MEDIUM - Important for infrastructure management
-
-```
-API Operations:
-- addCollector                 POST   /setting/collector/collectors
-- updateCollectorById          PUT    /setting/collector/collectors/{id}
-- patchCollectorById           PATCH  /setting/collector/collectors/{id}
-- deleteCollectorById          DELETE /setting/collector/collectors/{id}
-- getCollectorInstaller        GET    /setting/collector/collectors/{collectorId}/installers/{osAndArch}
-- ackCollectorDownAlertById    POST   /setting/collector/collectors/{id}/ackdown
-```
-
-**Current Status:** ✅ List, Get implemented | ❌ Write operations missing
-
----
-
-### 5. 🟡 DataSource Management (Write Ops) - NOT IMPLEMENTED
-**Priority:** MEDIUM - Important for module management
-
-```
-API Operations:
-- addDatasourceById            POST   /setting/datasources
-- updateDatasourceById         PUT    /setting/datasources/{id}
-- patchDatasourceById          PATCH  /setting/datasources/{id}
-- deleteDatasourceById         DELETE /setting/datasources/{id}
-- importDataSource             POST   /setting/datasources/importxml
-- importDataSourceJson         POST   /setting/datasources/importjson
-- getDataSourceOverviewGraphList GET  /setting/datasources/{dsId}/ographs
-- getDataSourceOverviewGraphById GET  /setting/datasources/{dsId}/ographs/{id}
-- getAssociatedDeviceListByDataSourceId GET /setting/datasources/{id}/devices
-- getUpdateReasonListByDataSourceId GET /setting/datasources/{id}/updatereasons
-```
-
-**Current Status:** ✅ List, Get implemented | ❌ Write/Import/Export missing
-
----
-
-### 6. 🟡 TopologySources (6 operations) - NOT IMPLEMENTED
-**Priority:** MEDIUM
-
-```
-API Operations:
-- addTopologySource            POST   /setting/topologysources
-- getTopologySourceList        GET    /setting/topologysources
-- getTopologySourceById        GET    /setting/topologysources/{id}
-- updateTopologySourceById     PUT    /setting/topologysources/{id}
-- patchTopologySourceById      PATCH  /setting/topologysources/{id}
-- deleteTopologySourceById     DELETE /setting/topologysources/{id}
-```
-
-**Current Status:** ✅ `get_topology` implemented | ❌ Topology source management missing
-
----
-
-### 7. 🟢 PropertySources (6 operations) - NOT IMPLEMENTED
-**Priority:** LOW
-
-```
-API Operations:
-- addPropertyRule              POST   /setting/propertyrules
-- getPropertyRuleList          GET    /setting/propertyrules
-- getPropertyRuleById          GET    /setting/propertyrules/{id}
-- updatePropertyRuleById       PUT    /setting/propertyrules/{id}
-- patchPropertyRuleById        PATCH  /setting/propertyrules/{id}
-- deletePropertyRuleById       DELETE /setting/propertyrules/{id}
-```
-
-**Use Cases:**
-- Manage automatic property assignments
-- Configure property inheritance rules
-
----
-
-### 8. 🟢 AppliesToFunctions (7 operations) - NOT IMPLEMENTED
-**Priority:** LOW
-
-```
-API Operations:
-- addAppliesToFunction         POST   /setting/functions
-- getAppliesToFunctionList     GET    /setting/functions
-- getAppliesToFunctionById     GET    /setting/functions/{id}
-- updateAppliesToFunction      PUT    /setting/functions/{id}
-- patchAppliesToFunction       PATCH  /setting/functions/{id}
-- deleteAppliesToFunctionById  DELETE /setting/functions/{id}
-- importAppliesToFunctionJson  POST   /setting/functions/importjson
-```
-
-**Use Cases:**
-- Manage AppliesTo function definitions
-- Reusable device selection logic
-
----
-
-### 9. ✅ Cost Optimization (3 operations) - IMPLEMENTED
-**Priority:** LOW - Nice to have
-
-```
-API Operations:
-- getRecommendationsList       GET /cost-optimization/recommendations           ✅
-- getRecommendationById        GET /cost-optimization/recommendations/{id}       ✅
-- getRecommendationCategoriesList GET /cost-optimization/recommendations/categories ✅
-```
-
-**Tools:** `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, `list_cost_optimization_recommendation_categories`
-
-**Use Cases:**
-- Get cloud cost optimization recommendations (AWS/Azure/GCP)
-- Surface potential annual savings and idle/oversized resources
-- Cloud resource optimization insights
-
----
-
-### 10. 🟢 Advanced Features - NOT IMPLEMENTED
-**Priority:** LOW
-
-```
-Log Partitions (1 operation):
-- createLogPartition           POST /setting/logpartitions
-
-Job Monitor (1 operation):
-- addJobMonitor               POST /setting/jobmonitors
-
-OID Management (1 operation):
-- addOid                      POST /setting/oids
-
-DNS Mapping (1 operation):
-- addDNSMapping               POST /setting/dnsmappings
-
-Debug Commands (2 operations):
-- executeDebugCommand         POST /debug
-- getDebugCommandResult       GET  /debug/{id}
-
-Delta APIs (2 operations):
-- getDeltaIdWithDevices       GET /device/devices/delta
-- getDeltaDevices             GET /device/devices/delta/{deltaId}
-
-API Stats (1 operation):
-- getExternalApiStats         GET /apiStats/externalApis
-
-Beta APIs - DiagnosticSources (8 operations):
-- Full CRUD + import/export for diagnostic sources
-```
-
----
-
-## 🎯 Implementation Priorities
-
-### Priority 1: HIGH VALUE 🔴
-**Estimated Impact:** Major capability additions
-
-1. **Widget Operations** (7 ops)
-   - Enables complete dashboard management
-   - Create and customize monitoring views
-   
-2. **Data/Metrics APIs** (9 ops)
-   - Essential for retrieving actual monitoring data
-   - Enable data analysis and visualization
-   - Most requested by users
-
-3. **Collector Management (Write)** (6 ops)
-   - Complete collector lifecycle management
-   - Infrastructure automation
-
-4. **DataSource Management (Write)** (10 ops)
-   - Module management and customization
-   - Import/export capabilities
-
-**Estimated Tools to Add:** ~32 tools
-
----
-
-### Priority 2: COMPLETENESS 🟡
-**Estimated Impact:** Fills gaps in existing features
-
-5. **Report Management (Write)** (3 ops)
-   - Complete report CRUD operations
-
-6. **LogSources** (7 ops)
-   - Log monitoring capabilities
-
-7. ~~**ConfigSource Management** (6+ ops)~~ ✅ IMPLEMENTED
-   - Complete config monitoring management
-
-8. ~~**EventSource Management** (6+ ops)~~ ✅ IMPLEMENTED
-   - Complete event monitoring management
-
-**Estimated Tools to Add:** ~22 tools
-
----
-
-### Priority 3: ADVANCED FEATURES 🟢
-**Estimated Impact:** Nice-to-have enhancements
-
-9. **TopologySources** (6 ops)
-10. **PropertySources** (6 ops)
-11. **AppliesToFunctions** (7 ops)
-12. ~~**Cost Optimization** (3 ops)~~ ✅ IMPLEMENTED
-13. **Advanced Device Group Operations** (5+ ops)
-14. **Diagnostic Sources** (8 ops)
-
-**Estimated Tools to Add:** ~35 tools
-
----
-
-## 📈 Roadmap to 100% Coverage
-
-| Phase | Focus Area | Tools to Add | Est. Coverage |
-|-------|-----------|--------------|---------------|
-| **Current** | Core monitoring & management | 125 | 37% |
-| **Phase 1** | High-value features | +32 | 47% |
-| **Phase 2** | Completeness | +22 | 53% |
-| **Phase 3** | Advanced features | +35 | 64% |
-| **Phase 4** | Remaining operations | +122 | 100% |
-
----
-
-## 🎨 Custom Enhancements
-
-The implementation includes **4 custom link generation tools** that are NOT in the official LogicMonitor API:
-
-1. ✨ `generate_dashboard_link` - Generate direct links to dashboards
-2. ✨ `generate_resource_link` - Generate direct links to devices
-3. ✨ `generate_alert_link` - Generate direct links to alerts
-4. ✨ `generate_website_link` - Generate direct links to websites
-
-These tools prevent AI assistants from guessing or constructing incorrect URLs and provide accurate navigation links.
-
----
-
-## 💡 Implementation Notes
-
-### Read-Only Focus
-The current implementation heavily favors **read operations (GET)**, which aligns with the default `MCP_READ_ONLY=true` mode. This is a safe and sensible default for monitoring use cases.
-
-### Core Monitoring Coverage
-The **essential monitoring operations** are well-covered:
-- ✅ Devices and resources
-- ✅ Alerts and alerting
-- ✅ Dashboards (except widgets)
-- ✅ Collectors (read-only)
-- ✅ Websites
-- ✅ Configuration management
-
-### Write Operation Strategy
-Many write operations (POST/PUT/PATCH/DELETE) for advanced features are intentionally omitted, likely for:
-- **Safety** - Preventing accidental modifications
-- **Simplicity** - Focusing on common use cases
-- **Security** - Limiting potential damage
-
-### Coverage Philosophy
-The **37% coverage** appears to be a deliberate choice focusing on:
-- Most commonly used operations
-- Essential monitoring tasks
-- Read-only safety
-- Quick wins for AI-assisted monitoring
-
----
-
-## 📋 Decision Matrix
-
-When deciding what to implement next, consider:
-
-| Factor | Priority 1 | Priority 2 | Priority 3 |
-|--------|-----------|-----------|-----------|
-| **User Value** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Complexity** | Medium | Medium | High |
-| **Risk** | Low | Low | Medium |
-| **Frequency of Use** | High | Medium | Low |
-| **Dependencies** | None | Some | Many |
-
----
-
-## 🔍 Analysis Methodology
-
-This analysis was generated by:
-1. Parsing the [LogicMonitor Swagger v3 API specification](https://www.logicmonitor.com/swagger-ui-master/api-v3/dist/swagger.json)
-2. Extracting all 336 API operations
-3. Comparing with the 125 implemented MCP tools
-4. Categorizing by functional area
-5. Assessing completeness and gaps
-6. Prioritizing based on value and usage patterns
-
----
-
-## 📝 Conclusion
-
-The LogicMonitor MCP server provides **solid coverage of core monitoring operations** with a focus on safety and commonly used features. The implementation is production-ready for read-heavy monitoring workflows and includes valuable custom enhancements (link generation).
-
-**Recommendation:** Maintain the current focus unless specific write operations or advanced features are requested by users. The 37% coverage strategically targets the most valuable 37% of the API.
-
----
-
-**Last Updated:** November 1, 2025  
-**Next Review:** When new features are requested or API changes
-
+*Coverage figures are computed directly from the spec (393 operations) against 190 covered operations.*

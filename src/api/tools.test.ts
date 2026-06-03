@@ -535,7 +535,9 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most list tools should have pagination
-        if (tool.name !== 'list_website_checkpoints') { // Some exceptions
+        // (a device's applied eventsources is a small fixed list with no pagination)
+        const paginationExempt = ['list_website_checkpoints', 'list_resource_eventsources'];
+        if (!paginationExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('size');
           expect(properties).toHaveProperty('offset');
         }
@@ -549,9 +551,17 @@ describe('getLogicMonitorTools', () => {
       listTools.forEach(tool => {
         const properties = tool.inputSchema.properties || {};
 
-        // Most list tools should have filter (some exceptions exist)
-        if (tool.name !== 'list_website_checkpoints' &&
-            tool.name !== 'list_collector_versions') {
+        // Most list tools should have filter (some exceptions exist).
+        // Device/instance alert-setting and applied-eventsource endpoints
+        // do not support a filter parameter in the LM API.
+        const filterExempt = [
+          'list_website_checkpoints',
+          'list_collector_versions',
+          'list_resource_alert_settings',
+          'list_instance_alert_settings',
+          'list_resource_eventsources',
+        ];
+        if (!filterExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('filter');
         }
       });
@@ -699,6 +709,12 @@ describe('getLogicMonitorTools', () => {
           'get_collector_installer',
           'get_website_checkpoint_data',
           'get_website_graph_data',
+          'get_instance_graph_data',
+          'get_resource_datasource_data',
+          'get_instance_group_overview_graph_data',
+          'get_resource_top_talkers_graph',
+          'get_resources_delta_id',
+          'get_resources_delta',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

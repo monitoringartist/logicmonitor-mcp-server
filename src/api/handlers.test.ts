@@ -45,6 +45,38 @@ describe('LogicMonitorHandlers', () => {
       getDataSource: jest.fn(),
       listDeviceDataSourceInstances: jest.fn(),
       getDeviceDataSourceInstanceData: jest.fn(),
+      createDeviceDataSourceInstance: jest.fn(),
+      updateDeviceDataSourceInstance: jest.fn(),
+      deleteDeviceDataSourceInstance: jest.fn(),
+      getDeviceDataSourceInstanceGraphData: jest.fn(),
+      getDeviceDataSourceData: jest.fn(),
+      listDeviceDataSourceInstanceGroups: jest.fn(),
+      getDeviceDataSourceInstanceGroup: jest.fn(),
+      createDeviceDataSourceInstanceGroup: jest.fn(),
+      updateDeviceDataSourceInstanceGroup: jest.fn(),
+      updateInstanceGroupAlertThreshold: jest.fn(),
+      getDeviceDataSourceInstanceGroupOverviewGraphData: jest.fn(),
+      listDeviceAlertSettings: jest.fn(),
+      listDeviceInstanceAlertSettings: jest.fn(),
+      getDeviceInstanceAlertSetting: jest.fn(),
+      updateDeviceInstanceAlertSetting: jest.fn(),
+      listDeviceInstanceConfigs: jest.fn(),
+      getDeviceInstanceConfig: jest.fn(),
+      collectDeviceInstanceConfig: jest.fn(),
+      listNetflowFlows: jest.fn(),
+      listNetflowPorts: jest.fn(),
+      listNetflowEndpoints: jest.fn(),
+      getDeviceTopTalkersGraph: jest.fn(),
+      getDeviceSDTHistory: jest.fn(),
+      getDeviceDataSourceSDTHistory: jest.fn(),
+      getDeviceInstanceSDTHistory: jest.fn(),
+      createDeviceProperty: jest.fn(),
+      deleteDeviceProperty: jest.fn(),
+      listDeviceAlerts: jest.fn(),
+      listDeviceEventSources: jest.fn(),
+      scheduleDeviceAutoDiscovery: jest.fn(),
+      getDevicesDeltaId: jest.fn(),
+      getDevicesDelta: jest.fn(),
       listDashboards: jest.fn(),
       getDashboard: jest.fn(),
       createDashboard: jest.fn(),
@@ -1395,6 +1427,110 @@ describe('LogicMonitorHandlers', () => {
         });
         expect(result).toEqual(mockResponse);
       });
+    });
+  });
+
+  describe('Device Instances, Alert Settings, Config, NetFlow & SDT History', () => {
+    it('create_resource_instance passes config to client', async () => {
+      mockClient.createDeviceDataSourceInstance.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_resource_instance', {
+        deviceId: 10,
+        deviceDataSourceId: 20,
+        config: { wildValue: 'eth0', displayName: 'eth0' },
+      });
+      expect(mockClient.createDeviceDataSourceInstance).toHaveBeenCalledWith(10, 20, {
+        wildValue: 'eth0',
+        displayName: 'eth0',
+      });
+    });
+
+    it('update_resource_instance forwards opType and config', async () => {
+      mockClient.updateDeviceDataSourceInstance.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_resource_instance', {
+        deviceId: 10,
+        deviceDataSourceId: 20,
+        instanceId: 30,
+        opType: 'replace',
+        config: { description: 'x' },
+      });
+      expect(mockClient.updateDeviceDataSourceInstance).toHaveBeenCalledWith(10, 20, 30, { description: 'x' }, { opType: 'replace' });
+    });
+
+    it('delete_resource_instance calls client', async () => {
+      mockClient.deleteDeviceDataSourceInstance.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_resource_instance', { deviceId: 10, deviceDataSourceId: 20, instanceId: 30 });
+      expect(mockClient.deleteDeviceDataSourceInstance).toHaveBeenCalledWith(10, 20, 30);
+    });
+
+    it('get_instance_graph_data forwards graph + time range', async () => {
+      mockClient.getDeviceDataSourceInstanceGraphData.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_instance_graph_data', {
+        deviceId: 1, deviceDataSourceId: 2, instanceId: 3, graphId: 4, start: 100, end: 200, format: 'json',
+      });
+      expect(mockClient.getDeviceDataSourceInstanceGraphData).toHaveBeenCalledWith(1, 2, 3, 4, { start: 100, end: 200, format: 'json' });
+    });
+
+    it('update_instance_group_alert_threshold forwards datapoint + config', async () => {
+      mockClient.updateInstanceGroupAlertThreshold.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_instance_group_alert_threshold', {
+        deviceId: 1, deviceDataSourceId: 2, instanceGroupId: 3, datapointId: 4, config: { alertExpr: '> 90 95 99' },
+      });
+      expect(mockClient.updateInstanceGroupAlertThreshold).toHaveBeenCalledWith(1, 2, 3, 4, { alertExpr: '> 90 95 99' });
+    });
+
+    it('update_instance_alert_setting forwards config', async () => {
+      mockClient.updateDeviceInstanceAlertSetting.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_instance_alert_setting', {
+        deviceId: 1, deviceDataSourceId: 2, instanceId: 3, alertSettingId: 4, config: { disableAlerting: true },
+      });
+      expect(mockClient.updateDeviceInstanceAlertSetting).toHaveBeenCalledWith(1, 2, 3, 4, { disableAlerting: true });
+    });
+
+    it('get_resource_instance_config forwards configId + params', async () => {
+      mockClient.getDeviceInstanceConfig.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_resource_instance_config', {
+        deviceId: 1, deviceDataSourceId: 2, instanceId: 3, configId: 'abc', format: 'raw',
+      });
+      expect(mockClient.getDeviceInstanceConfig).toHaveBeenCalledWith(1, 2, 3, 'abc', { format: 'raw', startEpoch: undefined, fields: undefined });
+    });
+
+    it('collect_resource_instance_config triggers collection', async () => {
+      mockClient.collectDeviceInstanceConfig.mockResolvedValue({} as never);
+      await handlers.handleToolCall('collect_resource_instance_config', { deviceId: 1, deviceDataSourceId: 2, instanceId: 3 });
+      expect(mockClient.collectDeviceInstanceConfig).toHaveBeenCalledWith(1, 2, 3);
+    });
+
+    it('list_resource_netflow_flows forwards netflow params', async () => {
+      mockClient.listNetflowFlows.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('list_resource_netflow_flows', { deviceId: 7, start: 1, end: 2, netflowFilter: 'x' });
+      expect(mockClient.listNetflowFlows).toHaveBeenCalledWith(7, expect.objectContaining({ start: 1, end: 2, netflowFilter: 'x' }));
+    });
+
+    it('get_resource_sdt_history calls client', async () => {
+      mockClient.getDeviceSDTHistory.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('get_resource_sdt_history', { deviceId: 7 });
+      expect(mockClient.getDeviceSDTHistory).toHaveBeenCalledWith(7, expect.any(Object));
+    });
+
+    it('create_resource_property and delete_resource_property call client', async () => {
+      mockClient.createDeviceProperty.mockResolvedValue({} as never);
+      mockClient.deleteDeviceProperty.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_resource_property', { deviceId: 7, name: 'k', value: 'v' });
+      await handlers.handleToolCall('delete_resource_property', { deviceId: 7, propertyName: 'k' });
+      expect(mockClient.createDeviceProperty).toHaveBeenCalledWith(7, 'k', 'v');
+      expect(mockClient.deleteDeviceProperty).toHaveBeenCalledWith(7, 'k');
+    });
+
+    it('schedule_resource_auto_discovery and delta tools call client', async () => {
+      mockClient.scheduleDeviceAutoDiscovery.mockResolvedValue({} as never);
+      mockClient.getDevicesDeltaId.mockResolvedValue({} as never);
+      mockClient.getDevicesDelta.mockResolvedValue({} as never);
+      await handlers.handleToolCall('schedule_resource_auto_discovery', { deviceId: 7 });
+      await handlers.handleToolCall('get_resources_delta_id', {});
+      await handlers.handleToolCall('get_resources_delta', { deltaId: 'd1' });
+      expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
+      expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
+      expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
     });
   });
 

@@ -1446,6 +1446,627 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
     },
   },
+  {
+    name: 'create_resource_instance',
+    description: 'Add a new datasource instance to a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Manually creates a monitored instance (e.g., a specific URL, port, process, or table) under a device datasource that supports manual/active discovery instances. ' +
+      '\n\n**Required:** deviceId, deviceDataSourceId, and a `config` with at least the instance `wildValue` (and usually `displayName`). ' +
+      '\n\n**Related tools:** "list\\_resource\\_datasources" (get deviceDataSourceId), "list\\_resource\\_instances", "update\\_resource\\_instance", "delete\\_resource\\_instance".',
+    annotations: { title: 'Create datasource instance', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        config: {
+          type: 'object',
+          description: 'Instance definition (e.g., wildValue, displayName, description, wildValue2, properties, disableAlerting).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'config'],
+    },
+  },
+  {
+    name: 'update_resource_instance',
+    description: 'Update an existing datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Partially updates instance fields such as displayName, description, properties, or disableAlerting. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, and a `config` with the fields to change. Optional `opType` (add/refresh/replace) controls property merge behavior. ' +
+      '\n\n**Related tools:** "list\\_resource\\_instances", "delete\\_resource\\_instance".',
+    annotations: { title: 'Update datasource instance', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        opType: { type: 'string', description: 'Optional property merge mode: "add", "refresh", or "replace".' },
+        config: {
+          type: 'object',
+          description: 'Instance fields to update (e.g., displayName, description, properties, disableAlerting).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_resource_instance',
+    description: 'Delete a datasource instance from a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ Permanent:** Removes the instance and stops its monitoring/data collection. ' +
+      '\n\n**Related tools:** "list\\_resource\\_instances" (find instanceId).',
+    annotations: { title: 'Delete datasource instance', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
+  {
+    name: 'get_instance_graph_data',
+    description: 'Get rendered graph data for a specific datasource instance graph in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Graph series data (lines, datapoints, timestamps) for the given graphId on an instance. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, graphId, optional start/end (epoch seconds) and format. ' +
+      '\n\n**Tip:** For raw datapoint values use "get\\_resource\\_instance\\_data" instead.',
+    annotations: { title: 'Get instance graph data', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        graphId: { type: 'number', description: 'The graph ID on the instance' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        format: { type: 'string', description: 'Response format (e.g., "json")' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId', 'graphId'],
+    },
+  },
+  {
+    name: 'get_resource_datasource_data',
+    description: 'Get aggregated time-series data for all instances of a datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Datapoint values across the datasource instances. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, optional period, start/end (epoch seconds), datapoints (comma-separated), format, aggregate. ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_data" (single instance).',
+    annotations: { title: 'Get datasource data', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        period: { type: 'number', description: 'Number of periods to retrieve' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        datapoints: { type: 'string', description: 'Comma-separated datapoint names' },
+        format: { type: 'string', description: 'Response format (e.g., "json", "csv")' },
+        aggregate: { type: 'string', description: 'Aggregation method (e.g., "average")' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId'],
+    },
+  },
+  {
+    name: 'list_resource_instance_groups',
+    description: 'List instance groups for a datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are instance groups:** Logical groupings of datasource instances (e.g., grouping interfaces by role). ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_group", "create\\_resource\\_instance\\_group".',
+    annotations: { title: 'List instance groups', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId'],
+    },
+  },
+  {
+    name: 'get_resource_instance_group',
+    description: 'Get details of a specific datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_resource\\_instance\\_groups", "update\\_resource\\_instance\\_group".',
+    annotations: { title: 'Get instance group', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        instanceGroupId: { type: 'number', description: 'The instance group ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceGroupId'],
+    },
+  },
+  {
+    name: 'create_resource_instance_group',
+    description: 'Create a datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Required:** deviceId, deviceDataSourceId, and a `config` with at least `name`. ' +
+      '\n\n**Related tools:** "update\\_resource\\_instance\\_group", "list\\_resource\\_instance\\_groups".',
+    annotations: { title: 'Create instance group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        config: {
+          type: 'object',
+          description: 'Instance group definition (e.g., name, description, groupName).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'config'],
+    },
+  },
+  {
+    name: 'update_resource_instance_group',
+    description: 'Update a datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceGroupId, and a `config` with fields to change. ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_group".',
+    annotations: { title: 'Update instance group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        instanceGroupId: { type: 'number', description: 'The instance group ID' },
+        config: {
+          type: 'object',
+          description: 'Instance group fields to update (e.g., name, description).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceGroupId', 'config'],
+    },
+  },
+  {
+    name: 'get_instance_group_overview_graph_data',
+    description: 'Get rendered overview graph data for a datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceGroupId, overviewGraphId, optional start/end (epoch seconds) and format.',
+    annotations: { title: 'Get instance group overview graph', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        instanceGroupId: { type: 'number', description: 'The instance group ID (dsigId)' },
+        overviewGraphId: { type: 'number', description: 'The overview graph ID (ographId)' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        format: { type: 'string', description: 'Response format (e.g., "json")' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceGroupId', 'overviewGraphId'],
+    },
+  },
+  {
+    name: 'update_instance_group_alert_threshold',
+    description: 'Set or update the alert threshold for a datapoint within a datasource instance group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceGroupId, datapointId, and a `config` with the alert threshold expression (e.g., {"alertExpr": "> 90 95 99"}). ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_group".',
+    annotations: { title: 'Update instance group alert threshold', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        instanceGroupId: { type: 'number', description: 'The instance group ID (dsigId)' },
+        datapointId: { type: 'number', description: 'The datapoint ID (dpId)' },
+        config: {
+          type: 'object',
+          description: 'Alert threshold config (e.g., alertExpr, disableAlerting).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceGroupId', 'datapointId', 'config'],
+    },
+  },
+  {
+    name: 'list_resource_alert_settings',
+    description: 'List datasource instance alert settings across an entire resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Alert threshold/configuration settings for the device\'s monitored instances. ' +
+      '\n\n**Related tools:** "list\\_instance\\_alert\\_settings", "get\\_instance\\_alert\\_setting".',
+    annotations: { title: 'List device alert settings', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        ...paginationSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'list_instance_alert_settings',
+    description: 'List alert settings for a specific datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "get\\_instance\\_alert\\_setting", "update\\_instance\\_alert\\_setting".',
+    annotations: { title: 'List instance alert settings', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        ...paginationSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
+  {
+    name: 'get_instance_alert_setting',
+    description: 'Get a specific alert setting for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_instance\\_alert\\_settings", "update\\_instance\\_alert\\_setting".',
+    annotations: { title: 'Get instance alert setting', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        alertSettingId: { type: 'number', description: 'The alert setting ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId', 'alertSettingId'],
+    },
+  },
+  {
+    name: 'update_instance_alert_setting',
+    description: 'Update an alert setting (threshold) for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, alertSettingId, and a `config` with fields to change (e.g., alertExpr, disableAlerting). ' +
+      '\n\n**Related tools:** "get\\_instance\\_alert\\_setting".',
+    annotations: { title: 'Update instance alert setting', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        alertSettingId: { type: 'number', description: 'The alert setting ID' },
+        config: {
+          type: 'object',
+          description: 'Alert setting fields to update (e.g., alertExpr, disableAlerting, alertClearTransitionInterval).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId', 'alertSettingId', 'config'],
+    },
+  },
+  {
+    name: 'list_resource_instance_configs',
+    description: 'List collected configuration files for a ConfigSource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Config versions/snapshots metadata (id, pollTimestamp, version, change status). ' +
+      '\n\n**Workflow:** Find the ConfigSource deviceDataSourceId via "list\\_resource\\_datasources", the instance via "list\\_resource\\_instances", then list its configs. ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_config".',
+    annotations: { title: 'List instance configs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The ConfigSource device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
+  {
+    name: 'get_resource_instance_config',
+    description: 'Get a specific collected configuration file (and its content) for a ConfigSource instance in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, configId (the config version id from "list\\_resource\\_instance\\_configs"), optional format/startEpoch. ' +
+      '\n\n**Returns:** The config content and metadata, useful for auditing config changes.',
+    annotations: { title: 'Get instance config', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The ConfigSource device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        configId: { type: 'string', description: 'The config version ID' },
+        format: { type: 'string', description: 'Response format' },
+        startEpoch: { type: 'number', description: 'Start epoch for diff context' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId', 'configId'],
+    },
+  },
+  {
+    name: 'collect_resource_instance_config',
+    description: 'Trigger an immediate configuration collection for a ConfigSource instance in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Forces LM to poll the device now for the latest config (instead of waiting for the next schedule). ' +
+      '\n\n**Related tools:** "list\\_resource\\_instance\\_configs" (view results afterward).',
+    annotations: { title: 'Collect instance config now', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The ConfigSource device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
+  {
+    name: 'list_resource_netflow_flows',
+    description: 'List NetFlow traffic flows for a NetFlow-enabled resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Flow records (source/destination, application, bytes, percentage). ' +
+      '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), netflowFilter, pagination. ' +
+      '\n\n**Related tools:** "list\\_resource\\_netflow\\_ports", "list\\_resource\\_netflow\\_endpoints".',
+    annotations: { title: 'List NetFlow flows', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'NetFlow filter expression' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'list_resource_netflow_ports',
+    description: 'List NetFlow traffic grouped by port for a NetFlow-enabled resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, optional ip, start/end (epoch seconds), netflowFilter, pagination.',
+    annotations: { title: 'List NetFlow ports', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        ip: { type: 'string', description: 'Filter by IP address' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'NetFlow filter expression' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'list_resource_netflow_endpoints',
+    description: 'List NetFlow traffic grouped by endpoint for a NetFlow-enabled resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, optional port, start/end (epoch seconds), netflowFilter, pagination.',
+    annotations: { title: 'List NetFlow endpoints', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        port: { type: 'string', description: 'Filter by port' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'NetFlow filter expression' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'get_resource_top_talkers_graph',
+    description: 'Get the NetFlow "top talkers" graph data for a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), netflowFilter, format, keyword.',
+    annotations: { title: 'Get NetFlow top talkers graph', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'NetFlow filter expression' },
+        format: { type: 'string', description: 'Response format' },
+        keyword: { type: 'string', description: 'Keyword filter' },
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'get_resource_sdt_history',
+    description: 'Get the Scheduled Down Time (SDT) history for a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Past SDT windows applied to the device. ' +
+      '\n\n**Related tools:** "get\\_resource\\_datasource\\_sdt\\_history", "get\\_instance\\_sdt\\_history".',
+    annotations: { title: 'Get device SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'get_resource_datasource_sdt_history',
+    description: 'Get the SDT history for a specific datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "get\\_resource\\_sdt\\_history", "get\\_instance\\_sdt\\_history".',
+    annotations: { title: 'Get datasource SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId'],
+    },
+  },
+  {
+    name: 'get_instance_sdt_history',
+    description: 'Get the SDT history for a specific datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "get\\_resource\\_sdt\\_history", "get\\_resource\\_datasource\\_sdt\\_history".',
+    annotations: { title: 'Get instance SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID (hdsId)' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
+  {
+    name: 'create_resource_property',
+    description: 'Add a custom property to a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, name (property key), value. ' +
+      '\n\n**Related tools:** "list\\_resource\\_properties", "update\\_resource\\_property", "delete\\_resource\\_property".',
+    annotations: { title: 'Create device property', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        name: { type: 'string', description: 'The property name/key' },
+        value: { type: 'string', description: 'The property value' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'name', 'value'],
+    },
+  },
+  {
+    name: 'delete_resource_property',
+    description: 'Delete a custom property from a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deviceId, propertyName. ' +
+      '\n\n**Related tools:** "list\\_resource\\_properties".',
+    annotations: { title: 'Delete device property', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        propertyName: { type: 'string', description: 'The property name/key to delete' },
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'propertyName'],
+    },
+  },
+  {
+    name: 'list_resource_alerts',
+    description: 'List alerts for a specific resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Active/historical alerts scoped to the device. ' +
+      '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), needMessage, pagination/filter. ' +
+      '\n\n**Related tools:** "list\\_alerts" (account-wide), "get\\_alert".',
+    annotations: { title: 'List device alerts', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Start time (epoch seconds)' },
+        end: { type: 'number', description: 'End time (epoch seconds)' },
+        needMessage: { type: 'boolean', description: 'Include the alert message body' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'list_resource_eventsources',
+    description: 'List the EventSources applied to a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** EventSources monitoring the device (e.g., Windows Event Logs, SNMP traps). ' +
+      '\n\n**Related tools:** "list\\_eventsources" (definitions).',
+    annotations: { title: 'List device eventsources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'schedule_resource_auto_discovery',
+    description: 'Trigger Active Discovery for a resource/device in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Forces LM to re-run instance discovery now (find new disks/interfaces/etc.) instead of waiting for the schedule. ' +
+      '\n\n**Related tools:** "list\\_resource\\_instances" (view discovered instances).',
+    annotations: { title: 'Schedule active discovery', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'get_resources_delta_id',
+    description: 'Begin a device delta-tracking session in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Returns a deltaId snapshot token (and current devices) that can later be passed to "get\\_resources\\_delta" to fetch only what changed. ' +
+      '\n\n**Parameters:** optional deltaId to refresh an existing token.',
+    annotations: { title: 'Get devices delta ID', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deltaId: { type: 'string', description: 'Optional existing delta token to refresh' },
+      },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_resources_delta',
+    description: 'Fetch device changes since a previous delta snapshot in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** deltaId (from "get\\_resources\\_delta\\_id"). ' +
+      '\n\n**Returns:** Added/updated/deleted devices since the snapshot.',
+    annotations: { title: 'Get devices delta', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deltaId: { type: 'string', description: 'The delta token from get_resources_delta_id' },
+      },
+      additionalProperties: false,
+      required: ['deltaId'],
+    },
+  },
 
   // Dashboard Tools
   {

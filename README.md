@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **152 MCP Tools** for comprehensive LogicMonitor operations (80 read-only, 72 write)
+- **184 MCP Tools** for comprehensive LogicMonitor operations (101 read-only, 83 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -522,6 +522,27 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_resource_datasource` - Get device datasource details
 - `list_resource_instances` - List datasource instances (disks, interfaces, etc.)
 - `get_resource_instance_data` - Get time-series metrics data
+- `get_resource_datasource_data` - Get aggregated datasource data across instances
+- `get_instance_graph_data` - Get rendered graph data for an instance
+- `list_resource_instance_groups` - List datasource instance groups
+- `get_resource_instance_group` - Get instance group details
+- `get_instance_group_overview_graph_data` - Get instance group overview graph data
+- `list_resource_alert_settings` - List a device's instance alert settings
+- `list_instance_alert_settings` - List a specific instance's alert settings
+- `get_instance_alert_setting` - Get an instance alert setting
+- `list_resource_instance_configs` - List collected ConfigSource configs for an instance
+- `get_resource_instance_config` - Get a specific collected config (with content)
+- `list_resource_netflow_flows` - List NetFlow traffic flows
+- `list_resource_netflow_ports` - List NetFlow traffic by port
+- `list_resource_netflow_endpoints` - List NetFlow traffic by endpoint
+- `get_resource_top_talkers_graph` - Get NetFlow top-talkers graph data
+- `get_resource_sdt_history` - Get a device's SDT history
+- `get_resource_datasource_sdt_history` - Get a datasource's SDT history
+- `get_instance_sdt_history` - Get an instance's SDT history
+- `list_resource_alerts` - List alerts for a specific device
+- `list_resource_eventsources` - List eventsources applied to a device
+- `get_resources_delta_id` - Start a device delta-tracking session
+- `get_resources_delta` - Fetch device changes since a delta snapshot
 - `list_eventsources` - List all eventsources
 - `get_eventsource` - Get eventsource details
 - `list_configsources` - List configuration sources
@@ -680,7 +701,18 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 **Write Operations:**
 - `update_resource_property` - Update device property value
+- `create_resource_property` - Add a custom property to a device
+- `delete_resource_property` - Delete a custom property from a device
 - `update_resource_group_property` - Update device group property value
+- `create_resource_instance` - Add a datasource instance to a device
+- `update_resource_instance` - Update a datasource instance
+- `delete_resource_instance` - Delete a datasource instance
+- `create_resource_instance_group` - Create a datasource instance group
+- `update_resource_instance_group` - Update a datasource instance group
+- `update_instance_group_alert_threshold` - Set a datapoint alert threshold on an instance group
+- `update_instance_alert_setting` - Update an instance alert threshold
+- `collect_resource_instance_config` - Trigger immediate config collection
+- `schedule_resource_auto_discovery` - Trigger Active Discovery on a device
 
 ### Scheduled Down Time (SDT)
 
@@ -720,9 +752,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **80 read-only tools** - Safe for production monitoring
-- **72 write tools** - Require caution (disabled by default with `--read-only`)
-- **152 total tools**
+- **101 read-only tools** - Safe for production monitoring
+- **83 write tools** - Require caution (disabled by default with `--read-only`)
+- **184 total tools**
 
 ## Security Considerations
 
