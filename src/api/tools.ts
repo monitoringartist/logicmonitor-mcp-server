@@ -2692,6 +2692,93 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['groupId'],
     },
   },
+  {
+    name: 'create_dashboard_group',
+    description: 'Create a new dashboard group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a folder to organize dashboards into a hierarchy. ' +
+      '\n\n**Required:** name. ' +
+      '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), plus widgetTokens/template via `config`. ' +
+      '\n\n**Related tools:** "list\\_dashboard\\_groups", "create\\_dashboard" (place dashboards in the group).',
+    annotations: { title: 'Create dashboard group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The dashboard group name' },
+        description: { type: 'string', description: 'The dashboard group description' },
+        parentId: { type: 'number', description: 'The parent dashboard group ID (root = 1)' },
+        config: {
+          type: 'object',
+          description: 'Additional dashboard group attributes (e.g., widgetTokens, template) merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+  },
+  {
+    name: 'update_dashboard_group',
+    description: 'Update a dashboard group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), or additional fields via `config`. Partial update. ' +
+      '\n\n**Related tools:** "get\\_dashboard\\_group", "list\\_dashboard\\_groups".',
+    annotations: { title: 'Update dashboard group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The dashboard group ID to update' },
+        name: { type: 'string', description: 'New dashboard group name' },
+        description: { type: 'string', description: 'New description' },
+        parentId: { type: 'number', description: 'Move the group under a different parent group ID' },
+        config: {
+          type: 'object',
+          description: 'Additional dashboard group attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'delete_dashboard_group',
+    description: 'Delete a dashboard group from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Deleting a non-empty group (with dashboards or subgroups) requires allowNonEmptyGroup=true and will remove its contents. Cannot be undone. ' +
+      '\n\n**Parameters:** groupId; optional allowNonEmptyGroup (default false). ' +
+      '\n\n**Before deleting:** Use "get\\_dashboard\\_group" to check dashboard/subgroup counts. ' +
+      '\n\n**Related tools:** "get\\_dashboard\\_group", "list\\_dashboard\\_groups".',
+    annotations: { title: 'Delete dashboard group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The dashboard group ID to delete' },
+        allowNonEmptyGroup: { type: 'boolean', description: 'Allow deleting a group that still contains dashboards/subgroups (default false).' },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'clone_dashboard_group',
+    description: 'Clone a dashboard group (and optionally its contents) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Asynchronously copies an existing dashboard group into a new group. ' +
+      '\n\n**Parameters:** groupId (source group), a `config` describing the new group (at least `name`, and `parentId` for placement), and optional recursive (clone subgroups/dashboards too). ' +
+      '\n\n**Related tools:** "create\\_dashboard\\_group", "get\\_dashboard\\_group".',
+    annotations: { title: 'Clone dashboard group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The source dashboard group ID to clone' },
+        config: {
+          type: 'object',
+          description: 'Definition of the new (cloned) group (e.g., name, parentId, description).',
+          additionalProperties: true,
+        },
+        recursive: { type: 'boolean', description: 'Also clone subgroups and dashboards (default false).' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'config'],
+    },
+  },
 
   // Report Tools
   {

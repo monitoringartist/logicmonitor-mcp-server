@@ -659,6 +659,26 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_dashboard_group': {
+          const { config, ...rest } = args;
+          return await this.client.createDashboardGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_dashboard_group': {
+          const { groupId, config, ...rest } = args;
+          return await this.client.updateDashboardGroup(groupId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_dashboard_group':
+          return await this.client.deleteDashboardGroup(args.groupId, {
+            allowNonEmptyGroup: args.allowNonEmptyGroup,
+          });
+
+        case 'clone_dashboard_group':
+          return await this.client.cloneDashboardGroup(args.groupId, args.config || {}, {
+            recursive: args.recursive,
+          });
+
         // Reports
         case 'list_reports': {
           const result = await this.client.listReports({

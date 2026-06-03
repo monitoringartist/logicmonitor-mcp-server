@@ -186,6 +186,11 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'update_logsource': ['mcp:tools', 'lm:write'],
   'delete_logsource': ['mcp:tools', 'lm:write'],
   'import_logsource': ['mcp:tools', 'lm:write'],
+  // Dashboard groups (write)
+  'create_dashboard_group': ['mcp:tools', 'lm:dashboards:write'],
+  'update_dashboard_group': ['mcp:tools', 'lm:dashboards:write'],
+  'delete_dashboard_group': ['mcp:tools', 'lm:dashboards:write'],
+  'clone_dashboard_group': ['mcp:tools', 'lm:dashboards:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

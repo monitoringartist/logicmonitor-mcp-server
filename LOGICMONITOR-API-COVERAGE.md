@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 228 |
-| **Operations Missing** | 165 |
-| **Coverage** | **58%** |
-| **Implemented MCP Tools** | 215 (+4 custom link tools) |
+| **Operations Covered** | 233 |
+| **Operations Missing** | 160 |
+| **Coverage** | **59%** |
+| **Implemented MCP Tools** | 219 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -50,7 +50,6 @@
 | Collector Groups & Agent Log Levels | 11 | 21 | 🟡 Partial |
 | Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
 | Website Groups (write) | 2 | 9 | 🟡 Partial |
-| Dashboard Groups (write) | 2 | 7 | 🟡 Partial |
 | TopologySources (write) | 2 | 7 | 🟡 Partial |
 | Roles (write) | 2 | 6 | 🟡 Partial |
 | ConfigSource extras | 7 | 9 | 🟡 Partial |
@@ -63,6 +62,7 @@
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
 | Audit / Access Logs | 2 | 2 | ✅ Full |
 | Cost Optimization | 3 | 3 | ✅ Full |
+| Dashboard Groups (write) | 7 | 7 | ✅ Full |
 | Dashboard Widgets | 7 | 7 | ✅ Full |
 | Dashboards | 7 | 7 | ✅ Full |
 | DataSource Management (write/import) | 12 | 12 | ✅ Full |
@@ -82,13 +82,11 @@
 
 Grouped by impact. Each item links to its detailed operation list below.
 
-### 🔴 HIGH Priority — 24 operations
+### 🔴 HIGH Priority — 19 operations
 
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-- **Dashboard Groups (write)** — 5 missing. Tools to add: `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
-
 ### 🟡 MEDIUM Priority — 77 operations
 
 *Administration, automation modules, and infrastructure completeness*
@@ -166,18 +164,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-
-### 🔴 Dashboard Groups (write)
-
-**Coverage:** 2/7 operations.  **Proposed tools:** `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteDashboardGroupById` | `/dashboard/groups/{id}` |
-| `PATCH` | `patchDashboardGroupById` | `/dashboard/groups/{id}` |
-| `POST` | `addDashboardGroup` | `/dashboard/groups` |
-| `POST` | `addDashboardGroupAsynchronously` | `/dashboard/groups/{id}/asyncclone` |
-| `PUT` | `updateDashboardGroupById` | `/dashboard/groups/{id}` |
 
 ### 🟡 Collector Groups & Agent Log Levels
 
@@ -582,6 +568,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Alert Rules & Escalation Chains** (12/12)
 - **Audit / Access Logs** (2/2)
 - **Cost Optimization** (3/3)
+- **Dashboard Groups (write)** (7/7)
 - **Dashboard Widgets** (7/7)
 - **Dashboards** (7/7)
 - **DataSource Management (write/import)** (12/12)
@@ -606,7 +593,7 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 58% |
+| Current | — | — | 59% |
 | Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
@@ -620,4 +607,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 228 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 233 covered operations.*

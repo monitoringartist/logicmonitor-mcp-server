@@ -77,6 +77,10 @@ describe('LogicMonitorHandlers', () => {
       scheduleDeviceAutoDiscovery: jest.fn(),
       getDevicesDeltaId: jest.fn(),
       getDevicesDelta: jest.fn(),
+      createDashboardGroup: jest.fn(),
+      updateDashboardGroup: jest.fn(),
+      deleteDashboardGroup: jest.fn(),
+      cloneDashboardGroup: jest.fn(),
       listLogSources: jest.fn(),
       getLogSource: jest.fn(),
       createLogSource: jest.fn(),
@@ -1562,6 +1566,40 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Dashboard Groups (write)', () => {
+    it('create_dashboard_group merges config into body', async () => {
+      mockClient.createDashboardGroup.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_dashboard_group', {
+        name: 'Cloud',
+        parentId: 1,
+        config: { description: 'cloud dashboards' },
+      });
+      expect(mockClient.createDashboardGroup).toHaveBeenCalledWith({
+        name: 'Cloud',
+        parentId: 1,
+        description: 'cloud dashboards',
+      });
+    });
+
+    it('update_dashboard_group excludes groupId from body', async () => {
+      mockClient.updateDashboardGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_dashboard_group', { groupId: 7, name: 'Renamed' });
+      expect(mockClient.updateDashboardGroup).toHaveBeenCalledWith(7, { name: 'Renamed' });
+    });
+
+    it('delete_dashboard_group forwards allowNonEmptyGroup', async () => {
+      mockClient.deleteDashboardGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_dashboard_group', { groupId: 7, allowNonEmptyGroup: true });
+      expect(mockClient.deleteDashboardGroup).toHaveBeenCalledWith(7, { allowNonEmptyGroup: true });
+    });
+
+    it('clone_dashboard_group forwards config + recursive', async () => {
+      mockClient.cloneDashboardGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('clone_dashboard_group', { groupId: 7, config: { name: 'Copy', parentId: 1 }, recursive: true });
+      expect(mockClient.cloneDashboardGroup).toHaveBeenCalledWith(7, { name: 'Copy', parentId: 1 }, { recursive: true });
     });
   });
 

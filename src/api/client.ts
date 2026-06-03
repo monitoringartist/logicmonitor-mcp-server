@@ -1405,6 +1405,27 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('GET', `/dashboard/groups/${groupId}`, undefined, params);
   }
 
+  async createDashboardGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/dashboard/groups', group);
+  }
+
+  async updateDashboardGroup(groupId: number, group: any) {
+    return this.request<LMResponse<any>>('PATCH', `/dashboard/groups/${groupId}`, group);
+  }
+
+  async deleteDashboardGroup(groupId: number, params?: { allowNonEmptyGroup?: boolean }) {
+    return this.request<LMResponse<any>>('DELETE', `/dashboard/groups/${groupId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async cloneDashboardGroup(groupId: number, group: any, params?: { recursive?: boolean }) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/dashboard/groups/${groupId}/asyncclone`,
+      group,
+      this.cleanParams(params || {}),
+    );
+  }
+
   // Reports
   async listReports(params?: {
     size?: number;
