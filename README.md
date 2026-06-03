@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **341 MCP Tools** for comprehensive LogicMonitor operations (170 read-only, 171 write)
+- **356 MCP Tools** for comprehensive LogicMonitor operations (178 read-only, 178 write) — **100% LogicMonitor API v3 coverage**
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -472,7 +472,7 @@ npm run start:http
 
 ## Available Tools
 
-The server provides 341 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
+The server provides 356 tools for comprehensive LogicMonitor operations (100% LogicMonitor API v3 coverage). Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
 ### Resource/Device Management
 
@@ -780,12 +780,21 @@ The server provides 341 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_resource_properties` - List custom properties for device
 - `list_resource_group_properties` - List properties for device group
+- `list_resource_group_datasources` / `get_resource_group_datasource` - DataSources applied to a device group
+- `get_resource_group_datasource_alert_setting` - Alert thresholds for a group datasource
+- `list_resource_group_cluster_alert_confs` / `get_resource_group_cluster_alert_conf` - Cluster alert configurations
+- `list_resource_group_alerts` - Alerts across a device group
+- `list_resource_group_sdts` / `get_resource_group_sdt_history` - Device group SDTs and history
 
 **Write Operations:**
 - `update_resource_property` - Update device property value
 - `create_resource_property` - Add a custom property to a device
 - `delete_resource_property` - Delete a custom property from a device
 - `update_resource_group_property` - Update device group property value
+- `create_resource_group_property` / `delete_resource_group_property` - Add/remove a device group property
+- `update_resource_group_datasource` - Update a datasource applied to a device group
+- `update_resource_group_datasource_alert_setting` - Update group datasource alert thresholds
+- `create_resource_group_cluster_alert_conf` / `update_resource_group_cluster_alert_conf` / `delete_resource_group_cluster_alert_conf` - Manage cluster alert configurations
 - `create_resource_instance` - Add a datasource instance to a device
 - `update_resource_instance` - Update a datasource instance
 - `delete_resource_instance` - Delete a datasource instance
@@ -879,9 +888,9 @@ The server provides 341 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **170 read-only tools** - Safe for production monitoring
-- **171 write tools** - Require caution (disabled by default with `--read-only`)
-- **341 total tools**
+- **178 read-only tools** - Safe for production monitoring
+- **178 write tools** - Require caution (disabled by default with `--read-only`)
+- **356 total tools** (100% LogicMonitor API v3 coverage)
 
 ## Security Considerations
 
@@ -905,7 +914,7 @@ export MCP_READ_ONLY=true
 npm start
 ```
 
-This disables all 171 write operations, leaving only 170 safe read-only tools.
+This disables all 178 write operations, leaving only 178 safe read-only tools.
 
 ### Authentication Setup
 

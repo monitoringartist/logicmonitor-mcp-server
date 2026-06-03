@@ -8,12 +8,12 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 374 |
-| **Operations Missing** | 19 |
-| **Coverage** | **95%** |
-| **Implemented MCP Tools** | 341 (+4 custom link tools) |
+| **Operations Covered** | 393 |
+| **Operations Missing** | 0 |
+| **Coverage** | **100%** |
+| **Implemented MCP Tools** | 356 (+4 custom link tools) |
 
-> **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
+> **How to read this doc:** Coverage is now **100%** — every Swagger operation is backed by an MCP tool. [Fully Covered Areas](#-fully-covered-areas) lists every category and its operation count.
 
 ---
 
@@ -21,7 +21,6 @@
 
 | Category | Covered | Total | Status |
 |----------|:-------:|:-----:|:------:|
-| Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
 | Access Group Module Mapping | 7 | 7 | ✅ Full |
 | Alert Automation — Action Chains & Rules | 14 | 14 | ✅ Full |
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
@@ -42,6 +41,7 @@
 | Dashboards | 7 | 7 | ✅ Full |
 | DataSource Management (write/import) | 12 | 12 | ✅ Full |
 | Default Dashboard (user data) | 2 | 2 | ✅ Full |
+| Device Groups — datasource alert settings, cluster, properties | 29 | 29 | ✅ Full |
 | Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
 | Diagnostic Remediation | 2 | 2 | ✅ Full |
 | DiagnosticSources | 8 | 8 | ✅ Full |
@@ -78,55 +78,11 @@
 
 ---
 
-## 🔴 What's Still Missing (Prioritized)
+## 🎉 What's Still Missing (Prioritized)
 
-Grouped by impact. Each item links to its detailed operation list below.
+**Nothing — 100% of the LogicMonitor Swagger v3 operations are now backed by MCP tools.**
 
-### 🔴 HIGH Priority — 19 operations
-
-*Core monitoring & configuration management — highest user value*
-
-- **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-
-### 🟡 MEDIUM Priority — 0 operations
-
-*All MEDIUM-priority categories are fully covered.*
-
-### 🟢 LOW Priority — 0 operations
-
-*All LOW-priority categories are now fully covered (Log Pipelines/Log Alerts, Log Query Groups, Log Partitions, Tracked Query Groups, AWS/Azure/GCP/SaaS Cloud Onboarding, ConfigSource & EventSource & Website extras, Diagnostic Remediation, Metrics, Default Dashboard, Alerts escalate, Access Group Module Mapping, Integration Audit Logs, API Usage Stats, LogicModule Metadata, Unmonitored Devices, Contract Info, DNS Mappings).*
-
----
-
-## 🔍 Gap Detail by Category
-
-Only operations **not yet implemented** are listed. Categories that are 100% covered are in [Fully Covered Areas](#-fully-covered-areas).
-
-### 🔴 Device Groups — datasource alert settings, cluster, properties
-
-**Coverage:** 10/29 operations.  **Proposed tools:** group datasource/alert-setting, cluster-alert, property CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
-| `DELETE` | `deleteDeviceGroupPropertyByName` | `/device/groups/{gid}/properties/{name}` |
-| `GET` | `getAlertListByDeviceGroupId` | `/device/groups/{id}/alerts` |
-| `GET` | `getDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
-| `GET` | `getDeviceGroupClusterAlertConfList` | `/device/groups/{deviceGroupId}/clusterAlertConf` |
-| `GET` | `getDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
-| `GET` | `getDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-| `GET` | `getDeviceGroupDatasourceList` | `/device/groups/{deviceGroupId}/datasources` |
-| `GET` | `getDeviceGroupSDTList` | `/device/groups/{id}/sdts` |
-| `GET` | `getSDTHistoryByDeviceGroupId` | `/device/groups/{id}/historysdts` |
-| `PATCH` | `patchDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
-| `PATCH` | `patchDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
-| `PATCH` | `patchDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-| `PATCH` | `patchDeviceGroupPropertyByName` | `/device/groups/{gid}/properties/{name}` |
-| `POST` | `addDeviceGroupClusterAlertConf` | `/device/groups/{deviceGroupId}/clusterAlertConf` |
-| `POST` | `addDeviceGroupProperty` | `/device/groups/{gid}/properties` |
-| `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
-| `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
-| `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
+All HIGH, MEDIUM, and LOW priority categories are fully covered. See [Fully Covered Areas](#-fully-covered-areas) for the complete category list.
 
 ---
 
@@ -154,6 +110,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Dashboards** (7/7)
 - **DataSource Management (write/import)** (12/12)
 - **Default Dashboard (user data)** (2/2)
+- **Device Groups — datasource alert settings, cluster, properties** (29/29)
 - **Devices — instances, alert settings, config & netflow** (52/52)
 - **Diagnostic Remediation** (2/2)
 - **DiagnosticSources** (8/8)
@@ -197,10 +154,7 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 ## 🗺️ Roadmap to 100% Coverage
 
-| Phase | Focus | Operations to add | Cumulative coverage |
-|-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 95% |
-| Phase 1 (HIGH) | Device Groups — datasource alert settings, cluster, properties | +19 | 100% |
+**🎉 100% coverage reached.** Every operation in the LogicMonitor Swagger v3 spec is now backed by an MCP tool. Future work focuses on maintaining parity as new API operations are released.
 
 ---
 
@@ -211,4 +165,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 310 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 393 covered operations.*

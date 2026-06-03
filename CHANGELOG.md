@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Device Group deep-dive tools (15 new), completing the Device Groups category and reaching **100% LogicMonitor API v3 coverage** (393/393 operations, 356 total MCP tools):
+  - Cluster alert configurations: `list_resource_group_cluster_alert_confs`, `get_resource_group_cluster_alert_conf`, `create_resource_group_cluster_alert_conf`, `update_resource_group_cluster_alert_conf`, `delete_resource_group_cluster_alert_conf`
+  - Group datasources: `list_resource_group_datasources`, `get_resource_group_datasource`, `update_resource_group_datasource`
+  - Group datasource alert settings: `get_resource_group_datasource_alert_setting`, `update_resource_group_datasource_alert_setting`
+  - Group properties: `create_resource_group_property`, `delete_resource_group_property` (complementing the existing `update_resource_group_property`)
+  - Group alerts & SDTs: `list_resource_group_alerts`, `list_resource_group_sdts`, `get_resource_group_sdt_history`
+  - PUT and PATCH update operations are consolidated into single `update_*` tools (PATCH semantics)
 - LOW-priority API coverage batch (56 new tools across 22 categories), raising overall coverage to ~95% (374/393 operations) with 341 total MCP tools:
   - Log management: log alert pipelines/processors (`list/get/create/update/delete_log_alert_group`, `list/get/create/update/delete_log_alert`, `set_log_alert_status`), log query groups (`list/get/create/update/delete_log_query_group`, `list_log_query_group_queries`, `list_log_query_groups_by_type`, `move_log_queries`), log partitions (`list/get/create/update/delete_log_partition`, `get_log_partition_retentions`, `log_partition_action`), and tracked query groups (`list/get/create/update/delete_tracked_query_group`)
   - Cloud onboarding (read-oriented validation): `get_aws_account_id`, `get_aws_external_id`, `test_aws_account`, `verify_aws_billing_permissions`, `discover_azure_subscriptions`, `test_azure_account`, `verify_azure_storage_permissions`, `test_gcp_account`, `test_saas_account`

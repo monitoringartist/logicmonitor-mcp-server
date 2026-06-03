@@ -2436,6 +2436,75 @@ export class LogicMonitorHandlers {
             args.value,
           );
 
+        case 'create_resource_group_property':
+          return await this.client.createDeviceGroupProperty(args.groupId, args.name, args.value);
+
+        case 'delete_resource_group_property':
+          return await this.client.deleteDeviceGroupProperty(args.groupId, args.propertyName);
+
+        // Device Group - Cluster Alert Configurations
+        case 'list_resource_group_cluster_alert_confs':
+          return await this.client.listDeviceGroupClusterAlertConfs(args.groupId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_resource_group_cluster_alert_conf':
+          return await this.client.getDeviceGroupClusterAlertConf(args.groupId, args.id);
+
+        case 'create_resource_group_cluster_alert_conf': {
+          const { groupId, config, ...rest } = args;
+          return await this.client.createDeviceGroupClusterAlertConf(groupId, { ...rest, ...(config || {}) });
+        }
+
+        case 'update_resource_group_cluster_alert_conf': {
+          const { groupId, id, config, ...rest } = args;
+          return await this.client.updateDeviceGroupClusterAlertConf(groupId, id, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_resource_group_cluster_alert_conf':
+          return await this.client.deleteDeviceGroupClusterAlertConf(args.groupId, args.id);
+
+        // Device Group - DataSources
+        case 'list_resource_group_datasources':
+          return await this.client.listDeviceGroupDatasources(args.groupId, {
+            includeDisabledDataSourceWithoutInstance: args.includeDisabledDataSourceWithoutInstance,
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_resource_group_datasource':
+          return await this.client.getDeviceGroupDatasource(args.groupId, args.id, { fields: args.fields });
+
+        case 'update_resource_group_datasource': {
+          const { groupId, id, config, ...rest } = args;
+          return await this.client.updateDeviceGroupDatasource(groupId, id, { ...rest, ...(config || {}) });
+        }
+
+        // Device Group - DataSource Alert Settings
+        case 'get_resource_group_datasource_alert_setting':
+          return await this.client.getDeviceGroupDatasourceAlertSetting(args.groupId, args.dsId, { fields: args.fields });
+
+        case 'update_resource_group_datasource_alert_setting': {
+          const { groupId, dsId, config, ...rest } = args;
+          return await this.client.updateDeviceGroupDatasourceAlertSetting(groupId, dsId, { ...rest, ...(config || {}) });
+        }
+
+        // Device Group - Alerts / SDTs
+        case 'list_resource_group_alerts':
+          return await this.client.listDeviceGroupAlerts(args.groupId, {
+            needMessage: args.needMessage, customColumns: args.customColumns,
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'list_resource_group_sdts':
+          return await this.client.listDeviceGroupSDTs(args.groupId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_resource_group_sdt_history':
+          return await this.client.getDeviceGroupSDTHistory(args.groupId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
         // Netscans
         case 'list_netscans':
           return await this.client.listNetscans({

@@ -336,6 +336,21 @@ describe('LogicMonitorHandlers', () => {
       addDNSMapping: jest.fn(),
       listDeviceGroupProperties: jest.fn(),
       updateDeviceGroupProperty: jest.fn(),
+      createDeviceGroupProperty: jest.fn(),
+      deleteDeviceGroupProperty: jest.fn(),
+      listDeviceGroupClusterAlertConfs: jest.fn(),
+      getDeviceGroupClusterAlertConf: jest.fn(),
+      createDeviceGroupClusterAlertConf: jest.fn(),
+      updateDeviceGroupClusterAlertConf: jest.fn(),
+      deleteDeviceGroupClusterAlertConf: jest.fn(),
+      listDeviceGroupDatasources: jest.fn(),
+      getDeviceGroupDatasource: jest.fn(),
+      updateDeviceGroupDatasource: jest.fn(),
+      getDeviceGroupDatasourceAlertSetting: jest.fn(),
+      updateDeviceGroupDatasourceAlertSetting: jest.fn(),
+      listDeviceGroupAlerts: jest.fn(),
+      listDeviceGroupSDTs: jest.fn(),
+      getDeviceGroupSDTHistory: jest.fn(),
       listNetscans: jest.fn(),
       getNetscan: jest.fn(),
       createNetscan: jest.fn(),
@@ -2078,6 +2093,98 @@ describe('LogicMonitorHandlers', () => {
       await handlers.handleToolCall('get_metrics_usage', {});
       expect(mockClient.getMetricsSummary).toHaveBeenCalled();
       expect(mockClient.getMetricsUsage).toHaveBeenCalled();
+    });
+  });
+
+  describe('Device Groups — datasource alert settings, cluster, properties', () => {
+    it('create_resource_group_property passes name + value', async () => {
+      mockClient.createDeviceGroupProperty.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_resource_group_property', { groupId: 1, name: 'env', value: 'prod' });
+      expect(mockClient.createDeviceGroupProperty).toHaveBeenCalledWith(1, 'env', 'prod');
+    });
+
+    it('delete_resource_group_property passes id + name', async () => {
+      mockClient.deleteDeviceGroupProperty.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_resource_group_property', { groupId: 1, propertyName: 'env' });
+      expect(mockClient.deleteDeviceGroupProperty).toHaveBeenCalledWith(1, 'env');
+    });
+
+    it('list_resource_group_cluster_alert_confs forwards pagination', async () => {
+      mockClient.listDeviceGroupClusterAlertConfs.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_group_cluster_alert_confs', { groupId: 5, size: 10 });
+      expect(mockClient.listDeviceGroupClusterAlertConfs).toHaveBeenCalledWith(5, expect.objectContaining({ size: 10 }));
+    });
+
+    it('get_resource_group_cluster_alert_conf passes ids', async () => {
+      mockClient.getDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_resource_group_cluster_alert_conf', { groupId: 5, id: 7 });
+      expect(mockClient.getDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7);
+    });
+
+    it('create_resource_group_cluster_alert_conf merges config', async () => {
+      mockClient.createDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_resource_group_cluster_alert_conf', { groupId: 5, config: { name: 'c1' } });
+      expect(mockClient.createDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, expect.objectContaining({ name: 'c1' }));
+    });
+
+    it('update_resource_group_cluster_alert_conf merges config', async () => {
+      mockClient.updateDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_resource_group_cluster_alert_conf', { groupId: 5, id: 7, config: { name: 'c2' } });
+      expect(mockClient.updateDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7, expect.objectContaining({ name: 'c2' }));
+    });
+
+    it('delete_resource_group_cluster_alert_conf passes ids', async () => {
+      mockClient.deleteDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_resource_group_cluster_alert_conf', { groupId: 5, id: 7 });
+      expect(mockClient.deleteDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7);
+    });
+
+    it('list_resource_group_datasources forwards includeDisabled flag', async () => {
+      mockClient.listDeviceGroupDatasources.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_group_datasources', { groupId: 5, includeDisabledDataSourceWithoutInstance: true });
+      expect(mockClient.listDeviceGroupDatasources).toHaveBeenCalledWith(5, expect.objectContaining({ includeDisabledDataSourceWithoutInstance: true }));
+    });
+
+    it('get_resource_group_datasource passes ids', async () => {
+      mockClient.getDeviceGroupDatasource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_resource_group_datasource', { groupId: 5, id: 8 });
+      expect(mockClient.getDeviceGroupDatasource).toHaveBeenCalledWith(5, 8, expect.any(Object));
+    });
+
+    it('update_resource_group_datasource merges config', async () => {
+      mockClient.updateDeviceGroupDatasource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_resource_group_datasource', { groupId: 5, id: 8, config: { disableAlerting: true } });
+      expect(mockClient.updateDeviceGroupDatasource).toHaveBeenCalledWith(5, 8, expect.objectContaining({ disableAlerting: true }));
+    });
+
+    it('get_resource_group_datasource_alert_setting passes ids', async () => {
+      mockClient.getDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_resource_group_datasource_alert_setting', { groupId: 5, dsId: 9 });
+      expect(mockClient.getDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.any(Object));
+    });
+
+    it('update_resource_group_datasource_alert_setting merges config', async () => {
+      mockClient.updateDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_resource_group_datasource_alert_setting', { groupId: 5, dsId: 9, config: { disableAlerting: false } });
+      expect(mockClient.updateDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.objectContaining({ disableAlerting: false }));
+    });
+
+    it('list_resource_group_alerts forwards needMessage', async () => {
+      mockClient.listDeviceGroupAlerts.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_group_alerts', { groupId: 5, needMessage: true });
+      expect(mockClient.listDeviceGroupAlerts).toHaveBeenCalledWith(5, expect.objectContaining({ needMessage: true }));
+    });
+
+    it('list_resource_group_sdts forwards pagination', async () => {
+      mockClient.listDeviceGroupSDTs.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_group_sdts', { groupId: 5, size: 20 });
+      expect(mockClient.listDeviceGroupSDTs).toHaveBeenCalledWith(5, expect.objectContaining({ size: 20 }));
+    });
+
+    it('get_resource_group_sdt_history forwards pagination', async () => {
+      mockClient.getDeviceGroupSDTHistory.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_resource_group_sdt_history', { groupId: 5, size: 20 });
+      expect(mockClient.getDeviceGroupSDTHistory).toHaveBeenCalledWith(5, expect.objectContaining({ size: 20 }));
     });
   });
 

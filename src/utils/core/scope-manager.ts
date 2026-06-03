@@ -335,6 +335,23 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'map_unmap_module_to_access_group': ['mcp:tools', 'lm:write'],
   'add_dns_mapping': ['mcp:tools', 'lm:write'],
 
+  // Device Groups - datasource alert settings, cluster, properties
+  'create_resource_group_property': ['mcp:tools', 'lm:write'],
+  'delete_resource_group_property': ['mcp:tools', 'lm:write'],
+  'list_resource_group_cluster_alert_confs': ['mcp:tools', 'lm:read'],
+  'get_resource_group_cluster_alert_conf': ['mcp:tools', 'lm:read'],
+  'create_resource_group_cluster_alert_conf': ['mcp:tools', 'lm:write'],
+  'update_resource_group_cluster_alert_conf': ['mcp:tools', 'lm:write'],
+  'delete_resource_group_cluster_alert_conf': ['mcp:tools', 'lm:write'],
+  'list_resource_group_datasources': ['mcp:tools', 'lm:read'],
+  'get_resource_group_datasource': ['mcp:tools', 'lm:read'],
+  'update_resource_group_datasource': ['mcp:tools', 'lm:write'],
+  'get_resource_group_datasource_alert_setting': ['mcp:tools', 'lm:read'],
+  'update_resource_group_datasource_alert_setting': ['mcp:tools', 'lm:write'],
+  'list_resource_group_alerts': ['mcp:tools', 'lm:read'],
+  'list_resource_group_sdts': ['mcp:tools', 'lm:read'],
+  'get_resource_group_sdt_history': ['mcp:tools', 'lm:read'],
+
   // Singletons (read)
   'get_integration_audit_logs': ['mcp:tools', 'lm:read'],
   'get_external_api_stats': ['mcp:tools', 'lm:read'],

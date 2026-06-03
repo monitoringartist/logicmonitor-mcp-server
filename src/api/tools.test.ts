@@ -730,6 +730,7 @@ describe('getLogicMonitorTools', () => {
           'get_diagnostic_remediation_sources',
           'get_diagnostic_remediation_results',
           'get_integration_audit_logs',
+          'get_resource_group_cluster_alert_conf',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

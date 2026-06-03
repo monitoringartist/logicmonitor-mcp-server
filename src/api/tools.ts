@@ -9719,6 +9719,239 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['groupId', 'propertyName', 'value'],
     },
   },
+  {
+    name: 'create_resource_group_property',
+    description: 'Add a custom property to a resource/device group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a new group-level property that is inherited by all resources/devices in the group (unless overridden at a lower level). ' +
+      '\n\n**Related tools:** "update\\_resource\\_group\\_property" (modify existing), "delete\\_resource\\_group\\_property" (remove), "list\\_resource\\_group\\_properties" (view all).',
+    annotations: { title: 'Create resource/device group property', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        name: { type: 'string', description: 'The property name (e.g., "ssh.user", "env").' },
+        value: { type: 'string', description: 'The property value.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'name', 'value'],
+    },
+  },
+  {
+    name: 'delete_resource_group_property',
+    description: 'Delete a custom property from a resource/device group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "update\\_resource\\_group\\_property", "create\\_resource\\_group\\_property", "list\\_resource\\_group\\_properties".',
+    annotations: { title: 'Delete resource/device group property', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        propertyName: { type: 'string', description: 'The name of the property to delete.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'propertyName'],
+    },
+  },
+
+  // Device Group - Cluster Alert Configurations
+  {
+    name: 'list_resource_group_cluster_alert_confs',
+    description: 'List cluster alert configurations for a resource/device group in LogicMonitor (LM). ' +
+      '\n\n**What this does:** Cluster alerts trigger when a threshold number of instances across the group meet a condition (e.g., "more than 5 servers down"). ' +
+      '\n\n**Related tools:** "get\\_resource\\_group\\_cluster\\_alert\\_conf", "create\\_resource\\_group\\_cluster\\_alert\\_conf".',
+    annotations: { title: 'List resource/device group cluster alert configs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'get_resource_group_cluster_alert_conf',
+    description: 'Get a specific cluster alert configuration for a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'Get resource/device group cluster alert config', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        id: { type: 'number', description: 'The cluster alert configuration ID' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'id'],
+    },
+  },
+  {
+    name: 'create_resource_group_cluster_alert_conf',
+    description: 'Create a cluster alert configuration for a resource/device group in LogicMonitor (LM). Provide attributes via "config".',
+    annotations: { title: 'Create resource/device group cluster alert config', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Cluster alert config attributes (name, dataSourceId, alertExpr, etc.).' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'config'],
+    },
+  },
+  {
+    name: 'update_resource_group_cluster_alert_conf',
+    description: 'Update a cluster alert configuration for a resource/device group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update resource/device group cluster alert config', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        id: { type: 'number', description: 'The cluster alert configuration ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'id', 'config'],
+    },
+  },
+  {
+    name: 'delete_resource_group_cluster_alert_conf',
+    description: 'Delete a cluster alert configuration from a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'Delete resource/device group cluster alert config', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        id: { type: 'number', description: 'The cluster alert configuration ID' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'id'],
+    },
+  },
+
+  // Device Group - DataSources
+  {
+    name: 'list_resource_group_datasources',
+    description: 'List the datasources applied to a resource/device group in LogicMonitor (LM). ' +
+      '\n\n**Related tools:** "get\\_resource\\_group\\_datasource", "update\\_resource\\_group\\_datasource", "get\\_resource\\_group\\_datasource\\_alert\\_setting".',
+    annotations: { title: 'List resource/device group datasources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        includeDisabledDataSourceWithoutInstance: { type: 'boolean', description: 'Include disabled datasources that have no instances.' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'get_resource_group_datasource',
+    description: 'Get a specific datasource applied to a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'Get resource/device group datasource', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        id: { type: 'number', description: 'The group datasource ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId', 'id'],
+    },
+  },
+  {
+    name: 'update_resource_group_datasource',
+    description: 'Update a datasource applied to a resource/device group in LogicMonitor (LM) (e.g., monitoring/collection settings). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update resource/device group datasource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        id: { type: 'number', description: 'The group datasource ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'id', 'config'],
+    },
+  },
+
+  // Device Group - DataSource Alert Settings
+  {
+    name: 'get_resource_group_datasource_alert_setting',
+    description: 'Get the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'Get resource/device group datasource alert setting', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        dsId: { type: 'number', description: 'The group datasource ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId', 'dsId'],
+    },
+  },
+  {
+    name: 'update_resource_group_datasource_alert_setting',
+    description: 'Update the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update resource/device group datasource alert setting', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        dsId: { type: 'number', description: 'The group datasource ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Alert setting fields to update (e.g., disableAlerting, datapoint thresholds).' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'dsId', 'config'],
+    },
+  },
+
+  // Device Group - Alerts / SDTs
+  {
+    name: 'list_resource_group_alerts',
+    description: 'List alerts for all resources/devices in a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'List resource/device group alerts', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        needMessage: { type: 'boolean', description: 'Include the alert message body.' },
+        customColumns: { type: 'string', description: 'Comma-separated custom columns to include.' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_resource_group_sdts',
+    description: 'List active/scheduled down times (SDTs) for a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'List resource/device group SDTs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'get_resource_group_sdt_history',
+    description: 'Get the scheduled down time (SDT) history for a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'Get resource/device group SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
 
   // NetScans
   {
