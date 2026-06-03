@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- LOW-priority API coverage batch (56 new tools across 22 categories), raising overall coverage to ~95% (374/393 operations) with 341 total MCP tools:
+  - Log management: log alert pipelines/processors (`list/get/create/update/delete_log_alert_group`, `list/get/create/update/delete_log_alert`, `set_log_alert_status`), log query groups (`list/get/create/update/delete_log_query_group`, `list_log_query_group_queries`, `list_log_query_groups_by_type`, `move_log_queries`), log partitions (`list/get/create/update/delete_log_partition`, `get_log_partition_retentions`, `log_partition_action`), and tracked query groups (`list/get/create/update/delete_tracked_query_group`)
+  - Cloud onboarding (read-oriented validation): `get_aws_account_id`, `get_aws_external_id`, `test_aws_account`, `verify_aws_billing_permissions`, `discover_azure_subscriptions`, `test_azure_account`, `verify_azure_storage_permissions`, `test_gcp_account`, `test_saas_account`
+  - Diagnostics & metrics: `get_diagnostic_remediation_sources`, `get_diagnostic_remediation_results`, `get_metrics_summary`, `get_metrics_usage`
+  - Extras & singletons: `get_configsource_update_reasons`, `get_website_sdt_history`, `get_website_graph_by_name`, `update_default_dashboard`, `escalate_alert`, `map_unmap_module_to_access_group`, `get_integration_audit_logs`, `get_external_api_stats`, `get_logicmodule_metadata`, `list_unmonitored_devices`, `get_contract_info`, `add_dns_mapping`
+  - Documentation note: ConfigSource and EventSource JSON imports were already covered by the existing `import_configsource`/`import_eventsource` tools (`format: "json"`); those categories are now marked fully covered
 - Cost Optimization Recommendations tools: `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, and `list_cost_optimization_recommendation_categories` (read-only, backed by the `/cost-optimization/recommendations` API)
 - Dashboard Widget tools: `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data` (read-only) and `create_widget`, `update_widget`, `delete_widget` (write), backed by the `/dashboard/widgets` API
 - Collector management tools: `create_collector`, `update_collector`, `delete_collector`, `acknowledge_collector_down_alert` (write) and `get_collector_installer` (read-only; returns an authenticated installer download URL rather than the binary), backed by the `/setting/collector/collectors` API

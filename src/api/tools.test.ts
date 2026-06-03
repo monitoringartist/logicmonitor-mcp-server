@@ -724,6 +724,12 @@ describe('getLogicMonitorTools', () => {
           'get_collector_events',
           'get_collector_status_check',
           'get_instance_graph_data_by_id',
+          'get_aws_account_id',
+          'get_aws_external_id',
+          'get_website_graph_by_name',
+          'get_diagnostic_remediation_sources',
+          'get_diagnostic_remediation_results',
+          'get_integration_audit_logs',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

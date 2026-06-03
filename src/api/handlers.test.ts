@@ -278,6 +278,62 @@ describe('LogicMonitorHandlers', () => {
       deleteApiToken: jest.fn(),
       fetchDeviceInstancesData: jest.fn(),
       getInstanceGraphDataById: jest.fn(),
+      listLogAlertGroups: jest.fn(),
+      getLogAlertGroup: jest.fn(),
+      createLogAlertGroup: jest.fn(),
+      updateLogAlertGroup: jest.fn(),
+      deleteLogAlertGroup: jest.fn(),
+      listLogAlerts: jest.fn(),
+      getLogAlert: jest.fn(),
+      createLogAlert: jest.fn(),
+      updateLogAlert: jest.fn(),
+      deleteLogAlert: jest.fn(),
+      setLogAlertStatus: jest.fn(),
+      listLogQueryGroups: jest.fn(),
+      getLogQueryGroup: jest.fn(),
+      createLogQueryGroup: jest.fn(),
+      updateLogQueryGroup: jest.fn(),
+      deleteLogQueryGroup: jest.fn(),
+      listLogQueryGroupQueries: jest.fn(),
+      listLogQueryGroupsByType: jest.fn(),
+      moveLogQueries: jest.fn(),
+      listLogPartitions: jest.fn(),
+      getLogPartition: jest.fn(),
+      createLogPartition: jest.fn(),
+      updateLogPartition: jest.fn(),
+      deleteLogPartition: jest.fn(),
+      getLogPartitionRetentions: jest.fn(),
+      logPartitionAction: jest.fn(),
+      listTrackedQueryGroups: jest.fn(),
+      getTrackedQueryGroup: jest.fn(),
+      createTrackedQueryGroup: jest.fn(),
+      updateTrackedQueryGroup: jest.fn(),
+      deleteTrackedQueryGroup: jest.fn(),
+      getAwsAccountId: jest.fn(),
+      getAwsExternalId: jest.fn(),
+      testAwsAccount: jest.fn(),
+      verifyAwsBillingPermissions: jest.fn(),
+      discoverAzureSubscriptions: jest.fn(),
+      testAzureAccount: jest.fn(),
+      verifyAzureStoragePermissions: jest.fn(),
+      testGcpAccount: jest.fn(),
+      testSaaSAccount: jest.fn(),
+      getConfigSourceUpdateReasons: jest.fn(),
+      getWebsiteSDTHistory: jest.fn(),
+      getWebsiteGraphByName: jest.fn(),
+      getDiagnosticRemediationSources: jest.fn(),
+      getDiagnosticRemediationResults: jest.fn(),
+      getMetricsSummary: jest.fn(),
+      getMetricsUsage: jest.fn(),
+      updateDefaultDashboard: jest.fn(),
+      escalateAlert: jest.fn(),
+      mapUnmapModuleToAccessGroup: jest.fn(),
+      getIntegrationAuditLogs: jest.fn(),
+      getExternalApiStats: jest.fn(),
+      getLogicModuleMetadata: jest.fn(),
+      listUnmonitoredDevices: jest.fn(),
+      getContractInfo: jest.fn(),
+      addDNSMapping: jest.fn(),
       listDeviceGroupProperties: jest.fn(),
       updateDeviceGroupProperty: jest.fn(),
       listNetscans: jest.fn(),
@@ -1827,6 +1883,201 @@ describe('LogicMonitorHandlers', () => {
       mockClient.getInstanceGraphDataById.mockResolvedValue({} as never);
       await handlers.handleToolCall('get_instance_graph_data_by_id', { instanceId: 10, graphId: 20, start: 1, end: 2 });
       expect(mockClient.getInstanceGraphDataById).toHaveBeenCalledWith(10, 20, expect.objectContaining({ start: 1, end: 2 }));
+    });
+  });
+
+  describe('Log Pipelines / Log Alerts (LOW priority)', () => {
+    it('list_log_alert_groups forwards pagination', async () => {
+      mockClient.listLogAlertGroups.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_log_alert_groups', { size: 10, offset: 0 });
+      expect(mockClient.listLogAlertGroups).toHaveBeenCalledWith(expect.objectContaining({ size: 10, offset: 0 }));
+    });
+
+    it('get_log_alert_group passes id', async () => {
+      mockClient.getLogAlertGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_log_alert_group', { pipelineId: 5 });
+      expect(mockClient.getLogAlertGroup).toHaveBeenCalledWith(5, expect.any(Object));
+    });
+
+    it('create_log_alert_group merges config into body', async () => {
+      mockClient.createLogAlertGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_log_alert_group', { config: { name: 'P1' } });
+      expect(mockClient.createLogAlertGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'P1' }));
+    });
+
+    it('update_log_alert_group merges config into body', async () => {
+      mockClient.updateLogAlertGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_log_alert_group', { pipelineId: 5, config: { name: 'P2' } });
+      expect(mockClient.updateLogAlertGroup).toHaveBeenCalledWith(5, expect.objectContaining({ name: 'P2' }));
+    });
+
+    it('delete_log_alert_group passes id', async () => {
+      mockClient.deleteLogAlertGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_log_alert_group', { pipelineId: 5 });
+      expect(mockClient.deleteLogAlertGroup).toHaveBeenCalledWith(5);
+    });
+
+    it('create_log_alert merges config into body', async () => {
+      mockClient.createLogAlert.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_log_alert', { config: { name: 'A1' } });
+      expect(mockClient.createLogAlert).toHaveBeenCalledWith(expect.objectContaining({ name: 'A1' }));
+    });
+
+    it('set_log_alert_status passes action + body', async () => {
+      mockClient.setLogAlertStatus.mockResolvedValue({} as never);
+      await handlers.handleToolCall('set_log_alert_status', { processorId: 3, action: 'enable', config: { x: 1 } });
+      expect(mockClient.setLogAlertStatus).toHaveBeenCalledWith(3, 'enable', expect.objectContaining({ x: 1 }));
+    });
+  });
+
+  describe('Log Query Groups (LOW priority)', () => {
+    it('list_log_query_groups forwards pagination', async () => {
+      mockClient.listLogQueryGroups.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_log_query_groups', { size: 5 });
+      expect(mockClient.listLogQueryGroups).toHaveBeenCalledWith(expect.objectContaining({ size: 5 }));
+    });
+
+    it('list_log_query_groups_by_type passes group type', async () => {
+      mockClient.listLogQueryGroupsByType.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_log_query_groups_by_type', { groupType: 'static', allGroups: true });
+      expect(mockClient.listLogQueryGroupsByType).toHaveBeenCalledWith('static', expect.objectContaining({ allGroups: true }));
+    });
+
+    it('move_log_queries passes group id + body', async () => {
+      mockClient.moveLogQueries.mockResolvedValue({} as never);
+      await handlers.handleToolCall('move_log_queries', { groupId: 7, config: { ids: [1, 2] } });
+      expect(mockClient.moveLogQueries).toHaveBeenCalledWith(7, expect.objectContaining({ ids: [1, 2] }));
+    });
+  });
+
+  describe('Log Partitions (LOW priority)', () => {
+    it('create_log_partition merges config into body', async () => {
+      mockClient.createLogPartition.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_log_partition', { config: { name: 'part1' } });
+      expect(mockClient.createLogPartition).toHaveBeenCalledWith(expect.objectContaining({ name: 'part1' }));
+    });
+
+    it('get_log_partition_retentions called', async () => {
+      mockClient.getLogPartitionRetentions.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_log_partition_retentions', {});
+      expect(mockClient.getLogPartitionRetentions).toHaveBeenCalled();
+    });
+
+    it('log_partition_action passes action + body', async () => {
+      mockClient.logPartitionAction.mockResolvedValue({} as never);
+      await handlers.handleToolCall('log_partition_action', { partitionId: 2, action: 'pause', config: { y: 1 } });
+      expect(mockClient.logPartitionAction).toHaveBeenCalledWith(2, 'pause', expect.objectContaining({ y: 1 }));
+    });
+  });
+
+  describe('Tracked Query Groups (LOW priority)', () => {
+    it('create_tracked_query_group merges config into body', async () => {
+      mockClient.createTrackedQueryGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_tracked_query_group', { config: { name: 'tq' } });
+      expect(mockClient.createTrackedQueryGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'tq' }));
+    });
+
+    it('delete_tracked_query_group passes id', async () => {
+      mockClient.deleteTrackedQueryGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_tracked_query_group', { groupId: 9 });
+      expect(mockClient.deleteTrackedQueryGroup).toHaveBeenCalledWith(9);
+    });
+  });
+
+  describe('Cloud Onboarding (LOW priority)', () => {
+    it('get_aws_account_id called', async () => {
+      mockClient.getAwsAccountId.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_aws_account_id', {});
+      expect(mockClient.getAwsAccountId).toHaveBeenCalled();
+    });
+
+    it('test_aws_account forwards config', async () => {
+      mockClient.testAwsAccount.mockResolvedValue({} as never);
+      await handlers.handleToolCall('test_aws_account', { config: { externalId: 'x' } });
+      expect(mockClient.testAwsAccount).toHaveBeenCalledWith(expect.objectContaining({ externalId: 'x' }));
+    });
+
+    it('discover_azure_subscriptions forwards config', async () => {
+      mockClient.discoverAzureSubscriptions.mockResolvedValue({} as never);
+      await handlers.handleToolCall('discover_azure_subscriptions', { config: { tenantId: 't' } });
+      expect(mockClient.discoverAzureSubscriptions).toHaveBeenCalledWith(expect.objectContaining({ tenantId: 't' }));
+    });
+
+    it('test_gcp_account forwards config', async () => {
+      mockClient.testGcpAccount.mockResolvedValue({} as never);
+      await handlers.handleToolCall('test_gcp_account', { config: { projectId: 'p' } });
+      expect(mockClient.testGcpAccount).toHaveBeenCalledWith(expect.objectContaining({ projectId: 'p' }));
+    });
+
+    it('test_saas_account forwards config', async () => {
+      mockClient.testSaaSAccount.mockResolvedValue({} as never);
+      await handlers.handleToolCall('test_saas_account', { config: { accountName: 'acme' } });
+      expect(mockClient.testSaaSAccount).toHaveBeenCalledWith(expect.objectContaining({ accountName: 'acme' }));
+    });
+  });
+
+  describe('Misc LOW priority singletons', () => {
+    it('get_configsource_update_reasons passes id', async () => {
+      mockClient.getConfigSourceUpdateReasons.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_configsource_update_reasons', { configSourceId: 11 });
+      expect(mockClient.getConfigSourceUpdateReasons).toHaveBeenCalledWith(11, expect.any(Object));
+    });
+
+    it('get_website_graph_by_name passes id + name', async () => {
+      mockClient.getWebsiteGraphByName.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_website_graph_by_name', { websiteId: 4, graphName: 'response' });
+      expect(mockClient.getWebsiteGraphByName).toHaveBeenCalledWith(4, 'response', expect.any(Object));
+    });
+
+    it('update_default_dashboard merges config', async () => {
+      mockClient.updateDefaultDashboard.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_default_dashboard', { userDataId: 'd1', config: { value: '5' } });
+      expect(mockClient.updateDefaultDashboard).toHaveBeenCalledWith('d1', expect.objectContaining({ value: '5' }));
+    });
+
+    it('escalate_alert passes alert id', async () => {
+      mockClient.escalateAlert.mockResolvedValue({} as never);
+      await handlers.handleToolCall('escalate_alert', { alertId: 'DS123' });
+      expect(mockClient.escalateAlert).toHaveBeenCalledWith('DS123');
+    });
+
+    it('map_unmap_module_to_access_group forwards config', async () => {
+      mockClient.mapUnmapModuleToAccessGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('map_unmap_module_to_access_group', { config: { moduleIds: [1] } });
+      expect(mockClient.mapUnmapModuleToAccessGroup).toHaveBeenCalledWith(expect.objectContaining({ moduleIds: [1] }));
+    });
+
+    it('add_dns_mapping forwards config', async () => {
+      mockClient.addDNSMapping.mockResolvedValue({} as never);
+      await handlers.handleToolCall('add_dns_mapping', { config: { hostname: 'h' } });
+      expect(mockClient.addDNSMapping).toHaveBeenCalledWith(expect.objectContaining({ hostname: 'h' }));
+    });
+
+    it('list_unmonitored_devices forwards pagination', async () => {
+      mockClient.listUnmonitoredDevices.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_unmonitored_devices', { size: 50 });
+      expect(mockClient.listUnmonitoredDevices).toHaveBeenCalledWith(expect.objectContaining({ size: 50 }));
+    });
+
+    it('get_contract_info called', async () => {
+      mockClient.getContractInfo.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_contract_info', {});
+      expect(mockClient.getContractInfo).toHaveBeenCalled();
+    });
+
+    it('get_integration_audit_logs called', async () => {
+      mockClient.getIntegrationAuditLogs.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_integration_audit_logs', { format: 'csv' });
+      expect(mockClient.getIntegrationAuditLogs).toHaveBeenCalledWith(expect.objectContaining({ format: 'csv' }));
+    });
+
+    it('get_metrics_summary and get_metrics_usage called', async () => {
+      mockClient.getMetricsSummary.mockResolvedValue({} as never);
+      mockClient.getMetricsUsage.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_metrics_summary', {});
+      await handlers.handleToolCall('get_metrics_usage', {});
+      expect(mockClient.getMetricsSummary).toHaveBeenCalled();
+      expect(mockClient.getMetricsUsage).toHaveBeenCalled();
     });
   });
 

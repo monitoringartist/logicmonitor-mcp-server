@@ -2815,6 +2815,280 @@ export class LogicMonitorClient {
     );
   }
 
+  // Log Pipelines / Log Alert Groups
+  async listLogAlertGroups(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/logpipelines', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/logpipelines', undefined, cleanedParams);
+  }
+
+  async getLogAlertGroup(pipelineId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/logpipelines/${pipelineId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createLogAlertGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/logpipelines', group);
+  }
+
+  async updateLogAlertGroup(pipelineId: number, group: any) {
+    return this.request<LMResponse<any>>('PATCH', `/logpipelines/${pipelineId}`, group);
+  }
+
+  async deleteLogAlertGroup(pipelineId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/logpipelines/${pipelineId}`);
+  }
+
+  async listLogAlerts(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/logpipelines/processors', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/logpipelines/processors', undefined, cleanedParams);
+  }
+
+  async getLogAlert(processorId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/logpipelines/processors/${processorId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createLogAlert(processor: any) {
+    return this.request<LMResponse<any>>('POST', '/logpipelines/processors', processor);
+  }
+
+  async updateLogAlert(processorId: number, processor: any) {
+    return this.request<LMResponse<any>>('PATCH', `/logpipelines/processors/${processorId}`, processor);
+  }
+
+  async deleteLogAlert(processorId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/logpipelines/processors/${processorId}`);
+  }
+
+  async setLogAlertStatus(processorId: number, action: string, body?: any) {
+    return this.request<LMResponse<any>>('PUT', `/logpipelines/processors/${processorId}/${encodeURIComponent(action)}`, body || {});
+  }
+
+  // Log Query Groups
+  async listLogQueryGroups(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/log/logquerygroups', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/log/logquerygroups', undefined, cleanedParams);
+  }
+
+  async getLogQueryGroup(groupId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/log/logquerygroups/${groupId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createLogQueryGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/log/logquerygroups', group);
+  }
+
+  async updateLogQueryGroup(groupId: number, group: any) {
+    return this.request<LMResponse<any>>('PATCH', `/log/logquerygroups/${groupId}`, group);
+  }
+
+  async deleteLogQueryGroup(groupId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/log/logquerygroups/${groupId}`);
+  }
+
+  async listLogQueryGroupQueries(groupId: number, params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/log/logquerygroups/${groupId}/logqueries`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async listLogQueryGroupsByType(groupType: string, params?: { allGroups?: boolean; size?: number; offset?: number; filter?: string; fields?: string }) {
+    return this.request<LMListResponse<any>>('GET', `/log/logquerygroups/grouptype/${encodeURIComponent(groupType)}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async moveLogQueries(groupId: number, body: any) {
+    return this.request<LMResponse<any>>('POST', `/log/logquerygroups/${groupId}/move`, body);
+  }
+
+  // Log Partitions
+  async listLogPartitions(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/log/partitions', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/log/partitions', undefined, cleanedParams);
+  }
+
+  async getLogPartition(partitionId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/log/partitions/${partitionId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createLogPartition(partition: any) {
+    return this.request<LMResponse<any>>('POST', '/log/partitions', partition);
+  }
+
+  async updateLogPartition(partitionId: number, partition: any) {
+    return this.request<LMResponse<any>>('PATCH', `/log/partitions/${partitionId}`, partition);
+  }
+
+  async deleteLogPartition(partitionId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/log/partitions/${partitionId}`);
+  }
+
+  async getLogPartitionRetentions(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/log/partitions/retentions', undefined, this.cleanParams(params || {}));
+  }
+
+  async logPartitionAction(partitionId: number, action: string, body?: any) {
+    return this.request<LMResponse<any>>('POST', `/log/partitions/${partitionId}/${encodeURIComponent(action)}`, body || {});
+  }
+
+  // Tracked Query Groups
+  async listTrackedQueryGroups(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/trackedquerygroups', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/trackedquerygroups', undefined, cleanedParams);
+  }
+
+  async getTrackedQueryGroup(groupId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/trackedquerygroups/${groupId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createTrackedQueryGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/trackedquerygroups', group);
+  }
+
+  async updateTrackedQueryGroup(groupId: number, group: any) {
+    return this.request<LMResponse<any>>('PATCH', `/trackedquerygroups/${groupId}`, group);
+  }
+
+  async deleteTrackedQueryGroup(groupId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/trackedquerygroups/${groupId}`);
+  }
+
+  // Cloud Onboarding (AWS / Azure / GCP)
+  async getAwsAccountId() {
+    return this.request<LMResponse<any>>('GET', '/aws/accountId');
+  }
+
+  async getAwsExternalId() {
+    return this.request<LMResponse<any>>('GET', '/aws/externalId');
+  }
+
+  async testAwsAccount(body: any) {
+    return this.request<LMResponse<any>>('POST', '/aws/functions/testAccount', body);
+  }
+
+  async verifyAwsBillingPermissions(body: any) {
+    return this.request<LMResponse<any>>('POST', '/aws/functions/verifyBillingPermissions', body);
+  }
+
+  async discoverAzureSubscriptions(body: any) {
+    return this.request<LMResponse<any>>('POST', '/azure/functions/discoverSubscriptions', body);
+  }
+
+  async testAzureAccount(body: any) {
+    return this.request<LMResponse<any>>('POST', '/azure/functions/testAccount', body);
+  }
+
+  async verifyAzureStoragePermissions(body: any) {
+    return this.request<LMResponse<any>>('POST', '/azure/functions/verifyStorageAccountsPermissions', body);
+  }
+
+  async testGcpAccount(body: any) {
+    return this.request<LMResponse<any>>('POST', '/gcp/functions/testAccount', body);
+  }
+
+  // ConfigSource update reasons
+  async getConfigSourceUpdateReasons(configSourceId: number, params?: { size?: number; offset?: number; filter?: string; fields?: string }) {
+    return this.request<LMListResponse<any>>('GET', `/setting/configsources/${configSourceId}/updatereasons`, undefined, this.cleanParams(params || {}));
+  }
+
+  // Website extras
+  async getWebsiteSDTHistory(websiteId: number, params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/websites/${websiteId}/historysdts`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getWebsiteGraphByName(websiteId: number, graphName: string, params?: { start?: number; end?: number; format?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/website/websites/${websiteId}/graphs/${encodeURIComponent(graphName)}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  // Diagnostic Remediation
+  async getDiagnosticRemediationSources(params?: { resourceId?: number; alertId?: string; moduleType?: string }) {
+    return this.request<LMResponse<any>>('GET', '/setting/diagnosticRemediation/list', undefined, this.cleanParams(params || {}));
+  }
+
+  async getDiagnosticRemediationResults(params?: Record<string, string | number | boolean>) {
+    return this.request<LMResponse<any>>('GET', '/setting/diagnosticRemediation/executionResults', undefined, this.cleanParams(params || {}));
+  }
+
+  // Metrics (Push/Usage)
+  async getMetricsSummary(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/metrics/summary', undefined, this.cleanParams(params || {}));
+  }
+
+  async getMetricsUsage(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/metrics/usage', undefined, this.cleanParams(params || {}));
+  }
+
+  // Default Dashboard (user data)
+  async updateDefaultDashboard(userDataId: string, body: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/userdata/${encodeURIComponent(userDataId)}`, body);
+  }
+
+  // Alert escalation
+  async escalateAlert(alertId: string) {
+    return this.request<LMResponse<any>>('POST', `/alert/alerts/${encodeURIComponent(alertId)}/escalate`, {});
+  }
+
+  // Access group module mapping
+  async mapUnmapModuleToAccessGroup(body: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/accessgroup/mapunmap/modules', body);
+  }
+
+  // Integration audit logs
+  async getIntegrationAuditLogs(params?: { format?: string }) {
+    return this.request<LMResponse<any>>('GET', '/setting/integrations/auditlogs', undefined, this.cleanParams(params || {}));
+  }
+
+  // API usage stats
+  async getExternalApiStats(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/apiStats/externalApis', undefined, this.cleanParams(params || {}));
+  }
+
+  // LogicModule metadata
+  async getLogicModuleMetadata(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/setting/logicmodules/metadata', undefined, this.cleanParams(params || {}));
+  }
+
+  // Unmonitored devices
+  async listUnmonitoredDevices(params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) return this.paginateAll<any>('/device/unmonitoreddevices', cleanedParams);
+    return this.request<LMListResponse<any>>('GET', '/device/unmonitoreddevices', undefined, cleanedParams);
+  }
+
+  // Contract / usage info
+  async getContractInfo(params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', '/usage/contractInfo', undefined, this.cleanParams(params || {}));
+  }
+
+  // DNS mappings
+  async addDNSMapping(body: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/dnsmappings', body);
+  }
+
+  // SaaS account
+  async testSaaSAccount(body: any) {
+    return this.request<LMResponse<any>>('POST', '/saas/functions/testAccount', body);
+  }
+
   // Device Group Properties
   async listDeviceGroupProperties(groupId: number, params?: {
     size?: number;

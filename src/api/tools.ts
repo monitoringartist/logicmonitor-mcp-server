@@ -8919,6 +8919,697 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
 
+  // Log Pipelines / Log Alert Groups
+  {
+    name: 'list_log_alert_groups',
+    description: 'List log alert pipelines (log alert groups) in LogicMonitor (LM). ' +
+      '\n\n**What this does:** Returns log pipelines used to organize log alert processors. ' +
+      '\n\n**Related tools:** "get\\_log\\_alert\\_group", "list\\_log\\_alerts".',
+    annotations: { title: 'List log alert groups', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_log_alert_group',
+    description: 'Get a specific log alert pipeline (log alert group) by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get log alert group', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { pipelineId: { type: 'number', description: 'The log pipeline ID' }, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['pipelineId'],
+    },
+  },
+  {
+    name: 'create_log_alert_group',
+    description: 'Create a log alert pipeline (log alert group) in LogicMonitor (LM). Provide pipeline attributes via "config".',
+    annotations: { title: 'Create log alert group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Log pipeline attributes (name, description, filters, etc.).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_log_alert_group',
+    description: 'Update a log alert pipeline (log alert group) in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update log alert group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pipelineId: { type: 'number', description: 'The log pipeline ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['pipelineId', 'config'],
+    },
+  },
+  {
+    name: 'delete_log_alert_group',
+    description: 'Delete a log alert pipeline (log alert group) by ID in LogicMonitor (LM).',
+    annotations: { title: 'Delete log alert group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { pipelineId: { type: 'number', description: 'The log pipeline ID' } },
+      additionalProperties: false,
+      required: ['pipelineId'],
+    },
+  },
+  {
+    name: 'list_log_alerts',
+    description: 'List log alerts (log pipeline processors) in LogicMonitor (LM).',
+    annotations: { title: 'List log alerts', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_log_alert',
+    description: 'Get a specific log alert (log pipeline processor) by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get log alert', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { processorId: { type: 'number', description: 'The log processor ID' }, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['processorId'],
+    },
+  },
+  {
+    name: 'create_log_alert',
+    description: 'Create a log alert (log pipeline processor) in LogicMonitor (LM). Provide processor attributes via "config".',
+    annotations: { title: 'Create log alert', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Log processor attributes (name, conditions, severity, etc.).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_log_alert',
+    description: 'Update a log alert (log pipeline processor) in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update log alert', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processorId: { type: 'number', description: 'The log processor ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['processorId', 'config'],
+    },
+  },
+  {
+    name: 'delete_log_alert',
+    description: 'Delete a log alert (log pipeline processor) by ID in LogicMonitor (LM).',
+    annotations: { title: 'Delete log alert', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { processorId: { type: 'number', description: 'The log processor ID' } },
+      additionalProperties: false,
+      required: ['processorId'],
+    },
+  },
+  {
+    name: 'set_log_alert_status',
+    description: 'Enable or disable a log alert (log pipeline processor) in LogicMonitor (LM). ' +
+      '\n\n**Parameters:** processorId and action (e.g., "enable"/"disable"); optional "config" body.',
+    annotations: { title: 'Set log alert status', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        processorId: { type: 'number', description: 'The log processor ID' },
+        action: { type: 'string', description: 'The action to perform (e.g., enable, disable).' },
+        config: { type: 'object', additionalProperties: true, description: 'Optional request body.' },
+      },
+      additionalProperties: false,
+      required: ['processorId', 'action'],
+    },
+  },
+
+  // Log Query Groups
+  {
+    name: 'list_log_query_groups',
+    description: 'List log query groups in LogicMonitor (LM).',
+    annotations: { title: 'List log query groups', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_log_query_group',
+    description: 'Get a specific log query group by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get log query group', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { groupId: { type: 'number', description: 'The log query group ID' }, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'create_log_query_group',
+    description: 'Create a log query group in LogicMonitor (LM). Provide attributes via "config".',
+    annotations: { title: 'Create log query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Log query group attributes.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_log_query_group',
+    description: 'Update a log query group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update log query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The log query group ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'config'],
+    },
+  },
+  {
+    name: 'delete_log_query_group',
+    description: 'Delete a log query group by ID in LogicMonitor (LM).',
+    annotations: { title: 'Delete log query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { groupId: { type: 'number', description: 'The log query group ID' } },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_log_query_group_queries',
+    description: 'List the log queries within a log query group in LogicMonitor (LM).',
+    annotations: { title: 'List log query group queries', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { groupId: { type: 'number', description: 'The log query group ID' }, ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_log_query_groups_by_type',
+    description: 'List log query groups filtered by group type in LogicMonitor (LM).',
+    annotations: { title: 'List log query groups by type', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupType: { type: 'string', description: 'The group type to filter by.' },
+        allGroups: { type: 'boolean', description: 'Whether to include all groups.' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupType'],
+    },
+  },
+  {
+    name: 'move_log_queries',
+    description: 'Move log queries into a target log query group in LogicMonitor (LM). Provide the move payload via "config".',
+    annotations: { title: 'Move log queries', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The target log query group ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Move payload (e.g., list of query IDs).' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'config'],
+    },
+  },
+
+  // Log Partitions
+  {
+    name: 'list_log_partitions',
+    description: 'List log partitions in LogicMonitor (LM).',
+    annotations: { title: 'List log partitions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_log_partition',
+    description: 'Get a specific log partition by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get log partition', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { partitionId: { type: 'number', description: 'The log partition ID' }, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['partitionId'],
+    },
+  },
+  {
+    name: 'create_log_partition',
+    description: 'Create a log partition in LogicMonitor (LM). Provide attributes via "config".',
+    annotations: { title: 'Create log partition', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Log partition attributes (name, description, retention, etc.).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_log_partition',
+    description: 'Update a log partition in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update log partition', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        partitionId: { type: 'number', description: 'The log partition ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['partitionId', 'config'],
+    },
+  },
+  {
+    name: 'delete_log_partition',
+    description: 'Delete a log partition by ID in LogicMonitor (LM).',
+    annotations: { title: 'Delete log partition', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { partitionId: { type: 'number', description: 'The log partition ID' } },
+      additionalProperties: false,
+      required: ['partitionId'],
+    },
+  },
+  {
+    name: 'get_log_partition_retentions',
+    description: 'Get the available log partition retention options in LogicMonitor (LM).',
+    annotations: { title: 'Get log partition retentions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'log_partition_action',
+    description: 'Perform an action on a log partition (e.g., pause/resume) in LogicMonitor (LM). ' +
+      '\n\n**Parameters:** partitionId and action; optional "config" body.',
+    annotations: { title: 'Log partition action', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        partitionId: { type: 'number', description: 'The log partition ID' },
+        action: { type: 'string', description: 'The action to perform.' },
+        config: { type: 'object', additionalProperties: true, description: 'Optional request body.' },
+      },
+      additionalProperties: false,
+      required: ['partitionId', 'action'],
+    },
+  },
+
+  // Tracked Query Groups
+  {
+    name: 'list_tracked_query_groups',
+    description: 'List tracked query groups (log analysis) in LogicMonitor (LM).',
+    annotations: { title: 'List tracked query groups', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_tracked_query_group',
+    description: 'Get a specific tracked query group by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get tracked query group', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { groupId: { type: 'number', description: 'The tracked query group ID' }, ...fieldsSchema },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'create_tracked_query_group',
+    description: 'Create a tracked query group in LogicMonitor (LM). Provide attributes via "config".',
+    annotations: { title: 'Create tracked query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Tracked query group attributes.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_tracked_query_group',
+    description: 'Update a tracked query group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update tracked query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The tracked query group ID' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['groupId', 'config'],
+    },
+  },
+  {
+    name: 'delete_tracked_query_group',
+    description: 'Delete a tracked query group by ID in LogicMonitor (LM).',
+    annotations: { title: 'Delete tracked query group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { groupId: { type: 'number', description: 'The tracked query group ID' } },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+
+  // Cloud Onboarding - AWS
+  {
+    name: 'get_aws_account_id',
+    description: 'Get the LogicMonitor (LM) AWS account ID used for cross-account IAM role trust during AWS cloud onboarding.',
+    annotations: { title: 'Get AWS account ID', readOnlyHint: true },
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'get_aws_external_id',
+    description: 'Get the external ID used to configure the AWS IAM trust relationship for LogicMonitor (LM) cloud onboarding.',
+    annotations: { title: 'Get AWS external ID', readOnlyHint: true },
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'test_aws_account',
+    description: 'Test AWS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation; does not mutate resources. Provide payload via "config".',
+    annotations: { title: 'Test AWS account', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'AWS account test payload (e.g., externalId, assumedRoleArn).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'verify_aws_billing_permissions',
+    description: 'Verify AWS billing/CUR permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    annotations: { title: 'Verify AWS billing permissions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'AWS billing verification payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // Cloud Onboarding - Azure
+  {
+    name: 'discover_azure_subscriptions',
+    description: 'Discover Azure subscriptions available for LogicMonitor (LM) cloud onboarding. Read-oriented; does not mutate resources. Provide payload via "config".',
+    annotations: { title: 'Discover Azure subscriptions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Azure credentials payload (clientId, secretKey, tenantId).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'test_azure_account',
+    description: 'Test Azure account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    annotations: { title: 'Test Azure account', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Azure account test payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'verify_azure_storage_permissions',
+    description: 'Verify Azure storage account permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    annotations: { title: 'Verify Azure storage permissions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Azure storage verification payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // Cloud Onboarding - GCP
+  {
+    name: 'test_gcp_account',
+    description: 'Test GCP account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    annotations: { title: 'Test GCP account', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'GCP account test payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // ConfigSource update reasons
+  {
+    name: 'get_configsource_update_reasons',
+    description: 'Get the update reasons (change history notes) for a ConfigSource in LogicMonitor (LM).',
+    annotations: { title: 'Get ConfigSource update reasons', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        configSourceId: { type: 'number', description: 'The ConfigSource ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['configSourceId'],
+    },
+  },
+
+  // Website extras
+  {
+    name: 'get_website_sdt_history',
+    description: 'Get the scheduled downtime (SDT) history for a website in LogicMonitor (LM).',
+    annotations: { title: 'Get website SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: { type: 'number', description: 'The website ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['websiteId'],
+    },
+  },
+  {
+    name: 'get_website_graph_by_name',
+    description: 'Get rendered graph data for a website by graph name in LogicMonitor (LM). ' +
+      '\n\n**Parameters:** websiteId, graphName, optional start/end (epoch seconds) and format.',
+    annotations: { title: 'Get website graph by name', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: { type: 'number', description: 'The website ID' },
+        graphName: { type: 'string', description: 'The graph name' },
+        start: { type: 'number', description: 'Start epoch seconds.' },
+        end: { type: 'number', description: 'End epoch seconds.' },
+        format: { type: 'string', description: 'Response format.' },
+      },
+      additionalProperties: false,
+      required: ['websiteId', 'graphName'],
+    },
+  },
+
+  // Diagnostic Remediation
+  {
+    name: 'get_diagnostic_remediation_sources',
+    description: 'List diagnostic remediation sources applicable to a resource/alert in LogicMonitor (LM).',
+    annotations: { title: 'Get diagnostic remediation sources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        resourceId: { type: 'number', description: 'The resource/device ID.' },
+        alertId: { type: 'string', description: 'The alert ID.' },
+        moduleType: { type: 'string', description: 'The module type.' },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_diagnostic_remediation_results',
+    description: 'Get diagnostic remediation execution results in LogicMonitor (LM).',
+    annotations: { title: 'Get diagnostic remediation results', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        resourceId: { type: 'number', description: 'The resource/device ID.' },
+        alertId: { type: 'string', description: 'The alert ID.' },
+        taskId: { type: 'string', description: 'The remediation task ID.' },
+      },
+      additionalProperties: false,
+    },
+  },
+
+  // Metrics
+  {
+    name: 'get_metrics_summary',
+    description: 'Get the metrics ingestion summary (push metrics) for the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get metrics summary', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_metrics_usage',
+    description: 'Get the metrics usage statistics for the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get metrics usage', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+
+  // Default Dashboard
+  {
+    name: 'update_default_dashboard',
+    description: 'Update the default dashboard preference (user data) in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
+    annotations: { title: 'Update default dashboard', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userDataId: { type: 'string', description: 'The user data ID (e.g., defaultDashboardId).' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update (e.g., value/dashboardId).' },
+      },
+      additionalProperties: false,
+      required: ['userDataId', 'config'],
+    },
+  },
+
+  // Alert escalation
+  {
+    name: 'escalate_alert',
+    description: 'Escalate an alert to the next stage in its escalation chain in LogicMonitor (LM).',
+    annotations: { title: 'Escalate alert', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { alertId: { type: 'string', description: 'The alert ID (e.g., DS12345).' } },
+      additionalProperties: false,
+      required: ['alertId'],
+    },
+  },
+
+  // Access group module mapping
+  {
+    name: 'map_unmap_module_to_access_group',
+    description: 'Map or unmap LogicModules to/from access groups in LogicMonitor (LM). Provide the mapping payload via "config".',
+    annotations: { title: 'Map/unmap module to access group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'Mapping payload (moduleIds, accessGroupIds, operation).' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // Integration audit logs
+  {
+    name: 'get_integration_audit_logs',
+    description: 'Get integration audit logs for the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get integration audit logs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { format: { type: 'string', description: 'Response format (e.g., csv).' } },
+      additionalProperties: false,
+    },
+  },
+
+  // API usage stats
+  {
+    name: 'get_external_api_stats',
+    description: 'Get external API usage statistics for the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get external API stats', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+
+  // LogicModule metadata
+  {
+    name: 'get_logicmodule_metadata',
+    description: 'Get metadata about LogicModules available in the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get LogicModule metadata', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+
+  // Unmonitored devices
+  {
+    name: 'list_unmonitored_devices',
+    description: 'List unmonitored devices discovered by LogicMonitor (LM) collectors but not yet added to monitoring.',
+    annotations: { title: 'List unmonitored devices', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+
+  // Contract / usage info
+  {
+    name: 'get_contract_info',
+    description: 'Get contract and usage information for the LogicMonitor (LM) portal.',
+    annotations: { title: 'Get contract info', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...fieldsSchema },
+      additionalProperties: false,
+    },
+  },
+
+  // DNS mappings
+  {
+    name: 'add_dns_mapping',
+    description: 'Add a DNS mapping in LogicMonitor (LM). Provide the mapping payload via "config".',
+    annotations: { title: 'Add DNS mapping', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'DNS mapping payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // SaaS account
+  {
+    name: 'test_saas_account',
+    description: 'Test SaaS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    annotations: { title: 'Test SaaS account', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { config: { type: 'object', additionalProperties: true, description: 'SaaS account test payload.' } },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
   // Device Group Properties
   {
     name: 'list_resource_group_properties',

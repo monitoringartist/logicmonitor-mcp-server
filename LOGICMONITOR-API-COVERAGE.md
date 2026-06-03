@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 310 |
-| **Operations Missing** | 83 |
-| **Coverage** | **79%** |
-| **Implemented MCP Tools** | 285 (+4 custom link tools) |
+| **Operations Covered** | 374 |
+| **Operations Missing** | 19 |
+| **Coverage** | **95%** |
+| **Implemented MCP Tools** | 341 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -21,46 +21,42 @@
 
 | Category | Covered | Total | Status |
 |----------|:-------:|:-----:|:------:|
-| Log Pipelines / Log Alerts | 0 | 13 | ❌ None |
-| Log Query Groups | 0 | 9 | ❌ None |
-| Log Partitions | 0 | 8 | ❌ None |
-| Tracked Query Groups | 0 | 6 | ❌ None |
-| AWS Cloud Onboarding | 0 | 4 | ❌ None |
-| Azure Cloud Onboarding | 0 | 3 | ❌ None |
-| Default Dashboard (user data) | 0 | 2 | ❌ None |
-| Diagnostic Remediation | 0 | 2 | ❌ None |
-| Metrics (Push/Usage) | 0 | 2 | ❌ None |
-| API Usage Stats | 0 | 1 | ❌ None |
-| Contract / Usage Info | 0 | 1 | ❌ None |
-| DNS Mappings | 0 | 1 | ❌ None |
-| GCP Cloud Onboarding | 0 | 1 | ❌ None |
-| Integration Audit Logs | 0 | 1 | ❌ None |
-| LogicModule Metadata | 0 | 1 | ❌ None |
-| SaaS Account | 0 | 1 | ❌ None |
-| Unmonitored Devices | 0 | 1 | ❌ None |
 | Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
-| ConfigSource extras | 7 | 9 | 🟡 Partial |
-| Website extras | 11 | 13 | 🟡 Partial |
-| Access Group Module Mapping | 6 | 7 | 🟡 Partial |
-| Alerts | 4 | 5 | 🟡 Partial |
-| EventSource extras | 7 | 8 | 🟡 Partial |
+| Access Group Module Mapping | 7 | 7 | ✅ Full |
 | Alert Automation — Action Chains & Rules | 14 | 14 | ✅ Full |
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
+| Alerts | 5 | 5 | ✅ Full |
+| API Usage Stats | 1 | 1 | ✅ Full |
 | AppliesTo Functions | 7 | 7 | ✅ Full |
 | Audit / Access Logs | 2 | 2 | ✅ Full |
+| AWS Cloud Onboarding | 4 | 4 | ✅ Full |
+| Azure Cloud Onboarding | 3 | 3 | ✅ Full |
 | Bulk Instance Data Fetch | 1 | 1 | ✅ Full |
 | Collector Debug Commands | 2 | 2 | ✅ Full |
 | Collector Groups & Agent Log Levels | 21 | 21 | ✅ Full |
+| ConfigSource extras | 9 | 9 | ✅ Full |
+| Contract / Usage Info | 1 | 1 | ✅ Full |
 | Cost Optimization | 3 | 3 | ✅ Full |
 | Dashboard Groups (write) | 7 | 7 | ✅ Full |
 | Dashboard Widgets | 7 | 7 | ✅ Full |
 | Dashboards | 7 | 7 | ✅ Full |
 | DataSource Management (write/import) | 12 | 12 | ✅ Full |
+| Default Dashboard (user data) | 2 | 2 | ✅ Full |
 | Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
+| Diagnostic Remediation | 2 | 2 | ✅ Full |
 | DiagnosticSources | 8 | 8 | ✅ Full |
+| DNS Mappings | 1 | 1 | ✅ Full |
+| EventSource extras | 8 | 8 | ✅ Full |
+| GCP Cloud Onboarding | 1 | 1 | ✅ Full |
 | Instance Graph Data (by instance id) | 1 | 1 | ✅ Full |
+| Integration Audit Logs | 1 | 1 | ✅ Full |
 | Job Monitors (BatchJobs) | 8 | 8 | ✅ Full |
+| Log Partitions | 8 | 8 | ✅ Full |
+| Log Pipelines / Log Alerts | 13 | 13 | ✅ Full |
+| Log Query Groups | 9 | 9 | ✅ Full |
+| LogicModule Metadata | 1 | 1 | ✅ Full |
 | LogSources | 7 | 7 | ✅ Full |
+| Metrics (Push/Usage) | 2 | 2 | ✅ Full |
 | NetScans | 6 | 6 | ✅ Full |
 | Ops Notes | 6 | 6 | ✅ Full |
 | PropertySources / Property Rules | 7 | 7 | ✅ Full |
@@ -69,11 +65,15 @@
 | Report Execution | 8 | 8 | ✅ Full |
 | Report Groups | 6 | 6 | ✅ Full |
 | Roles (write) | 6 | 6 | ✅ Full |
+| SaaS Account | 1 | 1 | ✅ Full |
 | Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
 | SNMP OIDs | 7 | 7 | ✅ Full |
 | TopologySources (write) | 7 | 7 | ✅ Full |
+| Tracked Query Groups | 6 | 6 | ✅ Full |
+| Unmonitored Devices | 1 | 1 | ✅ Full |
 | Users & API Tokens (write) | 12 | 12 | ✅ Full |
 | Website Checkpoints | 1 | 1 | ✅ Full |
+| Website extras | 13 | 13 | ✅ Full |
 | Website Groups (write) | 9 | 9 | ✅ Full |
 
 ---
@@ -90,34 +90,11 @@ Grouped by impact. Each item links to its detailed operation list below.
 
 ### 🟡 MEDIUM Priority — 0 operations
 
-*All MEDIUM-priority categories are now fully covered (Collector Groups & Agent Log Levels, Job Monitors, DiagnosticSources, Users & API Tokens, AppliesTo Functions, SNMP OIDs, RemediationSources, TopologySources, Bulk Instance Data Fetch, Instance Graph Data by instance id).*
+*All MEDIUM-priority categories are fully covered.*
 
-### 🟢 LOW Priority — 64 operations
+### 🟢 LOW Priority — 0 operations
 
-*Niche, cloud-onboarding, and rarely-scripted endpoints*
-
-- **Log Pipelines / Log Alerts** — 13 missing. Tools to add: log-alert and log-alert-group CRUD tools
-- **Log Query Groups** — 9 missing. Tools to add: log query group CRUD tools
-- **Log Partitions** — 8 missing. Tools to add: log partition CRUD tools
-- **Tracked Query Groups** — 6 missing. Tools to add: tracked-query-group CRUD tools
-- **AWS Cloud Onboarding** — 4 missing. Tools to add: cloud account test/verify tools
-- **Azure Cloud Onboarding** — 3 missing. Tools to add: cloud account test/verify tools
-- **ConfigSource extras** — 2 missing. Tools to add: `get_configsource_update_reasons`, `import_configsource_json`
-- **Website extras** — 2 missing. Tools to add: `get_website_sdt_history`, `get_website_graph_by_name`
-- **Diagnostic Remediation** — 2 missing. Tools to add: diagnostic remediation listing tools
-- **Metrics (Push/Usage)** — 2 missing. Tools to add: `get_metrics_summary`, `get_metrics_usage`
-- **Default Dashboard (user data)** — 2 missing. Tools to add: `update_default_dashboard`
-- **Alerts** — 1 missing. Tools to add: `escalate_alert`
-- **Access Group Module Mapping** — 1 missing. Tools to add: `map_unmap_module_to_access_group`
-- **Integration Audit Logs** — 1 missing. Tools to add: `get_integration_audit_logs`
-- **GCP Cloud Onboarding** — 1 missing. Tools to add: `test_gcp_account`
-- **API Usage Stats** — 1 missing. Tools to add: `get_external_api_stats`
-- **LogicModule Metadata** — 1 missing. Tools to add: `get_logicmodule_metadata`
-- **Unmonitored Devices** — 1 missing. Tools to add: `list_unmonitored_devices`
-- **EventSource extras** — 1 missing. Tools to add: `import_eventsource_json`
-- **Contract / Usage Info** — 1 missing. Tools to add: `get_contract_info`
-- **DNS Mappings** — 1 missing. Tools to add: `add_dns_mapping`
-- **SaaS Account** — 1 missing. Tools to add: `test_saas_account`
+*All LOW-priority categories are now fully covered (Log Pipelines/Log Alerts, Log Query Groups, Log Partitions, Tracked Query Groups, AWS/Azure/GCP/SaaS Cloud Onboarding, ConfigSource & EventSource & Website extras, Diagnostic Remediation, Metrics, Default Dashboard, Alerts escalate, Access Group Module Mapping, Integration Audit Logs, API Usage Stats, LogicModule Metadata, Unmonitored Devices, Contract Info, DNS Mappings).*
 
 ---
 
@@ -151,247 +128,47 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
 
-### 🟢 Log Pipelines / Log Alerts
-
-**Coverage:** 0/13 operations.  **Proposed tools:** log-alert and log-alert-group CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteLogAlertGroup` | `/logpipelines/{pipelineId}` |
-| `DELETE` | `deleteLogAlertsById` | `/logpipelines/processors/{processorId}` |
-| `GET` | `getLogAlertGroupById` | `/logpipelines/{pipelineId}` |
-| `GET` | `getLogAlertGroupsList` | `/logpipelines` |
-| `GET` | `getLogAlerts` | `/logpipelines/processors` |
-| `GET` | `getLogAlertsById` | `/logpipelines/processors/{processorId}` |
-| `PATCH` | `patchLogAlertGroup` | `/logpipelines/{pipelineId}` |
-| `PATCH` | `patchLogAlerts` | `/logpipelines/processors/{processorId}` |
-| `POST` | `addLogAlertGroup` | `/logpipelines` |
-| `POST` | `addLogAlerts` | `/logpipelines/processors` |
-| `PUT` | `updateDisableLogAlerts` | `/logpipelines/processors/{processorId}/{action}` |
-| `PUT` | `updateLogAlertGroup` | `/logpipelines/{pipelineId}` |
-| `PUT` | `updateLogAlerts` | `/logpipelines/processors/{processorId}` |
-
-### 🟢 Log Query Groups
-
-**Coverage:** 0/9 operations.  **Proposed tools:** log query group CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteLogQueryGroup` | `/log/logquerygroups/{id}` |
-| `GET` | `getLogQueriesByGroupId` | `/log/logquerygroups/{id}/logqueries` |
-| `GET` | `getLogQueryGroupById` | `/log/logquerygroups/{id}` |
-| `GET` | `getLogQueryGroupList` | `/log/logquerygroups` |
-| `GET` | `getLogQueryGroupListByGroupType` | `/log/logquerygroups/grouptype/{groupType}` |
-| `PATCH` | `patchLogQueryGroup` | `/log/logquerygroups/{id}` |
-| `POST` | `addLogQueryGroup` | `/log/logquerygroups` |
-| `POST` | `moveLogQueries` | `/log/logquerygroups/{id}/move` |
-| `PUT` | `updateLogQueryGroup` | `/log/logquerygroups/{id}` |
-
-### 🟢 Log Partitions
-
-**Coverage:** 0/8 operations.  **Proposed tools:** log partition CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteLogPartitionById` | `/log/partitions/{id}` |
-| `GET` | `getAllLogPartitions` | `/log/partitions` |
-| `GET` | `getPartitionById` | `/log/partitions/{id}` |
-| `GET` | `getRetentionList` | `/log/partitions/retentions` |
-| `PATCH` | `patchLogPartition` | `/log/partitions/{id}` |
-| `POST` | `createLogPartition` | `/log/partitions` |
-| `POST` | `partitionAction` | `/log/partitions/{id}/{action}` |
-| `PUT` | `updateLogPartition` | `/log/partitions/{id}` |
-
-### 🟢 Tracked Query Groups
-
-**Coverage:** 0/6 operations.  **Proposed tools:** tracked-query-group CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteTrackedQueryGroup` | `/trackedquerygroups/{id}` |
-| `GET` | `getTrackedQueryGroupById` | `/trackedquerygroups/{id}` |
-| `GET` | `getTrackedQueryGroupList` | `/trackedquerygroups` |
-| `PATCH` | `patchTrackedQueryGroup` | `/trackedquerygroups/{id}` |
-| `POST` | `createTrackedQueryGroup` | `/trackedquerygroups` |
-| `PUT` | `updateTrackedQueryGroup` | `/trackedquerygroups/{id}` |
-
-### 🟢 AWS Cloud Onboarding
-
-**Coverage:** 0/4 operations.  **Proposed tools:** cloud account test/verify tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getAwsAccountId` | `/aws/accountId` |
-| `GET` | `getAwsExternalId` | `/aws/externalId` |
-| `POST` | `testAWSAccount` | `/aws/functions/testAccount` |
-| `POST` | `verifyAWSBillingPermissions` | `/aws/functions/verifyBillingPermissions` |
-
-### 🟢 Azure Cloud Onboarding
-
-**Coverage:** 0/3 operations.  **Proposed tools:** cloud account test/verify tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `discoverSubscriptions` | `/azure/functions/discoverSubscriptions` |
-| `POST` | `testAzureAccount` | `/azure/functions/testAccount` |
-| `POST` | `verifyStorageAccountsPermissions` | `/azure/functions/verifyStorageAccountsPermissions` |
-
-### 🟢 ConfigSource extras
-
-**Coverage:** 7/9 operations.  **Proposed tools:** `get_configsource_update_reasons`, `import_configsource_json`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getUpdateReasonListByConfigSourceId` | `/setting/configsources/{id}/updatereasons` |
-| `POST` | `importConfigSourceJson` | `/setting/configsources/importjson` |
-
-### 🟢 Website extras
-
-**Coverage:** 11/13 operations.  **Proposed tools:** `get_website_sdt_history`, `get_website_graph_by_name`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getSDTHistoryByWebsiteId` | `/website/websites/{id}/historysdts` |
-| `GET` | `getWebsiteDataByGraphName` | `/website/websites/{id}/graphs/{graphName}/data` |
-
-### 🟢 Diagnostic Remediation
-
-**Coverage:** 0/2 operations.  **Proposed tools:** diagnostic remediation listing tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getDiagnosticRemediationAssignedSources` | `/setting/diagnosticRemediation/list` |
-| `GET` | `getDiagnosticRemediationExecutionResults` | `/setting/diagnosticRemediation/executionResults` |
-
-### 🟢 Metrics (Push/Usage)
-
-**Coverage:** 0/2 operations.  **Proposed tools:** `get_metrics_summary`, `get_metrics_usage`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getMetricsSummary` | `/metrics/summary` |
-| `GET` | `getMetricsUsage` | `/metrics/usage` |
-
-### 🟢 Default Dashboard (user data)
-
-**Coverage:** 0/2 operations.  **Proposed tools:** `update_default_dashboard`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `PATCH` | `patchDefaultDashboard` | `/setting/userdata/{id}` |
-| `PUT` | `updateDefaultDashboard` | `/setting/userdata/{id}` |
-
-### 🟢 Alerts
-
-**Coverage:** 4/5 operations.  **Proposed tools:** `escalate_alert`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `escalatedAlertById` | `/alert/alerts/{id}/escalate` |
-
-### 🟢 Access Group Module Mapping
-
-**Coverage:** 6/7 operations.  **Proposed tools:** `map_unmap_module_to_access_group`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `mapUnMapModuleToAccessGroup` | `/setting/accessgroup/mapunmap/modules` |
-
-### 🟢 Integration Audit Logs
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `get_integration_audit_logs`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getIntegrationAuditLogs` | `/setting/integrations/auditlogs` |
-
-### 🟢 GCP Cloud Onboarding
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `test_gcp_account`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `testGCPAccount` | `/gcp/functions/testAccount` |
-
-### 🟢 API Usage Stats
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `get_external_api_stats`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getExternalApiStats` | `/apiStats/externalApis` |
-
-### 🟢 LogicModule Metadata
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `get_logicmodule_metadata`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getV4Metadata` | `/setting/logicmodules/metadata` |
-
-### 🟢 Unmonitored Devices
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `list_unmonitored_devices`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getUnmonitoredDeviceList` | `/device/unmonitoreddevices` |
-
-### 🟢 EventSource extras
-
-**Coverage:** 7/8 operations.  **Proposed tools:** `import_eventsource_json`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `importEventSourceJson` | `/setting/eventsources/importjson` |
-
-### 🟢 Contract / Usage Info
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `get_contract_info`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getContractInfoByCompany` | `/usage/contractInfo` |
-
-### 🟢 DNS Mappings
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `add_dns_mapping`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `addDNSMapping` | `/setting/dnsmappings` |
-
-### 🟢 SaaS Account
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `test_saas_account`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `testSaaSAccount` | `/saas/functions/testAccount` |
-
 ---
 
 ## ✅ Fully Covered Areas
 
 These categories have every Swagger operation backed by an MCP tool:
 
+- **Access Group Module Mapping** (7/7)
 - **Alert Automation — Action Chains & Rules** (14/14)
 - **Alert Rules & Escalation Chains** (12/12)
+- **Alerts** (5/5)
+- **API Usage Stats** (1/1)
 - **AppliesTo Functions** (7/7)
 - **Audit / Access Logs** (2/2)
+- **AWS Cloud Onboarding** (4/4)
+- **Azure Cloud Onboarding** (3/3)
 - **Bulk Instance Data Fetch** (1/1)
 - **Collector Debug Commands** (2/2)
 - **Collector Groups & Agent Log Levels** (21/21)
+- **ConfigSource extras** (9/9)
+- **Contract / Usage Info** (1/1)
 - **Cost Optimization** (3/3)
 - **Dashboard Groups (write)** (7/7)
 - **Dashboard Widgets** (7/7)
 - **Dashboards** (7/7)
 - **DataSource Management (write/import)** (12/12)
+- **Default Dashboard (user data)** (2/2)
 - **Devices — instances, alert settings, config & netflow** (52/52)
+- **Diagnostic Remediation** (2/2)
 - **DiagnosticSources** (8/8)
+- **DNS Mappings** (1/1)
+- **EventSource extras** (8/8)
+- **GCP Cloud Onboarding** (1/1)
 - **Instance Graph Data (by instance id)** (1/1)
+- **Integration Audit Logs** (1/1)
 - **Job Monitors (BatchJobs)** (8/8)
+- **Log Partitions** (8/8)
+- **Log Pipelines / Log Alerts** (13/13)
+- **Log Query Groups** (9/9)
+- **LogicModule Metadata** (1/1)
 - **LogSources** (7/7)
+- **Metrics (Push/Usage)** (2/2)
 - **NetScans** (6/6)
 - **Ops Notes** (6/6)
 - **PropertySources / Property Rules** (7/7)
@@ -400,11 +177,15 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Report Execution** (8/8)
 - **Report Groups** (6/6)
 - **Roles (write)** (6/6)
+- **SaaS Account** (1/1)
 - **Scheduled Down Time (SDT)** (6/6)
 - **SNMP OIDs** (7/7)
 - **TopologySources (write)** (7/7)
+- **Tracked Query Groups** (6/6)
+- **Unmonitored Devices** (1/1)
 - **Users & API Tokens (write)** (12/12)
 - **Website Checkpoints** (1/1)
+- **Website extras** (13/13)
 - **Website Groups (write)** (9/9)
 
 ### Custom Enhancements (not in the official API)
@@ -418,9 +199,8 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 79% |
-| Phase 1 (HIGH) | Core monitoring & config mgmt | +19 | 84% |
-| Phase 2 (LOW) | Cloud onboarding & niche | +64 | 100% |
+| Current | — | — | 95% |
+| Phase 1 (HIGH) | Device Groups — datasource alert settings, cluster, properties | +19 | 100% |
 
 ---
 

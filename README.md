@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **285 MCP Tools** for comprehensive LogicMonitor operations (136 read-only, 149 write)
+- **341 MCP Tools** for comprehensive LogicMonitor operations (170 read-only, 171 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -472,7 +472,7 @@ npm run start:http
 
 ## Available Tools
 
-The server provides 122 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
+The server provides 341 tools for comprehensive LogicMonitor operations. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
 ### Resource/Device Management
 
@@ -832,11 +832,56 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_cost_optimization_recommendation` - Get a single recommendation by its composite ID
 - `list_cost_optimization_recommendation_categories` - List available recommendation categories
 
+### Log Management (Pipelines, Queries, Partitions)
+
+**Read-Only:**
+- `list_log_alert_groups` / `get_log_alert_group` - Log alert pipelines (groups)
+- `list_log_alerts` / `get_log_alert` - Log alerts (pipeline processors)
+- `list_log_query_groups` / `get_log_query_group` / `list_log_query_group_queries` / `list_log_query_groups_by_type` - Log query groups
+- `list_log_partitions` / `get_log_partition` / `get_log_partition_retentions` - Log partitions
+- `list_tracked_query_groups` / `get_tracked_query_group` - Tracked query groups
+
+**Write Operations:**
+- `create_log_alert_group` / `update_log_alert_group` / `delete_log_alert_group`
+- `create_log_alert` / `update_log_alert` / `delete_log_alert` / `set_log_alert_status`
+- `create_log_query_group` / `update_log_query_group` / `delete_log_query_group` / `move_log_queries`
+- `create_log_partition` / `update_log_partition` / `delete_log_partition` / `log_partition_action`
+- `create_tracked_query_group` / `update_tracked_query_group` / `delete_tracked_query_group`
+
+### Cloud Onboarding (AWS / Azure / GCP / SaaS)
+
+**Read-Only (validation/discovery; no resources mutated):**
+- `get_aws_account_id` / `get_aws_external_id` - AWS trust configuration values
+- `test_aws_account` / `verify_aws_billing_permissions` - Validate AWS credentials/permissions
+- `discover_azure_subscriptions` / `test_azure_account` / `verify_azure_storage_permissions` - Azure onboarding checks
+- `test_gcp_account` - Validate GCP credentials
+- `test_saas_account` - Validate SaaS account credentials
+
+### Diagnostics, Metrics & Account
+
+**Read-Only:**
+- `get_diagnostic_remediation_sources` / `get_diagnostic_remediation_results` - Diagnostic remediation
+- `get_metrics_summary` / `get_metrics_usage` - Push-metrics ingestion summary & usage
+- `get_configsource_update_reasons` - ConfigSource change-reason history
+- `get_website_sdt_history` - Website SDT history
+- `get_website_graph_by_name` - Website graph data by graph name
+- `get_integration_audit_logs` - Integration audit logs
+- `get_external_api_stats` - External API usage statistics
+- `get_logicmodule_metadata` - LogicModule metadata
+- `list_unmonitored_devices` - Discovered but unmonitored devices
+- `get_contract_info` - Contract & usage information
+
+**Write Operations:**
+- `update_default_dashboard` - Set the default dashboard preference
+- `escalate_alert` - Escalate an alert to the next stage
+- `map_unmap_module_to_access_group` - Map/unmap LogicModules to access groups
+- `add_dns_mapping` - Add a DNS mapping
+
 ### Summary
 
-- **136 read-only tools** - Safe for production monitoring
-- **149 write tools** - Require caution (disabled by default with `--read-only`)
-- **285 total tools**
+- **170 read-only tools** - Safe for production monitoring
+- **171 write tools** - Require caution (disabled by default with `--read-only`)
+- **341 total tools**
 
 ## Security Considerations
 
@@ -860,7 +905,7 @@ export MCP_READ_ONLY=true
 npm start
 ```
 
-This disables all 52 write operations, leaving only 73 safe read-only tools.
+This disables all 171 write operations, leaving only 170 safe read-only tools.
 
 ### Authentication Setup
 

@@ -268,6 +268,80 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'fetch_instances_data': ['mcp:tools', 'lm:read'],
   'get_instance_graph_data_by_id': ['mcp:tools', 'lm:read'],
 
+  // Log Pipelines / Log Alert Groups
+  'list_log_alert_groups': ['mcp:tools', 'lm:read'],
+  'get_log_alert_group': ['mcp:tools', 'lm:read'],
+  'create_log_alert_group': ['mcp:tools', 'lm:write'],
+  'update_log_alert_group': ['mcp:tools', 'lm:write'],
+  'delete_log_alert_group': ['mcp:tools', 'lm:write'],
+  'list_log_alerts': ['mcp:tools', 'lm:read'],
+  'get_log_alert': ['mcp:tools', 'lm:read'],
+  'create_log_alert': ['mcp:tools', 'lm:write'],
+  'update_log_alert': ['mcp:tools', 'lm:write'],
+  'delete_log_alert': ['mcp:tools', 'lm:write'],
+  'set_log_alert_status': ['mcp:tools', 'lm:write'],
+
+  // Log Query Groups
+  'list_log_query_groups': ['mcp:tools', 'lm:read'],
+  'get_log_query_group': ['mcp:tools', 'lm:read'],
+  'create_log_query_group': ['mcp:tools', 'lm:write'],
+  'update_log_query_group': ['mcp:tools', 'lm:write'],
+  'delete_log_query_group': ['mcp:tools', 'lm:write'],
+  'list_log_query_group_queries': ['mcp:tools', 'lm:read'],
+  'list_log_query_groups_by_type': ['mcp:tools', 'lm:read'],
+  'move_log_queries': ['mcp:tools', 'lm:write'],
+
+  // Log Partitions
+  'list_log_partitions': ['mcp:tools', 'lm:read'],
+  'get_log_partition': ['mcp:tools', 'lm:read'],
+  'create_log_partition': ['mcp:tools', 'lm:write'],
+  'update_log_partition': ['mcp:tools', 'lm:write'],
+  'delete_log_partition': ['mcp:tools', 'lm:write'],
+  'get_log_partition_retentions': ['mcp:tools', 'lm:read'],
+  'log_partition_action': ['mcp:tools', 'lm:write'],
+
+  // Tracked Query Groups
+  'list_tracked_query_groups': ['mcp:tools', 'lm:read'],
+  'get_tracked_query_group': ['mcp:tools', 'lm:read'],
+  'create_tracked_query_group': ['mcp:tools', 'lm:write'],
+  'update_tracked_query_group': ['mcp:tools', 'lm:write'],
+  'delete_tracked_query_group': ['mcp:tools', 'lm:write'],
+
+  // Cloud Onboarding (AWS / Azure / GCP / SaaS) - read-oriented validation
+  'get_aws_account_id': ['mcp:tools', 'lm:read'],
+  'get_aws_external_id': ['mcp:tools', 'lm:read'],
+  'test_aws_account': ['mcp:tools', 'lm:read'],
+  'verify_aws_billing_permissions': ['mcp:tools', 'lm:read'],
+  'discover_azure_subscriptions': ['mcp:tools', 'lm:read'],
+  'test_azure_account': ['mcp:tools', 'lm:read'],
+  'verify_azure_storage_permissions': ['mcp:tools', 'lm:read'],
+  'test_gcp_account': ['mcp:tools', 'lm:read'],
+  'test_saas_account': ['mcp:tools', 'lm:read'],
+
+  // ConfigSource update reasons & Website extras
+  'get_configsource_update_reasons': ['mcp:tools', 'lm:read'],
+  'get_website_sdt_history': ['mcp:tools', 'lm:read'],
+  'get_website_graph_by_name': ['mcp:tools', 'lm:read'],
+
+  // Diagnostic Remediation & Metrics
+  'get_diagnostic_remediation_sources': ['mcp:tools', 'lm:read'],
+  'get_diagnostic_remediation_results': ['mcp:tools', 'lm:read'],
+  'get_metrics_summary': ['mcp:tools', 'lm:read'],
+  'get_metrics_usage': ['mcp:tools', 'lm:read'],
+
+  // Default Dashboard, Alerts, Access Group mapping, DNS
+  'update_default_dashboard': ['mcp:tools', 'lm:write'],
+  'escalate_alert': ['mcp:tools', 'lm:write'],
+  'map_unmap_module_to_access_group': ['mcp:tools', 'lm:write'],
+  'add_dns_mapping': ['mcp:tools', 'lm:write'],
+
+  // Singletons (read)
+  'get_integration_audit_logs': ['mcp:tools', 'lm:read'],
+  'get_external_api_stats': ['mcp:tools', 'lm:read'],
+  'get_logicmodule_metadata': ['mcp:tools', 'lm:read'],
+  'list_unmonitored_devices': ['mcp:tools', 'lm:read'],
+  'get_contract_info': ['mcp:tools', 'lm:read'],
+
   // Roles (write)
   'create_role': ['mcp:tools', 'lm:users:manage'],
   'update_role': ['mcp:tools', 'lm:users:manage'],

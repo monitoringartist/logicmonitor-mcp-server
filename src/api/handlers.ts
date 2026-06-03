@@ -2182,6 +2182,243 @@ export class LogicMonitorHandlers {
             format: args.format,
           });
 
+        // Log Pipelines / Log Alert Groups
+        case 'list_log_alert_groups':
+          return await this.client.listLogAlertGroups({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_log_alert_group':
+          return await this.client.getLogAlertGroup(args.pipelineId, { fields: args.fields });
+
+        case 'create_log_alert_group': {
+          const { config, ...rest } = args;
+          return await this.client.createLogAlertGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_log_alert_group': {
+          const { pipelineId, config, ...rest } = args;
+          return await this.client.updateLogAlertGroup(pipelineId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_log_alert_group':
+          return await this.client.deleteLogAlertGroup(args.pipelineId);
+
+        case 'list_log_alerts':
+          return await this.client.listLogAlerts({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_log_alert':
+          return await this.client.getLogAlert(args.processorId, { fields: args.fields });
+
+        case 'create_log_alert': {
+          const { config, ...rest } = args;
+          return await this.client.createLogAlert({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_log_alert': {
+          const { processorId, config, ...rest } = args;
+          return await this.client.updateLogAlert(processorId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_log_alert':
+          return await this.client.deleteLogAlert(args.processorId);
+
+        case 'set_log_alert_status':
+          return await this.client.setLogAlertStatus(args.processorId, args.action, args.config || {});
+
+        // Log Query Groups
+        case 'list_log_query_groups':
+          return await this.client.listLogQueryGroups({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_log_query_group':
+          return await this.client.getLogQueryGroup(args.groupId, { fields: args.fields });
+
+        case 'create_log_query_group': {
+          const { config, ...rest } = args;
+          return await this.client.createLogQueryGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_log_query_group': {
+          const { groupId, config, ...rest } = args;
+          return await this.client.updateLogQueryGroup(groupId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_log_query_group':
+          return await this.client.deleteLogQueryGroup(args.groupId);
+
+        case 'list_log_query_group_queries':
+          return await this.client.listLogQueryGroupQueries(args.groupId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'list_log_query_groups_by_type':
+          return await this.client.listLogQueryGroupsByType(args.groupType, {
+            allGroups: args.allGroups, size: args.size, offset: args.offset, filter: args.filter, fields: args.fields,
+          });
+
+        case 'move_log_queries':
+          return await this.client.moveLogQueries(args.groupId, args.config || {});
+
+        // Log Partitions
+        case 'list_log_partitions':
+          return await this.client.listLogPartitions({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_log_partition':
+          return await this.client.getLogPartition(args.partitionId, { fields: args.fields });
+
+        case 'create_log_partition': {
+          const { config, ...rest } = args;
+          return await this.client.createLogPartition({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_log_partition': {
+          const { partitionId, config, ...rest } = args;
+          return await this.client.updateLogPartition(partitionId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_log_partition':
+          return await this.client.deleteLogPartition(args.partitionId);
+
+        case 'get_log_partition_retentions':
+          return await this.client.getLogPartitionRetentions({ fields: args.fields });
+
+        case 'log_partition_action':
+          return await this.client.logPartitionAction(args.partitionId, args.action, args.config || {});
+
+        // Tracked Query Groups
+        case 'list_tracked_query_groups':
+          return await this.client.listTrackedQueryGroups({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_tracked_query_group':
+          return await this.client.getTrackedQueryGroup(args.groupId, { fields: args.fields });
+
+        case 'create_tracked_query_group': {
+          const { config, ...rest } = args;
+          return await this.client.createTrackedQueryGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_tracked_query_group': {
+          const { groupId, config, ...rest } = args;
+          return await this.client.updateTrackedQueryGroup(groupId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_tracked_query_group':
+          return await this.client.deleteTrackedQueryGroup(args.groupId);
+
+        // Cloud Onboarding - AWS
+        case 'get_aws_account_id':
+          return await this.client.getAwsAccountId();
+
+        case 'get_aws_external_id':
+          return await this.client.getAwsExternalId();
+
+        case 'test_aws_account':
+          return await this.client.testAwsAccount(args.config || {});
+
+        case 'verify_aws_billing_permissions':
+          return await this.client.verifyAwsBillingPermissions(args.config || {});
+
+        // Cloud Onboarding - Azure
+        case 'discover_azure_subscriptions':
+          return await this.client.discoverAzureSubscriptions(args.config || {});
+
+        case 'test_azure_account':
+          return await this.client.testAzureAccount(args.config || {});
+
+        case 'verify_azure_storage_permissions':
+          return await this.client.verifyAzureStoragePermissions(args.config || {});
+
+        // Cloud Onboarding - GCP
+        case 'test_gcp_account':
+          return await this.client.testGcpAccount(args.config || {});
+
+        // ConfigSource update reasons
+        case 'get_configsource_update_reasons':
+          return await this.client.getConfigSourceUpdateReasons(args.configSourceId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields,
+          });
+
+        // Website extras
+        case 'get_website_sdt_history':
+          return await this.client.getWebsiteSDTHistory(args.websiteId, {
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_website_graph_by_name':
+          return await this.client.getWebsiteGraphByName(args.websiteId, args.graphName, {
+            start: args.start, end: args.end, format: args.format,
+          });
+
+        // Diagnostic Remediation
+        case 'get_diagnostic_remediation_sources':
+          return await this.client.getDiagnosticRemediationSources({
+            resourceId: args.resourceId, alertId: args.alertId, moduleType: args.moduleType,
+          });
+
+        case 'get_diagnostic_remediation_results':
+          return await this.client.getDiagnosticRemediationResults({
+            resourceId: args.resourceId, alertId: args.alertId, taskId: args.taskId,
+          });
+
+        // Metrics
+        case 'get_metrics_summary':
+          return await this.client.getMetricsSummary({ fields: args.fields });
+
+        case 'get_metrics_usage':
+          return await this.client.getMetricsUsage({ fields: args.fields });
+
+        // Default Dashboard
+        case 'update_default_dashboard': {
+          const { userDataId, config, ...rest } = args;
+          return await this.client.updateDefaultDashboard(userDataId, { ...rest, ...(config || {}) });
+        }
+
+        // Alert escalation
+        case 'escalate_alert':
+          return await this.client.escalateAlert(args.alertId);
+
+        // Access group module mapping
+        case 'map_unmap_module_to_access_group':
+          return await this.client.mapUnmapModuleToAccessGroup(args.config || {});
+
+        // Integration audit logs
+        case 'get_integration_audit_logs':
+          return await this.client.getIntegrationAuditLogs({ format: args.format });
+
+        // API usage stats
+        case 'get_external_api_stats':
+          return await this.client.getExternalApiStats({ fields: args.fields });
+
+        // LogicModule metadata
+        case 'get_logicmodule_metadata':
+          return await this.client.getLogicModuleMetadata({ fields: args.fields });
+
+        // Unmonitored devices
+        case 'list_unmonitored_devices':
+          return await this.client.listUnmonitoredDevices({
+            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+          });
+
+        // Contract / usage info
+        case 'get_contract_info':
+          return await this.client.getContractInfo({ fields: args.fields });
+
+        // DNS mappings
+        case 'add_dns_mapping':
+          return await this.client.addDNSMapping(args.config || {});
+
+        // SaaS account
+        case 'test_saas_account':
+          return await this.client.testSaaSAccount(args.config || {});
+
         // Device Group Properties
         case 'list_resource_group_properties':
           return await this.client.listDeviceGroupProperties(args.groupId, {
