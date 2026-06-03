@@ -139,6 +139,12 @@ describe('LogicMonitorHandlers', () => {
       deleteWebsite: jest.fn(),
       listWebsiteGroups: jest.fn(),
       getWebsiteGroup: jest.fn(),
+      createWebsiteGroup: jest.fn(),
+      updateWebsiteGroup: jest.fn(),
+      deleteWebsiteGroup: jest.fn(),
+      listWebsiteGroupWebsites: jest.fn(),
+      listWebsiteGroupSDTs: jest.fn(),
+      getWebsiteGroupSDTHistory: jest.fn(),
       listUsers: jest.fn(),
       getUser: jest.fn(),
       listRoles: jest.fn(),
@@ -1573,6 +1579,53 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Website Groups (write)', () => {
+    it('create_website_group merges config into body', async () => {
+      mockClient.createWebsiteGroup.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_website_group', {
+        name: 'Prod Sites',
+        parentId: 1,
+        config: { disableAlerting: false, properties: [{ name: 'env', value: 'prod' }] },
+      });
+      expect(mockClient.createWebsiteGroup).toHaveBeenCalledWith({
+        name: 'Prod Sites',
+        parentId: 1,
+        disableAlerting: false,
+        properties: [{ name: 'env', value: 'prod' }],
+      });
+    });
+
+    it('update_website_group excludes groupId/opType from body and forwards opType', async () => {
+      mockClient.updateWebsiteGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_website_group', { groupId: 4, name: 'Renamed', opType: 'replace' });
+      expect(mockClient.updateWebsiteGroup).toHaveBeenCalledWith(4, { name: 'Renamed' }, { opType: 'replace' });
+    });
+
+    it('delete_website_group forwards deleteChildren', async () => {
+      mockClient.deleteWebsiteGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_website_group', { groupId: 4, deleteChildren: 1 });
+      expect(mockClient.deleteWebsiteGroup).toHaveBeenCalledWith(4, { deleteChildren: 1 });
+    });
+
+    it('list_website_group_websites forwards pagination', async () => {
+      mockClient.listWebsiteGroupWebsites.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('list_website_group_websites', { groupId: 4, size: 50 });
+      expect(mockClient.listWebsiteGroupWebsites).toHaveBeenCalledWith(4, expect.objectContaining({ size: 50 }));
+    });
+
+    it('list_website_group_sdts calls client', async () => {
+      mockClient.listWebsiteGroupSDTs.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('list_website_group_sdts', { groupId: 4 });
+      expect(mockClient.listWebsiteGroupSDTs).toHaveBeenCalledWith(4, expect.any(Object));
+    });
+
+    it('get_website_group_sdt_history calls client', async () => {
+      mockClient.getWebsiteGroupSDTHistory.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('get_website_group_sdt_history', { groupId: 4 });
+      expect(mockClient.getWebsiteGroupSDTHistory).toHaveBeenCalledWith(4, expect.any(Object));
     });
   });
 

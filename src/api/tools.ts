@@ -3503,6 +3503,131 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['groupId'],
     },
   },
+  {
+    name: 'create_website_group',
+    description: 'Create a new website (synthetic monitoring) group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a folder to organize website monitors (web checks / ping checks) into a hierarchy. ' +
+      '\n\n**Required:** name. ' +
+      '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), disableAlerting, stopMonitoring, plus properties/testLocation via `config`. ' +
+      '\n\n**Related tools:** "list\\_website\\_groups", "create\\_website" (place monitors in the group).',
+    annotations: { title: 'Create website group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The website group name' },
+        description: { type: 'string', description: 'The website group description' },
+        parentId: { type: 'number', description: 'The parent website group ID (root = 1)' },
+        disableAlerting: { type: 'boolean', description: 'Disable alerting for the group' },
+        stopMonitoring: { type: 'boolean', description: 'Stop monitoring for the group' },
+        config: {
+          type: 'object',
+          description: 'Additional website group attributes (e.g., properties, testLocation) merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+  },
+  {
+    name: 'update_website_group',
+    description: 'Update a website group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), disableAlerting, stopMonitoring, or additional fields via `config`. Partial update. ' +
+      '\n\n**Optional:** opType ("refresh"/"add"/"replace") controls how `properties` are merged when supplied. ' +
+      '\n\n**Related tools:** "get\\_website\\_group", "list\\_website\\_groups".',
+    annotations: { title: 'Update website group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The website group ID to update' },
+        name: { type: 'string', description: 'New website group name' },
+        description: { type: 'string', description: 'New description' },
+        parentId: { type: 'number', description: 'Move the group under a different parent group ID' },
+        disableAlerting: { type: 'boolean', description: 'Disable alerting for the group' },
+        stopMonitoring: { type: 'boolean', description: 'Stop monitoring for the group' },
+        opType: { type: 'string', description: 'How to merge properties: "refresh", "add", or "replace".' },
+        config: {
+          type: 'object',
+          description: 'Additional website group attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'delete_website_group',
+    description: 'Delete a website group from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Cannot be undone. By default a non-empty group cannot be deleted; set deleteChildren=1 to also delete its websites and subgroups. ' +
+      '\n\n**Parameters:** groupId; optional deleteChildren (1 = delete contained websites/subgroups too, 0 = only an empty group). ' +
+      '\n\n**Before deleting:** Use "get\\_website\\_group" to check the website/subgroup counts. ' +
+      '\n\n**Related tools:** "get\\_website\\_group", "list\\_website\\_groups".',
+    annotations: { title: 'Delete website group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The website group ID to delete' },
+        deleteChildren: { type: 'number', description: 'Set to 1 to also delete contained websites and subgroups (default 0).' },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_website_group_websites',
+    description: 'List the website monitors that belong directly to a specific website group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of website monitors (web/ping checks) in the group, with id, name, type, status. ' +
+      '\n\n**Related tools:** "list\\_website\\_groups", "get\\_website\\_group", "list\\_websites".',
+    annotations: { title: 'List websites in group', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The website group ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_website_group_sdts',
+    description: 'List the active/scheduled down times (SDTs) configured on a specific website group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of SDT entries affecting the group: id, type, start/end time, comment. ' +
+      '\n\n**Related tools:** "get\\_website\\_group\\_sdt\\_history" (past SDTs), "create\\_sdt", "list\\_website\\_groups".',
+    annotations: { title: 'List website group SDTs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The website group ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'get_website_group_sdt_history',
+    description: 'Get the scheduled down time (SDT) history for a specific website group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of historical (expired) SDT entries for the group: id, type, start/end time, comment. ' +
+      '\n\n**Related tools:** "list\\_website\\_group\\_sdts" (active SDTs), "list\\_website\\_groups".',
+    annotations: { title: 'Get website group SDT history', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The website group ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
 
   // User Management Tools
   {

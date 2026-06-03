@@ -1567,6 +1567,76 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('GET', `/website/groups/${groupId}`, undefined, params);
   }
 
+  async createWebsiteGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/website/groups', group);
+  }
+
+  async updateWebsiteGroup(groupId: number, group: any, params?: { opType?: string }) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/website/groups/${groupId}`,
+      group,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async deleteWebsiteGroup(groupId: number, params?: { deleteChildren?: number }) {
+    return this.request<LMResponse<any>>(
+      'DELETE',
+      `/website/groups/${groupId}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async listWebsiteGroupWebsites(groupId: number, params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/groups/${groupId}/websites`;
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async listWebsiteGroupSDTs(groupId: number, params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/groups/${groupId}/sdts`;
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getWebsiteGroupSDTHistory(groupId: number, params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/groups/${groupId}/historysdts`;
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
   // Users
   async listUsers(params?: {
     size?: number;

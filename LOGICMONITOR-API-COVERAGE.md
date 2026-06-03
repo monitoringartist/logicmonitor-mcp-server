@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 241 |
-| **Operations Missing** | 152 |
-| **Coverage** | **61%** |
-| **Implemented MCP Tools** | 226 (+4 custom link tools) |
+| **Operations Covered** | 248 |
+| **Operations Missing** | 145 |
+| **Coverage** | **63%** |
+| **Implemented MCP Tools** | 232 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -48,7 +48,6 @@
 | Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
 | Collector Groups & Agent Log Levels | 11 | 21 | 🟡 Partial |
 | Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
-| Website Groups (write) | 2 | 9 | 🟡 Partial |
 | TopologySources (write) | 2 | 7 | 🟡 Partial |
 | ConfigSource extras | 7 | 9 | 🟡 Partial |
 | Website extras | 11 | 13 | 🟡 Partial |
@@ -75,6 +74,7 @@
 | Roles (write) | 6 | 6 | ✅ Full |
 | Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
 | Website Checkpoints | 1 | 1 | ✅ Full |
+| Website Groups (write) | 9 | 9 | ✅ Full |
 
 ---
 
@@ -87,7 +87,7 @@ Grouped by impact. Each item links to its detailed operation list below.
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-### 🟡 MEDIUM Priority — 69 operations
+### 🟡 MEDIUM Priority — 62 operations
 
 *Administration, automation modules, and infrastructure completeness*
 
@@ -98,7 +98,6 @@ Grouped by impact. Each item links to its detailed operation list below.
 - **AppliesTo Functions** — 7 missing. Tools to add: applies-to-function CRUD + import tools
 - **SNMP OIDs** — 7 missing. Tools to add: oid CRUD + import tools
 - **RemediationSources** — 7 missing. Tools to add: remediation-source CRUD + execute tools
-- **Website Groups (write)** — 7 missing. Tools to add: website-group CRUD + SDT-list tools
 - **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
 - **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
 - **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
@@ -265,20 +264,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `POST` | `addRemediationSource` | `/setting/remediationsources` |
 | `POST` | `executeRemediationManually` | `/setting/remediationsources/executemanually` |
 | `PUT` | `updateRemediationSourceById` | `/setting/remediationsources/{id}` |
-
-### 🟡 Website Groups (write)
-
-**Coverage:** 2/9 operations.  **Proposed tools:** website-group CRUD + SDT-list tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteWebsiteGroupById` | `/website/groups/{id}` |
-| `GET` | `getAllSDTListByWebsiteGroupId` | `/website/groups/{id}/sdts` |
-| `GET` | `getImmediateWebsiteListByWebsiteGroupId` | `/website/groups/{id}/websites` |
-| `GET` | `getSDTHistoryByWebsiteGroupId` | `/website/groups/{id}/historysdts` |
-| `PATCH` | `patchWebsiteGroupById` | `/website/groups/{id}` |
-| `POST` | `addWebsiteGroup` | `/website/groups` |
-| `PUT` | `updateWebsiteGroupById` | `/website/groups/{id}` |
 
 ### 🟡 TopologySources (write)
 
@@ -552,6 +537,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Roles (write)** (6/6)
 - **Scheduled Down Time (SDT)** (6/6)
 - **Website Checkpoints** (1/1)
+- **Website Groups (write)** (9/9)
 
 ### Custom Enhancements (not in the official API)
 
@@ -564,7 +550,7 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 61% |
+| Current | — | — | 63% |
 | Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
@@ -578,4 +564,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 241 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 248 covered operations.*

@@ -204,6 +204,14 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'create_role': ['mcp:tools', 'lm:users:manage'],
   'update_role': ['mcp:tools', 'lm:users:manage'],
   'delete_role': ['mcp:tools', 'lm:users:manage'],
+
+  // Website groups
+  'create_website_group': ['mcp:tools', 'lm:write'],
+  'update_website_group': ['mcp:tools', 'lm:write'],
+  'delete_website_group': ['mcp:tools', 'lm:write'],
+  'list_website_group_websites': ['mcp:tools', 'lm:read'],
+  'list_website_group_sdts': ['mcp:tools', 'lm:read'],
+  'get_website_group_sdt_history': ['mcp:tools', 'lm:read'],
 };
 
 /**

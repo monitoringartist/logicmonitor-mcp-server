@@ -809,6 +809,52 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_website_group': {
+          const { config, ...rest } = args;
+          return await this.client.createWebsiteGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_website_group': {
+          const { groupId, opType, config, ...rest } = args;
+          return await this.client.updateWebsiteGroup(
+            groupId,
+            { ...rest, ...(config || {}) },
+            { opType },
+          );
+        }
+
+        case 'delete_website_group':
+          return await this.client.deleteWebsiteGroup(args.groupId, {
+            deleteChildren: args.deleteChildren,
+          });
+
+        case 'list_website_group_websites':
+          return await this.client.listWebsiteGroupWebsites(args.groupId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'list_website_group_sdts':
+          return await this.client.listWebsiteGroupSDTs(args.groupId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_website_group_sdt_history':
+          return await this.client.getWebsiteGroupSDTHistory(args.groupId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
         // Users
         case 'list_users': {
           const result = await this.client.listUsers({
