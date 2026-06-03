@@ -909,6 +909,35 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('DELETE', `/website/websites/${websiteId}`);
   }
 
+  async getWebsiteCheckpointData(websiteId: number, checkpointId: number, params?: {
+    period?: number;
+    start?: number;
+    end?: number;
+    datapoints?: string;
+    format?: string;
+    aggregate?: string;
+  }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/website/websites/${websiteId}/checkpoints/${checkpointId}/data`,
+      undefined,
+      params,
+    );
+  }
+
+  async getWebsiteGraphData(websiteId: number, checkpointId: number, graphName: string, params?: {
+    start?: number;
+    end?: number;
+    format?: string;
+  }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/website/websites/${websiteId}/checkpoints/${checkpointId}/graphs/${encodeURIComponent(graphName)}/data`,
+      undefined,
+      params,
+    );
+  }
+
   // Website Groups
   async listWebsiteGroups(params?: {
     size?: number;

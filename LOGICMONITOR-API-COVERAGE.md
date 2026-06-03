@@ -8,7 +8,7 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 336 |
-| **Implemented Tools** | 140 |
+| **Implemented Tools** | 142 |
 | **Coverage** | **42%** |
 | **Custom Enhancements** | 4 link tools |
 
@@ -88,13 +88,11 @@
 - ✅ List, Get, Create, Update, Delete websites
 - ✅ Website Groups (List, Get)
 - ✅ Website Checkpoints (List)
+- ✅ Get checkpoint data
+- ✅ Get website graph data
 - ✅ **Generate website links** (custom addition)
 
-**Missing:**
-- ❌ Get checkpoint data
-- ❌ Get website graph data
-
-**Tools:** `list_websites`, `get_website`, `create_website`, `update_website`, `delete_website`, `list_website_groups`, `get_website_group`, `list_website_checkpoints`, `generate_website_link`
+**Tools:** `list_websites`, `get_website`, `create_website`, `update_website`, `delete_website`, `list_website_groups`, `get_website_group`, `list_website_checkpoints`, `get_website_checkpoint_data`, `get_website_graph_data`, `generate_website_link`
 
 ---
 

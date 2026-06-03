@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **137 MCP Tools** for comprehensive LogicMonitor operations (78 read-only, 59 write)
+- **139 MCP Tools** for comprehensive LogicMonitor operations (80 read-only, 59 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -589,6 +589,8 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `list_website_groups` - List website groups
 - `get_website_group` - Get website group details
 - `list_website_checkpoints` - List available monitoring checkpoints
+- `get_website_checkpoint_data` - Get raw monitoring data for a website checkpoint
+- `get_website_graph_data` - Get rendered graph data for a website checkpoint
 
 **Write Operations:**
 - `create_website` - Create new website monitor
@@ -705,9 +707,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **78 read-only tools** - Safe for production monitoring
+- **80 read-only tools** - Safe for production monitoring
 - **59 write tools** - Require caution (disabled by default with `--read-only`)
-- **137 total tools**
+- **139 total tools**
 
 ## Security Considerations
 

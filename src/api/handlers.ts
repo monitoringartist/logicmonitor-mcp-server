@@ -1403,6 +1403,23 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'get_website_checkpoint_data':
+          return await this.client.getWebsiteCheckpointData(args.websiteId, args.checkpointId, {
+            period: args.period,
+            start: args.start,
+            end: args.end,
+            datapoints: args.datapoints,
+            aggregate: args.aggregate,
+            format: args.format,
+          });
+
+        case 'get_website_graph_data':
+          return await this.client.getWebsiteGraphData(args.websiteId, args.checkpointId, args.graphName, {
+            start: args.start,
+            end: args.end,
+            format: args.format,
+          });
+
         // Topology
         case 'get_topology':
           return await this.client.getTopology({

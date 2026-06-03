@@ -85,6 +85,8 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'get_widget': ['mcp:tools', 'lm:dashboards:read'],
   'get_widget_data': ['mcp:tools', 'lm:dashboards:read'],
   'get_collector_installer': ['mcp:tools', 'lm:read'],
+  'get_website_checkpoint_data': ['mcp:tools', 'lm:read'],
+  'get_website_graph_data': ['mcp:tools', 'lm:read'],
   'list_datasources': ['mcp:tools', 'lm:read'],
   'get_datasource': ['mcp:tools', 'lm:read'],
   'list_cost_optimization_recommendations': ['mcp:tools', 'lm:read'],

@@ -145,6 +145,8 @@ describe('LogicMonitorHandlers', () => {
       updateIntegration: jest.fn(),
       deleteIntegration: jest.fn(),
       listWebsiteCheckpoints: jest.fn(),
+      getWebsiteCheckpointData: jest.fn(),
+      getWebsiteGraphData: jest.fn(),
       getTopology: jest.fn(),
       listCollectorVersions: jest.fn(),
       listCostOptimizationRecommendations: jest.fn(),
@@ -1379,6 +1381,55 @@ describe('LogicMonitorHandlers', () => {
           fields: undefined,
         });
         expect(result).toEqual(mockResponse);
+      });
+    });
+  });
+
+  describe('Website Data', () => {
+    describe('get_website_checkpoint_data', () => {
+      it('should fetch raw checkpoint data with time range and datapoints', async () => {
+        const mockData = { dataPoints: ['responseTime'], values: {} };
+        mockClient.getWebsiteCheckpointData.mockResolvedValue(mockData as never);
+
+        const result = await handlers.handleToolCall('get_website_checkpoint_data', {
+          websiteId: 12,
+          checkpointId: 3,
+          start: 1640000000,
+          end: 1640003600,
+          datapoints: 'responseTime,status',
+        });
+
+        expect(mockClient.getWebsiteCheckpointData).toHaveBeenCalledWith(12, 3, {
+          period: undefined,
+          start: 1640000000,
+          end: 1640003600,
+          datapoints: 'responseTime,status',
+          aggregate: undefined,
+          format: undefined,
+        });
+        expect(result).toEqual(mockData);
+      });
+    });
+
+    describe('get_website_graph_data', () => {
+      it('should fetch graph data by website, checkpoint and graph name', async () => {
+        const mockGraph = { lines: [{ data: [1, 2, 3] }] };
+        mockClient.getWebsiteGraphData.mockResolvedValue(mockGraph as never);
+
+        const result = await handlers.handleToolCall('get_website_graph_data', {
+          websiteId: 12,
+          checkpointId: 3,
+          graphName: 'responseTime',
+          start: 1640000000,
+          end: 1640003600,
+        });
+
+        expect(mockClient.getWebsiteGraphData).toHaveBeenCalledWith(12, 3, 'responseTime', {
+          start: 1640000000,
+          end: 1640003600,
+          format: undefined,
+        });
+        expect(result).toEqual(mockGraph);
       });
     });
   });

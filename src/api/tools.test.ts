@@ -425,6 +425,26 @@ describe('getLogicMonitorTools', () => {
         expect(toolNames).toContain('update_website');
         expect(toolNames).toContain('delete_website');
       });
+
+      it('should include website data tools as read-only', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('get_website_checkpoint_data');
+        expect(toolNames).toContain('get_website_graph_data');
+
+        expect(tools.find(t => t.name === 'get_website_checkpoint_data')?.annotations?.readOnlyHint).toBe(true);
+        expect(tools.find(t => t.name === 'get_website_graph_data')?.annotations?.readOnlyHint).toBe(true);
+      });
+
+      it('should require expected identifiers for website data tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'get_website_checkpoint_data')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['websiteId', 'checkpointId']));
+        expect(tools.find(t => t.name === 'get_website_graph_data')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['websiteId', 'checkpointId', 'graphName']));
+      });
     });
 
     describe('Link Tools', () => {
@@ -670,11 +690,17 @@ describe('getLogicMonitorTools', () => {
 
         // Most get tools should support fields parameter.
         // Data-rendering / action endpoints (instance data, topology, widget data,
-        // collector installer URL) accept other params instead of field selection.
-        if (tool.name !== 'get_resource_instance_data' &&
-            tool.name !== 'get_topology' &&
-            tool.name !== 'get_widget_data' &&
-            tool.name !== 'get_collector_installer') {
+        // collector installer URL, website checkpoint/graph data) accept other
+        // params (time range / format) instead of field selection.
+        const fieldsExempt = [
+          'get_resource_instance_data',
+          'get_topology',
+          'get_widget_data',
+          'get_collector_installer',
+          'get_website_checkpoint_data',
+          'get_website_graph_data',
+        ];
+        if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
       });

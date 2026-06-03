@@ -6552,6 +6552,124 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'get_website_checkpoint_data',
+    description: 'Get raw monitoring data for a specific website checkpoint in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Raw time-series data collected by one checkpoint location for a website monitor - datapoint values (e.g., response time, status, availability) over the requested time range. ' +
+      '\n\n**What this does:** Retrieves the actual measured values a single checkpoint (global test location) recorded for a website, as opposed to a rendered graph. Useful for analyzing performance from a specific region. ' +
+      '\n\n**When to use:**' +
+      '\n- Analyze response time / availability from one checkpoint location' +
+      '\n- Compare raw datapoint values across regions' +
+      '\n- Export checkpoint measurements for custom analysis' +
+      '\n\n**Required parameters:**' +
+      '\n- websiteId: The website monitor ID (from "list\\_websites")' +
+      '\n- checkpointId: The checkpoint location ID (from "list\\_website\\_checkpoints" or the website\'s configuration)' +
+      '\n\n**Optional parameters:**' +
+      '\n- period: Number of periods of data to return (alternative to start/end)' +
+      '\n- start: Start of the time range, in epoch seconds' +
+      '\n- end: End of the time range, in epoch seconds' +
+      '\n- datapoints: Comma-separated datapoint names to return (e.g., "responseTime,status")' +
+      '\n- aggregate: Aggregation option for the returned values' +
+      '\n- format: Response format for the data payload' +
+      '\n\n**Related tools:** "get\\_website\\_graph\\_data" (rendered graph series), "list\\_website\\_checkpoints" (find checkpoint IDs), "get\\_website" (website configuration).',
+    annotations: {
+      title: 'Get website checkpoint data',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: {
+          type: 'number',
+          description: 'The ID of the website monitor (from "list_websites").',
+        },
+        checkpointId: {
+          type: 'number',
+          description: 'The ID of the checkpoint location (from "list_website_checkpoints").',
+        },
+        period: {
+          type: 'number',
+          description: 'Number of periods of data to return (alternative to start/end).',
+        },
+        start: {
+          type: 'number',
+          description: 'Start of the time range, in epoch seconds (optional).',
+        },
+        end: {
+          type: 'number',
+          description: 'End of the time range, in epoch seconds (optional).',
+        },
+        datapoints: {
+          type: 'string',
+          description: 'Comma-separated datapoint names to return (e.g., "responseTime,status").',
+        },
+        aggregate: {
+          type: 'string',
+          description: 'Aggregation option for the returned values.',
+        },
+        format: {
+          type: 'string',
+          description: 'Optional response format for the data payload.',
+        },
+      },
+      additionalProperties: false,
+      required: ['websiteId', 'checkpointId'],
+    },
+  },
+  {
+    name: 'get_website_graph_data',
+    description: 'Get rendered graph data for a website monitor checkpoint in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Graph plot data (series, lines, and datapoint values) for a named graph of a website monitor, as measured from a specific checkpoint location. ' +
+      '\n\n**What this does:** Returns the data behind a specific website graph (e.g., a response-time graph) for one checkpoint, suitable for charting or analysis. ' +
+      '\n\n**When to use:**' +
+      '\n- Pull the data series shown by a website monitor graph' +
+      '\n- Visualize response time / availability trends from a checkpoint' +
+      '\n- Feed website graph data into downstream analysis' +
+      '\n\n**Required parameters:**' +
+      '\n- websiteId: The website monitor ID (from "list\\_websites")' +
+      '\n- checkpointId: The checkpoint location ID (from "list\\_website\\_checkpoints")' +
+      '\n- graphName: The name of the graph to retrieve (as configured on the website monitor)' +
+      '\n\n**Optional parameters:**' +
+      '\n- start: Start of the time range, in epoch seconds' +
+      '\n- end: End of the time range, in epoch seconds' +
+      '\n- format: Response format for the data payload' +
+      '\n\n**Related tools:** "get\\_website\\_checkpoint\\_data" (raw datapoint values), "list\\_website\\_checkpoints" (find checkpoint IDs), "get\\_website" (website configuration).',
+    annotations: {
+      title: 'Get website graph data',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: {
+          type: 'number',
+          description: 'The ID of the website monitor (from "list_websites").',
+        },
+        checkpointId: {
+          type: 'number',
+          description: 'The ID of the checkpoint location (from "list_website_checkpoints").',
+        },
+        graphName: {
+          type: 'string',
+          description: 'The name of the graph to retrieve (as configured on the website monitor).',
+        },
+        start: {
+          type: 'number',
+          description: 'Start of the time range, in epoch seconds (optional).',
+        },
+        end: {
+          type: 'number',
+          description: 'End of the time range, in epoch seconds (optional).',
+        },
+        format: {
+          type: 'string',
+          description: 'Optional response format for the data payload.',
+        },
+      },
+      additionalProperties: false,
+      required: ['websiteId', 'checkpointId', 'graphName'],
+    },
+  },
 
   // Topology
   {
