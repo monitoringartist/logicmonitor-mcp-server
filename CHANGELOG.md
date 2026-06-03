@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ConfigSource management tools: `create_configsource`, `update_configsource`, `delete_configsource`, and `import_configsource` (JSON/XML upload via multipart)
 - EventSource management tools: `create_eventsource`, `update_eventsource`, `delete_eventsource`, and `import_eventsource` (JSON/XML upload via multipart)
 - Expanded SDT management: `create_sdt` (any SDT target type) and `update_sdt`, complementing the existing device SDT tools
+- Report management tools: `create_report`, `update_report`, and `delete_report`, backed by the `/report/reports` API
 
 ### Changed
 - None

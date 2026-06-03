@@ -641,6 +641,21 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_report': {
+          const { config, ...rest } = args;
+          const report = { ...rest, ...(config || {}) };
+          return await this.client.createReport(report);
+        }
+
+        case 'update_report': {
+          const { reportId, config, ...rest } = args;
+          const report = { ...rest, ...(config || {}) };
+          return await this.client.updateReport(reportId, report);
+        }
+
+        case 'delete_report':
+          return await this.client.deleteReport(args.reportId);
+
         // Websites
         case 'list_websites': {
           const result = await this.client.listWebsites({

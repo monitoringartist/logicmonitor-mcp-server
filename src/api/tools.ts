@@ -1997,6 +1997,176 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['reportId'],
     },
   },
+  {
+    name: 'create_report',
+    description: 'Create a new report in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a scheduled or on-demand report (e.g., Alert, Alert SLA, Dashboard, Device Inventory, Resource Metric Trends) that can be delivered via email in HTML, PDF, CSV, or WORD format. ' +
+      '\n\n**Required parameters:**' +
+      '\n- name: The report name' +
+      '\n- type: The report type. Common values: "Alert", "Alert SLA", "Alert Threshold", "Dashboard", "Device Inventory", "Resource Metric Trends", "SLA", "Website SLA", "Audit", "Custom". (Use "get\\_report" on an existing report to see exact type strings.)' +
+      '\n\n**⚠️ Report definitions are type-specific.** Each report type requires different configuration (scope, columns, date range, etc.). The most reliable approach is to export an existing report of the same type via "get\\_report", adapt it, and pass the type-specific fields via `config`. ' +
+      '\n\n**Optional parameters:**' +
+      '\n- description: Report description' +
+      '\n- groupId: Report group ID (0 = root report group)' +
+      '\n- format: Output format - one of HTML, PDF, CSV, WORD' +
+      '\n- delivery: Whether/how the report is delivered via email' +
+      '\n- schedule: A cron schedule string for email delivery' +
+      '\n- scheduleTimezone: Timezone for the schedule' +
+      '\n- recipients: Array of email delivery recipients' +
+      '\n- config: Any additional type-specific report attributes (merged into the request body)' +
+      '\n\n**Related tools:** "get\\_report" (export a template), "list\\_reports" (browse existing), "update\\_report", "delete\\_report".',
+    annotations: {
+      title: 'Create report',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The name of the report.',
+        },
+        type: {
+          type: 'string',
+          description: 'The report type (e.g., "Alert", "Alert SLA", "Dashboard", "Device Inventory", "Resource Metric Trends", "SLA", "Website SLA", "Audit", "Custom").',
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the report.',
+        },
+        groupId: {
+          type: 'number',
+          description: 'The ID of the report group (0 = root report group).',
+        },
+        format: {
+          type: 'string',
+          description: 'The output format: HTML, PDF, CSV, or WORD.',
+        },
+        delivery: {
+          type: 'string',
+          description: 'Whether/how the report is delivered via email.',
+        },
+        schedule: {
+          type: 'string',
+          description: 'A cron schedule string indicating when the report is delivered via email.',
+        },
+        scheduleTimezone: {
+          type: 'string',
+          description: 'The timezone for the scheduled report.',
+        },
+        recipients: {
+          type: 'array',
+          description: 'Email delivery recipients (objects describing each recipient).',
+          items: { type: 'object', additionalProperties: true },
+        },
+        config: {
+          type: 'object',
+          description: 'Additional type-specific report attributes (scope, columns, date range, etc.), merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name', 'type'],
+    },
+  },
+  {
+    name: 'update_report',
+    description: 'Update an existing report in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies a report\'s name, description, group, format, schedule, recipients, or type-specific configuration. Uses a partial update (only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- reportId: The ID of the report to update (from "list\\_reports")' +
+      '\n\n**Optional parameters (what to change):**' +
+      '\n- name, description, groupId, format, delivery, schedule, scheduleTimezone, recipients' +
+      '\n- type: The report type (the API may require this when changing type-specific fields)' +
+      '\n- config: Any additional type-specific report attributes to update (merged into the body)' +
+      '\n\n**Best practice:** Use "get\\_report" first to review the current configuration (including its `type`), then change only the needed fields. ' +
+      '\n\n**Related tools:** "get\\_report" (review before update), "list\\_reports" (find report), "delete\\_report".',
+    annotations: {
+      title: 'Update report',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        reportId: {
+          type: 'number',
+          description: 'The ID of the report to update.',
+        },
+        name: {
+          type: 'string',
+          description: 'New report name.',
+        },
+        type: {
+          type: 'string',
+          description: 'The report type (may be required by the API when changing type-specific fields).',
+        },
+        description: {
+          type: 'string',
+          description: 'New description.',
+        },
+        groupId: {
+          type: 'number',
+          description: 'Move the report to a different report group by ID (0 = root).',
+        },
+        format: {
+          type: 'string',
+          description: 'New output format: HTML, PDF, CSV, or WORD.',
+        },
+        delivery: {
+          type: 'string',
+          description: 'Whether/how the report is delivered via email.',
+        },
+        schedule: {
+          type: 'string',
+          description: 'New cron schedule string for email delivery.',
+        },
+        scheduleTimezone: {
+          type: 'string',
+          description: 'New timezone for the scheduled report.',
+        },
+        recipients: {
+          type: 'array',
+          description: 'Email delivery recipients (objects describing each recipient).',
+          items: { type: 'object', additionalProperties: true },
+        },
+        config: {
+          type: 'object',
+          description: 'Additional type-specific report attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['reportId'],
+    },
+  },
+  {
+    name: 'delete_report',
+    description: 'Delete a report from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING: PERMANENT DELETION**' +
+      '\n- The report definition is permanently removed' +
+      '\n- Scheduled email delivery stops' +
+      '\n- Cannot be undone' +
+      '\n\n**What this does:** Permanently removes a report from LogicMonitor. Previously generated/delivered report files are not affected. ' +
+      '\n\n**Required parameters:**' +
+      '\n- reportId: The ID of the report to delete (from "list\\_reports")' +
+      '\n\n**Before deleting:** Use "get\\_report" to verify it is the correct report and consider exporting its configuration for backup. ' +
+      '\n\n**Related tools:** "get\\_report" (backup/verify before delete), "list\\_reports" (find report), "update\\_report" (modify instead of delete).',
+    annotations: {
+      title: 'Delete report',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        reportId: {
+          type: 'number',
+          description: 'The ID of the report to delete.',
+        },
+      },
+      additionalProperties: false,
+      required: ['reportId'],
+    },
+  },
 
   // Website (Synthetic Monitoring) Tools
   {

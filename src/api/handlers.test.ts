@@ -58,6 +58,9 @@ describe('LogicMonitorHandlers', () => {
       getDashboardGroup: jest.fn(),
       listReports: jest.fn(),
       getReport: jest.fn(),
+      createReport: jest.fn(),
+      updateReport: jest.fn(),
+      deleteReport: jest.fn(),
       listWebsites: jest.fn(),
       getWebsite: jest.fn(),
       createWebsite: jest.fn(),
@@ -1392,6 +1395,47 @@ describe('LogicMonitorHandlers', () => {
         });
         expect(result).toEqual(mockResponse);
       });
+    });
+  });
+
+  describe('Report Management', () => {
+    it('create_report should merge config into the body', async () => {
+      mockClient.createReport.mockResolvedValue({ id: 5 } as never);
+
+      await handlers.handleToolCall('create_report', {
+        name: 'Weekly Alerts',
+        type: 'Alert',
+        format: 'PDF',
+        config: { groupId: 2 },
+      });
+
+      expect(mockClient.createReport).toHaveBeenCalledWith({
+        name: 'Weekly Alerts',
+        type: 'Alert',
+        format: 'PDF',
+        groupId: 2,
+      });
+    });
+
+    it('update_report should exclude reportId from body and merge config', async () => {
+      mockClient.updateReport.mockResolvedValue({} as never);
+
+      await handlers.handleToolCall('update_report', {
+        reportId: 5,
+        description: 'updated',
+        config: { schedule: '0 8 * * 1' },
+      });
+
+      expect(mockClient.updateReport).toHaveBeenCalledWith(5, {
+        description: 'updated',
+        schedule: '0 8 * * 1',
+      });
+    });
+
+    it('delete_report should delete by id', async () => {
+      mockClient.deleteReport.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_report', { reportId: 5 });
+      expect(mockClient.deleteReport).toHaveBeenCalledWith(5);
     });
   });
 

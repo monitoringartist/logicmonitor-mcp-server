@@ -966,6 +966,18 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('GET', `/report/reports/${reportId}`, undefined, params);
   }
 
+  async createReport(report: any) {
+    return this.request<LMResponse<any>>('POST', '/report/reports', report);
+  }
+
+  async updateReport(reportId: number, report: any) {
+    return this.request<LMResponse<any>>('PATCH', `/report/reports/${reportId}`, report);
+  }
+
+  async deleteReport(reportId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/report/reports/${reportId}`);
+  }
+
   // Websites (Synthetic Monitoring)
   async listWebsites(params?: {
     size?: number;
