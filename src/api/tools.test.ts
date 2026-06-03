@@ -536,7 +536,7 @@ describe('getLogicMonitorTools', () => {
 
         // Most list tools should have pagination
         // (a device's applied eventsources is a small fixed list with no pagination)
-        const paginationExempt = ['list_website_checkpoints', 'list_resource_eventsources'];
+        const paginationExempt = ['list_website_checkpoints', 'list_resource_eventsources', 'list_collector_agent_log_levels'];
         if (!paginationExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('size');
           expect(properties).toHaveProperty('offset');
@@ -560,6 +560,7 @@ describe('getLogicMonitorTools', () => {
           'list_resource_alert_settings',
           'list_instance_alert_settings',
           'list_resource_eventsources',
+          'list_collector_agent_log_levels',
         ];
         if (!filterExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('filter');
@@ -685,7 +686,8 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most list tools should support fields parameter
-        if (tool.name !== 'list_website_checkpoints') {
+        const listFieldsExempt = ['list_website_checkpoints', 'list_collector_agent_log_levels'];
+        if (!listFieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
       });
@@ -718,6 +720,10 @@ describe('getLogicMonitorTools', () => {
           'get_datasource_overview_graph',
           'get_debug_command_result',
           'get_report_task_result',
+          'get_collector_agent_log_level',
+          'get_collector_events',
+          'get_collector_status_check',
+          'get_instance_graph_data_by_id',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

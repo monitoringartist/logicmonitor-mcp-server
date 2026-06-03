@@ -3902,6 +3902,106 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['userId'],
     },
   },
+  {
+    name: 'create_user',
+    description: 'Create a new user (admin) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a LogicMonitor user account and assigns roles. ' +
+      '\n\n**Required:** the user definition via `config` — at minimum username and roles (array of role names or {id} objects). May include email, firstName, lastName, password, etc. ' +
+      '\n\n**Related tools:** "list\\_users", "list\\_roles" (find role names), "create\\_api\\_token" (issue API credentials).',
+    annotations: { title: 'Create user', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The Admin/user definition merged into the request body (username, roles, email, etc.).' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_user',
+    description: 'Update a user (admin) in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
+      '\n\n**Parameters:** userId, `config` (fields to change), optional changePassword, validationOnly. ' +
+      '\n\n**Related tools:** "get\\_user", "list\\_users".',
+    annotations: { title: 'Update user', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', description: 'The user (admin) ID to update' },
+        changePassword: { type: 'boolean', description: 'Whether this update changes the password.' },
+        validationOnly: { type: 'boolean', description: 'Validate the change without persisting.' },
+        config: { type: 'object', additionalProperties: true, description: 'User fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['userId', 'config'],
+    },
+  },
+  {
+    name: 'delete_user',
+    description: 'Delete a user (admin) from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Cannot be undone. Any API tokens owned by the user are also removed. ' +
+      '\n\n**Related tools:** "get\\_user", "list\\_users".',
+    annotations: { title: 'Delete user', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', description: 'The user (admin) ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['userId'],
+    },
+  },
+  {
+    name: 'create_api_token',
+    description: 'Create an API token for a user in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ Security:** The response includes the Access Key — store it securely; it cannot be retrieved again. The token inherits the user\'s permissions. ' +
+      '\n\n**Parameters:** userId, `config` (e.g., { "note": "Terraform automation" }), optional type. ' +
+      '\n\n**Related tools:** "list\\_api\\_tokens", "delete\\_api\\_token".',
+    annotations: { title: 'Create API token', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', description: 'The user (admin) ID to create the token for' },
+        type: { type: 'string', description: 'Token type (optional).' },
+        config: { type: 'object', additionalProperties: true, description: 'The API token definition (e.g., note).' },
+      },
+      additionalProperties: false,
+      required: ['userId', 'config'],
+    },
+  },
+  {
+    name: 'update_api_token',
+    description: 'Update an API token (e.g., note or status) for a user in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
+      '\n\n**Parameters:** userId, apiTokenId, `config` (fields to change, e.g., { "status": 2 } to disable). ' +
+      '\n\n**Related tools:** "list\\_api\\_tokens".',
+    annotations: { title: 'Update API token', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', description: 'The user (admin) ID that owns the token' },
+        apiTokenId: { type: 'number', description: 'The API token ID to update' },
+        config: { type: 'object', additionalProperties: true, description: 'Token fields to update (e.g., note, status).' },
+      },
+      additionalProperties: false,
+      required: ['userId', 'apiTokenId', 'config'],
+    },
+  },
+  {
+    name: 'delete_api_token',
+    description: 'Delete (revoke) an API token for a user in LogicMonitor (LM) monitoring. Cannot be undone. ' +
+      '\n\n**Parameters:** userId, apiTokenId. ' +
+      '\n\n**Related tools:** "list\\_api\\_tokens" (find the token ID).',
+    annotations: { title: 'Delete API token', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', description: 'The user (admin) ID that owns the token' },
+        apiTokenId: { type: 'number', description: 'The API token ID to revoke' },
+      },
+      additionalProperties: false,
+      required: ['userId', 'apiTokenId'],
+    },
+  },
 
   // SDT (Scheduled Down Time) Tools
   {
@@ -8095,6 +8195,727 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       },
       additionalProperties: false,
       required: ['groupId'],
+    },
+  },
+  {
+    name: 'create_collector_group',
+    description: 'Create a new collector group in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Creates a folder to organize Collectors into a hierarchy. ' +
+      '\n\n**Required:** name. **Optional:** description, customProperties, autoBalance settings via `config`. ' +
+      '\n\n**Related tools:** "list\\_collector\\_groups", "update\\_collector\\_group".',
+    annotations: { title: 'Create collector group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The collector group name' },
+        description: { type: 'string', description: 'The collector group description' },
+        config: { type: 'object', additionalProperties: true, description: 'Additional collector group attributes merged into the request body (e.g., customProperties, autoBalanceStrategy).' },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+  },
+  {
+    name: 'update_collector_group',
+    description: 'Update a collector group in LogicMonitor (LM) monitoring. Partial update. ' +
+      '\n\n**Parameters:** groupId plus name, description, or additional fields via `config`. ' +
+      '\n\n**Optional query flags:** autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType. ' +
+      '\n\n**Related tools:** "get\\_collector\\_group", "list\\_collector\\_groups".',
+    annotations: { title: 'Update collector group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The collector group ID to update' },
+        name: { type: 'string', description: 'New collector group name' },
+        description: { type: 'string', description: 'New description' },
+        autoBalanceMonitoredDevices: { type: 'boolean', description: 'Auto-balance monitored devices across the group.' },
+        forceUpdateFailedOverDevices: { type: 'boolean', description: 'Force update of failed-over devices.' },
+        opType: { type: 'string', description: 'How to merge properties: "refresh", "add", or "replace".' },
+        config: { type: 'object', additionalProperties: true, description: 'Additional collector group attributes to update.' },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'delete_collector_group',
+    description: 'Delete a collector group from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Cannot be undone. The group should generally be empty (no Collectors) before deletion. ' +
+      '\n\n**Related tools:** "get\\_collector\\_group", "list\\_collector\\_groups".',
+    annotations: { title: 'Delete collector group', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The collector group ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_collector_agent_log_levels',
+    description: 'List the agent log levels for each component of a Collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of components with their current log level (trace/debug/info/warn/error). ' +
+      '\n\n**Related tools:** "get\\_collector\\_agent\\_log\\_level", "update\\_collector\\_agent\\_log\\_level".',
+    annotations: { title: 'List collector agent log levels', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The Collector ID' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'get_collector_agent_log_level',
+    description: 'Get the agent log level for a specific component of a Collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_collector\\_agent\\_log\\_levels", "update\\_collector\\_agent\\_log\\_level".',
+    annotations: { title: 'Get collector agent log level', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The Collector ID' },
+        component: { type: 'string', description: 'The Collector component name (e.g., "collector", "watchdog", "sbproxy").' },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'component'],
+    },
+  },
+  {
+    name: 'update_collector_agent_log_level',
+    description: 'Update the agent log level for a specific component of a Collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ Note:** Verbose levels (trace/debug) increase log volume; revert when finished troubleshooting. ' +
+      '\n\n**Parameters:** collectorId, component, and the new level via `config` (e.g., `{ "level": "debug" }`). ' +
+      '\n\n**Related tools:** "get\\_collector\\_agent\\_log\\_level".',
+    annotations: { title: 'Update collector agent log level', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The Collector ID' },
+        component: { type: 'string', description: 'The Collector component name' },
+        config: { type: 'object', additionalProperties: true, description: 'The log level body (e.g., { "level": "debug" }).' },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'component', 'config'],
+    },
+  },
+  {
+    name: 'get_collector_events',
+    description: 'Get recent events for a Collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Collector event entries (restarts, failovers, config changes, errors). ' +
+      '\n\n**Related tools:** "get\\_collector", "get\\_collector\\_status\\_check".',
+    annotations: { title: 'Get collector events', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The Collector ID' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'get_collector_status_check',
+    description: 'Run a status check on a Collector\'s services in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Health/status information about the Collector services. ' +
+      '\n\n**Related tools:** "get\\_collector", "get\\_collector\\_events".',
+    annotations: { title: 'Get collector status check', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The Collector ID' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+
+  // Job Monitors (BatchJobs)
+  {
+    name: 'list_job_monitors',
+    description: 'List Job Monitors (BatchJobs) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are Job Monitors:** Definitions for monitoring scheduled/batch jobs (cron tasks, ETL jobs) — tracking execution status, duration, and output. ' +
+      '\n\n**Related tools:** "get\\_job\\_monitor", "create\\_job\\_monitor".',
+    annotations: { title: 'List job monitors', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        format: { type: 'string', description: 'Response format (e.g., "file" for export).' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_job_monitor',
+    description: 'Get details of a specific Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_job\\_monitors", "update\\_job\\_monitor".',
+    annotations: { title: 'Get job monitor', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobMonitorId: { type: 'number', description: 'The Job Monitor ID' },
+        format: { type: 'string', description: 'Response format (e.g., "file").' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['jobMonitorId'],
+    },
+  },
+  {
+    name: 'create_job_monitor',
+    description: 'Create a Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Required:** the BatchJob definition via `config` (name, collector, command/script, schedule, alert thresholds, etc.). ' +
+      '\n\n**Related tools:** "get\\_job\\_monitor" (template), "import\\_job\\_monitor".',
+    annotations: { title: 'Create job monitor', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The BatchJob definition merged into the request body.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_job_monitor',
+    description: 'Update a Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
+      '\n\n**Parameters:** jobMonitorId, `config` (fields to change), optional reason (audit note). ' +
+      '\n\n**Related tools:** "get\\_job\\_monitor".',
+    annotations: { title: 'Update job monitor', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobMonitorId: { type: 'number', description: 'The Job Monitor ID to update' },
+        reason: { type: 'string', description: 'Optional audit reason for the change.' },
+        config: { type: 'object', additionalProperties: true, description: 'BatchJob fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['jobMonitorId', 'config'],
+    },
+  },
+  {
+    name: 'delete_job_monitor',
+    description: 'Delete a Job Monitor (BatchJob) from LogicMonitor (LM) monitoring. Cannot be undone. ' +
+      '\n\n**Related tools:** "get\\_job\\_monitor", "list\\_job\\_monitors".',
+    annotations: { title: 'Delete job monitor', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobMonitorId: { type: 'number', description: 'The Job Monitor ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['jobMonitorId'],
+    },
+  },
+  {
+    name: 'import_job_monitor',
+    description: 'Import a Job Monitor (BatchJob) definition into LogicMonitor (LM) monitoring from JSON or XML content. ' +
+      '\n\n**Parameters:** content (the JSON/XML text), format ("json" or "xml"), optional handleConflict/fieldsToPreserve (JSON only). ' +
+      '\n\n**Related tools:** "create\\_job\\_monitor".',
+    annotations: { title: 'Import job monitor', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON or XML definition content to import.' },
+        format: { type: 'string', enum: ['json', 'xml'], description: 'The import format.' },
+        handleConflict: { type: 'string', description: 'Conflict handling (JSON import).' },
+        fieldsToPreserve: { type: 'string', description: 'Fields to preserve on conflict (JSON import).' },
+      },
+      additionalProperties: false,
+      required: ['content', 'format'],
+    },
+  },
+
+  // DiagnosticSources
+  {
+    name: 'list_diagnosticsources',
+    description: 'List DiagnosticSources in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are DiagnosticSources:** LogicModules that gather diagnostic data on demand (e.g., when an alert fires) to aid troubleshooting. ' +
+      '\n\n**Related tools:** "get\\_diagnosticsource", "create\\_diagnosticsource".',
+    annotations: { title: 'List diagnosticsources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_diagnosticsource',
+    description: 'Get details of a specific DiagnosticSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_diagnosticsources".',
+    annotations: { title: 'Get diagnosticsource', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        diagnosticSourceId: { type: 'number', description: 'The DiagnosticSource ID' },
+        format: { type: 'string', description: 'Response format (e.g., "file").' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['diagnosticSourceId'],
+    },
+  },
+  {
+    name: 'create_diagnosticsource',
+    description: 'Create a DiagnosticSource in LogicMonitor (LM) monitoring. Definition passed via `config`. ' +
+      '\n\n**Related tools:** "get\\_diagnosticsource" (template), "import\\_diagnosticsource".',
+    annotations: { title: 'Create diagnosticsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The DiagnosticSource definition.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_diagnosticsource',
+    description: 'Update a DiagnosticSource in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
+      '\n\n**Parameters:** diagnosticSourceId, `config`, optional reason. ',
+    annotations: { title: 'Update diagnosticsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        diagnosticSourceId: { type: 'number', description: 'The DiagnosticSource ID to update' },
+        reason: { type: 'string', description: 'Optional audit reason.' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['diagnosticSourceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_diagnosticsource',
+    description: 'Delete a DiagnosticSource from LogicMonitor (LM) monitoring. Cannot be undone. ',
+    annotations: { title: 'Delete diagnosticsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        diagnosticSourceId: { type: 'number', description: 'The DiagnosticSource ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['diagnosticSourceId'],
+    },
+  },
+  {
+    name: 'import_diagnosticsource',
+    description: 'Import a DiagnosticSource definition (JSON) into LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Import diagnosticsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON definition content to import.' },
+        handleConflict: { type: 'string', description: 'Conflict handling.' },
+        fieldsToPreserve: { type: 'string', description: 'Fields to preserve on conflict.' },
+      },
+      additionalProperties: false,
+      required: ['content'],
+    },
+  },
+  {
+    name: 'execute_diagnosticsource',
+    description: 'Manually execute a DiagnosticSource in LogicMonitor (LM) monitoring to gather diagnostic data on demand. ' +
+      '\n\n**Parameters:** the execution request via `config` (e.g., deviceId, deviceDataSourceId / instance to run against). ',
+    annotations: { title: 'Execute diagnosticsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The DiagnosticsSourceExecution request body.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // AppliesTo Functions
+  {
+    name: 'list_applies_to_functions',
+    description: 'List AppliesTo Functions in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are AppliesTo Functions:** Reusable named expressions used in LogicModule AppliesTo logic to target groups of resources. ' +
+      '\n\n**Related tools:** "get\\_applies\\_to\\_function", "create\\_applies\\_to\\_function".',
+    annotations: { title: 'List appliesto functions', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_applies_to_function',
+    description: 'Get details of a specific AppliesTo Function in LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Get appliesto function', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        functionId: { type: 'number', description: 'The AppliesTo Function ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['functionId'],
+    },
+  },
+  {
+    name: 'create_applies_to_function',
+    description: 'Create an AppliesTo Function in LogicMonitor (LM) monitoring. Definition via `config` (name, code, description). ',
+    annotations: { title: 'Create appliesto function', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The AppliesToFunction definition (name, code, description).' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_applies_to_function',
+    description: 'Update an AppliesTo Function in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
+      '\n\n**Parameters:** functionId, `config`, optional reason, ignoreReference. ',
+    annotations: { title: 'Update appliesto function', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        functionId: { type: 'number', description: 'The AppliesTo Function ID to update' },
+        reason: { type: 'string', description: 'Optional audit reason.' },
+        ignoreReference: { type: 'boolean', description: 'Ignore reference checks when updating.' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['functionId', 'config'],
+    },
+  },
+  {
+    name: 'delete_applies_to_function',
+    description: 'Delete an AppliesTo Function from LogicMonitor (LM) monitoring. Cannot be undone. ' +
+      '\n\n**Optional:** ignoreReference to delete even if referenced by LogicModules. ',
+    annotations: { title: 'Delete appliesto function', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        functionId: { type: 'number', description: 'The AppliesTo Function ID to delete' },
+        ignoreReference: { type: 'boolean', description: 'Delete even if referenced.' },
+      },
+      additionalProperties: false,
+      required: ['functionId'],
+    },
+  },
+  {
+    name: 'import_applies_to_function',
+    description: 'Import an AppliesTo Function definition (JSON) into LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Import appliesto function', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON definition content to import.' },
+        handleConflict: { type: 'string', description: 'Conflict handling.' },
+        fieldsToPreserve: { type: 'string', description: 'Fields to preserve on conflict.' },
+      },
+      additionalProperties: false,
+      required: ['content'],
+    },
+  },
+
+  // SNMP OIDs
+  {
+    name: 'list_oids',
+    description: 'List SNMP OIDs (MIB definitions) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "get\\_oid", "create\\_oid".',
+    annotations: { title: 'List SNMP OIDs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_oid',
+    description: 'Get details of a specific SNMP OID in LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Get SNMP OID', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        oidId: { type: 'number', description: 'The OID record ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['oidId'],
+    },
+  },
+  {
+    name: 'create_oid',
+    description: 'Create an SNMP OID (MIB) definition in LogicMonitor (LM) monitoring. Definition via `config`. ',
+    annotations: { title: 'Create SNMP OID', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The OID definition.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_oid',
+    description: 'Update an SNMP OID definition in LogicMonitor (LM) monitoring. Partial update via `config`. ',
+    annotations: { title: 'Update SNMP OID', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        oidId: { type: 'number', description: 'The OID record ID to update' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['oidId', 'config'],
+    },
+  },
+  {
+    name: 'delete_oid',
+    description: 'Delete an SNMP OID definition from LogicMonitor (LM) monitoring. Cannot be undone. ',
+    annotations: { title: 'Delete SNMP OID', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        oidId: { type: 'number', description: 'The OID record ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['oidId'],
+    },
+  },
+  {
+    name: 'import_oid',
+    description: 'Import an SNMP OID definition (JSON) into LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Import SNMP OID', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON definition content to import.' },
+        handleConflict: { type: 'string', description: 'Conflict handling.' },
+        fieldsToPreserve: { type: 'string', description: 'Fields to preserve on conflict.' },
+      },
+      additionalProperties: false,
+      required: ['content'],
+    },
+  },
+
+  // RemediationSources
+  {
+    name: 'list_remediationsources',
+    description: 'List RemediationSources in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are RemediationSources:** LogicModules that run automated remediation actions (scripts) in response to alerts. ' +
+      '\n\n**Related tools:** "get\\_remediationsource", "execute\\_remediation".',
+    annotations: { title: 'List remediationsources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_remediationsource',
+    description: 'Get details of a specific RemediationSource in LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Get remediationsource', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        remediationSourceId: { type: 'number', description: 'The RemediationSource ID' },
+        format: { type: 'string', description: 'Response format (e.g., "file").' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['remediationSourceId'],
+    },
+  },
+  {
+    name: 'create_remediationsource',
+    description: 'Create a RemediationSource in LogicMonitor (LM) monitoring. Definition via `config`. ',
+    annotations: { title: 'Create remediationsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The RemediationSource definition.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_remediationsource',
+    description: 'Update a RemediationSource in LogicMonitor (LM) monitoring. Partial update via `config`. Optional reason. ',
+    annotations: { title: 'Update remediationsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        remediationSourceId: { type: 'number', description: 'The RemediationSource ID to update' },
+        reason: { type: 'string', description: 'Optional audit reason.' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['remediationSourceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_remediationsource',
+    description: 'Delete a RemediationSource from LogicMonitor (LM) monitoring. Cannot be undone. ',
+    annotations: { title: 'Delete remediationsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        remediationSourceId: { type: 'number', description: 'The RemediationSource ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['remediationSourceId'],
+    },
+  },
+  {
+    name: 'execute_remediation',
+    description: 'Manually execute a RemediationSource remediation action in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** This runs a remediation script/action against a target — verify the target before executing. ' +
+      '\n\n**Parameters:** the execution request via `config`. ',
+    annotations: { title: 'Execute remediation', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The RemediationSourceExecution request body.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+
+  // TopologySources
+  {
+    name: 'list_topologysources',
+    description: 'List TopologySources in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are TopologySources:** LogicModules that discover relationships between resources to build topology maps. ' +
+      '\n\n**Related tools:** "get\\_topologysource", "create\\_topologysource".',
+    annotations: { title: 'List topologysources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_topologysource',
+    description: 'Get details of a specific TopologySource in LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Get topologysource', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topologySourceId: { type: 'number', description: 'The TopologySource ID' },
+        format: { type: 'string', description: 'Response format (e.g., "file").' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['topologySourceId'],
+    },
+  },
+  {
+    name: 'create_topologysource',
+    description: 'Create a TopologySource in LogicMonitor (LM) monitoring. Definition via `config`. ',
+    annotations: { title: 'Create topologysource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The TopologySource definition.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_topologysource',
+    description: 'Update a TopologySource in LogicMonitor (LM) monitoring. Partial update via `config`. Optional reason. ',
+    annotations: { title: 'Update topologysource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topologySourceId: { type: 'number', description: 'The TopologySource ID to update' },
+        reason: { type: 'string', description: 'Optional audit reason.' },
+        config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
+      },
+      additionalProperties: false,
+      required: ['topologySourceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_topologysource',
+    description: 'Delete a TopologySource from LogicMonitor (LM) monitoring. Cannot be undone. ',
+    annotations: { title: 'Delete topologysource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topologySourceId: { type: 'number', description: 'The TopologySource ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['topologySourceId'],
+    },
+  },
+  {
+    name: 'import_topologysource',
+    description: 'Import a TopologySource definition (JSON) into LogicMonitor (LM) monitoring. ',
+    annotations: { title: 'Import topologysource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON definition content to import.' },
+        handleConflict: { type: 'string', description: 'Conflict handling.' },
+        fieldsToPreserve: { type: 'string', description: 'Fields to preserve on conflict.' },
+      },
+      additionalProperties: false,
+      required: ['content'],
+    },
+  },
+
+  // Bulk instance data fetch & instance graph by id
+  {
+    name: 'fetch_instances_data',
+    description: 'Fetch recent metric data for multiple device datasource instances in a single bulk request in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** the instances selector via `config` (the DeviceInstances body), plus optional time controls: period, start, end, aggregate. ' +
+      '\n\n**Related tools:** "get\\_resource\\_instance\\_data" (single instance), "get\\_instance\\_graph\\_data\\_by\\_id".',
+    annotations: { title: 'Fetch bulk instances data', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: { type: 'object', additionalProperties: true, description: 'The DeviceInstances request body selecting which instances/datapoints to fetch.' },
+        period: { type: 'number', description: 'Time period (e.g., number of hours).' },
+        start: { type: 'number', description: 'Start epoch seconds.' },
+        end: { type: 'number', description: 'End epoch seconds.' },
+        aggregate: { type: 'string', description: 'Aggregation function (e.g., "average").' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'get_instance_graph_data_by_id',
+    description: 'Get rendered graph data for a device datasource instance graph using only the instance ID in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Retrieves the time-series data for a specific graph on an instance, addressed directly by instanceId + graphId (no device/datasource path needed). ' +
+      '\n\n**Parameters:** instanceId, graphId, optional start/end (epoch seconds) and format. ' +
+      '\n\n**Related tools:** "get\\_instance\\_graph\\_data" (full device/datasource path), "list\\_resource\\_instances".',
+    annotations: { title: 'Get instance graph data by id', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instanceId: { type: 'number', description: 'The device datasource instance ID' },
+        graphId: { type: 'number', description: 'The graph ID' },
+        start: { type: 'number', description: 'Start epoch seconds.' },
+        end: { type: 'number', description: 'End epoch seconds.' },
+        format: { type: 'string', description: 'Response format.' },
+      },
+      additionalProperties: false,
+      required: ['instanceId', 'graphId'],
     },
   },
 

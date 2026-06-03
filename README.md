@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **232 MCP Tools** for comprehensive LogicMonitor operations (118 read-only, 114 write)
+- **285 MCP Tools** for comprehensive LogicMonitor operations (136 read-only, 149 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -539,6 +539,8 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_resource_instance_data` - Get time-series metrics data
 - `get_resource_datasource_data` - Get aggregated datasource data across instances
 - `get_instance_graph_data` - Get rendered graph data for an instance
+- `get_instance_graph_data_by_id` - Get graph data by instance ID + graph ID
+- `fetch_instances_data` - Bulk-fetch metric data for multiple instances
 - `list_resource_instance_groups` - List datasource instance groups
 - `get_resource_instance_group` - Get instance group details
 - `get_instance_group_overview_graph_data` - Get instance group overview graph data
@@ -636,6 +638,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `list_collector_groups` - List collector groups
 - `get_collector_group` - Get collector group details
 - `list_collector_versions` - List available collector versions
+- `list_collector_agent_log_levels` - List a collector's per-component log levels
+- `get_collector_agent_log_level` - Get a collector component's log level
+- `get_collector_events` - Get recent events for a collector
+- `get_collector_status_check` - Run a status check on a collector's services
 - `list_netscans` - List network discovery scans
 - `get_netscan` - Get NetScan details
 - `get_topology` - Get network topology information
@@ -647,6 +653,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `acknowledge_collector_down_alert` - Acknowledge a collector-down alert
 - `execute_debug_command` - Run a debug command on a collector (async; returns sessionId)
 - `get_debug_command_result` - Get the output of a collector debug command
+- `create_collector_group` - Create a collector group
+- `update_collector_group` - Update a collector group
+- `delete_collector_group` - Delete a collector group
+- `update_collector_agent_log_level` - Set a collector component's log level
 - `create_netscan` - Create NetScan
 - `update_netscan` - Modify NetScan
 - `delete_netscan` - Delete netscan
@@ -740,6 +750,30 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `create_access_group` - Create access group
 - `update_access_group` - Modify access group
 - `delete_access_group` - Delete access group
+- `create_user` - Create a user (admin) and assign roles
+- `update_user` - Update a user (admin)
+- `delete_user` - Delete a user (admin)
+- `create_api_token` - Issue an API token for a user
+- `update_api_token` - Update an API token (note/status)
+- `delete_api_token` - Revoke an API token
+
+### Settings & LogicModules
+
+**Read-Only:**
+- `list_job_monitors` / `get_job_monitor` - Job Monitors (BatchJobs)
+- `list_diagnosticsources` / `get_diagnosticsource` - DiagnosticSources
+- `list_applies_to_functions` / `get_applies_to_function` - AppliesTo Functions
+- `list_oids` / `get_oid` - SNMP OIDs
+- `list_remediationsources` / `get_remediationsource` - RemediationSources
+- `list_topologysources` / `get_topologysource` - TopologySources
+
+**Write Operations:**
+- `create_job_monitor` / `update_job_monitor` / `delete_job_monitor` / `import_job_monitor`
+- `create_diagnosticsource` / `update_diagnosticsource` / `delete_diagnosticsource` / `import_diagnosticsource` / `execute_diagnosticsource`
+- `create_applies_to_function` / `update_applies_to_function` / `delete_applies_to_function` / `import_applies_to_function`
+- `create_oid` / `update_oid` / `delete_oid` / `import_oid`
+- `create_remediationsource` / `update_remediationsource` / `delete_remediationsource` / `execute_remediation`
+- `create_topologysource` / `update_topologysource` / `delete_topologysource` / `import_topologysource`
 
 ### Properties & Configuration
 
@@ -800,9 +834,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **118 read-only tools** - Safe for production monitoring
-- **114 write tools** - Require caution (disabled by default with `--read-only`)
-- **232 total tools**
+- **136 read-only tools** - Safe for production monitoring
+- **149 write tools** - Require caution (disabled by default with `--read-only`)
+- **285 total tools**
 
 ## Security Considerations
 

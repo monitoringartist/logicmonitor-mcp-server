@@ -1708,6 +1708,47 @@ export class LogicMonitorClient {
     return this.request<LMListResponse<any>>('GET', `/setting/admins/${userId}/apitokens`, undefined, cleanedParams);
   }
 
+  async createUser(user: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/admins', user);
+  }
+
+  async updateUser(userId: number, user: any, params?: { changePassword?: boolean; validationOnly?: boolean }) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/admins/${userId}`,
+      user,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async deleteUser(userId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/admins/${userId}`);
+  }
+
+  async createApiToken(userId: number, token: any, params?: { type?: string }) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/setting/admins/${userId}/apitokens`,
+      token,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async updateApiToken(userId: number, apiTokenId: number, token: any) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/admins/${userId}/apitokens/${apiTokenId}`,
+      token,
+    );
+  }
+
+  async deleteApiToken(userId: number, apiTokenId: number) {
+    return this.request<LMResponse<any>>(
+      'DELETE',
+      `/setting/admins/${userId}/apitokens/${apiTokenId}`,
+    );
+  }
+
   // SDT (Scheduled Down Time)
   async listSDTs(params?: {
     size?: number;
@@ -2425,6 +2466,353 @@ export class LogicMonitorClient {
 
   async getCollectorGroup(groupId: number, params?: { fields?: string }) {
     return this.request<LMResponse<any>>('GET', `/setting/collector/groups/${groupId}`, undefined, params);
+  }
+
+  async createCollectorGroup(group: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/collector/groups', group);
+  }
+
+  async updateCollectorGroup(groupId: number, group: any, params?: {
+    autoBalanceMonitoredDevices?: boolean;
+    forceUpdateFailedOverDevices?: boolean;
+    opType?: string;
+  }) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/collector/groups/${groupId}`,
+      group,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async deleteCollectorGroup(groupId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/collector/groups/${groupId}`);
+  }
+
+  async listCollectorAgentLogLevels(collectorId: number) {
+    return this.request<LMResponse<any>>('GET', `/setting/collector/collectors/${collectorId}/agentloglevels`);
+  }
+
+  async getCollectorAgentLogLevel(collectorId: number, component: string) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/setting/collector/collectors/${collectorId}/agentloglevels/${encodeURIComponent(component)}`,
+    );
+  }
+
+  async updateCollectorAgentLogLevel(collectorId: number, component: string, body: any) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/collector/collectors/${collectorId}/agentloglevels/${encodeURIComponent(component)}`,
+      body,
+    );
+  }
+
+  async getCollectorEvents(collectorId: number) {
+    return this.request<LMResponse<any>>('GET', `/setting/collector/collectors/${collectorId}/events`);
+  }
+
+  async getCollectorStatusCheck(collectorId: number) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/setting/collector/collectors/${collectorId}/services/getStatusCheck`,
+    );
+  }
+
+  // Job Monitors (BatchJobs)
+  async listJobMonitors(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    format?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/batchjobs', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/batchjobs', undefined, cleanedParams);
+  }
+
+  async getJobMonitor(jobMonitorId: number, params?: { format?: string; fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/batchjobs/${jobMonitorId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createJobMonitor(jobMonitor: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/batchjobs', jobMonitor);
+  }
+
+  async updateJobMonitor(jobMonitorId: number, jobMonitor: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/batchjobs/${jobMonitorId}`, jobMonitor, this.cleanParams(params || {}));
+  }
+
+  async deleteJobMonitor(jobMonitorId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/batchjobs/${jobMonitorId}`);
+  }
+
+  async importJobMonitor(content: string, format: 'json' | 'xml', params?: {
+    handleConflict?: string;
+    fieldsToPreserve?: string;
+  }) {
+    const isJson = format === 'json';
+    const path = isJson ? '/setting/batchjobs/importjson' : '/setting/batchjobs/importxml';
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (isJson) {
+      if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+      if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    }
+    return this.requestMultipart<LMResponse<any>>(
+      path,
+      content,
+      isJson ? 'batchjob.json' : 'batchjob.xml',
+      isJson ? 'application/json' : 'application/xml',
+      queryParams,
+    );
+  }
+
+  // DiagnosticSources
+  async listDiagnosticSources(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/diagnosticsources', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/diagnosticsources', undefined, cleanedParams);
+  }
+
+  async getDiagnosticSource(diagnosticSourceId: number, params?: { format?: string; fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/diagnosticsources/${diagnosticSourceId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createDiagnosticSource(diagnosticSource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/diagnosticsources', diagnosticSource);
+  }
+
+  async updateDiagnosticSource(diagnosticSourceId: number, diagnosticSource: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/diagnosticsources/${diagnosticSourceId}`, diagnosticSource, this.cleanParams(params || {}));
+  }
+
+  async deleteDiagnosticSource(diagnosticSourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/diagnosticsources/${diagnosticSourceId}`);
+  }
+
+  async importDiagnosticSource(content: string, params?: { handleConflict?: string; fieldsToPreserve?: string }) {
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+    if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    return this.requestMultipart<LMResponse<any>>(
+      '/setting/diagnosticsources/importjson',
+      content,
+      'diagnosticsource.json',
+      'application/json',
+      queryParams,
+    );
+  }
+
+  async executeDiagnosticSource(execution: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/diagnosticsources/executemanually', execution);
+  }
+
+  // AppliesTo Functions
+  async listAppliesToFunctions(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/functions', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/functions', undefined, cleanedParams);
+  }
+
+  async getAppliesToFunction(functionId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/functions/${functionId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createAppliesToFunction(appliesToFunction: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/functions', appliesToFunction);
+  }
+
+  async updateAppliesToFunction(functionId: number, appliesToFunction: any, params?: { reason?: string; ignoreReference?: boolean }) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/functions/${functionId}`, appliesToFunction, this.cleanParams(params || {}));
+  }
+
+  async deleteAppliesToFunction(functionId: number, params?: { ignoreReference?: boolean }) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/functions/${functionId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async importAppliesToFunction(content: string, params?: { handleConflict?: string; fieldsToPreserve?: string }) {
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+    if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    return this.requestMultipart<LMResponse<any>>(
+      '/setting/functions/importjson',
+      content,
+      'function.json',
+      'application/json',
+      queryParams,
+    );
+  }
+
+  // SNMP OIDs
+  async listOIDs(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/oids', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/oids', undefined, cleanedParams);
+  }
+
+  async getOID(oidId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/oids/${oidId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createOID(oid: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/oids', oid);
+  }
+
+  async updateOID(oidId: number, oid: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/oids/${oidId}`, oid);
+  }
+
+  async deleteOID(oidId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/oids/${oidId}`);
+  }
+
+  async importOID(content: string, params?: { handleConflict?: string; fieldsToPreserve?: string }) {
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+    if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    return this.requestMultipart<LMResponse<any>>(
+      '/setting/oids/importjson',
+      content,
+      'oid.json',
+      'application/json',
+      queryParams,
+    );
+  }
+
+  // RemediationSources
+  async listRemediationSources(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/remediationsources', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/remediationsources', undefined, cleanedParams);
+  }
+
+  async getRemediationSource(remediationSourceId: number, params?: { format?: string; fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/remediationsources/${remediationSourceId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createRemediationSource(remediationSource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/remediationsources', remediationSource);
+  }
+
+  async updateRemediationSource(remediationSourceId: number, remediationSource: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/remediationsources/${remediationSourceId}`, remediationSource, this.cleanParams(params || {}));
+  }
+
+  async deleteRemediationSource(remediationSourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/remediationsources/${remediationSourceId}`);
+  }
+
+  async executeRemediation(execution: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/remediationsources/executemanually', execution);
+  }
+
+  // TopologySources
+  async listTopologySources(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/topologysources', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/topologysources', undefined, cleanedParams);
+  }
+
+  async getTopologySource(topologySourceId: number, params?: { format?: string; fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/topologysources/${topologySourceId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createTopologySource(topologySource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/topologysources', topologySource);
+  }
+
+  async updateTopologySource(topologySourceId: number, topologySource: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/topologysources/${topologySourceId}`, topologySource, this.cleanParams(params || {}));
+  }
+
+  async deleteTopologySource(topologySourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/topologysources/${topologySourceId}`);
+  }
+
+  async importTopologySource(content: string, params?: { handleConflict?: string; fieldsToPreserve?: string }) {
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+    if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    return this.requestMultipart<LMResponse<any>>(
+      '/setting/topologysources/importjson',
+      content,
+      'topologysource.json',
+      'application/json',
+      queryParams,
+    );
+  }
+
+  // Bulk instance data fetch & instance graph by id
+  async fetchDeviceInstancesData(body: any, params?: {
+    period?: number;
+    start?: number;
+    end?: number;
+    aggregate?: string;
+  }) {
+    return this.request<LMResponse<any>>('POST', '/device/instances/datafetch', body, this.cleanParams(params || {}));
+  }
+
+  async getInstanceGraphDataById(instanceId: number, graphId: number, params?: {
+    start?: number;
+    end?: number;
+    format?: string;
+  }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devicedatasourceinstances/${instanceId}/graphs/${graphId}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
   }
 
   // Device Group Properties

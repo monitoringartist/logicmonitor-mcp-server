@@ -199,6 +199,74 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],
   'create_user': ['mcp:tools', 'lm:users:manage'],
+  'update_user': ['mcp:tools', 'lm:users:manage'],
+  'delete_user': ['mcp:tools', 'lm:users:manage'],
+  'create_api_token': ['mcp:tools', 'lm:users:manage'],
+  'update_api_token': ['mcp:tools', 'lm:users:manage'],
+  'delete_api_token': ['mcp:tools', 'lm:users:manage'],
+
+  // Collector groups & agent log levels
+  'create_collector_group': ['mcp:tools', 'lm:write'],
+  'update_collector_group': ['mcp:tools', 'lm:write'],
+  'delete_collector_group': ['mcp:tools', 'lm:write'],
+  'list_collector_agent_log_levels': ['mcp:tools', 'lm:read'],
+  'get_collector_agent_log_level': ['mcp:tools', 'lm:read'],
+  'update_collector_agent_log_level': ['mcp:tools', 'lm:write'],
+  'get_collector_events': ['mcp:tools', 'lm:read'],
+  'get_collector_status_check': ['mcp:tools', 'lm:read'],
+
+  // Job Monitors (BatchJobs)
+  'list_job_monitors': ['mcp:tools', 'lm:read'],
+  'get_job_monitor': ['mcp:tools', 'lm:read'],
+  'create_job_monitor': ['mcp:tools', 'lm:write'],
+  'update_job_monitor': ['mcp:tools', 'lm:write'],
+  'delete_job_monitor': ['mcp:tools', 'lm:write'],
+  'import_job_monitor': ['mcp:tools', 'lm:write'],
+
+  // DiagnosticSources
+  'list_diagnosticsources': ['mcp:tools', 'lm:read'],
+  'get_diagnosticsource': ['mcp:tools', 'lm:read'],
+  'create_diagnosticsource': ['mcp:tools', 'lm:write'],
+  'update_diagnosticsource': ['mcp:tools', 'lm:write'],
+  'delete_diagnosticsource': ['mcp:tools', 'lm:write'],
+  'import_diagnosticsource': ['mcp:tools', 'lm:write'],
+  'execute_diagnosticsource': ['mcp:tools', 'lm:write'],
+
+  // AppliesTo Functions
+  'list_applies_to_functions': ['mcp:tools', 'lm:read'],
+  'get_applies_to_function': ['mcp:tools', 'lm:read'],
+  'create_applies_to_function': ['mcp:tools', 'lm:write'],
+  'update_applies_to_function': ['mcp:tools', 'lm:write'],
+  'delete_applies_to_function': ['mcp:tools', 'lm:write'],
+  'import_applies_to_function': ['mcp:tools', 'lm:write'],
+
+  // SNMP OIDs
+  'list_oids': ['mcp:tools', 'lm:read'],
+  'get_oid': ['mcp:tools', 'lm:read'],
+  'create_oid': ['mcp:tools', 'lm:write'],
+  'update_oid': ['mcp:tools', 'lm:write'],
+  'delete_oid': ['mcp:tools', 'lm:write'],
+  'import_oid': ['mcp:tools', 'lm:write'],
+
+  // RemediationSources
+  'list_remediationsources': ['mcp:tools', 'lm:read'],
+  'get_remediationsource': ['mcp:tools', 'lm:read'],
+  'create_remediationsource': ['mcp:tools', 'lm:write'],
+  'update_remediationsource': ['mcp:tools', 'lm:write'],
+  'delete_remediationsource': ['mcp:tools', 'lm:write'],
+  'execute_remediation': ['mcp:tools', 'lm:write'],
+
+  // TopologySources
+  'list_topologysources': ['mcp:tools', 'lm:read'],
+  'get_topologysource': ['mcp:tools', 'lm:read'],
+  'create_topologysource': ['mcp:tools', 'lm:write'],
+  'update_topologysource': ['mcp:tools', 'lm:write'],
+  'delete_topologysource': ['mcp:tools', 'lm:write'],
+  'import_topologysource': ['mcp:tools', 'lm:write'],
+
+  // Bulk instance data fetch & instance graph by id
+  'fetch_instances_data': ['mcp:tools', 'lm:read'],
+  'get_instance_graph_data_by_id': ['mcp:tools', 'lm:read'],
 
   // Roles (write)
   'create_role': ['mcp:tools', 'lm:users:manage'],

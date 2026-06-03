@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 248 |
-| **Operations Missing** | 145 |
-| **Coverage** | **63%** |
-| **Implemented MCP Tools** | 232 (+4 custom link tools) |
+| **Operations Covered** | 310 |
+| **Operations Missing** | 83 |
+| **Coverage** | **79%** |
+| **Implemented MCP Tools** | 285 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -23,12 +23,7 @@
 |----------|:-------:|:-----:|:------:|
 | Log Pipelines / Log Alerts | 0 | 13 | ❌ None |
 | Log Query Groups | 0 | 9 | ❌ None |
-| DiagnosticSources | 0 | 8 | ❌ None |
-| Job Monitors (BatchJobs) | 0 | 8 | ❌ None |
 | Log Partitions | 0 | 8 | ❌ None |
-| AppliesTo Functions | 0 | 7 | ❌ None |
-| RemediationSources | 0 | 7 | ❌ None |
-| SNMP OIDs | 0 | 7 | ❌ None |
 | Tracked Query Groups | 0 | 6 | ❌ None |
 | AWS Cloud Onboarding | 0 | 4 | ❌ None |
 | Azure Cloud Onboarding | 0 | 3 | ❌ None |
@@ -36,19 +31,14 @@
 | Diagnostic Remediation | 0 | 2 | ❌ None |
 | Metrics (Push/Usage) | 0 | 2 | ❌ None |
 | API Usage Stats | 0 | 1 | ❌ None |
-| Bulk Instance Data Fetch | 0 | 1 | ❌ None |
 | Contract / Usage Info | 0 | 1 | ❌ None |
 | DNS Mappings | 0 | 1 | ❌ None |
 | GCP Cloud Onboarding | 0 | 1 | ❌ None |
-| Instance Graph Data (by instance id) | 0 | 1 | ❌ None |
 | Integration Audit Logs | 0 | 1 | ❌ None |
 | LogicModule Metadata | 0 | 1 | ❌ None |
 | SaaS Account | 0 | 1 | ❌ None |
 | Unmonitored Devices | 0 | 1 | ❌ None |
 | Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
-| Collector Groups & Agent Log Levels | 11 | 21 | 🟡 Partial |
-| Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
-| TopologySources (write) | 2 | 7 | 🟡 Partial |
 | ConfigSource extras | 7 | 9 | 🟡 Partial |
 | Website extras | 11 | 13 | 🟡 Partial |
 | Access Group Module Mapping | 6 | 7 | 🟡 Partial |
@@ -56,23 +46,33 @@
 | EventSource extras | 7 | 8 | 🟡 Partial |
 | Alert Automation — Action Chains & Rules | 14 | 14 | ✅ Full |
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
+| AppliesTo Functions | 7 | 7 | ✅ Full |
 | Audit / Access Logs | 2 | 2 | ✅ Full |
+| Bulk Instance Data Fetch | 1 | 1 | ✅ Full |
 | Collector Debug Commands | 2 | 2 | ✅ Full |
+| Collector Groups & Agent Log Levels | 21 | 21 | ✅ Full |
 | Cost Optimization | 3 | 3 | ✅ Full |
 | Dashboard Groups (write) | 7 | 7 | ✅ Full |
 | Dashboard Widgets | 7 | 7 | ✅ Full |
 | Dashboards | 7 | 7 | ✅ Full |
 | DataSource Management (write/import) | 12 | 12 | ✅ Full |
 | Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
+| DiagnosticSources | 8 | 8 | ✅ Full |
+| Instance Graph Data (by instance id) | 1 | 1 | ✅ Full |
+| Job Monitors (BatchJobs) | 8 | 8 | ✅ Full |
 | LogSources | 7 | 7 | ✅ Full |
 | NetScans | 6 | 6 | ✅ Full |
 | Ops Notes | 6 | 6 | ✅ Full |
 | PropertySources / Property Rules | 7 | 7 | ✅ Full |
 | Recipient Groups | 6 | 6 | ✅ Full |
+| RemediationSources | 7 | 7 | ✅ Full |
 | Report Execution | 8 | 8 | ✅ Full |
 | Report Groups | 6 | 6 | ✅ Full |
 | Roles (write) | 6 | 6 | ✅ Full |
 | Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
+| SNMP OIDs | 7 | 7 | ✅ Full |
+| TopologySources (write) | 7 | 7 | ✅ Full |
+| Users & API Tokens (write) | 12 | 12 | ✅ Full |
 | Website Checkpoints | 1 | 1 | ✅ Full |
 | Website Groups (write) | 9 | 9 | ✅ Full |
 
@@ -87,20 +87,10 @@ Grouped by impact. Each item links to its detailed operation list below.
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-### 🟡 MEDIUM Priority — 62 operations
 
-*Administration, automation modules, and infrastructure completeness*
+### 🟡 MEDIUM Priority — 0 operations
 
-- **Collector Groups & Agent Log Levels** — 10 missing. Tools to add: collector-group CRUD, agent-log-level, events/status tools
-- **Job Monitors (BatchJobs)** — 8 missing. Tools to add: job-monitor CRUD + import tools
-- **DiagnosticSources** — 8 missing. Tools to add: diagnostic-source CRUD + import + execute tools
-- **Users & API Tokens (write)** — 8 missing. Tools to add: admin CRUD and API-token CRUD tools
-- **AppliesTo Functions** — 7 missing. Tools to add: applies-to-function CRUD + import tools
-- **SNMP OIDs** — 7 missing. Tools to add: oid CRUD + import tools
-- **RemediationSources** — 7 missing. Tools to add: remediation-source CRUD + execute tools
-- **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
-- **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
-- **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
+*All MEDIUM-priority categories are now fully covered (Collector Groups & Agent Log Levels, Job Monitors, DiagnosticSources, Users & API Tokens, AppliesTo Functions, SNMP OIDs, RemediationSources, TopologySources, Bulk Instance Data Fetch, Instance Graph Data by instance id).*
 
 ### 🟢 LOW Priority — 64 operations
 
@@ -160,138 +150,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-
-### 🟡 Collector Groups & Agent Log Levels
-
-**Coverage:** 11/21 operations.  **Proposed tools:** collector-group CRUD, agent-log-level, events/status tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteCollectorGroupById` | `/setting/collector/groups/{id}` |
-| `GET` | `getCollectorAgentLogLevelByComponent` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
-| `GET` | `getCollectorAgentLogLevels` | `/setting/collector/collectors/{id}/agentloglevels` |
-| `GET` | `getCollectorEvents` | `/setting/collector/collectors/{collectorId}/events` |
-| `GET` | `getCollectorStatusCheck` | `/setting/collector/collectors/{collectorId}/services/getStatusCheck` |
-| `PATCH` | `patchCollectorAgentLogLevel` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
-| `PATCH` | `patchCollectorGroupById` | `/setting/collector/groups/{id}` |
-| `POST` | `addCollectorGroup` | `/setting/collector/groups` |
-| `PUT` | `updateCollectorAgentLogLevel` | `/setting/collector/collectors/{id}/agentloglevels/{component}` |
-| `PUT` | `updateCollectorGroupById` | `/setting/collector/groups/{id}` |
-
-### 🟡 Job Monitors (BatchJobs)
-
-**Coverage:** 0/8 operations.  **Proposed tools:** job-monitor CRUD + import tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteJobMonitor` | `/setting/batchjobs/{id}` |
-| `GET` | `getJobMonitorById` | `/setting/batchjobs/{id}` |
-| `GET` | `getJobMonitorList` | `/setting/batchjobs` |
-| `PATCH` | `patchJobMonitor` | `/setting/batchjobs/{id}` |
-| `POST` | `addJobMonitor` | `/setting/batchjobs` |
-| `POST` | `importBatchJob` | `/setting/batchjobs/importxml` |
-| `POST` | `importJobMonitorJson` | `/setting/batchjobs/importjson` |
-| `PUT` | `updateJobMonitor` | `/setting/batchjobs/{id}` |
-
-### 🟡 DiagnosticSources
-
-**Coverage:** 0/8 operations.  **Proposed tools:** diagnostic-source CRUD + import + execute tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
-| `GET` | `getDiagnosticSourcesById` | `/setting/diagnosticsources/{id}` |
-| `GET` | `getDiagnosticSourcesList` | `/setting/diagnosticsources` |
-| `PATCH` | `patchDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
-| `POST` | `addDiagnosticSource` | `/setting/diagnosticsources` |
-| `POST` | `executeDiagnosticsManually` | `/setting/diagnosticsources/executemanually` |
-| `POST` | `importDiagnosticSourceJson` | `/setting/diagnosticsources/importjson` |
-| `PUT` | `updateDiagnosticSourceById` | `/setting/diagnosticsources/{id}` |
-
-### 🟡 Users & API Tokens (write)
-
-**Coverage:** 4/12 operations.  **Proposed tools:** admin CRUD and API-token CRUD tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteAdminById` | `/setting/admins/{id}` |
-| `DELETE` | `deleteApiTokenById` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
-| `PATCH` | `patchAdminById` | `/setting/admins/{id}` |
-| `PATCH` | `patchApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
-| `POST` | `addAdmin` | `/setting/admins` |
-| `POST` | `addApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens` |
-| `PUT` | `updateAdminById` | `/setting/admins/{id}` |
-| `PUT` | `updateApiTokenByAdminId` | `/setting/admins/{adminId}/apitokens/{apitokenId}` |
-
-### 🟡 AppliesTo Functions
-
-**Coverage:** 0/7 operations.  **Proposed tools:** applies-to-function CRUD + import tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteAppliesToFunctionById` | `/setting/functions/{id}` |
-| `GET` | `getAppliesToFunctionById` | `/setting/functions/{id}` |
-| `GET` | `getAppliesToFunctionList` | `/setting/functions` |
-| `PATCH` | `patchAppliesToFunction` | `/setting/functions/{id}` |
-| `POST` | `addAppliesToFunction` | `/setting/functions` |
-| `POST` | `importAppliesToFunctionJson` | `/setting/functions/importjson` |
-| `PUT` | `updateAppliesToFunction` | `/setting/functions/{id}` |
-
-### 🟡 SNMP OIDs
-
-**Coverage:** 0/7 operations.  **Proposed tools:** oid CRUD + import tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteOID` | `/setting/oids/{id}` |
-| `GET` | `getOIDList` | `/setting/oids` |
-| `GET` | `getOidById` | `/setting/oids/{id}` |
-| `PATCH` | `patchOID` | `/setting/oids/{id}` |
-| `POST` | `addOid` | `/setting/oids` |
-| `POST` | `importOidJson` | `/setting/oids/importjson` |
-| `PUT` | `updateOID` | `/setting/oids/{id}` |
-
-### 🟡 RemediationSources
-
-**Coverage:** 0/7 operations.  **Proposed tools:** remediation-source CRUD + execute tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteRemediationSourceById` | `/setting/remediationsources/{id}` |
-| `GET` | `getRemediationSourcesById` | `/setting/remediationsources/{id}` |
-| `GET` | `getRemediationSourcesList` | `/setting/remediationsources` |
-| `PATCH` | `patchRemediationSourceById` | `/setting/remediationsources/{id}` |
-| `POST` | `addRemediationSource` | `/setting/remediationsources` |
-| `POST` | `executeRemediationManually` | `/setting/remediationsources/executemanually` |
-| `PUT` | `updateRemediationSourceById` | `/setting/remediationsources/{id}` |
-
-### 🟡 TopologySources (write)
-
-**Coverage:** 2/7 operations.  **Proposed tools:** topology-source CRUD + import tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteTopologySource` | `/setting/topologysources/{id}` |
-| `PATCH` | `patchTopologySource` | `/setting/topologysources/{id}` |
-| `POST` | `addTopologySource` | `/setting/topologysources` |
-| `POST` | `importTopologySourceJson` | `/setting/topologysources/importjson` |
-| `PUT` | `updateTopologySource` | `/setting/topologysources/{id}` |
-
-### 🟡 Bulk Instance Data Fetch
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `fetch_instances_data`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `POST` | `fetchDeviceInstancesData` | `/device/instances/datafetch` |
-
-### 🟡 Instance Graph Data (by instance id)
-
-**Coverage:** 0/1 operations.  **Proposed tools:** `get_instance_graph_data`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getDeviceInstanceGraphDataOnlyByInstanceId` | `/device/devicedatasourceinstances/{instanceId}/graphs/{graphId}/data` |
 
 ### 🟢 Log Pipelines / Log Alerts
 
@@ -519,23 +377,33 @@ These categories have every Swagger operation backed by an MCP tool:
 
 - **Alert Automation — Action Chains & Rules** (14/14)
 - **Alert Rules & Escalation Chains** (12/12)
+- **AppliesTo Functions** (7/7)
 - **Audit / Access Logs** (2/2)
+- **Bulk Instance Data Fetch** (1/1)
 - **Collector Debug Commands** (2/2)
+- **Collector Groups & Agent Log Levels** (21/21)
 - **Cost Optimization** (3/3)
 - **Dashboard Groups (write)** (7/7)
 - **Dashboard Widgets** (7/7)
 - **Dashboards** (7/7)
 - **DataSource Management (write/import)** (12/12)
 - **Devices — instances, alert settings, config & netflow** (52/52)
+- **DiagnosticSources** (8/8)
+- **Instance Graph Data (by instance id)** (1/1)
+- **Job Monitors (BatchJobs)** (8/8)
 - **LogSources** (7/7)
 - **NetScans** (6/6)
 - **Ops Notes** (6/6)
 - **PropertySources / Property Rules** (7/7)
 - **Recipient Groups** (6/6)
+- **RemediationSources** (7/7)
 - **Report Execution** (8/8)
 - **Report Groups** (6/6)
 - **Roles (write)** (6/6)
 - **Scheduled Down Time (SDT)** (6/6)
+- **SNMP OIDs** (7/7)
+- **TopologySources (write)** (7/7)
+- **Users & API Tokens (write)** (12/12)
 - **Website Checkpoints** (1/1)
 - **Website Groups (write)** (9/9)
 
@@ -550,10 +418,9 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 63% |
-| Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
-| Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
-| Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
+| Current | — | — | 79% |
+| Phase 1 (HIGH) | Core monitoring & config mgmt | +19 | 84% |
+| Phase 2 (LOW) | Cloud onboarding & niche | +64 | 100% |
 
 ---
 
@@ -564,4 +431,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 248 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 310 covered operations.*

@@ -225,6 +225,59 @@ describe('LogicMonitorHandlers', () => {
       deleteReportGroup: jest.fn(),
       listCollectorGroups: jest.fn(),
       getCollectorGroup: jest.fn(),
+      createCollectorGroup: jest.fn(),
+      updateCollectorGroup: jest.fn(),
+      deleteCollectorGroup: jest.fn(),
+      listCollectorAgentLogLevels: jest.fn(),
+      getCollectorAgentLogLevel: jest.fn(),
+      updateCollectorAgentLogLevel: jest.fn(),
+      getCollectorEvents: jest.fn(),
+      getCollectorStatusCheck: jest.fn(),
+      listJobMonitors: jest.fn(),
+      getJobMonitor: jest.fn(),
+      createJobMonitor: jest.fn(),
+      updateJobMonitor: jest.fn(),
+      deleteJobMonitor: jest.fn(),
+      importJobMonitor: jest.fn(),
+      listDiagnosticSources: jest.fn(),
+      getDiagnosticSource: jest.fn(),
+      createDiagnosticSource: jest.fn(),
+      updateDiagnosticSource: jest.fn(),
+      deleteDiagnosticSource: jest.fn(),
+      importDiagnosticSource: jest.fn(),
+      executeDiagnosticSource: jest.fn(),
+      listAppliesToFunctions: jest.fn(),
+      getAppliesToFunction: jest.fn(),
+      createAppliesToFunction: jest.fn(),
+      updateAppliesToFunction: jest.fn(),
+      deleteAppliesToFunction: jest.fn(),
+      importAppliesToFunction: jest.fn(),
+      listOIDs: jest.fn(),
+      getOID: jest.fn(),
+      createOID: jest.fn(),
+      updateOID: jest.fn(),
+      deleteOID: jest.fn(),
+      importOID: jest.fn(),
+      listRemediationSources: jest.fn(),
+      getRemediationSource: jest.fn(),
+      createRemediationSource: jest.fn(),
+      updateRemediationSource: jest.fn(),
+      deleteRemediationSource: jest.fn(),
+      executeRemediation: jest.fn(),
+      listTopologySources: jest.fn(),
+      getTopologySource: jest.fn(),
+      createTopologySource: jest.fn(),
+      updateTopologySource: jest.fn(),
+      deleteTopologySource: jest.fn(),
+      importTopologySource: jest.fn(),
+      createUser: jest.fn(),
+      updateUser: jest.fn(),
+      deleteUser: jest.fn(),
+      createApiToken: jest.fn(),
+      updateApiToken: jest.fn(),
+      deleteApiToken: jest.fn(),
+      fetchDeviceInstancesData: jest.fn(),
+      getInstanceGraphDataById: jest.fn(),
       listDeviceGroupProperties: jest.fn(),
       updateDeviceGroupProperty: jest.fn(),
       listNetscans: jest.fn(),
@@ -1579,6 +1632,201 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Collector Groups & Agent Log Levels', () => {
+    it('create_collector_group merges config', async () => {
+      mockClient.createCollectorGroup.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_collector_group', { name: 'CG', config: { description: 'd' } });
+      expect(mockClient.createCollectorGroup).toHaveBeenCalledWith({ name: 'CG', description: 'd' });
+    });
+
+    it('update_collector_group forwards query flags + excludes them from body', async () => {
+      mockClient.updateCollectorGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_collector_group', { groupId: 2, name: 'X', opType: 'replace' });
+      expect(mockClient.updateCollectorGroup).toHaveBeenCalledWith(2, { name: 'X' }, expect.objectContaining({ opType: 'replace' }));
+    });
+
+    it('delete_collector_group calls client', async () => {
+      mockClient.deleteCollectorGroup.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_collector_group', { groupId: 2 });
+      expect(mockClient.deleteCollectorGroup).toHaveBeenCalledWith(2);
+    });
+
+    it('update_collector_agent_log_level forwards config', async () => {
+      mockClient.updateCollectorAgentLogLevel.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_collector_agent_log_level', { collectorId: 5, component: 'collector', config: { level: 'debug' } });
+      expect(mockClient.updateCollectorAgentLogLevel).toHaveBeenCalledWith(5, 'collector', { level: 'debug' });
+    });
+
+    it('get_collector_events / status_check call client', async () => {
+      mockClient.getCollectorEvents.mockResolvedValue({} as never);
+      mockClient.getCollectorStatusCheck.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_collector_events', { collectorId: 5 });
+      await handlers.handleToolCall('get_collector_status_check', { collectorId: 5 });
+      expect(mockClient.getCollectorEvents).toHaveBeenCalledWith(5);
+      expect(mockClient.getCollectorStatusCheck).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('Job Monitors (BatchJobs)', () => {
+    it('create_job_monitor merges config', async () => {
+      mockClient.createJobMonitor.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_job_monitor', { config: { name: 'J' } });
+      expect(mockClient.createJobMonitor).toHaveBeenCalledWith({ name: 'J' });
+    });
+
+    it('update_job_monitor forwards reason', async () => {
+      mockClient.updateJobMonitor.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_job_monitor', { jobMonitorId: 3, reason: 'r', config: { name: 'J2' } });
+      expect(mockClient.updateJobMonitor).toHaveBeenCalledWith(3, { name: 'J2' }, { reason: 'r' });
+    });
+
+    it('import_job_monitor forwards content + format', async () => {
+      mockClient.importJobMonitor.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_job_monitor', { content: '{}', format: 'json' });
+      expect(mockClient.importJobMonitor).toHaveBeenCalledWith('{}', 'json', expect.any(Object));
+    });
+  });
+
+  describe('DiagnosticSources', () => {
+    it('create_diagnosticsource merges config', async () => {
+      mockClient.createDiagnosticSource.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_diagnosticsource', { config: { name: 'D' } });
+      expect(mockClient.createDiagnosticSource).toHaveBeenCalledWith({ name: 'D' });
+    });
+
+    it('execute_diagnosticsource forwards config', async () => {
+      mockClient.executeDiagnosticSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('execute_diagnosticsource', { config: { deviceId: 1 } });
+      expect(mockClient.executeDiagnosticSource).toHaveBeenCalledWith({ deviceId: 1 });
+    });
+  });
+
+  describe('AppliesTo Functions', () => {
+    it('create_applies_to_function merges config', async () => {
+      mockClient.createAppliesToFunction.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_applies_to_function', { config: { name: 'F', code: 'x' } });
+      expect(mockClient.createAppliesToFunction).toHaveBeenCalledWith({ name: 'F', code: 'x' });
+    });
+
+    it('update_applies_to_function forwards reason + ignoreReference', async () => {
+      mockClient.updateAppliesToFunction.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_applies_to_function', { functionId: 2, reason: 'r', ignoreReference: true, config: { code: 'y' } });
+      expect(mockClient.updateAppliesToFunction).toHaveBeenCalledWith(2, { code: 'y' }, { reason: 'r', ignoreReference: true });
+    });
+
+    it('delete_applies_to_function forwards ignoreReference', async () => {
+      mockClient.deleteAppliesToFunction.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_applies_to_function', { functionId: 2, ignoreReference: true });
+      expect(mockClient.deleteAppliesToFunction).toHaveBeenCalledWith(2, { ignoreReference: true });
+    });
+  });
+
+  describe('SNMP OIDs', () => {
+    it('create_oid merges config', async () => {
+      mockClient.createOID.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_oid', { config: { name: 'O' } });
+      expect(mockClient.createOID).toHaveBeenCalledWith({ name: 'O' });
+    });
+
+    it('update_oid excludes oidId from body', async () => {
+      mockClient.updateOID.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_oid', { oidId: 7, config: { name: 'O2' } });
+      expect(mockClient.updateOID).toHaveBeenCalledWith(7, { name: 'O2' });
+    });
+
+    it('import_oid forwards content', async () => {
+      mockClient.importOID.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_oid', { content: '{}' });
+      expect(mockClient.importOID).toHaveBeenCalledWith('{}', expect.any(Object));
+    });
+  });
+
+  describe('RemediationSources', () => {
+    it('create_remediationsource merges config', async () => {
+      mockClient.createRemediationSource.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_remediationsource', { config: { name: 'R' } });
+      expect(mockClient.createRemediationSource).toHaveBeenCalledWith({ name: 'R' });
+    });
+
+    it('execute_remediation forwards config', async () => {
+      mockClient.executeRemediation.mockResolvedValue({} as never);
+      await handlers.handleToolCall('execute_remediation', { config: { alertId: 'x' } });
+      expect(mockClient.executeRemediation).toHaveBeenCalledWith({ alertId: 'x' });
+    });
+  });
+
+  describe('TopologySources', () => {
+    it('create_topologysource merges config', async () => {
+      mockClient.createTopologySource.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_topologysource', { config: { name: 'T' } });
+      expect(mockClient.createTopologySource).toHaveBeenCalledWith({ name: 'T' });
+    });
+
+    it('update_topologysource forwards reason', async () => {
+      mockClient.updateTopologySource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_topologysource', { topologySourceId: 4, reason: 'r', config: { name: 'T2' } });
+      expect(mockClient.updateTopologySource).toHaveBeenCalledWith(4, { name: 'T2' }, { reason: 'r' });
+    });
+
+    it('import_topologysource forwards content', async () => {
+      mockClient.importTopologySource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_topologysource', { content: '{}' });
+      expect(mockClient.importTopologySource).toHaveBeenCalledWith('{}', expect.any(Object));
+    });
+  });
+
+  describe('Users & API Tokens (write)', () => {
+    it('create_user merges config', async () => {
+      mockClient.createUser.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_user', { config: { username: 'u', roles: ['administrator'] } });
+      expect(mockClient.createUser).toHaveBeenCalledWith({ username: 'u', roles: ['administrator'] });
+    });
+
+    it('update_user forwards query flags', async () => {
+      mockClient.updateUser.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_user', { userId: 9, changePassword: true, config: { password: 'p' } });
+      expect(mockClient.updateUser).toHaveBeenCalledWith(9, { password: 'p' }, expect.objectContaining({ changePassword: true }));
+    });
+
+    it('delete_user calls client', async () => {
+      mockClient.deleteUser.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_user', { userId: 9 });
+      expect(mockClient.deleteUser).toHaveBeenCalledWith(9);
+    });
+
+    it('create_api_token forwards userId + type + config', async () => {
+      mockClient.createApiToken.mockResolvedValue({} as never);
+      await handlers.handleToolCall('create_api_token', { userId: 9, type: 'foo', config: { note: 'n' } });
+      expect(mockClient.createApiToken).toHaveBeenCalledWith(9, { note: 'n' }, { type: 'foo' });
+    });
+
+    it('update_api_token forwards ids + config', async () => {
+      mockClient.updateApiToken.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_api_token', { userId: 9, apiTokenId: 3, config: { note: 'n2' } });
+      expect(mockClient.updateApiToken).toHaveBeenCalledWith(9, 3, { note: 'n2' });
+    });
+
+    it('delete_api_token calls client', async () => {
+      mockClient.deleteApiToken.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_api_token', { userId: 9, apiTokenId: 3 });
+      expect(mockClient.deleteApiToken).toHaveBeenCalledWith(9, 3);
+    });
+  });
+
+  describe('Bulk instance data & instance graph by id', () => {
+    it('fetch_instances_data forwards config + time controls', async () => {
+      mockClient.fetchDeviceInstancesData.mockResolvedValue({} as never);
+      await handlers.handleToolCall('fetch_instances_data', { config: { instances: [] }, period: 1, aggregate: 'average' });
+      expect(mockClient.fetchDeviceInstancesData).toHaveBeenCalledWith({ instances: [] }, expect.objectContaining({ period: 1, aggregate: 'average' }));
+    });
+
+    it('get_instance_graph_data_by_id forwards ids + range', async () => {
+      mockClient.getInstanceGraphDataById.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_instance_graph_data_by_id', { instanceId: 10, graphId: 20, start: 1, end: 2 });
+      expect(mockClient.getInstanceGraphDataById).toHaveBeenCalledWith(10, 20, expect.objectContaining({ start: 1, end: 2 }));
     });
   });
 

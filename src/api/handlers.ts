@@ -1892,6 +1892,296 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_collector_group': {
+          const { config, ...rest } = args;
+          return await this.client.createCollectorGroup({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_collector_group': {
+          const { groupId, autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType, config, ...rest } = args;
+          return await this.client.updateCollectorGroup(
+            groupId,
+            { ...rest, ...(config || {}) },
+            { autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType },
+          );
+        }
+
+        case 'delete_collector_group':
+          return await this.client.deleteCollectorGroup(args.groupId);
+
+        case 'list_collector_agent_log_levels':
+          return await this.client.listCollectorAgentLogLevels(args.collectorId);
+
+        case 'get_collector_agent_log_level':
+          return await this.client.getCollectorAgentLogLevel(args.collectorId, args.component);
+
+        case 'update_collector_agent_log_level':
+          return await this.client.updateCollectorAgentLogLevel(args.collectorId, args.component, args.config || {});
+
+        case 'get_collector_events':
+          return await this.client.getCollectorEvents(args.collectorId);
+
+        case 'get_collector_status_check':
+          return await this.client.getCollectorStatusCheck(args.collectorId);
+
+        // Job Monitors (BatchJobs)
+        case 'list_job_monitors':
+          return await this.client.listJobMonitors({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            format: args.format,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_job_monitor':
+          return await this.client.getJobMonitor(args.jobMonitorId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_job_monitor': {
+          const { config, ...rest } = args;
+          return await this.client.createJobMonitor({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_job_monitor': {
+          const { jobMonitorId, reason, config, ...rest } = args;
+          return await this.client.updateJobMonitor(jobMonitorId, { ...rest, ...(config || {}) }, { reason });
+        }
+
+        case 'delete_job_monitor':
+          return await this.client.deleteJobMonitor(args.jobMonitorId);
+
+        case 'import_job_monitor':
+          return await this.client.importJobMonitor(args.content, args.format, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        // DiagnosticSources
+        case 'list_diagnosticsources':
+          return await this.client.listDiagnosticSources({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_diagnosticsource':
+          return await this.client.getDiagnosticSource(args.diagnosticSourceId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_diagnosticsource': {
+          const { config, ...rest } = args;
+          return await this.client.createDiagnosticSource({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_diagnosticsource': {
+          const { diagnosticSourceId, reason, config, ...rest } = args;
+          return await this.client.updateDiagnosticSource(diagnosticSourceId, { ...rest, ...(config || {}) }, { reason });
+        }
+
+        case 'delete_diagnosticsource':
+          return await this.client.deleteDiagnosticSource(args.diagnosticSourceId);
+
+        case 'import_diagnosticsource':
+          return await this.client.importDiagnosticSource(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        case 'execute_diagnosticsource':
+          return await this.client.executeDiagnosticSource(args.config || {});
+
+        // AppliesTo Functions
+        case 'list_applies_to_functions':
+          return await this.client.listAppliesToFunctions({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_applies_to_function':
+          return await this.client.getAppliesToFunction(args.functionId, {
+            fields: args.fields,
+          });
+
+        case 'create_applies_to_function': {
+          const { config, ...rest } = args;
+          return await this.client.createAppliesToFunction({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_applies_to_function': {
+          const { functionId, reason, ignoreReference, config, ...rest } = args;
+          return await this.client.updateAppliesToFunction(
+            functionId,
+            { ...rest, ...(config || {}) },
+            { reason, ignoreReference },
+          );
+        }
+
+        case 'delete_applies_to_function':
+          return await this.client.deleteAppliesToFunction(args.functionId, {
+            ignoreReference: args.ignoreReference,
+          });
+
+        case 'import_applies_to_function':
+          return await this.client.importAppliesToFunction(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        // SNMP OIDs
+        case 'list_oids':
+          return await this.client.listOIDs({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_oid':
+          return await this.client.getOID(args.oidId, {
+            fields: args.fields,
+          });
+
+        case 'create_oid': {
+          const { config, ...rest } = args;
+          return await this.client.createOID({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_oid': {
+          const { oidId, config, ...rest } = args;
+          return await this.client.updateOID(oidId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_oid':
+          return await this.client.deleteOID(args.oidId);
+
+        case 'import_oid':
+          return await this.client.importOID(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        // RemediationSources
+        case 'list_remediationsources':
+          return await this.client.listRemediationSources({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_remediationsource':
+          return await this.client.getRemediationSource(args.remediationSourceId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_remediationsource': {
+          const { config, ...rest } = args;
+          return await this.client.createRemediationSource({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_remediationsource': {
+          const { remediationSourceId, reason, config, ...rest } = args;
+          return await this.client.updateRemediationSource(remediationSourceId, { ...rest, ...(config || {}) }, { reason });
+        }
+
+        case 'delete_remediationsource':
+          return await this.client.deleteRemediationSource(args.remediationSourceId);
+
+        case 'execute_remediation':
+          return await this.client.executeRemediation(args.config || {});
+
+        // TopologySources
+        case 'list_topologysources':
+          return await this.client.listTopologySources({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_topologysource':
+          return await this.client.getTopologySource(args.topologySourceId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_topologysource': {
+          const { config, ...rest } = args;
+          return await this.client.createTopologySource({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_topologysource': {
+          const { topologySourceId, reason, config, ...rest } = args;
+          return await this.client.updateTopologySource(topologySourceId, { ...rest, ...(config || {}) }, { reason });
+        }
+
+        case 'delete_topologysource':
+          return await this.client.deleteTopologySource(args.topologySourceId);
+
+        case 'import_topologysource':
+          return await this.client.importTopologySource(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        // Users & API Tokens (write)
+        case 'create_user': {
+          const { config, ...rest } = args;
+          return await this.client.createUser({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_user': {
+          const { userId, changePassword, validationOnly, config, ...rest } = args;
+          return await this.client.updateUser(userId, { ...rest, ...(config || {}) }, { changePassword, validationOnly });
+        }
+
+        case 'delete_user':
+          return await this.client.deleteUser(args.userId);
+
+        case 'create_api_token': {
+          const { userId, type, config, ...rest } = args;
+          return await this.client.createApiToken(userId, { ...rest, ...(config || {}) }, { type });
+        }
+
+        case 'update_api_token': {
+          const { userId, apiTokenId, config, ...rest } = args;
+          return await this.client.updateApiToken(userId, apiTokenId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_api_token':
+          return await this.client.deleteApiToken(args.userId, args.apiTokenId);
+
+        // Bulk instance data fetch & instance graph by id
+        case 'fetch_instances_data':
+          return await this.client.fetchDeviceInstancesData(args.config || {}, {
+            period: args.period,
+            start: args.start,
+            end: args.end,
+            aggregate: args.aggregate,
+          });
+
+        case 'get_instance_graph_data_by_id':
+          return await this.client.getInstanceGraphDataById(args.instanceId, args.graphId, {
+            start: args.start,
+            end: args.end,
+            format: args.format,
+          });
+
         // Device Group Properties
         case 'list_resource_group_properties':
           return await this.client.listDeviceGroupProperties(args.groupId, {

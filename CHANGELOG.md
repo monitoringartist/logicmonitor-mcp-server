@@ -24,6 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - EventSource management tools: `create_eventsource`, `update_eventsource`, `delete_eventsource`, and `import_eventsource` (JSON/XML upload via multipart)
 - Expanded SDT management: `create_sdt` (any SDT target type) and `update_sdt`, complementing the existing device SDT tools
 - Report management tools: `create_report`, `update_report`, and `delete_report`, backed by the `/report/reports` API
+- Collector group & agent log level tools (8 new): `create_collector_group`, `update_collector_group`, `delete_collector_group`, `update_collector_agent_log_level` (write) and `list_collector_agent_log_levels`, `get_collector_agent_log_level`, `get_collector_events`, `get_collector_status_check` (read-only) — bringing the Collector Groups category to full coverage
+- Job Monitor (BatchJob) tools (6 new): `list_job_monitors`, `get_job_monitor`, `create_job_monitor`, `update_job_monitor`, `delete_job_monitor`, `import_job_monitor` (JSON/XML multipart)
+- DiagnosticSource tools (7 new): CRUD (`list/get/create/update/delete_diagnosticsource`), `import_diagnosticsource` (JSON), and `execute_diagnosticsource` (run on demand)
+- AppliesTo Function tools (6 new): CRUD (`list/get/create/update/delete_applies_to_function`) and `import_applies_to_function` (JSON)
+- SNMP OID tools (6 new): CRUD (`list/get/create/update/delete_oid`) and `import_oid` (JSON)
+- RemediationSource tools (6 new): CRUD (`list/get/create/update/delete_remediationsource`) and `execute_remediation` (run on demand)
+- TopologySource tools (6 new): CRUD (`list/get/create/update/delete_topologysource`) and `import_topologysource` (JSON)
+- User & API token write tools (6 new): `create_user`, `update_user`, `delete_user`, `create_api_token`, `update_api_token`, `delete_api_token`, backed by the `/setting/admins` API
+- Bulk instance data & instance graph tools (2 new): `fetch_instances_data` (bulk metric fetch via `/device/instances/datafetch`) and `get_instance_graph_data_by_id` (graph data addressed by instance ID + graph ID)
 - Website group tools (6 new): `create_website_group`, `update_website_group`, `delete_website_group` (write; properties/testLocation via `config`), plus `list_website_group_websites`, `list_website_group_sdts`, and `get_website_group_sdt_history` (read-only), backed by the `/website/groups` API — bringing the Website Groups category to full coverage
 - Role write tools (3 new): `create_role`, `update_role`, and `delete_role` (privileges and other Role fields passed via `config`), backed by the `/setting/roles` API — bringing the Roles category to full coverage
 - Report execution tools (2 new): `generate_report` (run a report on demand; returns a `taskId`) and `get_report_task_result` (fetch the run status/output), backed by the `/report/reports/{id}/executions` and `/report/reports/{id}/tasks/{taskId}` APIs — bringing the Report Execution category to full coverage
