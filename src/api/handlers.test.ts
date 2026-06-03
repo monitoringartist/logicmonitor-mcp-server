@@ -36,6 +36,11 @@ describe('LogicMonitorHandlers', () => {
       addAlertNote: jest.fn(),
       listCollectors: jest.fn(),
       getCollector: jest.fn(),
+      createCollector: jest.fn(),
+      updateCollector: jest.fn(),
+      deleteCollector: jest.fn(),
+      getCollectorInstallerUrl: jest.fn(),
+      acknowledgeCollectorDownAlert: jest.fn(),
       listDataSources: jest.fn(),
       getDataSource: jest.fn(),
       listDeviceDataSourceInstances: jest.fn(),
@@ -1374,6 +1379,105 @@ describe('LogicMonitorHandlers', () => {
           fields: undefined,
         });
         expect(result).toEqual(mockResponse);
+      });
+    });
+  });
+
+  describe('Collector Management', () => {
+    describe('create_collector', () => {
+      it('should merge config into the collector body', async () => {
+        const created = { id: 7, description: 'DC1 Collector' };
+        mockClient.createCollector.mockResolvedValue(created as never);
+
+        const result = await handlers.handleToolCall('create_collector', {
+          description: 'DC1 Collector',
+          collectorGroupId: 2,
+          config: { resendIval: 30 },
+        });
+
+        expect(mockClient.createCollector).toHaveBeenCalledWith({
+          description: 'DC1 Collector',
+          collectorGroupId: 2,
+          resendIval: 30,
+        });
+        expect(result).toEqual(created);
+      });
+    });
+
+    describe('update_collector', () => {
+      it('should split query options from the body and merge config', async () => {
+        const updated = { id: 7, description: 'Renamed' };
+        mockClient.updateCollector.mockResolvedValue(updated as never);
+
+        const result = await handlers.handleToolCall('update_collector', {
+          collectorId: 7,
+          description: 'Renamed',
+          opType: 'refresh',
+          autoBalanceMonitoredDevices: true,
+          config: { resendIval: 15 },
+        });
+
+        expect(mockClient.updateCollector).toHaveBeenCalledWith(
+          7,
+          { description: 'Renamed', resendIval: 15 },
+          {
+            autoBalanceMonitoredDevices: true,
+            forceUpdateFailedOverDevices: undefined,
+            opType: 'refresh',
+          },
+        );
+        expect(result).toEqual(updated);
+      });
+    });
+
+    describe('delete_collector', () => {
+      it('should delete a collector by id', async () => {
+        mockClient.deleteCollector.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('delete_collector', { collectorId: 7 });
+
+        expect(mockClient.deleteCollector).toHaveBeenCalledWith(7);
+      });
+    });
+
+    describe('get_collector_installer', () => {
+      it('should return the installer download URL info', async () => {
+        const info = {
+          url: 'https://acme.logicmonitor.com/santaba/rest/setting/collector/collectors/7/installers/linux64',
+          collectorId: 7,
+          osAndArch: 'linux64',
+          downloadInstructions: 'curl ...',
+          note: 'requires bearer token',
+        };
+        mockClient.getCollectorInstallerUrl.mockReturnValue(info as never);
+
+        const result = await handlers.handleToolCall('get_collector_installer', {
+          collectorId: 7,
+          osAndArch: 'linux64',
+          collectorSize: 'medium',
+        });
+
+        expect(mockClient.getCollectorInstallerUrl).toHaveBeenCalledWith(7, 'linux64', {
+          collectorVersion: undefined,
+          collectorSize: 'medium',
+          useEA: undefined,
+          monitorOthers: undefined,
+          token: undefined,
+        });
+        expect(result).toEqual(info);
+      });
+    });
+
+    describe('acknowledge_collector_down_alert', () => {
+      it('should acknowledge a collector down alert with a comment', async () => {
+        mockClient.acknowledgeCollectorDownAlert.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('acknowledge_collector_down_alert', {
+          collectorId: 7,
+          comment: 'Investigating',
+        });
+
+        expect(mockClient.acknowledgeCollectorDownAlert).toHaveBeenCalledWith(7, 'Investigating');
       });
     });
   });

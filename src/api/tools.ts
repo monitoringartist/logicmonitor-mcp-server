@@ -990,6 +990,282 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['collectorId'],
     },
   },
+  {
+    name: 'create_collector',
+    description: 'Create a new collector record in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Registers a new Collector in your LogicMonitor portal. This creates the Collector entry and (optionally) a Collector device; you still need to download and run the installer on the target host to bring it online. ' +
+      '\n\n**Typical workflow:**' +
+      '\n1. `create_collector` to register the Collector and obtain its `id`' +
+      '\n2. `get_collector_installer` to obtain the installer download URL for the target OS/architecture' +
+      '\n3. Install and run the Collector on the host' +
+      '\n4. `get_collector` / `list_collectors` to verify it comes online' +
+      '\n\n**Optional parameters:**' +
+      '\n- description: The Collector\'s description/name' +
+      '\n- collectorGroupId: The collector group to place it in (from "list\\_collector\\_groups")' +
+      '\n- backupAgentId: ID of a backup Collector for failover' +
+      '\n- escalatingChainId: Escalation chain ID for Collector-down alerts' +
+      '\n- resendIval: Alert notification resend interval (minutes)' +
+      '\n- suppressAlertClear: Suppress alert-clear notifications' +
+      '\n- enableFailBack: Enable automatic failback' +
+      '\n- specifiedCollectorDeviceGroupId: Device group for the auto-created Collector device' +
+      '\n- needAutoCreateCollectorDevice: Whether to auto-create a Collector device' +
+      '\n- config: An object with any additional Collector attributes (merged into the request body)' +
+      '\n\n**Related tools:** "get\\_collector\\_installer" (download installer), "list\\_collector\\_groups" (find group), "update\\_collector", "delete\\_collector".',
+    annotations: {
+      title: 'Create collector',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        description: {
+          type: 'string',
+          description: 'The Collector\'s description (name).',
+        },
+        collectorGroupId: {
+          type: 'number',
+          description: 'The ID of the collector group to place the Collector in.',
+        },
+        backupAgentId: {
+          type: 'number',
+          description: 'The ID of a backup Collector assigned for failover.',
+        },
+        escalatingChainId: {
+          type: 'number',
+          description: 'The ID of the escalation chain associated with this Collector.',
+        },
+        resendIval: {
+          type: 'number',
+          description: 'Interval, in minutes, after which Collector-down alert notifications are resent.',
+        },
+        suppressAlertClear: {
+          type: 'boolean',
+          description: 'Whether alert-clear notifications are suppressed for the Collector.',
+        },
+        enableFailBack: {
+          type: 'boolean',
+          description: 'Whether automatic failback is enabled for the Collector.',
+        },
+        specifiedCollectorDeviceGroupId: {
+          type: 'number',
+          description: 'The device group ID used when auto-creating the Collector device.',
+        },
+        needAutoCreateCollectorDevice: {
+          type: 'boolean',
+          description: 'Whether to auto-create a Collector device for this Collector.',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional Collector attributes, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'update_collector',
+    description: 'Update an existing collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies a Collector\'s settings such as description, collector group, backup Collector, escalation chain, failover/failback behavior, and alerting options. Uses a partial update (only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- collectorId: The ID of the Collector to update (from "list\\_collectors")' +
+      '\n\n**Optional parameters (what to change):**' +
+      '\n- description, collectorGroupId, backupAgentId, escalatingChainId, resendIval, suppressAlertClear, enableFailBack, specifiedCollectorDeviceGroupId, needAutoCreateCollectorDevice' +
+      '\n- config: An object with any additional Collector attributes to update (merged into the body)' +
+      '\n\n**Advanced options:**' +
+      '\n- autoBalanceMonitoredDevices: Rebalance monitored devices across the Auto-Balanced Collector Group' +
+      '\n- forceUpdateFailedOverDevices: Force update of failed-over devices' +
+      '\n- opType: Operation type for how the update is applied (e.g., "refresh", "add", "replace")' +
+      '\n\n**Best practice:** Call "get\\_collector" first to review current settings, then send only the fields you want to change. ' +
+      '\n\n**Related tools:** "get\\_collector" (review before update), "list\\_collectors" (find Collector), "delete\\_collector".',
+    annotations: {
+      title: 'Update collector',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the collector to update.',
+        },
+        description: {
+          type: 'string',
+          description: 'New description (name) for the Collector.',
+        },
+        collectorGroupId: {
+          type: 'number',
+          description: 'Move the Collector to a different collector group by ID.',
+        },
+        backupAgentId: {
+          type: 'number',
+          description: 'The ID of a backup Collector assigned for failover.',
+        },
+        escalatingChainId: {
+          type: 'number',
+          description: 'The ID of the escalation chain associated with this Collector.',
+        },
+        resendIval: {
+          type: 'number',
+          description: 'Interval, in minutes, after which Collector-down alert notifications are resent.',
+        },
+        suppressAlertClear: {
+          type: 'boolean',
+          description: 'Whether alert-clear notifications are suppressed for the Collector.',
+        },
+        enableFailBack: {
+          type: 'boolean',
+          description: 'Whether automatic failback is enabled for the Collector.',
+        },
+        specifiedCollectorDeviceGroupId: {
+          type: 'number',
+          description: 'The device group ID used when auto-creating the Collector device.',
+        },
+        needAutoCreateCollectorDevice: {
+          type: 'boolean',
+          description: 'Whether to auto-create a Collector device for this Collector.',
+        },
+        autoBalanceMonitoredDevices: {
+          type: 'boolean',
+          description: 'Rebalance monitored devices across the Auto-Balanced Collector Group.',
+        },
+        forceUpdateFailedOverDevices: {
+          type: 'boolean',
+          description: 'Force update of failed-over devices.',
+        },
+        opType: {
+          type: 'string',
+          description: 'Operation type controlling how the update is applied (e.g., "refresh", "add", "replace").',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional Collector attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'delete_collector',
+    description: 'Delete a collector from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING: PERMANENT DELETION**' +
+      '\n- The Collector record is permanently removed from LogicMonitor' +
+      '\n- Resources/devices monitored by this Collector will stop being monitored unless reassigned or covered by failover' +
+      '\n- Cannot be undone' +
+      '\n\n**What this does:** Removes the Collector registration from your portal. The Collector should ideally be uninstalled from the host as well. ' +
+      '\n\n**Required parameters:**' +
+      '\n- collectorId: The ID of the Collector to delete (from "list\\_collectors")' +
+      '\n\n**Before deleting:**' +
+      '\n- Use "get\\_collector" to verify it is the correct Collector and check `numberOfHosts`' +
+      '\n- Reassign monitored resources/devices to another Collector if needed' +
+      '\n- Ensure a backup/failover Collector is available for critical monitoring' +
+      '\n\n**Related tools:** "get\\_collector" (verify before delete), "list\\_collectors" (find Collector), "update\\_collector" (reconfigure instead of delete).',
+    annotations: {
+      title: 'Delete collector',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the collector to delete.',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'get_collector_installer',
+    description: 'Get the installer download URL for a collector in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** An object with the authenticated installer download `url` (including query parameters), the target `osAndArch`, ready-to-run `downloadInstructions` (a curl command), and a `note`. ' +
+      '\n\n**⚠️ Important:** The installer is a large binary file. This tool intentionally returns the download URL rather than the binary itself. ' +
+      'The URL requires your LogicMonitor bearer token in the `Authorization` header, so download it with the provided curl command (not a browser). ' +
+      '\n\n**Required parameters:**' +
+      '\n- collectorId: The ID of the Collector to install (from "create\\_collector" or "list\\_collectors")' +
+      '\n- osAndArch: The OS and architecture of the installer, e.g. "linux64", "linux32", "win64", "win32".' +
+      '\n\n**Optional parameters:**' +
+      '\n- collectorVersion: Specific installer version to download (defaults to the latest GD Collector)' +
+      '\n- collectorSize: Collector size - one of nano, small (2GB), medium (4GB), large (8GB), "extra large" (16GB), "double extra large" (32GB). Requires collector version 22.180+. Defaults to small.' +
+      '\n- useEA: If true, use the latest EA Collector version (defaults to false)' +
+      '\n- monitorOthers: Whether the Collector should monitor other resources' +
+      '\n- token: Optional installer token' +
+      '\n\n**Related tools:** "create\\_collector" (register the Collector first), "list\\_collector\\_versions" (find a version), "get\\_collector" (status).',
+    annotations: {
+      title: 'Get collector installer download URL',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the collector to install.',
+        },
+        osAndArch: {
+          type: 'string',
+          description: 'The OS and architecture for the installer, e.g. "linux64", "linux32", "win64", "win32".',
+        },
+        collectorVersion: {
+          type: 'number',
+          description: 'Specific installer version to download. Defaults to the latest GD Collector.',
+        },
+        collectorSize: {
+          type: 'string',
+          description: 'Collector size: nano, small, medium, large, "extra large", or "double extra large". Defaults to small.',
+        },
+        useEA: {
+          type: 'boolean',
+          description: 'If true, use the latest EA Collector version. Defaults to false.',
+        },
+        monitorOthers: {
+          type: 'boolean',
+          description: 'Whether the Collector should monitor other resources.',
+        },
+        token: {
+          type: 'string',
+          description: 'Optional installer token.',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'osAndArch'],
+    },
+  },
+  {
+    name: 'acknowledge_collector_down_alert',
+    description: 'Acknowledge a collector-down alert in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Acknowledges the alert raised when a Collector goes down, optionally recording a comment. This signals that someone is aware of and investigating the outage; it does not bring the Collector back online. ' +
+      '\n\n**When to use:**' +
+      '\n- A Collector is down and you want to acknowledge the alert to stop repeated notifications' +
+      '\n- Record an investigation note for the Collector-down condition' +
+      '\n\n**Required parameters:**' +
+      '\n- collectorId: The ID of the down Collector (from "list\\_collectors", where `isDown` is true)' +
+      '\n\n**Optional parameters:**' +
+      '\n- comment: A note explaining the acknowledgement (e.g., "Investigating network outage at DC1")' +
+      '\n\n**Related tools:** "get\\_collector" (check `isDown`/`acked` status), "list\\_collectors" (find down Collectors), "acknowledge\\_alert" (acknowledge regular alerts).',
+    annotations: {
+      title: 'Acknowledge collector down alert',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the down collector whose alert to acknowledge.',
+        },
+        comment: {
+          type: 'string',
+          description: 'Optional comment explaining the acknowledgement.',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
 
   // DataSource Tools
   {

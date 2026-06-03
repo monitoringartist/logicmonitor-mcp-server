@@ -439,6 +439,44 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_collector': {
+          const { config, ...rest } = args;
+          const collector = { ...rest, ...(config || {}) };
+          return await this.client.createCollector(collector);
+        }
+
+        case 'update_collector': {
+          const {
+            collectorId,
+            config,
+            autoBalanceMonitoredDevices,
+            forceUpdateFailedOverDevices,
+            opType,
+            ...rest
+          } = args;
+          const collector = { ...rest, ...(config || {}) };
+          return await this.client.updateCollector(collectorId, collector, {
+            autoBalanceMonitoredDevices,
+            forceUpdateFailedOverDevices,
+            opType,
+          });
+        }
+
+        case 'delete_collector':
+          return await this.client.deleteCollector(args.collectorId);
+
+        case 'get_collector_installer':
+          return this.client.getCollectorInstallerUrl(args.collectorId, args.osAndArch, {
+            collectorVersion: args.collectorVersion,
+            collectorSize: args.collectorSize,
+            useEA: args.useEA,
+            monitorOthers: args.monitorOthers,
+            token: args.token,
+          });
+
+        case 'acknowledge_collector_down_alert':
+          return await this.client.acknowledgeCollectorDownAlert(args.collectorId, args.comment);
+
         // DataSources
         case 'list_datasources': {
           const result = await this.client.listDataSources({

@@ -84,6 +84,7 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'list_dashboard_widgets': ['mcp:tools', 'lm:dashboards:read'],
   'get_widget': ['mcp:tools', 'lm:dashboards:read'],
   'get_widget_data': ['mcp:tools', 'lm:dashboards:read'],
+  'get_collector_installer': ['mcp:tools', 'lm:read'],
   'list_datasources': ['mcp:tools', 'lm:read'],
   'get_datasource': ['mcp:tools', 'lm:read'],
   'list_cost_optimization_recommendations': ['mcp:tools', 'lm:read'],
@@ -98,6 +99,10 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'create_widget': ['mcp:tools', 'lm:dashboards:write'],
   'update_widget': ['mcp:tools', 'lm:dashboards:write'],
   'delete_widget': ['mcp:tools', 'lm:dashboards:write'],
+  'create_collector': ['mcp:tools', 'lm:write'],
+  'update_collector': ['mcp:tools', 'lm:write'],
+  'delete_collector': ['mcp:tools', 'lm:write'],
+  'acknowledge_collector_down_alert': ['mcp:tools', 'lm:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

@@ -300,6 +300,42 @@ describe('getLogicMonitorTools', () => {
         expect(listTool?.annotations?.readOnlyHint).toBe(true);
         expect(getTool?.annotations?.readOnlyHint).toBe(true);
       });
+
+      it('should include collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('create_collector');
+        expect(toolNames).toContain('update_collector');
+        expect(toolNames).toContain('delete_collector');
+        expect(toolNames).toContain('get_collector_installer');
+        expect(toolNames).toContain('acknowledge_collector_down_alert');
+      });
+
+      it('should set correct read-only hints for collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        // get_collector_installer is read-only (returns a URL, no mutation)
+        expect(tools.find(t => t.name === 'get_collector_installer')?.annotations?.readOnlyHint).toBe(true);
+
+        ['create_collector', 'update_collector', 'delete_collector', 'acknowledge_collector_down_alert']
+          .forEach(name => {
+            expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(false);
+          });
+      });
+
+      it('should require expected identifiers for collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'update_collector')?.inputSchema.required)
+          .toContain('collectorId');
+        expect(tools.find(t => t.name === 'delete_collector')?.inputSchema.required)
+          .toContain('collectorId');
+        expect(tools.find(t => t.name === 'get_collector_installer')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['collectorId', 'osAndArch']));
+        expect(tools.find(t => t.name === 'acknowledge_collector_down_alert')?.inputSchema.required)
+          .toContain('collectorId');
+      });
     });
 
     describe('List Tools with Query Parameter', () => {
@@ -633,11 +669,12 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most get tools should support fields parameter.
-        // Data-rendering endpoints (instance data, topology, widget data)
-        // accept time-range/format params instead of field selection.
+        // Data-rendering / action endpoints (instance data, topology, widget data,
+        // collector installer URL) accept other params instead of field selection.
         if (tool.name !== 'get_resource_instance_data' &&
             tool.name !== 'get_topology' &&
-            tool.name !== 'get_widget_data') {
+            tool.name !== 'get_widget_data' &&
+            tool.name !== 'get_collector_installer') {
           expect(properties).toHaveProperty('fields');
         }
       });

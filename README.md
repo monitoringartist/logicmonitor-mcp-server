@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **132 MCP Tools** for comprehensive LogicMonitor operations (77 read-only, 55 write)
+- **137 MCP Tools** for comprehensive LogicMonitor operations (78 read-only, 59 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -563,6 +563,7 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_collectors` - List monitoring collectors (agents)
 - `get_collector` - Get collector details
+- `get_collector_installer` - Get the installer download URL for a collector
 - `list_collector_groups` - List collector groups
 - `get_collector_group` - Get collector group details
 - `list_collector_versions` - List available collector versions
@@ -571,6 +572,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_topology` - Get network topology information
 
 **Write Operations:**
+- `create_collector` - Register a new collector
+- `update_collector` - Modify collector settings
+- `delete_collector` - Delete a collector
+- `acknowledge_collector_down_alert` - Acknowledge a collector-down alert
 - `create_netscan` - Create NetScan
 - `update_netscan` - Modify NetScan
 - `delete_netscan` - Delete netscan
@@ -700,9 +705,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **77 read-only tools** - Safe for production monitoring
-- **55 write tools** - Require caution (disabled by default with `--read-only`)
-- **132 total tools**
+- **78 read-only tools** - Safe for production monitoring
+- **59 write tools** - Require caution (disabled by default with `--read-only`)
+- **137 total tools**
 
 ## Security Considerations
 

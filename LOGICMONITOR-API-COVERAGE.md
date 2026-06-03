@@ -8,8 +8,8 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 336 |
-| **Implemented Tools** | 135 |
-| **Coverage** | **40%** |
+| **Implemented Tools** | 140 |
+| **Coverage** | **42%** |
 | **Custom Enhancements** | 4 link tools |
 
 ---
@@ -66,20 +66,18 @@
 
 ---
 
-### Collectors ⭐ GOOD
-**Status:** Read operations complete, write operations missing
+### Collectors ⭐ COMPLETE
+**Status:** Read and core write operations implemented
 
 **Implemented:**
 - ✅ List, Get collectors
+- ✅ Add, Update/Patch, Delete collectors
+- ✅ Get collector installer (returns authenticated download URL)
+- ✅ Acknowledge collector down alert
 - ✅ Collector Groups (List, Get)
 - ✅ Collector Versions (List)
 
-**Missing:**
-- ❌ Add, Update, Patch, Delete collectors
-- ❌ Get collector installer
-- ❌ Acknowledge collector down alert
-
-**Tools:** `list_collectors`, `get_collector`, `list_collector_groups`, `get_collector_group`, `list_collector_versions`
+**Tools:** `list_collectors`, `get_collector`, `create_collector`, `update_collector`, `delete_collector`, `get_collector_installer`, `acknowledge_collector_down_alert`, `list_collector_groups`, `get_collector_group`, `list_collector_versions`
 
 ---
 
