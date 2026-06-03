@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Strict `fields` validation against the Swagger v3 spec. For 42 canonical list/get tools (devices, device groups, alerts, dashboards, dashboard groups, widgets, websites, website groups, collectors, collector groups, users, roles, datasources, eventsources, configsources, SDTs, opsnotes, reports, recipient groups, alert rules, escalation chains), an invalid `fields` name now raises a clear `INVALID_PARAMETERS` error with closest-match suggestions instead of being silently ignored by the API. Valid field names are generated from the spec via `npm run generate:field-schemas` (`scripts/generate-field-schemas.mjs` → `src/api/field-schemas.ts`), so allow-lists stay in lock-step with the API. Tools without a known response model are unaffected (fail-open).
 - Device Group deep-dive tools (15 new), completing the Device Groups category and reaching **100% LogicMonitor API v3 coverage** (393/393 operations, 356 total MCP tools):
   - Cluster alert configurations: `list_resource_group_cluster_alert_confs`, `get_resource_group_cluster_alert_conf`, `create_resource_group_cluster_alert_conf`, `update_resource_group_cluster_alert_conf`, `delete_resource_group_cluster_alert_conf`
   - Group datasources: `list_resource_group_datasources`, `get_resource_group_datasource`, `update_resource_group_datasource`

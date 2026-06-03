@@ -7,6 +7,7 @@
 import { LogicMonitorClient } from './client.js';
 import { batchProcessor, smartBatchProcessor as _smartBatchProcessor } from '../utils/helpers/batch-processor.js';
 import { autoFormatFilter, SEARCH_FIELDS } from '../utils/helpers/filters.js';
+import { validateFields } from '../utils/helpers/validate-fields.js';
 import { LogicMonitorApiError } from '../utils/core/lm-error.js';
 import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../utils/core/error-handler.js';
 
@@ -127,6 +128,11 @@ export class LogicMonitorHandlers {
     progressCallback?: ProgressCallback,
   ): Promise<any> {
     try {
+      // Strict validation of the optional `fields` parameter against the Swagger
+      // schema (no-op for tools without a known response model). Catches typo'd
+      // field names that the API would otherwise silently ignore.
+      validateFields(name, args?.fields);
+
       switch (name) {
         // Resource Management
         case 'list_resources': {

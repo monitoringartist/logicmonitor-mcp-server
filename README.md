@@ -27,6 +27,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
 - **CSRF Protection**: Automatic CSRF protection for session-based authentication
 - **Read-Only Mode**: Safe monitoring without modification capabilities (enabled by default)
+- **Strict `fields` Validation**: Field selectors on canonical list/get tools are validated against the LogicMonitor Swagger v3 spec, so a typo'd field name returns a clear error with suggestions instead of being silently dropped
 - **Flexible Configuration**: CLI flags, environment variables, or `.env` file
 - **Debug Logging**: JSON or human-readable formats with detailed request/response logging
 - **Tool Filtering**: Enable specific tools or disable search functionality

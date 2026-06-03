@@ -36,6 +36,7 @@
         "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
         "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/servers/index.js",
         "lint": "eslint src/**/*.ts",
+        "generate:field-schemas": "node scripts/generate-field-schemas.mjs",
         "prepare": "npm run build",
         "prepublishOnly": "npm run build && npm test",
         "version": "npm run build && git add -A",

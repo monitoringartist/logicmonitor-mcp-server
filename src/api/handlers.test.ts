@@ -433,7 +433,7 @@ describe('LogicMonitorHandlers', () => {
         mockClient.listResources.mockResolvedValue(mockResponse);
 
         const result = await handlers.handleToolCall('list_resources', {
-          fields: 'id,customField',
+          fields: 'id,description',
         });
 
         expect(result).toEqual(mockResponse);
@@ -483,11 +483,11 @@ describe('LogicMonitorHandlers', () => {
 
         await handlers.handleToolCall('get_resource', {
           deviceId: 123,
-          fields: 'id,customField',
+          fields: 'id,description',
         });
 
         expect(mockClient.getDevice).toHaveBeenCalledWith(123, {
-          fields: 'id,customField',
+          fields: 'id,description',
         });
       });
     });
