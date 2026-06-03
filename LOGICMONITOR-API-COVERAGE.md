@@ -11,7 +11,7 @@
 | **Operations Covered** | 393 |
 | **Operations Missing** | 0 |
 | **Coverage** | **100%** |
-| **Implemented MCP Tools** | 356 (+4 custom link tools) |
+| **Implemented MCP Tools** | 356 (+4 custom link tools) - sometimes multiple API operations are merged into single MCP tools |
 
 > **How to read this doc:** Coverage is now **100%** — every Swagger operation is backed by an MCP tool. [Fully Covered Areas](#-fully-covered-areas) lists every category and its operation count.
 
