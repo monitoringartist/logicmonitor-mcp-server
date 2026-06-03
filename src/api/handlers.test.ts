@@ -77,6 +77,14 @@ describe('LogicMonitorHandlers', () => {
       scheduleDeviceAutoDiscovery: jest.fn(),
       getDevicesDeltaId: jest.fn(),
       getDevicesDelta: jest.fn(),
+      createDataSource: jest.fn(),
+      updateDataSource: jest.fn(),
+      deleteDataSource: jest.fn(),
+      importDataSource: jest.fn(),
+      listDataSourceOverviewGraphs: jest.fn(),
+      getDataSourceOverviewGraph: jest.fn(),
+      listDataSourceDevices: jest.fn(),
+      listDataSourceUpdateReasons: jest.fn(),
       listActionChains: jest.fn(),
       getActionChain: jest.fn(),
       createActionChain: jest.fn(),
@@ -1542,6 +1550,64 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('DataSource Management', () => {
+    it('create_datasource forwards config and createGraph', async () => {
+      mockClient.createDataSource.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_datasource', {
+        config: { name: 'MyDS', collector: 'script', appliesTo: 'true()' },
+        createGraph: true,
+      });
+      expect(mockClient.createDataSource).toHaveBeenCalledWith(
+        { name: 'MyDS', collector: 'script', appliesTo: 'true()' },
+        { createGraph: true },
+      );
+    });
+
+    it('update_datasource forwards config + reason', async () => {
+      mockClient.updateDataSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_datasource', {
+        dataSourceId: 5,
+        config: { description: 'x' },
+        reason: 'tuning',
+      });
+      expect(mockClient.updateDataSource).toHaveBeenCalledWith(5, { description: 'x' }, {
+        reason: 'tuning',
+        forceUniqueIdentifier: undefined,
+      });
+    });
+
+    it('delete_datasource calls client', async () => {
+      mockClient.deleteDataSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_datasource', { dataSourceId: 5 });
+      expect(mockClient.deleteDataSource).toHaveBeenCalledWith(5);
+    });
+
+    it('import_datasource forwards content/format/params', async () => {
+      mockClient.importDataSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_datasource', {
+        content: '{"name":"x"}',
+        format: 'json',
+        handleConflict: 'all',
+      });
+      expect(mockClient.importDataSource).toHaveBeenCalledWith('{"name":"x"}', 'json', {
+        handleConflict: 'all',
+        fieldsToPreserve: undefined,
+      });
+    });
+
+    it('get_datasource_overview_graph calls client', async () => {
+      mockClient.getDataSourceOverviewGraph.mockResolvedValue({} as never);
+      await handlers.handleToolCall('get_datasource_overview_graph', { dataSourceId: 5, overviewGraphId: 9 });
+      expect(mockClient.getDataSourceOverviewGraph).toHaveBeenCalledWith(5, 9);
+    });
+
+    it('list_datasource_devices calls client', async () => {
+      mockClient.listDataSourceDevices.mockResolvedValue({ items: [] } as never);
+      await handlers.handleToolCall('list_datasource_devices', { dataSourceId: 5 });
+      expect(mockClient.listDataSourceDevices).toHaveBeenCalledWith(5, expect.any(Object));
     });
   });
 

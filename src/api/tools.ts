@@ -1339,6 +1339,162 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['dataSourceId'],
     },
   },
+  {
+    name: 'create_datasource',
+    description: 'Create a new DataSource (LogicModule) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines a new monitoring module: collection method, appliesTo logic, datapoints, graphs, and alert thresholds. ' +
+      '\n\n**⚠️ DataSources are complex, type-specific modules.** The most reliable approach is to export an existing similar DataSource via "get\\_datasource" (with `fields: "*"`), adapt it, and pass the full definition via `config`. ' +
+      '\n\n**Required:** a `config` object containing at least `name`, `collector` (collection method), and `appliesTo`. ' +
+      '\n\n**Optional:** `createGraph` (boolean) to auto-create default graphs. ' +
+      '\n\n**Tip:** For sharing/distributing modules prefer "import\\_datasource" with official XML/JSON. ' +
+      '\n\n**Related tools:** "get\\_datasource", "update\\_datasource", "import\\_datasource".',
+    annotations: { title: 'Create datasource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: {
+          type: 'object',
+          description: 'Full DataSource definition (name, collector, appliesTo, dataPoints, datapoints graphs, collectInterval, etc.).',
+          additionalProperties: true,
+        },
+        createGraph: { type: 'boolean', description: 'Auto-create default graphs for the datasource.' },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_datasource',
+    description: 'Update an existing DataSource (LogicModule) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** dataSourceId and a `config` with the fields to change. Partial update. ' +
+      '\n\n**Optional:** `reason` (audit reason for the change), `forceUniqueIdentifier`. ' +
+      '\n\n**⚠️ Caution:** Editing a built-in/LogicMonitor-managed DataSource may require a `reason` and can be overwritten by future module updates. Review with "get\\_datasource" first. ' +
+      '\n\n**Related tools:** "get\\_datasource", "list\\_datasource\\_update\\_reasons".',
+    annotations: { title: 'Update datasource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The ID of the datasource to update' },
+        config: {
+          type: 'object',
+          description: 'DataSource fields to update (merged into the request body).',
+          additionalProperties: true,
+        },
+        reason: { type: 'string', description: 'Audit reason for the update.' },
+        forceUniqueIdentifier: { type: 'boolean', description: 'Force a unique identifier when needed.' },
+      },
+      additionalProperties: false,
+      required: ['dataSourceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_datasource',
+    description: 'Delete a DataSource (LogicModule) from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Permanently removes the module and stops all monitoring it provided across every applied device. Historical data may be lost. Cannot be undone. ' +
+      '\n\n**Before deleting:** Use "list\\_datasource\\_devices" to see how many resources rely on it. ' +
+      '\n\n**Related tools:** "get\\_datasource", "list\\_datasource\\_devices".',
+    annotations: { title: 'Delete datasource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The ID of the datasource to delete' },
+      },
+      additionalProperties: false,
+      required: ['dataSourceId'],
+    },
+  },
+  {
+    name: 'import_datasource',
+    description: 'Import a DataSource (LogicModule) into LogicMonitor (LM) monitoring from XML or JSON content. ' +
+      '\n\n**What this does:** Uploads an exported DataSource definition (e.g., from the LM repository or another portal) as a multipart file. ' +
+      '\n\n**Parameters:** ' +
+      '\n- content: The full XML or JSON module definition (as a string)' +
+      '\n- format: "xml" or "json"' +
+      '\n- handleConflict (JSON only): how to resolve name conflicts (e.g., "all", "ignore")' +
+      '\n- fieldsToPreserve (JSON only): comma-separated fields to keep from the existing module' +
+      '\n\n**Related tools:** "create\\_datasource" (build from scratch), "get\\_datasource".',
+    annotations: { title: 'Import datasource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The XML or JSON DataSource definition content.' },
+        format: { type: 'string', enum: ['xml', 'json'], description: 'The content format: "xml" or "json".' },
+        handleConflict: { type: 'string', description: 'JSON import only: conflict handling strategy.' },
+        fieldsToPreserve: { type: 'string', description: 'JSON import only: comma-separated fields to preserve.' },
+      },
+      additionalProperties: false,
+      required: ['content', 'format'],
+    },
+  },
+  {
+    name: 'list_datasource_overview_graphs',
+    description: 'List overview graphs defined on a DataSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are overview graphs:** Aggregate graphs that summarize data across all instances of the datasource on a device. ' +
+      '\n\n**Related tools:** "get\\_datasource\\_overview\\_graph", "get\\_datasource".',
+    annotations: { title: 'List datasource overview graphs', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The datasource ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['dataSourceId'],
+    },
+  },
+  {
+    name: 'get_datasource_overview_graph',
+    description: 'Get the definition of a specific DataSource overview graph in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Related tools:** "list\\_datasource\\_overview\\_graphs".',
+    annotations: { title: 'Get datasource overview graph', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The datasource ID' },
+        overviewGraphId: { type: 'number', description: 'The overview graph ID' },
+      },
+      additionalProperties: false,
+      required: ['dataSourceId', 'overviewGraphId'],
+    },
+  },
+  {
+    name: 'list_datasource_devices',
+    description: 'List the resources/devices a DataSource is currently applied to in LogicMonitor (LM) monitoring. ' +
+      '\n\n**When to use:** Assess impact before editing/deleting a datasource, or audit where a module is collecting. ' +
+      '\n\n**Related tools:** "get\\_datasource", "delete\\_datasource".',
+    annotations: { title: 'List datasource devices', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The datasource ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['dataSourceId'],
+    },
+  },
+  {
+    name: 'list_datasource_update_reasons',
+    description: 'List the audit history of update reasons for a DataSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Change records (who/when/why) for the module. ' +
+      '\n\n**Related tools:** "update\\_datasource" (provide a `reason` when editing).',
+    annotations: { title: 'List datasource update reasons', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dataSourceId: { type: 'number', description: 'The datasource ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['dataSourceId'],
+    },
+  },
 
   // Device DataSource Instance Tools
   {

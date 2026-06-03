@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 204 |
-| **Operations Missing** | 189 |
-| **Coverage** | **52%** |
-| **Implemented MCP Tools** | 195 (+4 custom link tools) |
+| **Operations Covered** | 214 |
+| **Operations Missing** | 179 |
+| **Coverage** | **54%** |
+| **Implemented MCP Tools** | 203 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -50,7 +50,6 @@
 | Unmonitored Devices | 0 | 1 | ❌ None |
 | Device Groups — datasource alert settings, cluster, properties | 10 | 29 | 🟡 Partial |
 | Collector Groups & Agent Log Levels | 11 | 21 | 🟡 Partial |
-| DataSource Management (write/import) | 2 | 12 | 🟡 Partial |
 | Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
 | Website Groups (write) | 2 | 9 | 🟡 Partial |
 | Dashboard Groups (write) | 2 | 7 | 🟡 Partial |
@@ -68,6 +67,7 @@
 | Cost Optimization | 3 | 3 | ✅ Full |
 | Dashboard Widgets | 7 | 7 | ✅ Full |
 | Dashboards | 7 | 7 | ✅ Full |
+| DataSource Management (write/import) | 12 | 12 | ✅ Full |
 | Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
 | NetScans | 6 | 6 | ✅ Full |
 | Ops Notes | 6 | 6 | ✅ Full |
@@ -82,12 +82,11 @@
 
 Grouped by impact. Each item links to its detailed operation list below.
 
-### 🔴 HIGH Priority — 48 operations
+### 🔴 HIGH Priority — 38 operations
 
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-- **DataSource Management (write/import)** — 10 missing. Tools to add: datasource CRUD, import (xml/json), ographs, associated devices tools
 - **PropertySources / Property Rules** — 7 missing. Tools to add: property-rule CRUD + import tools
 - **LogSources** — 7 missing. Tools to add: logsource CRUD + import tools
 - **Dashboard Groups (write)** — 5 missing. Tools to add: `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
@@ -169,23 +168,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-
-### 🔴 DataSource Management (write/import)
-
-**Coverage:** 2/12 operations.  **Proposed tools:** datasource CRUD, import (xml/json), ographs, associated devices tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteDatasourceById` | `/setting/datasources/{id}` |
-| `GET` | `getAssociatedDeviceListByDataSourceId` | `/setting/datasources/{id}/devices` |
-| `GET` | `getDataSourceOverviewGraphById` | `/setting/datasources/{dsId}/ographs/{id}` |
-| `GET` | `getDataSourceOverviewGraphList` | `/setting/datasources/{dsId}/ographs` |
-| `GET` | `getUpdateReasonListByDataSourceId` | `/setting/datasources/{id}/updatereasons` |
-| `PATCH` | `patchDatasourceById` | `/setting/datasources/{id}` |
-| `POST` | `addDatasourceById` | `/setting/datasources` |
-| `POST` | `importDataSource` | `/setting/datasources/importxml` |
-| `POST` | `importDataSourceJson` | `/setting/datasources/importjson` |
-| `PUT` | `updateDatasourceById` | `/setting/datasources/{id}` |
 
 ### 🔴 PropertySources / Property Rules
 
@@ -632,6 +614,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Cost Optimization** (3/3)
 - **Dashboard Widgets** (7/7)
 - **Dashboards** (7/7)
+- **DataSource Management (write/import)** (12/12)
 - **Devices — instances, alert settings, config & netflow** (52/52)
 - **NetScans** (6/6)
 - **Ops Notes** (6/6)
@@ -651,8 +634,8 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 52% |
-| Phase 1 (HIGH) | Core monitoring & config mgmt | +48 | 64% |
+| Current | — | — | 54% |
+| Phase 1 (HIGH) | Core monitoring & config mgmt | +38 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
 
@@ -665,4 +648,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 204 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 214 covered operations.*

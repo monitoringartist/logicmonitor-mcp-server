@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **195 MCP Tools** for comprehensive LogicMonitor operations (105 read-only, 90 write)
+- **203 MCP Tools** for comprehensive LogicMonitor operations (109 read-only, 94 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -529,6 +529,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 **Read-Only:**
 - `list_datasources` - List all available datasources
 - `get_datasource` - Get datasource details
+- `list_datasource_overview_graphs` - List a datasource's overview graphs
+- `get_datasource_overview_graph` - Get an overview graph definition
+- `list_datasource_devices` - List devices a datasource is applied to
+- `list_datasource_update_reasons` - List a datasource's change/audit history
 - `list_resource_datasources` - List datasources applied to device
 - `get_resource_datasource` - Get device datasource details
 - `list_resource_instances` - List datasource instances (disks, interfaces, etc.)
@@ -560,6 +564,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_configsource` - Get configsource details
 
 **Write Operations:**
+- `create_datasource` - Create a new DataSource (LogicModule)
+- `update_datasource` - Modify a DataSource
+- `delete_datasource` - Delete a DataSource
+- `import_datasource` - Import a DataSource from XML/JSON
 - `update_resource_datasource` - Modify device datasource configuration
 - `create_eventsource` - Create a new EventSource
 - `update_eventsource` - Modify an EventSource
@@ -763,9 +771,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **105 read-only tools** - Safe for production monitoring
-- **90 write tools** - Require caution (disabled by default with `--read-only`)
-- **195 total tools**
+- **109 read-only tools** - Safe for production monitoring
+- **94 write tools** - Require caution (disabled by default with `--read-only`)
+- **203 total tools**
 
 ## Security Considerations
 

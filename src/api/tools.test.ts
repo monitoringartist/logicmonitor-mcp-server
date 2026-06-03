@@ -624,8 +624,8 @@ describe('getLogicMonitorTools', () => {
       // Should have at least 50 tools (comprehensive API coverage)
       expect(allTools.length).toBeGreaterThanOrEqual(50);
 
-      // Should have fewer than 200 tools (reasonable upper bound)
-      expect(allTools.length).toBeLessThan(200);
+      // Should have fewer than 400 tools (reasonable upper bound; full API ~393 operations)
+      expect(allTools.length).toBeLessThan(400);
     });
 
     it('should have at least 30% read-only tools', () => {
@@ -715,6 +715,7 @@ describe('getLogicMonitorTools', () => {
           'get_resource_top_talkers_graph',
           'get_resources_delta_id',
           'get_resources_delta',
+          'get_datasource_overview_graph',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

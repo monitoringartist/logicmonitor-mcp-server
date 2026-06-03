@@ -163,6 +163,15 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'update_action_rule': ['mcp:tools', 'lm:write'],
   'delete_action_rule': ['mcp:tools', 'lm:write'],
   'set_action_rule_status': ['mcp:tools', 'lm:write'],
+  // DataSource management (write/import) + read extras
+  'create_datasource': ['mcp:tools', 'lm:write'],
+  'update_datasource': ['mcp:tools', 'lm:write'],
+  'delete_datasource': ['mcp:tools', 'lm:write'],
+  'import_datasource': ['mcp:tools', 'lm:write'],
+  'list_datasource_overview_graphs': ['mcp:tools', 'lm:read'],
+  'get_datasource_overview_graph': ['mcp:tools', 'lm:read'],
+  'list_datasource_devices': ['mcp:tools', 'lm:read'],
+  'list_datasource_update_reasons': ['mcp:tools', 'lm:read'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

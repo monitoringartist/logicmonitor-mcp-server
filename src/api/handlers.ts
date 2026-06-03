@@ -504,6 +504,51 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_datasource':
+          return await this.client.createDataSource(args.config || {}, { createGraph: args.createGraph });
+
+        case 'update_datasource':
+          return await this.client.updateDataSource(args.dataSourceId, args.config || {}, {
+            reason: args.reason,
+            forceUniqueIdentifier: args.forceUniqueIdentifier,
+          });
+
+        case 'delete_datasource':
+          return await this.client.deleteDataSource(args.dataSourceId);
+
+        case 'import_datasource':
+          return await this.client.importDataSource(args.content, args.format, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
+        case 'list_datasource_overview_graphs':
+          return await this.client.listDataSourceOverviewGraphs(args.dataSourceId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'get_datasource_overview_graph':
+          return await this.client.getDataSourceOverviewGraph(args.dataSourceId, args.overviewGraphId);
+
+        case 'list_datasource_devices':
+          return await this.client.listDataSourceDevices(args.dataSourceId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'list_datasource_update_reasons':
+          return await this.client.listDataSourceUpdateReasons(args.dataSourceId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
         // Device DataSource Instances
         case 'list_resource_instances':
           return await this.client.listDeviceDataSourceInstances(
