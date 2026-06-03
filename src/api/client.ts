@@ -1498,4 +1498,97 @@ export class LogicMonitorClient {
   }) {
     return this.request<LMListResponse<any>>('GET', '/setting/collector/collectors/versions', undefined, params);
   }
+
+  // Cost Optimization Recommendations
+  async listCostOptimizationRecommendations(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+  }) {
+    const cleanedParams = this.cleanParams(params);
+    return this.request<LMListResponse<any>>('GET', '/cost-optimization/recommendations', undefined, cleanedParams);
+  }
+
+  async getCostOptimizationRecommendation(id: string, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/cost-optimization/recommendations/${encodeURIComponent(id)}`,
+      undefined,
+      params,
+    );
+  }
+
+  async listCostOptimizationRecommendationCategories(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+  }) {
+    const cleanedParams = this.cleanParams(params);
+    return this.request<LMListResponse<any>>(
+      'GET',
+      '/cost-optimization/recommendations/categories',
+      undefined,
+      cleanedParams,
+    );
+  }
+
+  // Dashboard Widgets
+  async listWidgets(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+
+    if (autoPaginate) {
+      return this.paginateAll<any>('/dashboard/widgets', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/dashboard/widgets', undefined, cleanedParams);
+  }
+
+  async listDashboardWidgets(dashboardId: number, params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/dashboard/dashboards/${dashboardId}/widgets`;
+
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getWidget(widgetId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/dashboard/widgets/${widgetId}`, undefined, params);
+  }
+
+  async getWidgetData(widgetId: number, params?: {
+    start?: number;
+    end?: number;
+    format?: string;
+  }) {
+    return this.request<LMResponse<any>>('GET', `/dashboard/widgets/${widgetId}/data`, undefined, params);
+  }
+
+  async createWidget(widget: any) {
+    return this.request<LMResponse<any>>('POST', '/dashboard/widgets', widget);
+  }
+
+  async updateWidget(widgetId: number, widget: any) {
+    return this.request<LMResponse<any>>('PATCH', `/dashboard/widgets/${widgetId}`, widget);
+  }
+
+  async deleteWidget(widgetId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/dashboard/widgets/${widgetId}`);
+  }
 }

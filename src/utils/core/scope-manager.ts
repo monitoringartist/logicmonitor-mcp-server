@@ -80,14 +80,24 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'get_alert': ['mcp:tools', 'lm:alerts:read'],
   'list_dashboards': ['mcp:tools', 'lm:dashboards:read'],
   'get_dashboard': ['mcp:tools', 'lm:dashboards:read'],
+  'list_widgets': ['mcp:tools', 'lm:dashboards:read'],
+  'list_dashboard_widgets': ['mcp:tools', 'lm:dashboards:read'],
+  'get_widget': ['mcp:tools', 'lm:dashboards:read'],
+  'get_widget_data': ['mcp:tools', 'lm:dashboards:read'],
   'list_datasources': ['mcp:tools', 'lm:read'],
   'get_datasource': ['mcp:tools', 'lm:read'],
+  'list_cost_optimization_recommendations': ['mcp:tools', 'lm:read'],
+  'get_cost_optimization_recommendation': ['mcp:tools', 'lm:read'],
+  'list_cost_optimization_recommendation_categories': ['mcp:tools', 'lm:read'],
 
   // Write operations - require write scopes
   'acknowledge_alert': ['mcp:tools', 'lm:alerts:write'],
   'add_device': ['mcp:tools', 'lm:devices:write'],
   'update_device': ['mcp:tools', 'lm:devices:write'],
   'delete_device': ['mcp:tools', 'lm:devices:write'],
+  'create_widget': ['mcp:tools', 'lm:dashboards:write'],
+  'update_widget': ['mcp:tools', 'lm:dashboards:write'],
+  'delete_widget': ['mcp:tools', 'lm:dashboards:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

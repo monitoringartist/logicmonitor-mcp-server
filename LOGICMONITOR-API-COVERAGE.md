@@ -8,8 +8,8 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 336 |
-| **Implemented Tools** | 125 |
-| **Coverage** | **37%** |
+| **Implemented Tools** | 135 |
+| **Coverage** | **40%** |
 | **Custom Enhancements** | 4 link tools |
 
 ---
@@ -46,23 +46,23 @@
 
 ---
 
-### Dashboards ⭐ GOOD
-**Status:** Core features implemented, widgets missing
+### Dashboards ⭐ COMPLETE
+**Status:** Core features and widget operations implemented
 
 **Implemented:**
 - ✅ List, Get, Create, Update, Delete dashboards
 - ✅ Dashboard Groups (List, Get)
 - ✅ **Generate dashboard links** (custom addition)
+- ✅ Widget operations
+  - `getWidgetList` → `list_widgets`
+  - `getWidgetListByDashboardId` → `list_dashboard_widgets`
+  - `getWidgetById` → `get_widget`
+  - `getWidgetDataById` → `get_widget_data`
+  - `addWidget` → `create_widget`
+  - `updateWidgetById` / `patchWidgetById` → `update_widget`
+  - `deleteWidgetById` → `delete_widget`
 
-**Missing:**
-- ❌ Widget operations (7 operations)
-  - `addWidget`
-  - `getWidgetList`, `getWidgetById`
-  - `updateWidgetById`, `patchWidgetById`
-  - `deleteWidgetById`
-  - `getWidgetDataById`
-
-**Tools:** `list_dashboards`, `get_dashboard`, `create_dashboard`, `update_dashboard`, `delete_dashboard`, `list_dashboard_groups`, `get_dashboard_group`, `generate_dashboard_link`
+**Tools:** `list_dashboards`, `get_dashboard`, `create_dashboard`, `update_dashboard`, `delete_dashboard`, `list_dashboard_groups`, `get_dashboard_group`, `generate_dashboard_link`, `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data`, `create_widget`, `update_widget`, `delete_widget`
 
 ---
 
@@ -361,18 +361,21 @@ API Operations:
 
 ---
 
-### 9. 🟢 Cost Optimization (3 operations) - NOT IMPLEMENTED
+### 9. ✅ Cost Optimization (3 operations) - IMPLEMENTED
 **Priority:** LOW - Nice to have
 
 ```
 API Operations:
-- getRecommendationsList       GET /cost-optimization/recommendations
-- getRecommendationById        GET /cost-optimization/recommendations/{id}
-- getRecommendationCategoriesList GET /cost-optimization/recommendations/categories
+- getRecommendationsList       GET /cost-optimization/recommendations           ✅
+- getRecommendationById        GET /cost-optimization/recommendations/{id}       ✅
+- getRecommendationCategoriesList GET /cost-optimization/recommendations/categories ✅
 ```
 
+**Tools:** `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, `list_cost_optimization_recommendation_categories`
+
 **Use Cases:**
-- Get cost optimization recommendations
+- Get cloud cost optimization recommendations (AWS/Azure/GCP)
+- Surface potential annual savings and idle/oversized resources
 - Cloud resource optimization insights
 
 ---
@@ -461,7 +464,7 @@ Beta APIs - DiagnosticSources (8 operations):
 9. **TopologySources** (6 ops)
 10. **PropertySources** (6 ops)
 11. **AppliesToFunctions** (7 ops)
-12. **Cost Optimization** (3 ops)
+12. ~~**Cost Optimization** (3 ops)~~ ✅ IMPLEMENTED
 13. **Advanced Device Group Operations** (5+ ops)
 14. **Diagnostic Sources** (8 ops)
 

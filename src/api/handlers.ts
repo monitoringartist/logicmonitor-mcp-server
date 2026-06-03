@@ -1379,6 +1379,74 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        // Cost Optimization Recommendations
+        case 'list_cost_optimization_recommendations':
+          return await this.client.listCostOptimizationRecommendations({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        case 'get_cost_optimization_recommendation':
+          return await this.client.getCostOptimizationRecommendation(args.id, {
+            fields: args.fields,
+          });
+
+        case 'list_cost_optimization_recommendation_categories':
+          return await this.client.listCostOptimizationRecommendationCategories({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+          });
+
+        // Dashboard Widgets
+        case 'list_widgets':
+          return await this.client.listWidgets({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'list_dashboard_widgets':
+          return await this.client.listDashboardWidgets(args.dashboardId, {
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_widget':
+          return await this.client.getWidget(args.widgetId, {
+            fields: args.fields,
+          });
+
+        case 'get_widget_data':
+          return await this.client.getWidgetData(args.widgetId, {
+            start: args.start,
+            end: args.end,
+            format: args.format,
+          });
+
+        case 'create_widget': {
+          const { config, ...rest } = args;
+          const widget = { ...rest, ...(config || {}) };
+          return await this.client.createWidget(widget);
+        }
+
+        case 'update_widget': {
+          const { widgetId, config, ...rest } = args;
+          const widget = { ...rest, ...(config || {}) };
+          return await this.client.updateWidget(widgetId, widget);
+        }
+
+        case 'delete_widget':
+          return await this.client.deleteWidget(args.widgetId);
+
         default:
           throw new MCPError(
             `Unknown tool: ${name}`,

@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- None
+- Cost Optimization Recommendations tools: `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, and `list_cost_optimization_recommendation_categories` (read-only, backed by the `/cost-optimization/recommendations` API)
+- Dashboard Widget tools: `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data` (read-only) and `create_widget`, `update_widget`, `delete_widget` (write), backed by the `/dashboard/widgets` API
 
 ### Changed
 - None

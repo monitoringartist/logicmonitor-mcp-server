@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **125 MCP Tools** for comprehensive LogicMonitor operations (73 read-only, 52 write)
+- **132 MCP Tools** for comprehensive LogicMonitor operations (77 read-only, 55 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -538,6 +538,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `generate_dashboard_link` - Generate direct link to dashboard in LM UI
 - `list_dashboard_groups` - List dashboard groups
 - `get_dashboard_group` - Get dashboard group details
+- `list_widgets` - List dashboard widgets across all dashboards
+- `list_dashboard_widgets` - List widgets belonging to a specific dashboard
+- `get_widget` - Get widget configuration details
+- `get_widget_data` - Get a widget's rendered data (optionally for a time range)
 - `list_reports` - List all reports
 - `get_report` - Get report details
 - `list_report_groups` - List report groups
@@ -547,6 +551,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `create_dashboard` - Create new dashboard
 - `update_dashboard` - Modify dashboard
 - `delete_dashboard` - Delete dashboard
+- `create_widget` - Add a widget to a dashboard
+- `update_widget` - Modify a widget
+- `delete_widget` - Delete a widget
 - `create_report_group` - Create report group
 - `update_report_group` - Modify report group
 - `delete_report_group` - Delete report group
@@ -684,11 +691,18 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `list_audit_logs` - List audit trail logs (supports simple search via `query` parameter or advanced filtering via `filter` parameter)
 - `get_audit_log` - Get audit log entry details
 
+### Cost Optimization
+
+**Read-Only:**
+- `list_cost_optimization_recommendations` - List cloud cost optimization recommendations (filter by `recommendationCategory`/`recommendationStatus`)
+- `get_cost_optimization_recommendation` - Get a single recommendation by its composite ID
+- `list_cost_optimization_recommendation_categories` - List available recommendation categories
+
 ### Summary
 
-- **70 read-only tools** - Safe for production monitoring
-- **52 write tools** - Require caution (disabled by default with `--read-only`)
-- **122 total tools**
+- **77 read-only tools** - Safe for production monitoring
+- **55 write tools** - Require caution (disabled by default with `--read-only`)
+- **132 total tools**
 
 ## Security Considerations
 

@@ -142,6 +142,16 @@ describe('LogicMonitorHandlers', () => {
       listWebsiteCheckpoints: jest.fn(),
       getTopology: jest.fn(),
       listCollectorVersions: jest.fn(),
+      listCostOptimizationRecommendations: jest.fn(),
+      getCostOptimizationRecommendation: jest.fn(),
+      listCostOptimizationRecommendationCategories: jest.fn(),
+      listWidgets: jest.fn(),
+      listDashboardWidgets: jest.fn(),
+      getWidget: jest.fn(),
+      getWidgetData: jest.fn(),
+      createWidget: jest.fn(),
+      updateWidget: jest.fn(),
+      deleteWidget: jest.fn(),
     } as unknown as jest.Mocked<LogicMonitorClient>;
 
     handlers = new LogicMonitorHandlers(mockClient);
@@ -1282,6 +1292,222 @@ describe('LogicMonitorHandlers', () => {
       });
 
       expect(result).toEqual({});
+    });
+  });
+
+  describe('Cost Optimization Recommendations', () => {
+    describe('list_cost_optimization_recommendations', () => {
+      it('should list recommendations passing pagination, filter and fields', async () => {
+        const mockResponse = {
+          total: 1,
+          items: [
+            {
+              id: '123-456-EBS_UNATTACHED',
+              recommendationId: 123,
+              recommendationCategory: 'EBS Unattached',
+              recommendationStatus: 'active',
+              annualSavings: 240.5,
+              cloudProvider: 'AWS',
+            },
+          ],
+        };
+
+        mockClient.listCostOptimizationRecommendations.mockResolvedValue(mockResponse as never);
+
+        const result = await handlers.handleToolCall('list_cost_optimization_recommendations', {
+          size: 25,
+          offset: 0,
+          filter: 'recommendationCategory:"EBS Unattached"',
+          fields: 'id,annualSavings',
+        });
+
+        expect(mockClient.listCostOptimizationRecommendations).toHaveBeenCalledWith({
+          size: 25,
+          offset: 0,
+          filter: 'recommendationCategory:"EBS Unattached"',
+          fields: 'id,annualSavings',
+        });
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe('get_cost_optimization_recommendation', () => {
+      it('should get a recommendation by composite id', async () => {
+        const mockRecommendation = {
+          id: '123-456-EBS_UNATTACHED',
+          recommendationId: 123,
+          annualSavings: 240.5,
+        };
+
+        mockClient.getCostOptimizationRecommendation.mockResolvedValue(mockRecommendation as never);
+
+        const result = await handlers.handleToolCall('get_cost_optimization_recommendation', {
+          id: '123-456-EBS_UNATTACHED',
+        });
+
+        expect(result).toEqual(mockRecommendation);
+        expect(mockClient.getCostOptimizationRecommendation).toHaveBeenCalledWith(
+          '123-456-EBS_UNATTACHED',
+          { fields: undefined },
+        );
+      });
+    });
+
+    describe('list_cost_optimization_recommendation_categories', () => {
+      it('should list recommendation categories', async () => {
+        const mockResponse = {
+          total: 1,
+          items: [{ name: 'EBS Unattached', description: 'Unattached EBS volumes' }],
+        };
+
+        mockClient.listCostOptimizationRecommendationCategories.mockResolvedValue(mockResponse as never);
+
+        const result = await handlers.handleToolCall('list_cost_optimization_recommendation_categories', {
+          size: 50,
+          offset: 0,
+        });
+
+        expect(mockClient.listCostOptimizationRecommendationCategories).toHaveBeenCalledWith({
+          size: 50,
+          offset: 0,
+          filter: undefined,
+          fields: undefined,
+        });
+        expect(result).toEqual(mockResponse);
+      });
+    });
+  });
+
+  describe('Dashboard Widgets', () => {
+    describe('list_widgets', () => {
+      it('should list widgets passing pagination, filter and fields', async () => {
+        const mockResponse = {
+          total: 1,
+          items: [{ id: 10, name: 'CPU Graph', type: 'cgraph', dashboardId: 5 }],
+        };
+        mockClient.listWidgets.mockResolvedValue(mockResponse as never);
+
+        const result = await handlers.handleToolCall('list_widgets', {
+          size: 25,
+          offset: 0,
+          filter: 'type:"cgraph"',
+          fields: 'id,name,type',
+        });
+
+        expect(mockClient.listWidgets).toHaveBeenCalledWith({
+          size: 25,
+          offset: 0,
+          filter: 'type:"cgraph"',
+          fields: 'id,name,type',
+          autoPaginate: undefined,
+        });
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe('list_dashboard_widgets', () => {
+      it('should list widgets for a given dashboard', async () => {
+        const mockResponse = { total: 1, items: [{ id: 11, dashboardId: 5 }] };
+        mockClient.listDashboardWidgets.mockResolvedValue(mockResponse as never);
+
+        const result = await handlers.handleToolCall('list_dashboard_widgets', {
+          dashboardId: 5,
+          size: 50,
+        });
+
+        expect(mockClient.listDashboardWidgets).toHaveBeenCalledWith(5, {
+          size: 50,
+          offset: undefined,
+          filter: undefined,
+          fields: undefined,
+          autoPaginate: undefined,
+        });
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe('get_widget', () => {
+      it('should get a widget by id', async () => {
+        const mockWidget = { id: 10, name: 'CPU Graph', type: 'cgraph' };
+        mockClient.getWidget.mockResolvedValue(mockWidget as never);
+
+        const result = await handlers.handleToolCall('get_widget', { widgetId: 10 });
+
+        expect(result).toEqual(mockWidget);
+        expect(mockClient.getWidget).toHaveBeenCalledWith(10, { fields: undefined });
+      });
+    });
+
+    describe('get_widget_data', () => {
+      it('should get widget data with a time range', async () => {
+        const mockData = { type: 'cgraph', title: 'CPU' };
+        mockClient.getWidgetData.mockResolvedValue(mockData as never);
+
+        const result = await handlers.handleToolCall('get_widget_data', {
+          widgetId: 10,
+          start: 1640000000,
+          end: 1640003600,
+          format: 'json',
+        });
+
+        expect(result).toEqual(mockData);
+        expect(mockClient.getWidgetData).toHaveBeenCalledWith(10, {
+          start: 1640000000,
+          end: 1640003600,
+          format: 'json',
+        });
+      });
+    });
+
+    describe('create_widget', () => {
+      it('should merge config into the widget body', async () => {
+        const created = { id: 99, name: 'New Gauge', type: 'gauge', dashboardId: 5 };
+        mockClient.createWidget.mockResolvedValue(created as never);
+
+        const result = await handlers.handleToolCall('create_widget', {
+          dashboardId: 5,
+          name: 'New Gauge',
+          type: 'gauge',
+          config: { graphInfo: { dataPoint: 'CPUBusyPercent' } },
+        });
+
+        expect(mockClient.createWidget).toHaveBeenCalledWith({
+          dashboardId: 5,
+          name: 'New Gauge',
+          type: 'gauge',
+          graphInfo: { dataPoint: 'CPUBusyPercent' },
+        });
+        expect(result).toEqual(created);
+      });
+    });
+
+    describe('update_widget', () => {
+      it('should update a widget, merging config and excluding widgetId from body', async () => {
+        const updated = { id: 10, name: 'Renamed' };
+        mockClient.updateWidget.mockResolvedValue(updated as never);
+
+        const result = await handlers.handleToolCall('update_widget', {
+          widgetId: 10,
+          name: 'Renamed',
+          config: { interval: 5 },
+        });
+
+        expect(mockClient.updateWidget).toHaveBeenCalledWith(10, {
+          name: 'Renamed',
+          interval: 5,
+        });
+        expect(result).toEqual(updated);
+      });
+    });
+
+    describe('delete_widget', () => {
+      it('should delete a widget by id', async () => {
+        mockClient.deleteWidget.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('delete_widget', { widgetId: 10 });
+
+        expect(mockClient.deleteWidget).toHaveBeenCalledWith(10);
+      });
     });
   });
 

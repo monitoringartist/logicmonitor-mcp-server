@@ -211,6 +211,77 @@ describe('getLogicMonitorTools', () => {
       });
     });
 
+    describe('Cost Optimization Tools', () => {
+      it('should include cost optimization recommendation tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('list_cost_optimization_recommendations');
+        expect(toolNames).toContain('get_cost_optimization_recommendation');
+        expect(toolNames).toContain('list_cost_optimization_recommendation_categories');
+      });
+
+      it('should mark all cost optimization tools as read-only', () => {
+        const tools = getLogicMonitorTools(false);
+        const costTools = tools.filter(t => t.name.startsWith('list_cost_optimization') ||
+          t.name.startsWith('get_cost_optimization'));
+
+        expect(costTools).toHaveLength(3);
+        costTools.forEach(tool => {
+          expect(tool.annotations?.readOnlyHint).toBe(true);
+        });
+      });
+
+      it('should require id for get_cost_optimization_recommendation', () => {
+        const tools = getLogicMonitorTools(false);
+        const getTool = tools.find(t => t.name === 'get_cost_optimization_recommendation');
+
+        expect(getTool?.inputSchema.required).toContain('id');
+      });
+    });
+
+    describe('Widget Tools', () => {
+      it('should include all widget tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('list_widgets');
+        expect(toolNames).toContain('list_dashboard_widgets');
+        expect(toolNames).toContain('get_widget');
+        expect(toolNames).toContain('get_widget_data');
+        expect(toolNames).toContain('create_widget');
+        expect(toolNames).toContain('update_widget');
+        expect(toolNames).toContain('delete_widget');
+      });
+
+      it('should have correct read-only hints for widget tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        const readOnly = ['list_widgets', 'list_dashboard_widgets', 'get_widget', 'get_widget_data'];
+        const write = ['create_widget', 'update_widget', 'delete_widget'];
+
+        readOnly.forEach(name => {
+          expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(true);
+        });
+        write.forEach(name => {
+          expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(false);
+        });
+      });
+
+      it('should require the expected identifiers', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'list_dashboard_widgets')?.inputSchema.required)
+          .toContain('dashboardId');
+        expect(tools.find(t => t.name === 'get_widget')?.inputSchema.required)
+          .toContain('widgetId');
+        expect(tools.find(t => t.name === 'create_widget')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['dashboardId', 'name', 'type']));
+        expect(tools.find(t => t.name === 'delete_widget')?.inputSchema.required)
+          .toContain('widgetId');
+      });
+    });
+
     describe('Collector Tools', () => {
       it('should include collector tools', () => {
         const tools = getLogicMonitorTools(false);
@@ -561,9 +632,12 @@ describe('getLogicMonitorTools', () => {
       getTools.forEach(tool => {
         const properties = tool.inputSchema.properties || {};
 
-        // Most get tools should support fields parameter
+        // Most get tools should support fields parameter.
+        // Data-rendering endpoints (instance data, topology, widget data)
+        // accept time-range/format params instead of field selection.
         if (tool.name !== 'get_resource_instance_data' &&
-            tool.name !== 'get_topology') {
+            tool.name !== 'get_topology' &&
+            tool.name !== 'get_widget_data') {
           expect(properties).toHaveProperty('fields');
         }
       });

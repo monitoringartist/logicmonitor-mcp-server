@@ -6381,6 +6381,404 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       additionalProperties: false,
     },
   },
+
+  // Cost Optimization Recommendations Tools
+  {
+    name: 'list_cost_optimization_recommendations',
+    description: 'List cloud cost optimization recommendations in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of recommendations, each with: id (composite identifier), recommendationId, recommendation (details), recommendationCategory, recommendationStatus, annualSavings (potential annual savings in USD), cloudProvider (AWS/Azure/GCP), cloudServiceType, cloudAccountId, resourceDisplayName, resourceId, deviceSubtype, criteria, providerConsoleUrl, createdAtMS, updatedAtMS. ' +
+      '\n\n**What this is:** LogicMonitor Cost Optimization analyzes your connected cloud accounts (AWS, Azure, GCP) and surfaces actionable recommendations to reduce spend, such as removing unattached storage, right-sizing instances, or deleting idle resources. ' +
+      '\n\n**When to use:**' +
+      '\n- Find ways to reduce cloud spend' +
+      '\n- Build a cost-savings report (sum annualSavings)' +
+      '\n- Identify idle or oversized cloud resources' +
+      '\n- Review recommendations by category or status' +
+      '\n\n**Filtering:** Filtering is supported on `recommendationStatus` and `recommendationCategory` using the `:` (equals) operator. ' +
+      'Only one value at a time is supported for `recommendationCategory`, but multiple statuses may be combined with the `|` (OR) operator. ' +
+      'When combining different filters, only the `,` (AND) relation is supported. ' +
+      '\n- Single category: `recommendationCategory:"EC2 Right Sizing"`' +
+      '\n- Multiple statuses: `recommendationStatus:"active"|"snoozed"`' +
+      '\n- Combined: `recommendationCategory:"EBS Unattached",recommendationStatus:"active"`' +
+      '\n\n**Tip:** Use "list\\_cost\\_optimization\\_recommendation\\_categories" first to discover valid category names. ' +
+      '\n\n**Related tools:** "get\\_cost\\_optimization\\_recommendation" (full details for one recommendation), "list\\_cost\\_optimization\\_recommendation\\_categories" (available categories).',
+    annotations: {
+      title: 'List cost optimization recommendations',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        size: {
+          type: 'number',
+          description: 'Number of results per page (default: 50, max: 500).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Starting offset for pagination (default: 0).',
+        },
+        filter: {
+          type: 'string',
+          description: 'Filter expression. Only `recommendationStatus` and `recommendationCategory` ' +
+            'are filterable, using the `:` (equals) operator. One category value at a time; ' +
+            'multiple statuses may be OR-ed with `|`; combine different filters with `,` (AND). ' +
+            'Examples: `recommendationCategory:"EBS Unattached"` or ' +
+            '`recommendationCategory:"EC2 Right Sizing",recommendationStatus:"active"|"snoozed"`.',
+        },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_cost_optimization_recommendation',
+    description: 'Get detailed information about a specific cloud cost optimization recommendation in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Full recommendation object including recommendation details, category, status, annualSavings (USD), cloud provider/account/service, the associated resource (resourceDisplayName, resourceId, deviceSubtype), criteria, providerConsoleUrl, and timestamps (createdAtMS, updatedAtMS). ' +
+      '\n\n**When to use:**' +
+      '\n- Inspect a single recommendation surfaced by "list\\_cost\\_optimization\\_recommendations"' +
+      '\n- Get the cloud provider console URL to act on a recommendation' +
+      '\n- Review the exact criteria behind a savings recommendation' +
+      '\n\n**Related tools:** "list\\_cost\\_optimization\\_recommendations" (find recommendation IDs).',
+    annotations: {
+      title: 'Get cost optimization recommendation details',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          description: 'The composite recommendation identifier, made up of the recommendation\'s ' +
+            'database ID, the associated resource ID, and the recommendation type, delimited by ' +
+            'hyphens (e.g., "123-456-EBS_UNATTACHED"). Obtain this from ' +
+            '"list\\_cost\\_optimization\\_recommendations".',
+        },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['id'],
+    },
+  },
+  {
+    name: 'list_cost_optimization_recommendation_categories',
+    description: 'List the available cloud cost optimization recommendation categories in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of categories, each with: name (category name, e.g. "EBS Unattached", "EC2 Right Sizing") and description. ' +
+      '\n\n**When to use:**' +
+      '\n- Discover valid category names before filtering "list\\_cost\\_optimization\\_recommendations"' +
+      '\n- Understand the kinds of savings opportunities LogicMonitor detects' +
+      '\n\n**Related tools:** "list\\_cost\\_optimization\\_recommendations" (filter by a category name).',
+    annotations: {
+      title: 'List cost optimization recommendation categories',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        size: {
+          type: 'number',
+          description: 'Number of results per page (default: 50).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Starting offset for pagination (default: 0).',
+        },
+        filter: {
+          type: 'string',
+          description: 'Optional filter expression using LogicMonitor query syntax.',
+        },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+    },
+  },
+
+  // Dashboard Widget Tools
+  {
+    name: 'list_widgets',
+    description: 'List dashboard widgets across all dashboards in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of widgets, each with: id, name, type, dashboardId, description, theme, interval (refresh, minutes), timescale, lastUpdatedOn, lastUpdatedBy. ' +
+      '\n\n**What are widgets:** Individual visual components on a dashboard - graphs, alert tables, gauges, big numbers, maps, pie charts, SLA widgets, NOC widgets, etc. ' +
+      '\n\n**When to use:**' +
+      '\n- Inventory all widgets in your portal' +
+      '\n- Find widgets of a particular type or name' +
+      '\n- Locate a widget id to inspect or modify' +
+      '\n\n**Tip:** To list widgets belonging to one dashboard, use "list\\_dashboard\\_widgets" instead. ' +
+      '\n\n**Related tools:** "list\\_dashboard\\_widgets" (widgets of one dashboard), "get\\_widget" (details), "get\\_widget\\_data" (rendered data).',
+    annotations: {
+      title: 'List widgets',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'list_dashboard_widgets',
+    description: 'List all widgets that belong to a specific dashboard in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Array of widgets on the dashboard with: id, name, type, dashboardId, description, theme, interval, timescale. ' +
+      '\n\n**When to use:**' +
+      '\n- See the contents of a dashboard before editing' +
+      '\n- Enumerate widgets to clone or reorganize' +
+      '\n- Find a widget id within a known dashboard' +
+      '\n\n**Required parameters:**' +
+      '\n- dashboardId: The dashboard ID (from "list\\_dashboards")' +
+      '\n\n**Related tools:** "list\\_dashboards" (find dashboard IDs), "get\\_widget" (widget details), "create\\_widget" (add a widget to this dashboard).',
+    annotations: {
+      title: 'List widgets on a dashboard',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dashboardId: {
+          type: 'number',
+          description: 'The ID of the dashboard whose widgets to list (from "list_dashboards").',
+        },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['dashboardId'],
+    },
+  },
+  {
+    name: 'get_widget',
+    description: 'Get detailed configuration for a specific dashboard widget in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Full widget object including type-specific configuration (e.g., graph datapoints, alert filters, gauge thresholds), name, type, dashboardId, description, theme, interval, timescale, and timestamps. ' +
+      '\n\n**When to use:**' +
+      '\n- Inspect a widget\'s configuration' +
+      '\n- Export a widget\'s config to clone it (the returned object can be adapted and passed to "create\\_widget")' +
+      '\n- Discover the type-specific attributes required for "create\\_widget"/"update\\_widget"' +
+      '\n\n**Required parameters:**' +
+      '\n- widgetId: The widget ID (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
+      '\n\n**Related tools:** "get\\_widget\\_data" (rendered data values), "update\\_widget" (modify), "create\\_widget" (clone).',
+    annotations: {
+      title: 'Get widget details',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        widgetId: {
+          type: 'number',
+          description: 'The ID of the widget to retrieve.',
+        },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['widgetId'],
+    },
+  },
+  {
+    name: 'get_widget_data',
+    description: 'Get the rendered data for a specific dashboard widget in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** The widget\'s computed data payload. The shape depends on the widget type (e.g., graph series/datapoints, alert lists, big-number values, gauge readings). ' +
+      '\n\n**What this does:** Unlike "get\\_widget" (which returns configuration), this returns the actual values the widget would display, optionally for a specific time range. ' +
+      '\n\n**When to use:**' +
+      '\n- Read current metric values shown by a graph/gauge/big-number widget' +
+      '\n- Pull widget data for a custom time window' +
+      '\n- Feed dashboard data into downstream analysis' +
+      '\n\n**Required parameters:**' +
+      '\n- widgetId: The widget ID (from "list\\_widgets")' +
+      '\n\n**Optional parameters:**' +
+      '\n- start: Start of the time range, in epoch seconds' +
+      '\n- end: End of the time range, in epoch seconds' +
+      '\n- format: Response format for the data payload' +
+      '\n\n**Related tools:** "get\\_widget" (configuration), "list\\_widgets" (find widget IDs).',
+    annotations: {
+      title: 'Get widget data',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        widgetId: {
+          type: 'number',
+          description: 'The ID of the widget whose data to retrieve.',
+        },
+        start: {
+          type: 'number',
+          description: 'Start of the time range, in epoch seconds (optional).',
+        },
+        end: {
+          type: 'number',
+          description: 'End of the time range, in epoch seconds (optional).',
+        },
+        format: {
+          type: 'string',
+          description: 'Optional response format for the widget data payload.',
+        },
+      },
+      additionalProperties: false,
+      required: ['widgetId'],
+    },
+  },
+  {
+    name: 'create_widget',
+    description: 'Create a new widget on a dashboard in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Adds a visual component (graph, alert table, gauge, big number, map, pie chart, SLA, NOC, etc.) to an existing dashboard. ' +
+      '\n\n**Required parameters:**' +
+      '\n- dashboardId: The dashboard to add the widget to (from "list\\_dashboards")' +
+      '\n- name: The widget name' +
+      '\n- type: The widget type. One of: alert, batchjob, flash, gmap, ngraph, ograph, cgraph, sgraph, netflowgraph, groupNetflowGraph, netflow, groupNetflow, html, bigNumber, gauge, pieChart, table, dynamicTable, deviceSLA, text, statsd, deviceStatus, serviceAlert, noc, websiteOverview, websiteOverallStatus, websiteIndividualStatus, websiteSLA, savedMap.' +
+      '\n\n**Optional parameters:**' +
+      '\n- description: Widget description' +
+      '\n- theme: Color scheme (e.g., newBorderBlue, solidGray, simplePurple)' +
+      '\n- interval: Refresh interval in minutes' +
+      '\n- timescale: Default timescale of the widget' +
+      '\n- config: An object with type-specific attributes (merged into the widget body). Different widget types require different attributes.' +
+      '\n\n**⚠️ Widget configuration is type-specific and can be complex.** The easiest reliable workflow is: ' +
+      '\n1. Create a widget of the desired type in the LogicMonitor UI (or find an existing one) ' +
+      '\n2. Call "get\\_widget" to export its full configuration ' +
+      '\n3. Adapt that configuration and pass the type-specific fields via "config" here ' +
+      '\n\n**Related tools:** "get\\_widget" (export a template), "list\\_dashboards" (find dashboardId), "update\\_widget" (modify), "delete\\_widget" (remove).',
+    annotations: {
+      title: 'Create widget',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dashboardId: {
+          type: 'number',
+          description: 'The ID of the dashboard the widget belongs to.',
+        },
+        name: {
+          type: 'string',
+          description: 'The name of the widget.',
+        },
+        type: {
+          type: 'string',
+          description: 'The widget type (e.g., "alert", "cgraph", "bigNumber", "gauge", "table", "pieChart", "noc", "text", "deviceSLA"). See tool description for the full list.',
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the widget.',
+        },
+        theme: {
+          type: 'string',
+          description: 'The color scheme of the widget (e.g., "newBorderBlue", "solidGray").',
+        },
+        interval: {
+          type: 'number',
+          description: 'The refresh interval of the widget, in minutes.',
+        },
+        timescale: {
+          type: 'string',
+          description: 'The default timescale of the widget.',
+        },
+        config: {
+          type: 'object',
+          description: 'Type-specific widget configuration attributes, merged into the widget body. ' +
+            'Use "get_widget" on an existing widget of the same type to discover the required attributes.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['dashboardId', 'name', 'type'],
+    },
+  },
+  {
+    name: 'update_widget',
+    description: 'Update an existing dashboard widget in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies a widget\'s name, description, theme, refresh interval, timescale, dashboard placement, or type-specific configuration. Uses a partial update (only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- widgetId: The widget ID to update (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
+      '\n\n**Optional parameters (what to change):**' +
+      '\n- name: New widget name' +
+      '\n- description: New description' +
+      '\n- theme: New color scheme' +
+      '\n- interval: New refresh interval (minutes)' +
+      '\n- timescale: New default timescale' +
+      '\n- dashboardId: Move the widget to a different dashboard' +
+      '\n- type: The widget type (some configuration changes require the type)' +
+      '\n- config: An object with type-specific attributes to update (merged into the widget body)' +
+      '\n\n**Best practice:** Call "get\\_widget" first to review the current configuration, then send only the fields you want to change. For complex type-specific edits, export via "get\\_widget", adapt, and pass through "config". ' +
+      '\n\n**Related tools:** "get\\_widget" (review before update), "list\\_widgets" (find widget), "delete\\_widget" (remove).',
+    annotations: {
+      title: 'Update widget',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        widgetId: {
+          type: 'number',
+          description: 'The ID of the widget to update.',
+        },
+        name: {
+          type: 'string',
+          description: 'New name for the widget.',
+        },
+        description: {
+          type: 'string',
+          description: 'New description for the widget.',
+        },
+        theme: {
+          type: 'string',
+          description: 'New color scheme for the widget.',
+        },
+        interval: {
+          type: 'number',
+          description: 'New refresh interval, in minutes.',
+        },
+        timescale: {
+          type: 'string',
+          description: 'New default timescale for the widget.',
+        },
+        dashboardId: {
+          type: 'number',
+          description: 'Move the widget to a different dashboard by ID.',
+        },
+        type: {
+          type: 'string',
+          description: 'The widget type (required by the API for some configuration changes).',
+        },
+        config: {
+          type: 'object',
+          description: 'Type-specific widget configuration attributes to update, merged into the widget body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['widgetId'],
+    },
+  },
+  {
+    name: 'delete_widget',
+    description: 'Delete a widget from a dashboard in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING: PERMANENT DELETION**' +
+      '\n- The widget and its configuration are permanently removed from the dashboard' +
+      '\n- Cannot be undone - no recovery possible' +
+      '\n\n**What this does:** Permanently removes a single widget from its dashboard. The dashboard itself is not deleted. ' +
+      '\n\n**Required parameters:**' +
+      '\n- widgetId: The widget ID to delete (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
+      '\n\n**Before deleting:**' +
+      '\n- Use "get\\_widget" to verify it is the correct widget' +
+      '\n- Consider exporting its configuration via "get\\_widget" for backup' +
+      '\n\n**Related tools:** "get\\_widget" (backup/verify before delete), "list\\_dashboard\\_widgets" (find widget), "update\\_widget" (modify instead of delete).',
+    annotations: {
+      title: 'Delete widget',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        widgetId: {
+          type: 'number',
+          description: 'The ID of the widget to delete.',
+        },
+      },
+      additionalProperties: false,
+      required: ['widgetId'],
+    },
+  },
 ];
 
 /**
