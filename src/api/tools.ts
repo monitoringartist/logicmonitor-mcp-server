@@ -3657,6 +3657,71 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['roleId'],
     },
   },
+  {
+    name: 'create_role',
+    description: 'Create a new role in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines a custom role with a specific set of privileges that can then be assigned to users. ' +
+      '\n\n**Required:** name and privileges (the array of privilege objects granting access to specific resources/features). ' +
+      '\n\n**Privilege structure:** Each privilege typically has `objectType` (e.g., "dashboard\\_group", "device\\_group", "setting"), `objectId`, `objectName`, and `operation` ("read"/"write"/"ack"). Pass the full privileges array (and any other Role fields) via `config`. ' +
+      '\n\n**Tip:** Use "get\\_role" on an existing role as a template for the privileges array. ' +
+      '\n\n**Related tools:** "get\\_role" (template/verify), "list\\_roles", "update\\_role", "create\\_user" (assign the role).',
+    annotations: { title: 'Create role', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The role name' },
+        description: { type: 'string', description: 'The role description' },
+        config: {
+          type: 'object',
+          description: 'Role attributes merged into the request body. Must include `privileges` (array). May include roleGroupId, twoFARequired, requireEULA, customHelpLabel, customHelpURL, etc.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name', 'config'],
+    },
+  },
+  {
+    name: 'update_role',
+    description: 'Update a role in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** roleId plus any of name, description, or additional fields (e.g., the `privileges` array) via `config`. Partial update. ' +
+      '\n\n**⚠️ Note:** Replacing the `privileges` array changes what every user assigned this role can access. Use "get\\_role" first to retrieve the current privileges and modify from there. ' +
+      '\n\n**Related tools:** "get\\_role" (retrieve current config), "list\\_roles".',
+    annotations: { title: 'Update role', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        roleId: { type: 'number', description: 'The ID of the role to update' },
+        name: { type: 'string', description: 'New role name' },
+        description: { type: 'string', description: 'New role description' },
+        config: {
+          type: 'object',
+          description: 'Role attributes to update, merged into the request body (e.g., privileges, roleGroupId, twoFARequired).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['roleId'],
+    },
+  },
+  {
+    name: 'delete_role',
+    description: 'Delete a role from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Cannot be undone. A role that still has users assigned to it generally cannot be deleted — reassign those users first. ' +
+      '\n\n**Required parameters:**' +
+      '\n- roleId: The ID of the role to delete (from "list\\_roles")' +
+      '\n\n**Before deleting:** Use "get\\_role" to check `associatedUserCount`. ' +
+      '\n\n**Related tools:** "get\\_role" (check user count), "list\\_roles", "update_user" (reassign users).',
+    annotations: { title: 'Delete role', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        roleId: { type: 'number', description: 'The ID of the role to delete.' },
+      },
+      additionalProperties: false,
+      required: ['roleId'],
+    },
+  },
 
   // API Token Tools
   {

@@ -1609,6 +1609,18 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('GET', `/setting/roles/${roleId}`, undefined, params);
   }
 
+  async createRole(role: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/roles', role);
+  }
+
+  async updateRole(roleId: number, role: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/roles/${roleId}`, role);
+  }
+
+  async deleteRole(roleId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/roles/${roleId}`);
+  }
+
   // API Tokens
   async listApiTokens(userId: number, params?: {
     size?: number;

@@ -143,6 +143,9 @@ describe('LogicMonitorHandlers', () => {
       getUser: jest.fn(),
       listRoles: jest.fn(),
       getRole: jest.fn(),
+      createRole: jest.fn(),
+      updateRole: jest.fn(),
+      deleteRole: jest.fn(),
       listApiTokens: jest.fn(),
       listSDTs: jest.fn(),
       getSDT: jest.fn(),
@@ -1570,6 +1573,32 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Roles (write)', () => {
+    it('create_role merges name + config (privileges)', async () => {
+      mockClient.createRole.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_role', {
+        name: 'Read Only',
+        config: { privileges: [{ objectType: 'dashboard_group', objectId: '*', operation: 'read' }] },
+      });
+      expect(mockClient.createRole).toHaveBeenCalledWith({
+        name: 'Read Only',
+        privileges: [{ objectType: 'dashboard_group', objectId: '*', operation: 'read' }],
+      });
+    });
+
+    it('update_role excludes roleId from body', async () => {
+      mockClient.updateRole.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_role', { roleId: 3, name: 'Renamed' });
+      expect(mockClient.updateRole).toHaveBeenCalledWith(3, { name: 'Renamed' });
+    });
+
+    it('delete_role calls client', async () => {
+      mockClient.deleteRole.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_role', { roleId: 3 });
+      expect(mockClient.deleteRole).toHaveBeenCalledWith(3);
     });
   });
 

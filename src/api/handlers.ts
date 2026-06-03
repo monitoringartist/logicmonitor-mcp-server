@@ -863,6 +863,19 @@ export class LogicMonitorHandlers {
             fields: args.fields,
           });
 
+        case 'create_role': {
+          const { config, ...rest } = args;
+          return await this.client.createRole({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_role': {
+          const { roleId, config, ...rest } = args;
+          return await this.client.updateRole(roleId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_role':
+          return await this.client.deleteRole(args.roleId);
+
         // API Tokens
         case 'list_api_tokens': {
           const result = await this.client.listApiTokens(args.userId, {

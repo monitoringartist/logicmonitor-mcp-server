@@ -199,6 +199,11 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],
   'create_user': ['mcp:tools', 'lm:users:manage'],
+
+  // Roles (write)
+  'create_role': ['mcp:tools', 'lm:users:manage'],
+  'update_role': ['mcp:tools', 'lm:users:manage'],
+  'delete_role': ['mcp:tools', 'lm:users:manage'],
 };
 
 /**

@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 237 |
-| **Operations Missing** | 156 |
-| **Coverage** | **60%** |
-| **Implemented MCP Tools** | 223 (+4 custom link tools) |
+| **Operations Covered** | 241 |
+| **Operations Missing** | 152 |
+| **Coverage** | **61%** |
+| **Implemented MCP Tools** | 226 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -50,7 +50,6 @@
 | Users & API Tokens (write) | 4 | 12 | 🟡 Partial |
 | Website Groups (write) | 2 | 9 | 🟡 Partial |
 | TopologySources (write) | 2 | 7 | 🟡 Partial |
-| Roles (write) | 2 | 6 | 🟡 Partial |
 | ConfigSource extras | 7 | 9 | 🟡 Partial |
 | Website extras | 11 | 13 | 🟡 Partial |
 | Access Group Module Mapping | 6 | 7 | 🟡 Partial |
@@ -73,6 +72,7 @@
 | Recipient Groups | 6 | 6 | ✅ Full |
 | Report Execution | 8 | 8 | ✅ Full |
 | Report Groups | 6 | 6 | ✅ Full |
+| Roles (write) | 6 | 6 | ✅ Full |
 | Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
 | Website Checkpoints | 1 | 1 | ✅ Full |
 
@@ -87,7 +87,7 @@ Grouped by impact. Each item links to its detailed operation list below.
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-### 🟡 MEDIUM Priority — 73 operations
+### 🟡 MEDIUM Priority — 69 operations
 
 *Administration, automation modules, and infrastructure completeness*
 
@@ -100,7 +100,6 @@ Grouped by impact. Each item links to its detailed operation list below.
 - **RemediationSources** — 7 missing. Tools to add: remediation-source CRUD + execute tools
 - **Website Groups (write)** — 7 missing. Tools to add: website-group CRUD + SDT-list tools
 - **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
-- **Roles (write)** — 4 missing. Tools to add: `create_role`, `update_role`, `delete_role`
 - **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
 - **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
 
@@ -292,17 +291,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `POST` | `addTopologySource` | `/setting/topologysources` |
 | `POST` | `importTopologySourceJson` | `/setting/topologysources/importjson` |
 | `PUT` | `updateTopologySource` | `/setting/topologysources/{id}` |
-
-### 🟡 Roles (write)
-
-**Coverage:** 2/6 operations.  **Proposed tools:** `create_role`, `update_role`, `delete_role`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteRoleById` | `/setting/roles/{id}` |
-| `PATCH` | `patchRoleById` | `/setting/roles/{id}` |
-| `POST` | `addRole` | `/setting/roles` |
-| `PUT` | `updateRoleById` | `/setting/roles/{id}` |
 
 ### 🟡 Bulk Instance Data Fetch
 
@@ -561,6 +549,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Recipient Groups** (6/6)
 - **Report Execution** (8/8)
 - **Report Groups** (6/6)
+- **Roles (write)** (6/6)
 - **Scheduled Down Time (SDT)** (6/6)
 - **Website Checkpoints** (1/1)
 
@@ -575,7 +564,7 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 60% |
+| Current | — | — | 61% |
 | Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
@@ -589,4 +578,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 237 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 241 covered operations.*
