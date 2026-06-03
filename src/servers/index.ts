@@ -52,8 +52,10 @@ import { ScopeManager } from '../utils/core/scope-manager.js';
 import { isMCPError, formatErrorForUser } from '../utils/core/error-handler.js';
 import { createServer } from './server.js';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables.
+// quiet: true suppresses dotenv v17's startup log, which would otherwise
+// corrupt the JSON-RPC stream when running over the stdio transport.
+dotenv.config({ quiet: true });
 
 // Read version from package.json
 const __filename = fileURLToPath(import.meta.url);
@@ -460,7 +462,7 @@ if (TRANSPORT === 'stdio') {
   // Global rate limiter for all endpoints
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // Generous limit for general use
+    limit: 500, // Generous limit for general use
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many requests from this IP, please try again later.',
@@ -472,7 +474,7 @@ if (TRANSPORT === 'stdio') {
   // Rate limiting for authentication endpoints
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    limit: 100, // Limit each IP to 100 requests per windowMs
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many requests from this IP, please try again later.',
@@ -481,7 +483,7 @@ if (TRANSPORT === 'stdio') {
   // Stricter rate limiting for login endpoints
   const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 login attempts per windowMs
+    limit: 5, // Limit each IP to 5 login attempts per windowMs
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many login attempts, please try again later.',
@@ -490,7 +492,7 @@ if (TRANSPORT === 'stdio') {
   // Rate limiting for health check endpoints
   const healthLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 60, // Allow health checks every second
+    limit: 60, // Allow health checks every second
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many health check requests, please try again later.',
