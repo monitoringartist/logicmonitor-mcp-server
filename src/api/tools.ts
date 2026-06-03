@@ -2571,13 +2571,13 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   {
     name: 'generate_resource_link',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device. ' +
-      `\n\n**Returns:** Complete resource URL with full group hierarchy, resource/device details (id, name, displayName), and group path array. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{path},resources-{id}` +
+      `\n\n**Returns:** Complete resource URL plus resource/device details (id, name, displayName). URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/resources/treeNodes/t-d,id-{deviceId}?source=details` +
       '\n\n**When to use:** ' +
       '\n- Share resource/device links in incident tickets' +
       '\n- Create alert notifications with resource/device links' +
       '\n- Build reports with clickable resource/device references' +
       '\n- Document infrastructure with direct LM links' +
-      '\n\n**Why use this:** Provides the complete URL including all parent group IDs, so clicking the link navigates directly to the resource/device in the correct folder context. ' +
+      '\n\n**Why use this:** Provides the canonical resource details URL so clicking the link navigates directly to the resource/device details view. ' +
       '\n\n**Workflow:** First find resource/device using "list\\_resources" or "search\\_resources", then use this tool with deviceId to generate shareable link. ' +
       '\n\n**Related tools:** "list\\_resources" (find device), "get\\_resource" (get details), "generate\\_alert\\_link" (link to resource/device alerts).',
     annotations: {

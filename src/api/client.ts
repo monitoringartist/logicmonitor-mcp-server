@@ -1259,9 +1259,9 @@ export class LogicMonitorClient {
    * The URL follows the pattern: https://{company}.logicmonitor.com/santaba/uiv4/resources/treeNodes?resourcePath=resourceGroups-{groupId1},resourceGroups-{groupId2},...,resources-{deviceId}
    * Note: Uses URL encoding (%2C) for commas in the actual URL
    */
-  async generateResourceLink(deviceId: number): Promise<{ url: string; device: any; groupPath: any[] }> {
-    // Get device details to retrieve hostGroupIds
-    const device = await this.getDevice(deviceId, { fields: 'id,displayName,name,hostGroupIds' });
+  async generateResourceLink(deviceId: number): Promise<{ url: string; device: any }> {
+    // Get device details to verify it exists
+    const device = await this.getDevice(deviceId, { fields: 'id,displayName,name' });
 
     if (!device || !device.id) {
       throw new LogicMonitorApiError(
@@ -1274,46 +1274,15 @@ export class LogicMonitorClient {
       );
     }
 
-    // Build the group hierarchy path
-    const groupPath: any[] = [];
-
-    // Device can have multiple hostGroupIds, use the first one (primary group)
-    if (device.hostGroupIds && device.hostGroupIds.length > 0) {
-      const deviceGroupIds = device.hostGroupIds.split(',').map((id: string) => parseInt(id.trim()));
-      const primaryGroupId = deviceGroupIds[0];
-
-      let currentGroupId = primaryGroupId;
-
-      // Traverse up the group hierarchy
-      while (currentGroupId) {
-        try {
-          const group = await this.getDeviceGroup(currentGroupId, { fields: 'id,name,parentId' });
-          groupPath.unshift(group); // Add to beginning to maintain correct order
-          currentGroupId = group.parentId;
-        } catch (error) {
-          // If we can't fetch a parent group (e.g., root level), stop traversing
-          this.logger?.('warn', `Could not fetch device group ${currentGroupId}`, { error });
-          break;
-        }
-      }
-    }
-
-    // Build the URL path segments
-    const groupSegments = groupPath.map(group => `resourceGroups-${group.id}`).join(',');
-    const resourceSegment = `resources-${deviceId}`;
-    const pathSegments = groupSegments ? `${groupSegments},${resourceSegment}` : resourceSegment;
-
-    // URL encode the path (commas become %2C)
-    const encodedPath = encodeURIComponent(pathSegments);
-
-    // Construct the full URL
+    // Construct the full URL.
+    // Format: {portal}/santaba/uiv4/resources/treeNodes/t-d,id-{deviceId}?source=details
+    // where "t-d" denotes the tree-node type (device) and "id-{deviceId}" the resource id.
     const baseUrl = this.baseUrl.replace('/santaba/rest', '');
-    const url = `${baseUrl}/santaba/uiv4/resources/treeNodes?resourcePath=${encodedPath}`;
+    const url = `${baseUrl}/santaba/uiv4/resources/treeNodes/t-d,id-${deviceId}?source=details`;
 
     return {
       url,
       device,
-      groupPath,
     };
   }
 
