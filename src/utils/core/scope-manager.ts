@@ -172,6 +172,13 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'get_datasource_overview_graph': ['mcp:tools', 'lm:read'],
   'list_datasource_devices': ['mcp:tools', 'lm:read'],
   'list_datasource_update_reasons': ['mcp:tools', 'lm:read'],
+  // PropertySources (property rules)
+  'list_property_rules': ['mcp:tools', 'lm:read'],
+  'get_property_rule': ['mcp:tools', 'lm:read'],
+  'create_property_rule': ['mcp:tools', 'lm:write'],
+  'update_property_rule': ['mcp:tools', 'lm:write'],
+  'delete_property_rule': ['mcp:tools', 'lm:write'],
+  'import_property_rule': ['mcp:tools', 'lm:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

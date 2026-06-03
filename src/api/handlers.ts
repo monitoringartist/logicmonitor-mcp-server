@@ -1577,6 +1577,40 @@ export class LogicMonitorHandlers {
         case 'set_action_rule_status':
           return await this.client.setActionRuleStatus(args.actionRuleId, args.enabled);
 
+        // Property Rules (PropertySources)
+        case 'list_property_rules':
+          return await this.client.listPropertyRules({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            format: args.format,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_property_rule':
+          return await this.client.getPropertyRule(args.propertyRuleId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_property_rule':
+          return await this.client.createPropertyRule(args.config || {});
+
+        case 'update_property_rule':
+          return await this.client.updatePropertyRule(args.propertyRuleId, args.config || {}, {
+            reason: args.reason,
+          });
+
+        case 'delete_property_rule':
+          return await this.client.deletePropertyRule(args.propertyRuleId);
+
+        case 'import_property_rule':
+          return await this.client.importPropertyRule(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
         // OpsNotes
         case 'list_opsnotes':
           return await this.client.listOpsNotes({

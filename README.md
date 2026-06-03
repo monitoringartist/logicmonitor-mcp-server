@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **203 MCP Tools** for comprehensive LogicMonitor operations (109 read-only, 94 write)
+- **209 MCP Tools** for comprehensive LogicMonitor operations (111 read-only, 98 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -562,6 +562,8 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_eventsource` - Get eventsource details
 - `list_configsources` - List configuration sources
 - `get_configsource` - Get configsource details
+- `list_property_rules` - List PropertySources (auto property assignment rules)
+- `get_property_rule` - Get PropertySource details
 
 **Write Operations:**
 - `create_datasource` - Create a new DataSource (LogicModule)
@@ -577,6 +579,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `update_configsource` - Modify a ConfigSource
 - `delete_configsource` - Delete a ConfigSource
 - `import_configsource` - Import a ConfigSource from a JSON/XML definition
+- `create_property_rule` - Create a new PropertySource
+- `update_property_rule` - Modify a PropertySource
+- `delete_property_rule` - Delete a PropertySource
+- `import_property_rule` - Import a PropertySource from a JSON definition
 
 ### Dashboards & Reporting
 
@@ -771,9 +777,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **109 read-only tools** - Safe for production monitoring
-- **94 write tools** - Require caution (disabled by default with `--read-only`)
-- **203 total tools**
+- **111 read-only tools** - Safe for production monitoring
+- **98 write tools** - Require caution (disabled by default with `--read-only`)
+- **209 total tools**
 
 ## Security Considerations
 

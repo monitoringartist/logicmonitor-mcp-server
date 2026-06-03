@@ -77,6 +77,12 @@ describe('LogicMonitorHandlers', () => {
       scheduleDeviceAutoDiscovery: jest.fn(),
       getDevicesDeltaId: jest.fn(),
       getDevicesDelta: jest.fn(),
+      listPropertyRules: jest.fn(),
+      getPropertyRule: jest.fn(),
+      createPropertyRule: jest.fn(),
+      updatePropertyRule: jest.fn(),
+      deletePropertyRule: jest.fn(),
+      importPropertyRule: jest.fn(),
       createDataSource: jest.fn(),
       updateDataSource: jest.fn(),
       deleteDataSource: jest.fn(),
@@ -1550,6 +1556,43 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Property Rules (PropertySources)', () => {
+    it('create_property_rule forwards config', async () => {
+      mockClient.createPropertyRule.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_property_rule', {
+        config: { name: 'MyPS', appliesTo: 'true()', scriptType: 'embed', groovyScript: 'println 1' },
+      });
+      expect(mockClient.createPropertyRule).toHaveBeenCalledWith({
+        name: 'MyPS', appliesTo: 'true()', scriptType: 'embed', groovyScript: 'println 1',
+      });
+    });
+
+    it('update_property_rule forwards config + reason', async () => {
+      mockClient.updatePropertyRule.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_property_rule', {
+        propertyRuleId: 5,
+        config: { groovyScript: 'println 2' },
+        reason: 'tuning',
+      });
+      expect(mockClient.updatePropertyRule).toHaveBeenCalledWith(5, { groovyScript: 'println 2' }, { reason: 'tuning' });
+    });
+
+    it('delete_property_rule calls client', async () => {
+      mockClient.deletePropertyRule.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_property_rule', { propertyRuleId: 5 });
+      expect(mockClient.deletePropertyRule).toHaveBeenCalledWith(5);
+    });
+
+    it('import_property_rule forwards content + params', async () => {
+      mockClient.importPropertyRule.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_property_rule', { content: '{"name":"x"}', handleConflict: 'all' });
+      expect(mockClient.importPropertyRule).toHaveBeenCalledWith('{"name":"x"}', {
+        handleConflict: 'all',
+        fieldsToPreserve: undefined,
+      });
     });
   });
 
