@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 235 |
-| **Operations Missing** | 158 |
+| **Operations Covered** | 237 |
+| **Operations Missing** | 156 |
 | **Coverage** | **60%** |
-| **Implemented MCP Tools** | 221 (+4 custom link tools) |
+| **Implemented MCP Tools** | 223 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -52,7 +52,6 @@
 | TopologySources (write) | 2 | 7 | 🟡 Partial |
 | Roles (write) | 2 | 6 | 🟡 Partial |
 | ConfigSource extras | 7 | 9 | 🟡 Partial |
-| Report Execution | 6 | 8 | 🟡 Partial |
 | Website extras | 11 | 13 | 🟡 Partial |
 | Access Group Module Mapping | 6 | 7 | 🟡 Partial |
 | Alerts | 4 | 5 | 🟡 Partial |
@@ -72,6 +71,7 @@
 | Ops Notes | 6 | 6 | ✅ Full |
 | PropertySources / Property Rules | 7 | 7 | ✅ Full |
 | Recipient Groups | 6 | 6 | ✅ Full |
+| Report Execution | 8 | 8 | ✅ Full |
 | Report Groups | 6 | 6 | ✅ Full |
 | Scheduled Down Time (SDT) | 6 | 6 | ✅ Full |
 | Website Checkpoints | 1 | 1 | ✅ Full |
@@ -87,7 +87,7 @@ Grouped by impact. Each item links to its detailed operation list below.
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-### 🟡 MEDIUM Priority — 75 operations
+### 🟡 MEDIUM Priority — 73 operations
 
 *Administration, automation modules, and infrastructure completeness*
 
@@ -101,7 +101,6 @@ Grouped by impact. Each item links to its detailed operation list below.
 - **Website Groups (write)** — 7 missing. Tools to add: website-group CRUD + SDT-list tools
 - **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
 - **Roles (write)** — 4 missing. Tools to add: `create_role`, `update_role`, `delete_role`
-- **Report Execution** — 2 missing. Tools to add: `generate_report`, `get_report_task_result`
 - **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
 - **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
 
@@ -304,15 +303,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PATCH` | `patchRoleById` | `/setting/roles/{id}` |
 | `POST` | `addRole` | `/setting/roles` |
 | `PUT` | `updateRoleById` | `/setting/roles/{id}` |
-
-### 🟡 Report Execution
-
-**Coverage:** 6/8 operations.  **Proposed tools:** `generate_report`, `get_report_task_result`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `fetchReportUsingTaskId` | `/report/reports/{id}/tasks/{taskId}` |
-| `POST` | `generateReportById` | `/report/reports/{id}/executions` |
 
 ### 🟡 Bulk Instance Data Fetch
 
@@ -569,6 +559,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Ops Notes** (6/6)
 - **PropertySources / Property Rules** (7/7)
 - **Recipient Groups** (6/6)
+- **Report Execution** (8/8)
 - **Report Groups** (6/6)
 - **Scheduled Down Time (SDT)** (6/6)
 - **Website Checkpoints** (1/1)
@@ -598,4 +589,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 235 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 237 covered operations.*

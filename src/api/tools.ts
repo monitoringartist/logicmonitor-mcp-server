@@ -3089,6 +3089,69 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['reportId'],
     },
   },
+  {
+    name: 'generate_report',
+    description: 'Run (generate) a report on demand in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Triggers an immediate execution of an existing report definition. Generation is asynchronous: this returns a `taskId` that you pass to "get\\_report\\_task\\_result" to check status and retrieve the generated report (e.g., a download URL). ' +
+      '\n\n**Required parameters:**' +
+      '\n- reportId: The ID of the report to run (from "list\\_reports")' +
+      '\n\n**Optional parameters:**' +
+      '\n- receiveEmails: Comma-separated email address(es) that LogicMonitor should email the generated report to' +
+      '\n- withAdminId: Generate the report as a specific admin/user ID (0 or omitted = current user)' +
+      '\n\n**Workflow:** Call this tool, then poll "get\\_report\\_task\\_result" with the returned `taskId` until the report is ready. ' +
+      '\n\n**Related tools:** "get\\_report\\_task\\_result" (fetch status/output), "list\\_reports" (find reportId), "get\\_report" (report details).',
+    annotations: {
+      title: 'Generate report',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        reportId: {
+          type: 'number',
+          description: 'The ID of the report to run.',
+        },
+        receiveEmails: {
+          type: 'string',
+          description: 'Comma-separated email address(es) to send the generated report to.',
+        },
+        withAdminId: {
+          type: 'number',
+          description: 'Generate the report as this admin/user ID (0 or omitted = current user).',
+        },
+      },
+      additionalProperties: false,
+      required: ['reportId'],
+    },
+  },
+  {
+    name: 'get_report_task_result',
+    description: 'Get the result of an on-demand report generation in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Retrieves the status and output of a report run started via "generate\\_report", using the `taskId` it returned. The report may not be ready immediately; poll until it completes. ' +
+      '\n\n**Required parameters:**' +
+      '\n- reportId: The ID of the report that was run' +
+      '\n- taskId: The task ID returned by "generate\\_report"' +
+      '\n\n**Related tools:** "generate\\_report" (start a report run).',
+    annotations: {
+      title: 'Get report task result',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        reportId: {
+          type: 'number',
+          description: 'The ID of the report that was run.',
+        },
+        taskId: {
+          type: 'string',
+          description: 'The task ID returned by generate_report.',
+        },
+      },
+      additionalProperties: false,
+      required: ['reportId', 'taskId'],
+    },
+  },
 
   // Website (Synthetic Monitoring) Tools
   {

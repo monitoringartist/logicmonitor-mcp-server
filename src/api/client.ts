@@ -1473,6 +1473,17 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('DELETE', `/report/reports/${reportId}`);
   }
 
+  async generateReport(reportId: number, body?: { withAdminId?: number; receiveEmails?: string }) {
+    return this.request<LMResponse<any>>('POST', `/report/reports/${reportId}/executions`, body || {});
+  }
+
+  async getReportTaskResult(reportId: number, taskId: string) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/report/reports/${reportId}/tasks/${encodeURIComponent(taskId)}`,
+    );
+  }
+
   // Websites (Synthetic Monitoring)
   async listWebsites(params?: {
     size?: number;

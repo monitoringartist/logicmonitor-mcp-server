@@ -717,6 +717,7 @@ describe('getLogicMonitorTools', () => {
           'get_resources_delta',
           'get_datasource_overview_graph',
           'get_debug_command_result',
+          'get_report_task_result',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');

@@ -120,6 +120,8 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'create_report': ['mcp:tools', 'lm:write'],
   'update_report': ['mcp:tools', 'lm:write'],
   'delete_report': ['mcp:tools', 'lm:write'],
+  'generate_report': ['mcp:tools', 'lm:write'],
+  'get_report_task_result': ['mcp:tools', 'lm:read'],
   // Device instances, alert settings, config, netflow, SDT history
   'create_resource_instance': ['mcp:tools', 'lm:write'],
   'update_resource_instance': ['mcp:tools', 'lm:write'],

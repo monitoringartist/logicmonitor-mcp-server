@@ -727,6 +727,15 @@ export class LogicMonitorHandlers {
         case 'delete_report':
           return await this.client.deleteReport(args.reportId);
 
+        case 'generate_report':
+          return await this.client.generateReport(args.reportId, {
+            withAdminId: args.withAdminId,
+            receiveEmails: args.receiveEmails,
+          });
+
+        case 'get_report_task_result':
+          return await this.client.getReportTaskResult(args.reportId, args.taskId);
+
         // Websites
         case 'list_websites': {
           const result = await this.client.listWebsites({

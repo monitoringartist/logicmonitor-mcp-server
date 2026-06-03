@@ -130,6 +130,8 @@ describe('LogicMonitorHandlers', () => {
       createReport: jest.fn(),
       updateReport: jest.fn(),
       deleteReport: jest.fn(),
+      generateReport: jest.fn(),
+      getReportTaskResult: jest.fn(),
       listWebsites: jest.fn(),
       getWebsite: jest.fn(),
       createWebsite: jest.fn(),
@@ -1568,6 +1570,20 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Report Execution', () => {
+    it('generate_report forwards reportId + body', async () => {
+      mockClient.generateReport.mockResolvedValue({ taskId: 't1' } as never);
+      await handlers.handleToolCall('generate_report', { reportId: 9, receiveEmails: 'a@b.com', withAdminId: 0 });
+      expect(mockClient.generateReport).toHaveBeenCalledWith(9, { withAdminId: 0, receiveEmails: 'a@b.com' });
+    });
+
+    it('get_report_task_result forwards reportId + taskId', async () => {
+      mockClient.getReportTaskResult.mockResolvedValue({ status: 'done' } as never);
+      await handlers.handleToolCall('get_report_task_result', { reportId: 9, taskId: 't1' });
+      expect(mockClient.getReportTaskResult).toHaveBeenCalledWith(9, 't1');
     });
   });
 
