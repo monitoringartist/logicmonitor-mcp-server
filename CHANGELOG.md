@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dashboard Widget tools: `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data` (read-only) and `create_widget`, `update_widget`, `delete_widget` (write), backed by the `/dashboard/widgets` API
 - Collector management tools: `create_collector`, `update_collector`, `delete_collector`, `acknowledge_collector_down_alert` (write) and `get_collector_installer` (read-only; returns an authenticated installer download URL rather than the binary), backed by the `/setting/collector/collectors` API
 - Website monitoring data tools (read-only): `get_website_checkpoint_data` (raw checkpoint datapoint values) and `get_website_graph_data` (rendered graph series for a checkpoint), backed by the `/website/websites/{id}/checkpoints` API
+- ConfigSource management tools: `create_configsource`, `update_configsource`, `delete_configsource`, and `import_configsource` (JSON/XML upload via multipart)
+- EventSource management tools: `create_eventsource`, `update_eventsource`, `delete_eventsource`, and `import_eventsource` (JSON/XML upload via multipart)
+- Expanded SDT management: `create_sdt` (any SDT target type) and `update_sdt`, complementing the existing device SDT tools
 
 ### Changed
 - None

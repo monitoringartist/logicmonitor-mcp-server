@@ -8,8 +8,8 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 336 |
-| **Implemented Tools** | 142 |
-| **Coverage** | **42%** |
+| **Implemented Tools** | 152 |
+| **Coverage** | **45%** |
 | **Custom Enhancements** | 4 link tools |
 
 ---
@@ -128,20 +128,18 @@
 
 ---
 
-### Monitoring Resources ⚠️ BASIC
-**Status:** Read-only operations
+### Monitoring Resources ⭐ COMPLETE
+**Status:** Read and write operations implemented
 
 **Implemented:**
-- ✅ ConfigSources (List, Get)
-- ✅ EventSources (List, Get)
-- ✅ SDTs (List, Get, Create Device SDT, Delete)
+- ✅ ConfigSources (List, Get, Add, Update, Delete, Import JSON/XML)
+- ✅ EventSources (List, Get, Add, Update, Delete, Import JSON/XML)
+- ✅ SDTs (List, Get, Create Device SDT, Create any-type SDT, Update, Delete)
 
-**Missing:**
-- ❌ ConfigSource management (Add, Update, Delete, Import/Export)
-- ❌ EventSource management (Add, Update, Delete, Import/Export)
-- ❌ Complete SDT management
+**Notes:**
+- "Export" is served by `get_configsource` / `get_eventsource`, which return the full module definition (there is no dedicated export endpoint in the API).
 
-**Tools:** `list_configsources`, `get_configsource`, `list_eventsources`, `get_eventsource`, `list_sdts`, `get_sdt`, `create_resource_sdt`, `delete_sdt`
+**Tools:** `list_configsources`, `get_configsource`, `create_configsource`, `update_configsource`, `delete_configsource`, `import_configsource`, `list_eventsources`, `get_eventsource`, `create_eventsource`, `update_eventsource`, `delete_eventsource`, `import_eventsource`, `list_sdts`, `get_sdt`, `create_resource_sdt`, `create_sdt`, `update_sdt`, `delete_sdt`
 
 ---
 
@@ -444,10 +442,10 @@ Beta APIs - DiagnosticSources (8 operations):
 6. **LogSources** (7 ops)
    - Log monitoring capabilities
 
-7. **ConfigSource Management** (6+ ops)
+7. ~~**ConfigSource Management** (6+ ops)~~ ✅ IMPLEMENTED
    - Complete config monitoring management
 
-8. **EventSource Management** (6+ ops)
+8. ~~**EventSource Management** (6+ ops)~~ ✅ IMPLEMENTED
    - Complete event monitoring management
 
 **Estimated Tools to Add:** ~22 tools

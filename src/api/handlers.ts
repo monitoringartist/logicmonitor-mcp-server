@@ -829,6 +829,18 @@ export class LogicMonitorHandlers {
           return await this.client.createDeviceSDT(sdt);
         }
 
+        case 'create_sdt': {
+          const { config, ...rest } = args;
+          const sdt = { ...rest, ...(config || {}) };
+          return await this.client.createSDT(sdt);
+        }
+
+        case 'update_sdt': {
+          const { sdtId, config, ...rest } = args;
+          const sdt = { ...rest, ...(config || {}) };
+          return await this.client.updateSDT(sdtId, sdt);
+        }
+
         case 'delete_sdt':
           return await this.client.deleteSDT(args.sdtId);
 
@@ -857,6 +869,27 @@ export class LogicMonitorHandlers {
         case 'get_configsource':
           return await this.client.getConfigSource(args.configSourceId, {
             fields: args.fields,
+          });
+
+        case 'create_configsource': {
+          const { config, ...rest } = args;
+          const configSource = { ...rest, ...(config || {}) };
+          return await this.client.createConfigSource(configSource);
+        }
+
+        case 'update_configsource': {
+          const { configSourceId, reason, config, ...rest } = args;
+          const configSource = { ...rest, ...(config || {}) };
+          return await this.client.updateConfigSource(configSourceId, configSource, { reason });
+        }
+
+        case 'delete_configsource':
+          return await this.client.deleteConfigSource(args.configSourceId);
+
+        case 'import_configsource':
+          return await this.client.importConfigSource(args.content, args.format, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
           });
 
         // Device Properties
@@ -1005,6 +1038,27 @@ export class LogicMonitorHandlers {
         case 'get_eventsource':
           return await this.client.getEventSource(args.eventSourceId, {
             fields: args.fields,
+          });
+
+        case 'create_eventsource': {
+          const { config, ...rest } = args;
+          const eventSource = { ...rest, ...(config || {}) };
+          return await this.client.createEventSource(eventSource);
+        }
+
+        case 'update_eventsource': {
+          const { eventSourceId, config, ...rest } = args;
+          const eventSource = { ...rest, ...(config || {}) };
+          return await this.client.updateEventSource(eventSourceId, eventSource);
+        }
+
+        case 'delete_eventsource':
+          return await this.client.deleteEventSource(args.eventSourceId);
+
+        case 'import_eventsource':
+          return await this.client.importEventSource(args.content, args.format, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
           });
 
         // Escalation Chains

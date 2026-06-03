@@ -73,9 +73,15 @@ describe('LogicMonitorHandlers', () => {
       listSDTs: jest.fn(),
       getSDT: jest.fn(),
       createDeviceSDT: jest.fn(),
+      createSDT: jest.fn(),
+      updateSDT: jest.fn(),
       deleteSDT: jest.fn(),
       listConfigSources: jest.fn(),
       getConfigSource: jest.fn(),
+      createConfigSource: jest.fn(),
+      updateConfigSource: jest.fn(),
+      deleteConfigSource: jest.fn(),
+      importConfigSource: jest.fn(),
       listDeviceProperties: jest.fn(),
       updateDeviceProperty: jest.fn(),
       listAuditLogs: jest.fn(),
@@ -90,6 +96,10 @@ describe('LogicMonitorHandlers', () => {
       updateDeviceDataSource: jest.fn(),
       listEventSources: jest.fn(),
       getEventSource: jest.fn(),
+      createEventSource: jest.fn(),
+      updateEventSource: jest.fn(),
+      deleteEventSource: jest.fn(),
+      importEventSource: jest.fn(),
       listEscalationChains: jest.fn(),
       getEscalationChain: jest.fn(),
       createEscalationChain: jest.fn(),
@@ -1381,6 +1391,148 @@ describe('LogicMonitorHandlers', () => {
           fields: undefined,
         });
         expect(result).toEqual(mockResponse);
+      });
+    });
+  });
+
+  describe('Monitoring Resources Management', () => {
+    describe('SDT', () => {
+      it('create_sdt should merge config into the body', async () => {
+        const created = { id: 'DGG_1' };
+        mockClient.createSDT.mockResolvedValue(created as never);
+
+        const result = await handlers.handleToolCall('create_sdt', {
+          type: 'DeviceGroupSDT',
+          sdtType: 1,
+          startDateTime: 100,
+          endDateTime: 200,
+          config: { deviceGroupId: 42 },
+        });
+
+        expect(mockClient.createSDT).toHaveBeenCalledWith({
+          type: 'DeviceGroupSDT',
+          sdtType: 1,
+          startDateTime: 100,
+          endDateTime: 200,
+          deviceGroupId: 42,
+        });
+        expect(result).toEqual(created);
+      });
+
+      it('update_sdt should exclude sdtId from body and merge config', async () => {
+        mockClient.updateSDT.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('update_sdt', {
+          sdtId: 'DV_5',
+          comment: 'extended',
+          config: { endDateTime: 999 },
+        });
+
+        expect(mockClient.updateSDT).toHaveBeenCalledWith('DV_5', {
+          comment: 'extended',
+          endDateTime: 999,
+        });
+      });
+    });
+
+    describe('ConfigSource', () => {
+      it('create_configsource should merge config', async () => {
+        mockClient.createConfigSource.mockResolvedValue({ id: 3 } as never);
+
+        await handlers.handleToolCall('create_configsource', {
+          name: 'CiscoIOS_Config',
+          config: { appliesTo: 'isCisco()' },
+        });
+
+        expect(mockClient.createConfigSource).toHaveBeenCalledWith({
+          name: 'CiscoIOS_Config',
+          appliesTo: 'isCisco()',
+        });
+      });
+
+      it('update_configsource should pass reason as query and exclude it from body', async () => {
+        mockClient.updateConfigSource.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('update_configsource', {
+          configSourceId: 3,
+          description: 'updated',
+          reason: 'tuning collection',
+        });
+
+        expect(mockClient.updateConfigSource).toHaveBeenCalledWith(
+          3,
+          { description: 'updated' },
+          { reason: 'tuning collection' },
+        );
+      });
+
+      it('delete_configsource should delete by id', async () => {
+        mockClient.deleteConfigSource.mockResolvedValue({} as never);
+        await handlers.handleToolCall('delete_configsource', { configSourceId: 3 });
+        expect(mockClient.deleteConfigSource).toHaveBeenCalledWith(3);
+      });
+
+      it('import_configsource should pass content, format and options', async () => {
+        mockClient.importConfigSource.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('import_configsource', {
+          content: '{"name":"x"}',
+          format: 'json',
+          handleConflict: 'FORCE_OVERWRITE',
+          fieldsToPreserve: 'APPLIES_TO',
+        });
+
+        expect(mockClient.importConfigSource).toHaveBeenCalledWith('{"name":"x"}', 'json', {
+          handleConflict: 'FORCE_OVERWRITE',
+          fieldsToPreserve: 'APPLIES_TO',
+        });
+      });
+    });
+
+    describe('EventSource', () => {
+      it('create_eventsource should merge config', async () => {
+        mockClient.createEventSource.mockResolvedValue({ id: 9 } as never);
+
+        await handlers.handleToolCall('create_eventsource', {
+          name: 'SNMPTrap_Custom',
+          config: { collector: 'snmptrap' },
+        });
+
+        expect(mockClient.createEventSource).toHaveBeenCalledWith({
+          name: 'SNMPTrap_Custom',
+          collector: 'snmptrap',
+        });
+      });
+
+      it('update_eventsource should exclude id from body', async () => {
+        mockClient.updateEventSource.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('update_eventsource', {
+          eventSourceId: 9,
+          description: 'updated',
+        });
+
+        expect(mockClient.updateEventSource).toHaveBeenCalledWith(9, { description: 'updated' });
+      });
+
+      it('delete_eventsource should delete by id', async () => {
+        mockClient.deleteEventSource.mockResolvedValue({} as never);
+        await handlers.handleToolCall('delete_eventsource', { eventSourceId: 9 });
+        expect(mockClient.deleteEventSource).toHaveBeenCalledWith(9);
+      });
+
+      it('import_eventsource should pass content, format and options', async () => {
+        mockClient.importEventSource.mockResolvedValue({} as never);
+
+        await handlers.handleToolCall('import_eventsource', {
+          content: '<eventsource/>',
+          format: 'xml',
+        });
+
+        expect(mockClient.importEventSource).toHaveBeenCalledWith('<eventsource/>', 'xml', {
+          handleConflict: undefined,
+          fieldsToPreserve: undefined,
+        });
       });
     });
   });

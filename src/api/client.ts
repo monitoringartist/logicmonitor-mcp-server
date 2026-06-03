@@ -224,6 +224,96 @@ export class LogicMonitorClient {
   }
 
   /**
+   * Upload a LogicModule file (XML or JSON) via a multipart/form-data request.
+   *
+   * Used by the import endpoints (e.g. /setting/configsources/importjson). The file
+   * content is sent under the "file" form field, matching LogicMonitor's import API.
+   * The Content-Type header is intentionally NOT set so that fetch generates the
+   * correct multipart boundary automatically.
+   */
+  private async requestMultipart<T>(
+    path: string,
+    fileContent: string,
+    fileName: string,
+    contentType: string,
+    params?: Record<string, string | number | boolean>,
+  ): Promise<T> {
+    const url = new URL(`${this.baseUrl}${path}`);
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const form = new FormData();
+    form.append('file', new Blob([fileContent], { type: contentType }), fileName);
+
+    const headers: Record<string, string> = {
+      'Authorization': `Bearer ${this.bearerToken}`,
+      'Accept': 'application/json',
+      'X-Version': '3',
+    };
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    const startTime = Date.now();
+
+    this.logger?.('debug', 'LM API Multipart Request', {
+      method: 'POST',
+      path,
+      url: url.toString(),
+      fileName,
+      contentType,
+      params,
+    });
+
+    let response: Response;
+    let data: any;
+
+    try {
+      response = await fetch(url.toString(), {
+        method: 'POST',
+        headers,
+        body: form,
+        signal: controller.signal,
+      });
+      data = await response.json();
+
+      if (!response.ok) {
+        throw new LogicMonitorApiError(
+          `LogicMonitor API Error: ${response.status}`,
+          {
+            status: response.status,
+            errorCode: data.errorCode,
+            errorMessage: data.errorMessage || data.errmsg || response.statusText,
+            errorDetail: data.errorDetail,
+            path,
+            duration: Date.now() - startTime,
+          },
+        );
+      }
+    } catch (error) {
+      const isTimeout = error instanceof Error && error.name === 'AbortError';
+      this.logger?.('error', 'LM API Multipart Request Failed', {
+        path,
+        timeout: isTimeout,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      if (isTimeout) {
+        throw new Error(`Request timeout after ${this.timeout}ms: POST ${path}`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    return data;
+  }
+
+  /**
    * Generic pagination helper that automatically fetches all pages
    * @param path - The API path to paginate
    * @param params - Request parameters including optional size/offset
@@ -1043,6 +1133,14 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('POST', '/sdt/sdts', sdt);
   }
 
+  async createSDT(sdt: any) {
+    return this.request<LMResponse<any>>('POST', '/sdt/sdts', sdt);
+  }
+
+  async updateSDT(sdtId: string, sdt: any) {
+    return this.request<LMResponse<any>>('PATCH', `/sdt/sdts/${sdtId}`, sdt);
+  }
+
   async deleteSDT(sdtId: string) {
     return this.request<LMResponse<any>>('DELETE', `/sdt/sdts/${sdtId}`);
   }
@@ -1066,6 +1164,43 @@ export class LogicMonitorClient {
 
   async getConfigSource(configSourceId: number, params?: { fields?: string }) {
     return this.request<LMResponse<any>>('GET', `/setting/configsources/${configSourceId}`, undefined, params);
+  }
+
+  async createConfigSource(configSource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/configsources', configSource);
+  }
+
+  async updateConfigSource(configSourceId: number, configSource: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/configsources/${configSourceId}`,
+      configSource,
+      params,
+    );
+  }
+
+  async deleteConfigSource(configSourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/configsources/${configSourceId}`);
+  }
+
+  async importConfigSource(content: string, format: 'json' | 'xml', params?: {
+    handleConflict?: string;
+    fieldsToPreserve?: string;
+  }) {
+    const isJson = format === 'json';
+    const path = isJson ? '/setting/configsources/importjson' : '/setting/configsources/importxml';
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (isJson) {
+      if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+      if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    }
+    return this.requestMultipart<LMResponse<any>>(
+      path,
+      content,
+      isJson ? 'configsource.json' : 'configsource.xml',
+      isJson ? 'application/json' : 'text/xml',
+      queryParams,
+    );
   }
 
   // Device Properties
@@ -1203,6 +1338,38 @@ export class LogicMonitorClient {
 
   async getEventSource(eventSourceId: number, params?: { fields?: string }) {
     return this.request<LMResponse<any>>('GET', `/setting/eventsources/${eventSourceId}`, undefined, params);
+  }
+
+  async createEventSource(eventSource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/eventsources', eventSource);
+  }
+
+  async updateEventSource(eventSourceId: number, eventSource: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/eventsources/${eventSourceId}`, eventSource);
+  }
+
+  async deleteEventSource(eventSourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/eventsources/${eventSourceId}`);
+  }
+
+  async importEventSource(content: string, format: 'json' | 'xml', params?: {
+    handleConflict?: string;
+    fieldsToPreserve?: string;
+  }) {
+    const isJson = format === 'json';
+    const path = isJson ? '/setting/eventsources/importjson' : '/setting/eventsources/importxml';
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (isJson) {
+      if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+      if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    }
+    return this.requestMultipart<LMResponse<any>>(
+      path,
+      content,
+      isJson ? 'eventsource.json' : 'eventsource.xml',
+      isJson ? 'application/json' : 'text/xml',
+      queryParams,
+    );
   }
 
   // Escalation Chains

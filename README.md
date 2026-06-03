@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **139 MCP Tools** for comprehensive LogicMonitor operations (80 read-only, 59 write)
+- **149 MCP Tools** for comprehensive LogicMonitor operations (80 read-only, 69 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -529,6 +529,14 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 **Write Operations:**
 - `update_resource_datasource` - Modify device datasource configuration
+- `create_eventsource` - Create a new EventSource
+- `update_eventsource` - Modify an EventSource
+- `delete_eventsource` - Delete an EventSource
+- `import_eventsource` - Import an EventSource from a JSON/XML definition
+- `create_configsource` - Create a new ConfigSource
+- `update_configsource` - Modify a ConfigSource
+- `delete_configsource` - Delete a ConfigSource
+- `import_configsource` - Import a ConfigSource from a JSON/XML definition
 
 ### Dashboards & Reporting
 
@@ -678,7 +686,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `get_sdt` - Get SDT details
 
 **Write Operations:**
-- `create_resource_sdt` - Create scheduled down time
+- `create_resource_sdt` - Create scheduled down time for a resource/device
+- `create_sdt` - Create scheduled down time for any target (device group, website, collector, instance, etc.)
+- `update_sdt` - Modify a scheduled down time
 - `delete_sdt` - Delete scheduled down time
 
 ### Operational Notes
@@ -708,8 +718,8 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 ### Summary
 
 - **80 read-only tools** - Safe for production monitoring
-- **59 write tools** - Require caution (disabled by default with `--read-only`)
-- **139 total tools**
+- **69 write tools** - Require caution (disabled by default with `--read-only`)
+- **149 total tools**
 
 ## Security Considerations
 

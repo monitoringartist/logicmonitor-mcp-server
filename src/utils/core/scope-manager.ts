@@ -105,6 +105,16 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'update_collector': ['mcp:tools', 'lm:write'],
   'delete_collector': ['mcp:tools', 'lm:write'],
   'acknowledge_collector_down_alert': ['mcp:tools', 'lm:write'],
+  'create_configsource': ['mcp:tools', 'lm:write'],
+  'update_configsource': ['mcp:tools', 'lm:write'],
+  'delete_configsource': ['mcp:tools', 'lm:write'],
+  'import_configsource': ['mcp:tools', 'lm:write'],
+  'create_eventsource': ['mcp:tools', 'lm:write'],
+  'update_eventsource': ['mcp:tools', 'lm:write'],
+  'delete_eventsource': ['mcp:tools', 'lm:write'],
+  'import_eventsource': ['mcp:tools', 'lm:write'],
+  'create_sdt': ['mcp:tools', 'lm:write'],
+  'update_sdt': ['mcp:tools', 'lm:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

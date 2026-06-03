@@ -2735,6 +2735,127 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['sdtId'],
     },
   },
+  {
+    name: 'create_sdt',
+    description: 'Create a Scheduled Down Time (SDT) for any resource type in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Suppresses alert notifications during a maintenance window. Unlike "create\\_resource\\_sdt" (which is device-specific), this generic tool supports all SDT target types: resources/devices, device groups, websites, collectors, and instances. ' +
+      '\n\n**Required parameters:**' +
+      '\n- type: The SDT target type. Common values: "DeviceSDT" (a single resource/device), "DeviceGroupSDT", "DeviceDataSourceInstanceSDT", "WebsiteSDT", "WebsiteGroupSDT", "CollectorSDT".' +
+      '\n\n**Schedule (provide the relevant fields):**' +
+      '\n- sdtType: Schedule kind. 1 = one-time (default for maintenance), or use weekly/monthly/daily recurring types.' +
+      '\n- startDateTime / endDateTime: Epoch milliseconds for a one-time SDT window' +
+      '\n- duration: Duration in minutes (for recurring SDTs)' +
+      '\n- comment: Note describing the maintenance' +
+      '\n\n**Target identifier (depends on `type`, pass via `config`):**' +
+      '\n- DeviceSDT → deviceId' +
+      '\n- DeviceGroupSDT → deviceGroupId' +
+      '\n- WebsiteSDT → websiteId' +
+      '\n- CollectorSDT → collectorId' +
+      '\n- DeviceDataSourceInstanceSDT → deviceId + deviceDataSourceId + (instance fields)' +
+      '\n\n**Tip:** Because SDT bodies are type-specific, put any fields not listed above (e.g. the target ID, recurrence fields) into the `config` object; they are merged into the request body. ' +
+      '\n\n**Related tools:** "create\\_resource\\_sdt" (simpler device-only SDT), "list\\_sdts" (find SDTs), "update\\_sdt" (modify), "delete\\_sdt" (cancel).',
+    annotations: {
+      title: 'Create Scheduled Down Time (any type)',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          description: 'The SDT target type, e.g. "DeviceSDT", "DeviceGroupSDT", "WebsiteSDT", "CollectorSDT", "DeviceDataSourceInstanceSDT".',
+        },
+        sdtType: {
+          type: 'number',
+          description: 'The schedule type. 1 = one-time. Other values select recurring schedules (weekly/monthly/daily).',
+        },
+        startDateTime: {
+          type: 'number',
+          description: 'Start time in epoch milliseconds (for one-time SDTs).',
+        },
+        endDateTime: {
+          type: 'number',
+          description: 'End time in epoch milliseconds (for one-time SDTs).',
+        },
+        duration: {
+          type: 'number',
+          description: 'Duration of the SDT in minutes (for recurring SDTs).',
+        },
+        comment: {
+          type: 'string',
+          description: 'A note describing the maintenance window.',
+        },
+        config: {
+          type: 'object',
+          description: 'Type-specific SDT fields merged into the request body, e.g. the target identifier ' +
+            '(deviceId / deviceGroupId / websiteId / collectorId) and any recurrence fields (weekDay, hour, minute, monthDay, weekOfMonth).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['type'],
+    },
+  },
+  {
+    name: 'update_sdt',
+    description: 'Update an existing Scheduled Down Time (SDT) in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies an SDT\'s schedule, duration, or comment. Uses a partial update (only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- sdtId: The ID of the SDT to update (from "list\\_sdts"), in the format like "DV_123".' +
+      '\n\n**Optional parameters (what to change):**' +
+      '\n- type: The SDT target type (the API may require this when changing schedule fields)' +
+      '\n- sdtType: Schedule kind (one-time/recurring)' +
+      '\n- startDateTime / endDateTime: New one-time window (epoch milliseconds)' +
+      '\n- duration: New duration in minutes' +
+      '\n- comment: Updated note' +
+      '\n- config: Any additional type-specific fields to update (merged into the body)' +
+      '\n\n**Best practice:** Use "get\\_sdt" to review the current SDT (including its `type`) before updating. ' +
+      '\n\n**Related tools:** "get\\_sdt" (review before update), "list\\_sdts" (find SDT), "delete\\_sdt" (cancel instead).',
+    annotations: {
+      title: 'Update Scheduled Down Time',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sdtId: {
+          type: 'string',
+          description: 'The ID of the SDT to update (e.g. "DV_123").',
+        },
+        type: {
+          type: 'string',
+          description: 'The SDT target type (may be required by the API when changing schedule fields).',
+        },
+        sdtType: {
+          type: 'number',
+          description: 'The schedule type. 1 = one-time. Other values select recurring schedules.',
+        },
+        startDateTime: {
+          type: 'number',
+          description: 'New start time in epoch milliseconds.',
+        },
+        endDateTime: {
+          type: 'number',
+          description: 'New end time in epoch milliseconds.',
+        },
+        duration: {
+          type: 'number',
+          description: 'New duration of the SDT in minutes.',
+        },
+        comment: {
+          type: 'string',
+          description: 'Updated note describing the maintenance window.',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional type-specific SDT fields to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['sdtId'],
+    },
+  },
 
   // ConfigSource Tools
   {
@@ -2809,6 +2930,174 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       },
       additionalProperties: false,
       required: ['configSourceId'],
+    },
+  },
+  {
+    name: 'create_configsource',
+    description: 'Create a new ConfigSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines a new configuration-monitoring module (ConfigSource) that collects and version-tracks device configuration files (e.g., network device running-config). ' +
+      '\n\n**⚠️ ConfigSource definitions are complex.** They include collection scripts, appliesTo logic, config-change alerting, and collection schedules. The most reliable way to create one is to model it on an existing ConfigSource: use "get\\_configsource" to export a similar definition, adapt it, and pass the fields here (use `config` for any attributes not listed below). To re-import an exported ConfigSource file, use "import\\_configsource" instead. ' +
+      '\n\n**Common parameters:**' +
+      '\n- name: Unique ConfigSource name' +
+      '\n- displayName: Human-friendly display name' +
+      '\n- description: What this ConfigSource collects' +
+      '\n- appliesTo: AppliesTo expression selecting which resources it runs on' +
+      '\n- collectionMethod / collectionAttribute: How configuration is collected' +
+      '\n- config: Any additional ConfigSource attributes (merged into the request body)' +
+      '\n\n**Related tools:** "get\\_configsource" (export a template), "import\\_configsource" (import a file), "update\\_configsource", "delete\\_configsource".',
+    annotations: {
+      title: 'Create ConfigSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Unique ConfigSource name.',
+        },
+        displayName: {
+          type: 'string',
+          description: 'Human-friendly display name.',
+        },
+        description: {
+          type: 'string',
+          description: 'Description of what the ConfigSource collects.',
+        },
+        appliesTo: {
+          type: 'string',
+          description: 'AppliesTo expression selecting which resources the ConfigSource runs on.',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional ConfigSource attributes (collection scripts, schedule, config-change alerting, etc.), merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+  },
+  {
+    name: 'update_configsource',
+    description: 'Update an existing ConfigSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies a ConfigSource definition (partial update - only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- configSourceId: The ID of the ConfigSource to update (from "list\\_configsources")' +
+      '\n\n**Optional parameters:**' +
+      '\n- name, displayName, description, appliesTo' +
+      '\n- reason: An audit note recording why the ConfigSource was changed (stored in its update history)' +
+      '\n- config: Any additional ConfigSource attributes to update (merged into the body)' +
+      '\n\n**Best practice:** Use "get\\_configsource" first to review the current definition, then change only the needed fields. ' +
+      '\n\n**Related tools:** "get\\_configsource" (review before update), "list\\_configsources" (find it), "delete\\_configsource".',
+    annotations: {
+      title: 'Update ConfigSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        configSourceId: {
+          type: 'number',
+          description: 'The ID of the ConfigSource to update.',
+        },
+        name: {
+          type: 'string',
+          description: 'New ConfigSource name.',
+        },
+        displayName: {
+          type: 'string',
+          description: 'New display name.',
+        },
+        description: {
+          type: 'string',
+          description: 'New description.',
+        },
+        appliesTo: {
+          type: 'string',
+          description: 'New AppliesTo expression.',
+        },
+        reason: {
+          type: 'string',
+          description: 'Audit note recording why the ConfigSource was changed (stored in update history).',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional ConfigSource attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['configSourceId'],
+    },
+  },
+  {
+    name: 'delete_configsource',
+    description: 'Delete a ConfigSource from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING: PERMANENT DELETION**' +
+      '\n- The ConfigSource definition is permanently removed' +
+      '\n- Configuration collection for matching resources stops' +
+      '\n- Historical config data associated with it may be lost' +
+      '\n- Cannot be undone' +
+      '\n\n**Required parameters:**' +
+      '\n- configSourceId: The ID of the ConfigSource to delete (from "list\\_configsources")' +
+      '\n\n**Before deleting:** Use "get\\_configsource" to verify it is the correct module and consider exporting its definition for backup. ' +
+      '\n\n**Related tools:** "get\\_configsource" (backup/verify before delete), "list\\_configsources" (find it).',
+    annotations: {
+      title: 'Delete ConfigSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        configSourceId: {
+          type: 'number',
+          description: 'The ID of the ConfigSource to delete.',
+        },
+      },
+      additionalProperties: false,
+      required: ['configSourceId'],
+    },
+  },
+  {
+    name: 'import_configsource',
+    description: 'Import a ConfigSource into LogicMonitor (LM) monitoring from an exported JSON or XML definition. ' +
+      '\n\n**What this does:** Uploads a ConfigSource definition file (the kind exported from LogicMonitor or a community LogicModule) and creates/updates the ConfigSource. ' +
+      '\n\n**Required parameters:**' +
+      '\n- content: The full text content of the ConfigSource file (JSON or XML)' +
+      '\n- format: "json" or "xml" - must match the content' +
+      '\n\n**Optional parameters (JSON import only):**' +
+      '\n- handleConflict: How to resolve conflicts with an existing module, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS"' +
+      '\n- fieldsToPreserve: Comma-separated fields to preserve when overwriting (e.g. "APPLIES_TO,COLLECTION_INTERVAL")' +
+      '\n\n**Tip:** To get a definition to import, use "get\\_configsource" on an existing module (export), or paste an exported file\'s contents. ' +
+      '\n\n**Related tools:** "get\\_configsource" (export), "create\\_configsource" (create from structured fields), "list\\_configsources".',
+    annotations: {
+      title: 'Import ConfigSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          description: 'The full text content of the ConfigSource definition file (JSON or XML).',
+        },
+        format: {
+          type: 'string',
+          enum: ['json', 'xml'],
+          description: 'The format of the content: "json" or "xml".',
+        },
+        handleConflict: {
+          type: 'string',
+          description: 'JSON import only: conflict-resolution strategy, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS".',
+        },
+        fieldsToPreserve: {
+          type: 'string',
+          description: 'JSON import only: comma-separated fields to preserve when overwriting (e.g. "APPLIES_TO,COLLECTION_INTERVAL").',
+        },
+      },
+      additionalProperties: false,
+      required: ['content', 'format'],
     },
   },
 
@@ -3568,6 +3857,167 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       },
       additionalProperties: false,
       required: ['eventSourceId'],
+    },
+  },
+  {
+    name: 'create_eventsource',
+    description: 'Create a new EventSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines a new event-monitoring module (EventSource) that collects events (e.g., SNMP traps, Windows event logs, syslog) and maps them to LogicMonitor alerts. ' +
+      '\n\n**⚠️ EventSource definitions are complex** (collection method, filters, severity mapping, appliesTo). The most reliable way to create one is to model it on an existing EventSource: use "get\\_eventsource" to export a similar definition, adapt it, and pass the fields here (use `config` for attributes not listed below). To re-import an exported EventSource file, use "import\\_eventsource". ' +
+      '\n\n**Common parameters:**' +
+      '\n- name: Unique EventSource name' +
+      '\n- description: What events this collects' +
+      '\n- appliesTo: AppliesTo expression selecting which resources it runs on' +
+      '\n- collector: The collection mechanism (e.g., "scriptevent", "snmptrap", "eventlog", "syslog")' +
+      '\n- config: Any additional EventSource attributes (filters, severity mapping, schedule), merged into the request body' +
+      '\n\n**Related tools:** "get\\_eventsource" (export a template), "import\\_eventsource" (import a file), "update\\_eventsource", "delete\\_eventsource".',
+    annotations: {
+      title: 'Create EventSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Unique EventSource name.',
+        },
+        description: {
+          type: 'string',
+          description: 'Description of what events the EventSource collects.',
+        },
+        appliesTo: {
+          type: 'string',
+          description: 'AppliesTo expression selecting which resources the EventSource runs on.',
+        },
+        collector: {
+          type: 'string',
+          description: 'The collection mechanism (e.g., "scriptevent", "snmptrap", "eventlog", "syslog").',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional EventSource attributes (filters, severity mapping, schedule), merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+  },
+  {
+    name: 'update_eventsource',
+    description: 'Update an existing EventSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Modifies an EventSource definition (partial update - only the fields you provide are changed). ' +
+      '\n\n**Required parameters:**' +
+      '\n- eventSourceId: The ID of the EventSource to update (from "list\\_eventsources")' +
+      '\n\n**Optional parameters:**' +
+      '\n- name, description, appliesTo, collector' +
+      '\n- config: Any additional EventSource attributes to update (merged into the body)' +
+      '\n\n**Best practice:** Use "get\\_eventsource" first to review the current definition, then change only the needed fields. ' +
+      '\n\n**Related tools:** "get\\_eventsource" (review before update), "list\\_eventsources" (find it), "delete\\_eventsource".',
+    annotations: {
+      title: 'Update EventSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        eventSourceId: {
+          type: 'number',
+          description: 'The ID of the EventSource to update.',
+        },
+        name: {
+          type: 'string',
+          description: 'New EventSource name.',
+        },
+        description: {
+          type: 'string',
+          description: 'New description.',
+        },
+        appliesTo: {
+          type: 'string',
+          description: 'New AppliesTo expression.',
+        },
+        collector: {
+          type: 'string',
+          description: 'New collection mechanism.',
+        },
+        config: {
+          type: 'object',
+          description: 'Additional EventSource attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['eventSourceId'],
+    },
+  },
+  {
+    name: 'delete_eventsource',
+    description: 'Delete an EventSource from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING: PERMANENT DELETION**' +
+      '\n- The EventSource definition is permanently removed' +
+      '\n- Event collection for matching resources stops' +
+      '\n- Cannot be undone' +
+      '\n\n**Required parameters:**' +
+      '\n- eventSourceId: The ID of the EventSource to delete (from "list\\_eventsources")' +
+      '\n\n**Before deleting:** Use "get\\_eventsource" to verify it is the correct module and consider exporting its definition for backup. ' +
+      '\n\n**Related tools:** "get\\_eventsource" (backup/verify before delete), "list\\_eventsources" (find it).',
+    annotations: {
+      title: 'Delete EventSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        eventSourceId: {
+          type: 'number',
+          description: 'The ID of the EventSource to delete.',
+        },
+      },
+      additionalProperties: false,
+      required: ['eventSourceId'],
+    },
+  },
+  {
+    name: 'import_eventsource',
+    description: 'Import an EventSource into LogicMonitor (LM) monitoring from an exported JSON or XML definition. ' +
+      '\n\n**What this does:** Uploads an EventSource definition file (exported from LogicMonitor or a community LogicModule) and creates/updates the EventSource. ' +
+      '\n\n**Required parameters:**' +
+      '\n- content: The full text content of the EventSource file (JSON or XML)' +
+      '\n- format: "json" or "xml" - must match the content' +
+      '\n\n**Optional parameters (JSON import only):**' +
+      '\n- handleConflict: How to resolve conflicts with an existing module, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS"' +
+      '\n- fieldsToPreserve: Comma-separated fields to preserve when overwriting (e.g. "APPLIES_TO,ACTIVE_DISCOVERY")' +
+      '\n\n**Tip:** To get a definition to import, use "get\\_eventsource" on an existing module (export), or paste an exported file\'s contents. ' +
+      '\n\n**Related tools:** "get\\_eventsource" (export), "create\\_eventsource" (create from structured fields), "list\\_eventsources".',
+    annotations: {
+      title: 'Import EventSource',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          description: 'The full text content of the EventSource definition file (JSON or XML).',
+        },
+        format: {
+          type: 'string',
+          enum: ['json', 'xml'],
+          description: 'The format of the content: "json" or "xml".',
+        },
+        handleConflict: {
+          type: 'string',
+          description: 'JSON import only: conflict-resolution strategy, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS".',
+        },
+        fieldsToPreserve: {
+          type: 'string',
+          description: 'JSON import only: comma-separated fields to preserve when overwriting.',
+        },
+      },
+      additionalProperties: false,
+      required: ['content', 'format'],
     },
   },
 
