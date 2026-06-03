@@ -6524,6 +6524,124 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
 
+  // LogSources
+  {
+    name: 'list_logsources',
+    description: 'List LogSources in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are LogSources:** Modules that define how logs are collected, parsed, filtered, and mapped to resources for LM Logs. ' +
+      '\n\n**Returns:** Array of logsources with id, name, description, collectionMethod, appliesTo. ' +
+      '\n\n**Related tools:** "get\\_logsource", "create\\_logsource".',
+    annotations: { title: 'List logsources', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        format: { type: 'string', description: 'Optional response format.' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_logsource',
+    description: 'Get details of a specific LogSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Full config: name, collectionMethod, appliesToScript, resourceMapping, filters, logFields, sensitiveDataMaskingRules. ' +
+      '\n\n**Related tools:** "list\\_logsources", "update\\_logsource".',
+    annotations: { title: 'Get logsource', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        logSourceId: { type: 'number', description: 'The LogSource ID' },
+        format: { type: 'string', description: 'Optional response format.' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['logSourceId'],
+    },
+  },
+  {
+    name: 'create_logsource',
+    description: 'Create a LogSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines how logs are collected, parsed, filtered, and mapped to resources for LM Logs. ' +
+      '\n\n**⚠️ LogSources are complex modules.** The most reliable approach is to export an existing one via "get\\_logsource", adapt it, and pass the full definition via `config`. ' +
+      '\n\n**Required:** a `config` containing at least `name`, `collectionMethod`, and `appliesToScript`. ' +
+      '\n\n**Tip:** For sharing/distributing prefer "import\\_logsource" with official JSON. ' +
+      '\n\n**Related tools:** "get\\_logsource", "update\\_logsource", "import\\_logsource".',
+    annotations: { title: 'Create logsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: {
+          type: 'object',
+          description: 'Full LogSource definition (name, collectionMethod, appliesToScript, resourceMapping, filters, logFields, etc.).',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'update_logsource',
+    description: 'Update a LogSource in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** logSourceId and a `config` with fields to change. Partial update. Optional `reason` (audit note). ' +
+      '\n\n**Best practice:** Review with "get\\_logsource" first. ' +
+      '\n\n**Related tools:** "get\\_logsource", "list\\_logsources".',
+    annotations: { title: 'Update logsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        logSourceId: { type: 'number', description: 'The LogSource ID' },
+        config: {
+          type: 'object',
+          description: 'LogSource fields to update (merged into the request body).',
+          additionalProperties: true,
+        },
+        reason: { type: 'string', description: 'Audit reason for the update.' },
+      },
+      additionalProperties: false,
+      required: ['logSourceId', 'config'],
+    },
+  },
+  {
+    name: 'delete_logsource',
+    description: 'Delete a LogSource from LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ WARNING:** Permanently removes the module; log collection it provided will stop. Cannot be undone. ' +
+      '\n\n**Related tools:** "get\\_logsource" (review before delete).',
+    annotations: { title: 'Delete logsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        logSourceId: { type: 'number', description: 'The LogSource ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['logSourceId'],
+    },
+  },
+  {
+    name: 'import_logsource',
+    description: 'Import a LogSource into LogicMonitor (LM) monitoring from JSON content. ' +
+      '\n\n**What this does:** Uploads an exported LogSource JSON definition as a multipart file. ' +
+      '\n\n**Parameters:** ' +
+      '\n- content: The full JSON module definition (as a string)' +
+      '\n- handleConflict: how to resolve name conflicts (e.g., "all", "ignore")' +
+      '\n- fieldsToPreserve: comma-separated fields to keep from the existing module' +
+      '\n\n**Related tools:** "create\\_logsource" (build from scratch).',
+    annotations: { title: 'Import logsource', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The JSON LogSource definition content.' },
+        handleConflict: { type: 'string', description: 'Conflict handling strategy (e.g., "all", "ignore").' },
+        fieldsToPreserve: { type: 'string', description: 'Comma-separated fields to preserve from the existing module.' },
+      },
+      additionalProperties: false,
+      required: ['content'],
+    },
+  },
+
   // OpsNotes
   {
     name: 'list_opsnotes',

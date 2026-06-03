@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 221 |
-| **Operations Missing** | 172 |
-| **Coverage** | **56%** |
-| **Implemented MCP Tools** | 209 (+4 custom link tools) |
+| **Operations Covered** | 228 |
+| **Operations Missing** | 165 |
+| **Coverage** | **58%** |
+| **Implemented MCP Tools** | 215 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -27,7 +27,6 @@
 | Job Monitors (BatchJobs) | 0 | 8 | ❌ None |
 | Log Partitions | 0 | 8 | ❌ None |
 | AppliesTo Functions | 0 | 7 | ❌ None |
-| LogSources | 0 | 7 | ❌ None |
 | RemediationSources | 0 | 7 | ❌ None |
 | SNMP OIDs | 0 | 7 | ❌ None |
 | Tracked Query Groups | 0 | 6 | ❌ None |
@@ -68,6 +67,7 @@
 | Dashboards | 7 | 7 | ✅ Full |
 | DataSource Management (write/import) | 12 | 12 | ✅ Full |
 | Devices — instances, alert settings, config & netflow | 52 | 52 | ✅ Full |
+| LogSources | 7 | 7 | ✅ Full |
 | NetScans | 6 | 6 | ✅ Full |
 | Ops Notes | 6 | 6 | ✅ Full |
 | PropertySources / Property Rules | 7 | 7 | ✅ Full |
@@ -82,12 +82,11 @@
 
 Grouped by impact. Each item links to its detailed operation list below.
 
-### 🔴 HIGH Priority — 31 operations
+### 🔴 HIGH Priority — 24 operations
 
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-- **LogSources** — 7 missing. Tools to add: logsource CRUD + import tools
 - **Dashboard Groups (write)** — 5 missing. Tools to add: `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group`
 
 ### 🟡 MEDIUM Priority — 77 operations
@@ -167,20 +166,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-
-### 🔴 LogSources
-
-**Coverage:** 0/7 operations.  **Proposed tools:** logsource CRUD + import tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteLogSource` | `/setting/logsources/{id}` |
-| `GET` | `getLogSourceById` | `/setting/logsources/{id}` |
-| `GET` | `getLogSourceList` | `/setting/logsources` |
-| `PATCH` | `patchLogSource` | `/setting/logsources/{id}` |
-| `POST` | `addLogSource` | `/setting/logsources` |
-| `POST` | `importLogSourceJson` | `/setting/logsources/importjson` |
-| `PUT` | `updateLogSource` | `/setting/logsources/{id}` |
 
 ### 🔴 Dashboard Groups (write)
 
@@ -601,6 +586,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Dashboards** (7/7)
 - **DataSource Management (write/import)** (12/12)
 - **Devices — instances, alert settings, config & netflow** (52/52)
+- **LogSources** (7/7)
 - **NetScans** (6/6)
 - **Ops Notes** (6/6)
 - **PropertySources / Property Rules** (7/7)
@@ -620,8 +606,8 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 56% |
-| Phase 1 (HIGH) | Core monitoring & config mgmt | +31 | 64% |
+| Current | — | — | 58% |
+| Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
 
@@ -634,4 +620,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 221 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 228 covered operations.*

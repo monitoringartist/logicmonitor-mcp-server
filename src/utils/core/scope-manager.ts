@@ -179,6 +179,13 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'update_property_rule': ['mcp:tools', 'lm:write'],
   'delete_property_rule': ['mcp:tools', 'lm:write'],
   'import_property_rule': ['mcp:tools', 'lm:write'],
+  // LogSources
+  'list_logsources': ['mcp:tools', 'lm:read'],
+  'get_logsource': ['mcp:tools', 'lm:read'],
+  'create_logsource': ['mcp:tools', 'lm:write'],
+  'update_logsource': ['mcp:tools', 'lm:write'],
+  'delete_logsource': ['mcp:tools', 'lm:write'],
+  'import_logsource': ['mcp:tools', 'lm:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

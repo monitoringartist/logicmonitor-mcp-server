@@ -1611,6 +1611,40 @@ export class LogicMonitorHandlers {
             fieldsToPreserve: args.fieldsToPreserve,
           });
 
+        // LogSources
+        case 'list_logsources':
+          return await this.client.listLogSources({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            format: args.format,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_logsource':
+          return await this.client.getLogSource(args.logSourceId, {
+            format: args.format,
+            fields: args.fields,
+          });
+
+        case 'create_logsource':
+          return await this.client.createLogSource(args.config || {});
+
+        case 'update_logsource':
+          return await this.client.updateLogSource(args.logSourceId, args.config || {}, {
+            reason: args.reason,
+          });
+
+        case 'delete_logsource':
+          return await this.client.deleteLogSource(args.logSourceId);
+
+        case 'import_logsource':
+          return await this.client.importLogSource(args.content, {
+            handleConflict: args.handleConflict,
+            fieldsToPreserve: args.fieldsToPreserve,
+          });
+
         // OpsNotes
         case 'list_opsnotes':
           return await this.client.listOpsNotes({

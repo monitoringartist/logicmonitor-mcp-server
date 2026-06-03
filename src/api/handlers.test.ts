@@ -77,6 +77,12 @@ describe('LogicMonitorHandlers', () => {
       scheduleDeviceAutoDiscovery: jest.fn(),
       getDevicesDeltaId: jest.fn(),
       getDevicesDelta: jest.fn(),
+      listLogSources: jest.fn(),
+      getLogSource: jest.fn(),
+      createLogSource: jest.fn(),
+      updateLogSource: jest.fn(),
+      deleteLogSource: jest.fn(),
+      importLogSource: jest.fn(),
       listPropertyRules: jest.fn(),
       getPropertyRule: jest.fn(),
       createPropertyRule: jest.fn(),
@@ -1556,6 +1562,43 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('LogSources', () => {
+    it('create_logsource forwards config', async () => {
+      mockClient.createLogSource.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_logsource', {
+        config: { name: 'MyLS', collectionMethod: 'logfile', appliesToScript: 'true()' },
+      });
+      expect(mockClient.createLogSource).toHaveBeenCalledWith({
+        name: 'MyLS', collectionMethod: 'logfile', appliesToScript: 'true()',
+      });
+    });
+
+    it('update_logsource forwards config + reason', async () => {
+      mockClient.updateLogSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_logsource', {
+        logSourceId: 5,
+        config: { description: 'x' },
+        reason: 'tuning',
+      });
+      expect(mockClient.updateLogSource).toHaveBeenCalledWith(5, { description: 'x' }, { reason: 'tuning' });
+    });
+
+    it('delete_logsource calls client', async () => {
+      mockClient.deleteLogSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_logsource', { logSourceId: 5 });
+      expect(mockClient.deleteLogSource).toHaveBeenCalledWith(5);
+    });
+
+    it('import_logsource forwards content + params', async () => {
+      mockClient.importLogSource.mockResolvedValue({} as never);
+      await handlers.handleToolCall('import_logsource', { content: '{"name":"x"}', handleConflict: 'all' });
+      expect(mockClient.importLogSource).toHaveBeenCalledWith('{"name":"x"}', {
+        handleConflict: 'all',
+        fieldsToPreserve: undefined,
+      });
     });
   });
 

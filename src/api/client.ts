@@ -2095,6 +2095,57 @@ export class LogicMonitorClient {
     );
   }
 
+  // LogSources
+  async listLogSources(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    format?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/logsources', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/logsources', undefined, cleanedParams);
+  }
+
+  async getLogSource(logSourceId: number, params?: { format?: string; fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/logsources/${logSourceId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createLogSource(logSource: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/logsources', logSource);
+  }
+
+  async updateLogSource(logSourceId: number, logSource: any, params?: { reason?: string }) {
+    return this.request<LMResponse<any>>(
+      'PATCH',
+      `/setting/logsources/${logSourceId}`,
+      logSource,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async deleteLogSource(logSourceId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/logsources/${logSourceId}`);
+  }
+
+  async importLogSource(content: string, params?: { handleConflict?: string; fieldsToPreserve?: string }) {
+    const queryParams: Record<string, string | number | boolean> = {};
+    if (params?.handleConflict) queryParams.handleConflict = params.handleConflict;
+    if (params?.fieldsToPreserve) queryParams.fieldsToPreserve = params.fieldsToPreserve;
+    return this.requestMultipart<LMResponse<any>>(
+      '/setting/logsources/importjson',
+      content,
+      'logsource.json',
+      'application/json',
+      queryParams,
+    );
+  }
+
   // OpsNotes
   async listOpsNotes(params?: {
     size?: number;
