@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - EventSource management tools: `create_eventsource`, `update_eventsource`, `delete_eventsource`, and `import_eventsource` (JSON/XML upload via multipart)
 - Expanded SDT management: `create_sdt` (any SDT target type) and `update_sdt`, complementing the existing device SDT tools
 - Report management tools: `create_report`, `update_report`, and `delete_report`, backed by the `/report/reports` API
+- Collector debug command tools (2 new): `execute_debug_command` (submit a debug command to a collector; returns a `sessionId`) and `get_debug_command_result` (fetch the command output), backed by the `/debug` API — bringing the Collector Debug Commands category to full coverage
 - Dashboard group write tools (4 new): `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group` (with `allowNonEmptyGroup`), and `clone_dashboard_group` (async clone, optionally recursive), backed by the `/dashboard/groups` API — bringing the Dashboard Groups category to full coverage
 - LogSource tools (6 new): `list_logsources`, `get_logsource`, `create_logsource`, `update_logsource`, `delete_logsource`, and `import_logsource` (JSON multipart) — bringing the LogSources category to full coverage
 - PropertySource (property rule) tools (6 new): `list_property_rules`, `get_property_rule`, `create_property_rule`, `update_property_rule`, `delete_property_rule`, and `import_property_rule` (JSON multipart) — bringing the PropertySources category to full coverage

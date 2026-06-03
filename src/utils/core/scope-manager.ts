@@ -105,6 +105,8 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'update_collector': ['mcp:tools', 'lm:write'],
   'delete_collector': ['mcp:tools', 'lm:write'],
   'acknowledge_collector_down_alert': ['mcp:tools', 'lm:write'],
+  'execute_debug_command': ['mcp:tools', 'lm:write'],
+  'get_debug_command_result': ['mcp:tools', 'lm:read'],
   'create_configsource': ['mcp:tools', 'lm:write'],
   'update_configsource': ['mcp:tools', 'lm:write'],
   'delete_configsource': ['mcp:tools', 'lm:write'],

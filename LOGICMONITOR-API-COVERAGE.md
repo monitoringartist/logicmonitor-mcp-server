@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 233 |
-| **Operations Missing** | 160 |
-| **Coverage** | **59%** |
-| **Implemented MCP Tools** | 219 (+4 custom link tools) |
+| **Operations Covered** | 235 |
+| **Operations Missing** | 158 |
+| **Coverage** | **60%** |
+| **Implemented MCP Tools** | 221 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -32,7 +32,6 @@
 | Tracked Query Groups | 0 | 6 | ❌ None |
 | AWS Cloud Onboarding | 0 | 4 | ❌ None |
 | Azure Cloud Onboarding | 0 | 3 | ❌ None |
-| Collector Debug Commands | 0 | 2 | ❌ None |
 | Default Dashboard (user data) | 0 | 2 | ❌ None |
 | Diagnostic Remediation | 0 | 2 | ❌ None |
 | Metrics (Push/Usage) | 0 | 2 | ❌ None |
@@ -61,6 +60,7 @@
 | Alert Automation — Action Chains & Rules | 14 | 14 | ✅ Full |
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
 | Audit / Access Logs | 2 | 2 | ✅ Full |
+| Collector Debug Commands | 2 | 2 | ✅ Full |
 | Cost Optimization | 3 | 3 | ✅ Full |
 | Dashboard Groups (write) | 7 | 7 | ✅ Full |
 | Dashboard Widgets | 7 | 7 | ✅ Full |
@@ -87,7 +87,7 @@ Grouped by impact. Each item links to its detailed operation list below.
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-### 🟡 MEDIUM Priority — 77 operations
+### 🟡 MEDIUM Priority — 75 operations
 
 *Administration, automation modules, and infrastructure completeness*
 
@@ -102,7 +102,6 @@ Grouped by impact. Each item links to its detailed operation list below.
 - **TopologySources (write)** — 5 missing. Tools to add: topology-source CRUD + import tools
 - **Roles (write)** — 4 missing. Tools to add: `create_role`, `update_role`, `delete_role`
 - **Report Execution** — 2 missing. Tools to add: `generate_report`, `get_report_task_result`
-- **Collector Debug Commands** — 2 missing. Tools to add: `execute_debug_command`, `get_debug_command_result`
 - **Bulk Instance Data Fetch** — 1 missing. Tools to add: `fetch_instances_data`
 - **Instance Graph Data (by instance id)** — 1 missing. Tools to add: `get_instance_graph_data`
 
@@ -314,15 +313,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 |--------|-----------|----------|
 | `GET` | `fetchReportUsingTaskId` | `/report/reports/{id}/tasks/{taskId}` |
 | `POST` | `generateReportById` | `/report/reports/{id}/executions` |
-
-### 🟡 Collector Debug Commands
-
-**Coverage:** 0/2 operations.  **Proposed tools:** `execute_debug_command`, `get_debug_command_result`
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `GET` | `getDebugCommandResult` | `/debug/{id}` |
-| `POST` | `executeDebugCommand` | `/debug` |
 
 ### 🟡 Bulk Instance Data Fetch
 
@@ -567,6 +557,7 @@ These categories have every Swagger operation backed by an MCP tool:
 - **Alert Automation — Action Chains & Rules** (14/14)
 - **Alert Rules & Escalation Chains** (12/12)
 - **Audit / Access Logs** (2/2)
+- **Collector Debug Commands** (2/2)
 - **Cost Optimization** (3/3)
 - **Dashboard Groups (write)** (7/7)
 - **Dashboard Widgets** (7/7)
@@ -593,7 +584,7 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 59% |
+| Current | — | — | 60% |
 | Phase 1 (HIGH) | Core monitoring & config mgmt | +24 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
@@ -607,4 +598,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 233 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 235 covered operations.*

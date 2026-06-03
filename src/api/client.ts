@@ -626,6 +626,20 @@ export class LogicMonitorClient {
     );
   }
 
+  // Collector Debug Commands
+  async executeDebugCommand(collectorId: number, cmdline: string) {
+    return this.request<LMResponse<any>>('POST', '/debug', { cmdline }, this.cleanParams({ collectorId }));
+  }
+
+  async getDebugCommandResult(sessionId: string, collectorId: number) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/debug/${encodeURIComponent(sessionId)}`,
+      undefined,
+      this.cleanParams({ collectorId }),
+    );
+  }
+
   // DataSources
   async listDataSources(params?: {
     size?: number;

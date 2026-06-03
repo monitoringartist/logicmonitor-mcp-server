@@ -41,6 +41,8 @@ describe('LogicMonitorHandlers', () => {
       deleteCollector: jest.fn(),
       getCollectorInstallerUrl: jest.fn(),
       acknowledgeCollectorDownAlert: jest.fn(),
+      executeDebugCommand: jest.fn(),
+      getDebugCommandResult: jest.fn(),
       listDataSources: jest.fn(),
       getDataSource: jest.fn(),
       listDeviceDataSourceInstances: jest.fn(),
@@ -1566,6 +1568,20 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Collector Debug Commands', () => {
+    it('execute_debug_command forwards collectorId + cmdline', async () => {
+      mockClient.executeDebugCommand.mockResolvedValue({ sessionId: 'abc' } as never);
+      await handlers.handleToolCall('execute_debug_command', { collectorId: 5, cmdline: '!tlist' });
+      expect(mockClient.executeDebugCommand).toHaveBeenCalledWith(5, '!tlist');
+    });
+
+    it('get_debug_command_result forwards sessionId + collectorId', async () => {
+      mockClient.getDebugCommandResult.mockResolvedValue({ output: 'ok' } as never);
+      await handlers.handleToolCall('get_debug_command_result', { sessionId: 'abc', collectorId: 5 });
+      expect(mockClient.getDebugCommandResult).toHaveBeenCalledWith('abc', 5);
     });
   });
 

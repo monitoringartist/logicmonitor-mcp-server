@@ -1266,6 +1266,64 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       required: ['collectorId'],
     },
   },
+  {
+    name: 'execute_debug_command',
+    description: 'Execute a Collector debug command in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Submits a debug command (e.g., `!account`, `!tlist`, `!ping <host>`, `!checkcredential`) to run on a specific Collector. Execution is asynchronous: this returns a `sessionId` that you pass to "get\\_debug\\_command\\_result" to retrieve the output. ' +
+      '\n\n**⚠️ Note:** Debug commands run directly on the Collector host and are primarily a troubleshooting/diagnostics tool. Use with care. ' +
+      '\n\n**Required parameters:**' +
+      '\n- collectorId: The ID of the Collector to run the command on (from "list\\_collectors")' +
+      '\n- cmdline: The debug command line to execute (e.g., "!tlist", "!ping 8.8.8.8")' +
+      '\n\n**Workflow:** Call this tool, then poll "get\\_debug\\_command\\_result" with the returned `sessionId` until output is available. ' +
+      '\n\n**Related tools:** "get\\_debug\\_command\\_result" (fetch output), "list\\_collectors" (find collectorId).',
+    annotations: {
+      title: 'Execute collector debug command',
+      readOnlyHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the collector to run the debug command on.',
+        },
+        cmdline: {
+          type: 'string',
+          description: 'The debug command line to execute (e.g., "!tlist", "!ping 8.8.8.8").',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'cmdline'],
+    },
+  },
+  {
+    name: 'get_debug_command_result',
+    description: 'Get the result of a previously executed Collector debug command in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Retrieves the output of a debug command submitted via "execute\\_debug\\_command", using the `sessionId` returned by that call. The result may not be ready immediately; poll until `output` is populated. ' +
+      '\n\n**Required parameters:**' +
+      '\n- sessionId: The session ID returned by "execute\\_debug\\_command"' +
+      '\n- collectorId: The ID of the Collector the command was run on' +
+      '\n\n**Related tools:** "execute\\_debug\\_command" (submit a command).',
+    annotations: {
+      title: 'Get collector debug command result',
+      readOnlyHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: {
+          type: 'string',
+          description: 'The session ID returned by execute_debug_command.',
+        },
+        collectorId: {
+          type: 'number',
+          description: 'The ID of the collector the debug command was run on.',
+        },
+      },
+      additionalProperties: false,
+      required: ['sessionId', 'collectorId'],
+    },
+  },
 
   // DataSource Tools
   {

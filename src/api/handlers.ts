@@ -477,6 +477,12 @@ export class LogicMonitorHandlers {
         case 'acknowledge_collector_down_alert':
           return await this.client.acknowledgeCollectorDownAlert(args.collectorId, args.comment);
 
+        case 'execute_debug_command':
+          return await this.client.executeDebugCommand(args.collectorId, args.cmdline);
+
+        case 'get_debug_command_result':
+          return await this.client.getDebugCommandResult(args.sessionId, args.collectorId);
+
         // DataSources
         case 'list_datasources': {
           const result = await this.client.listDataSources({
