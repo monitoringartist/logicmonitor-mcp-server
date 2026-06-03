@@ -77,6 +77,17 @@ describe('LogicMonitorHandlers', () => {
       scheduleDeviceAutoDiscovery: jest.fn(),
       getDevicesDeltaId: jest.fn(),
       getDevicesDelta: jest.fn(),
+      listActionChains: jest.fn(),
+      getActionChain: jest.fn(),
+      createActionChain: jest.fn(),
+      updateActionChain: jest.fn(),
+      deleteActionChain: jest.fn(),
+      listActionRules: jest.fn(),
+      getActionRule: jest.fn(),
+      createActionRule: jest.fn(),
+      updateActionRule: jest.fn(),
+      deleteActionRule: jest.fn(),
+      setActionRuleStatus: jest.fn(),
       listDashboards: jest.fn(),
       getDashboard: jest.fn(),
       createDashboard: jest.fn(),
@@ -1531,6 +1542,74 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.scheduleDeviceAutoDiscovery).toHaveBeenCalledWith(7);
       expect(mockClient.getDevicesDeltaId).toHaveBeenCalledWith({ deltaId: undefined });
       expect(mockClient.getDevicesDelta).toHaveBeenCalledWith('d1');
+    });
+  });
+
+  describe('Alert Automation - Action Chains & Rules', () => {
+    it('create_action_chain merges config into the body', async () => {
+      mockClient.createActionChain.mockResolvedValue({ id: 1 } as never);
+      await handlers.handleToolCall('create_action_chain', {
+        name: 'Escalation A',
+        stages: [['ops@example.com']],
+        config: { description: 'primary' },
+      });
+      expect(mockClient.createActionChain).toHaveBeenCalledWith({
+        name: 'Escalation A',
+        stages: [['ops@example.com']],
+        description: 'primary',
+      });
+    });
+
+    it('update_action_chain excludes id from body and merges config', async () => {
+      mockClient.updateActionChain.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_action_chain', {
+        actionChainId: 9,
+        name: 'Renamed',
+        config: { description: 'x' },
+      });
+      expect(mockClient.updateActionChain).toHaveBeenCalledWith(9, { name: 'Renamed', description: 'x' });
+    });
+
+    it('delete_action_chain calls client', async () => {
+      mockClient.deleteActionChain.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_action_chain', { actionChainId: 9 });
+      expect(mockClient.deleteActionChain).toHaveBeenCalledWith(9);
+    });
+
+    it('create_action_rule merges config and forwards required fields', async () => {
+      mockClient.createActionRule.mockResolvedValue({ id: 2 } as never);
+      await handlers.handleToolCall('create_action_rule', {
+        name: 'Rule A',
+        actionChainId: 9,
+        deviceGroups: ['*'],
+        levelStr: 'Warn,Error,Critical',
+        config: { datasource: 'CPU' },
+      });
+      expect(mockClient.createActionRule).toHaveBeenCalledWith({
+        name: 'Rule A',
+        actionChainId: 9,
+        deviceGroups: ['*'],
+        levelStr: 'Warn,Error,Critical',
+        datasource: 'CPU',
+      });
+    });
+
+    it('update_action_rule excludes id from body', async () => {
+      mockClient.updateActionRule.mockResolvedValue({} as never);
+      await handlers.handleToolCall('update_action_rule', { actionRuleId: 5, enabled: false });
+      expect(mockClient.updateActionRule).toHaveBeenCalledWith(5, { enabled: false });
+    });
+
+    it('set_action_rule_status forwards enabled flag', async () => {
+      mockClient.setActionRuleStatus.mockResolvedValue({} as never);
+      await handlers.handleToolCall('set_action_rule_status', { actionRuleId: 5, enabled: true });
+      expect(mockClient.setActionRuleStatus).toHaveBeenCalledWith(5, true);
+    });
+
+    it('delete_action_rule calls client', async () => {
+      mockClient.deleteActionRule.mockResolvedValue({} as never);
+      await handlers.handleToolCall('delete_action_rule', { actionRuleId: 5 });
+      expect(mockClient.deleteActionRule).toHaveBeenCalledWith(5);
     });
   });
 

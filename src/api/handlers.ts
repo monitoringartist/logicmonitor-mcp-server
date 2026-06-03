@@ -1477,6 +1477,61 @@ export class LogicMonitorHandlers {
         case 'delete_alert_rule':
           return await this.client.deleteAlertRule(args.ruleId);
 
+        // Action Chains
+        case 'list_action_chains':
+          return await this.client.listActionChains({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_action_chain':
+          return await this.client.getActionChain(args.actionChainId, { fields: args.fields });
+
+        case 'create_action_chain': {
+          const { config, ...rest } = args;
+          return await this.client.createActionChain({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_action_chain': {
+          const { actionChainId, config, ...rest } = args;
+          return await this.client.updateActionChain(actionChainId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_action_chain':
+          return await this.client.deleteActionChain(args.actionChainId);
+
+        // Action Rules
+        case 'list_action_rules':
+          return await this.client.listActionRules({
+            size: args.size,
+            offset: args.offset,
+            filter: args.filter,
+            fields: args.fields,
+            autoPaginate: args.autoPaginate,
+          });
+
+        case 'get_action_rule':
+          return await this.client.getActionRule(args.actionRuleId, { fields: args.fields });
+
+        case 'create_action_rule': {
+          const { config, ...rest } = args;
+          return await this.client.createActionRule({ ...rest, ...(config || {}) });
+        }
+
+        case 'update_action_rule': {
+          const { actionRuleId, config, ...rest } = args;
+          return await this.client.updateActionRule(actionRuleId, { ...rest, ...(config || {}) });
+        }
+
+        case 'delete_action_rule':
+          return await this.client.deleteActionRule(args.actionRuleId);
+
+        case 'set_action_rule_status':
+          return await this.client.setActionRuleStatus(args.actionRuleId, args.enabled);
+
         // OpsNotes
         case 'list_opsnotes':
           return await this.client.listOpsNotes({

@@ -8,10 +8,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total API Operations** | 393 |
-| **Operations Covered** | 190 |
-| **Operations Missing** | 203 |
-| **Coverage** | **48%** |
-| **Implemented MCP Tools** | 184 (+4 custom link tools) |
+| **Operations Covered** | 204 |
+| **Operations Missing** | 189 |
+| **Coverage** | **52%** |
+| **Implemented MCP Tools** | 195 (+4 custom link tools) |
 
 > **How to read this doc:** Start with [What's Still Missing](#-whats-still-missing-prioritized) for the prioritized backlog, then jump to [Gap Detail by Category](#-gap-detail-by-category) for the exact operations and proposed tools. [Fully Covered Areas](#-fully-covered-areas) lists what's already done.
 
@@ -21,7 +21,6 @@
 
 | Category | Covered | Total | Status |
 |----------|:-------:|:-----:|:------:|
-| Alert Automation — Action Chains & Rules | 0 | 14 | ❌ None |
 | Log Pipelines / Log Alerts | 0 | 13 | ❌ None |
 | Log Query Groups | 0 | 9 | ❌ None |
 | DiagnosticSources | 0 | 8 | ❌ None |
@@ -63,6 +62,7 @@
 | Access Group Module Mapping | 6 | 7 | 🟡 Partial |
 | Alerts | 4 | 5 | 🟡 Partial |
 | EventSource extras | 7 | 8 | 🟡 Partial |
+| Alert Automation — Action Chains & Rules | 14 | 14 | ✅ Full |
 | Alert Rules & Escalation Chains | 12 | 12 | ✅ Full |
 | Audit / Access Logs | 2 | 2 | ✅ Full |
 | Cost Optimization | 3 | 3 | ✅ Full |
@@ -82,12 +82,11 @@
 
 Grouped by impact. Each item links to its detailed operation list below.
 
-### 🔴 HIGH Priority — 62 operations
+### 🔴 HIGH Priority — 48 operations
 
 *Core monitoring & configuration management — highest user value*
 
 - **Device Groups — datasource alert settings, cluster, properties** — 19 missing. Tools to add: group datasource/alert-setting, cluster-alert, property CRUD tools
-- **Alert Automation — Action Chains & Rules** — 14 missing. Tools to add: action-chain and action-rule CRUD + status tools
 - **DataSource Management (write/import)** — 10 missing. Tools to add: datasource CRUD, import (xml/json), ographs, associated devices tools
 - **PropertySources / Property Rules** — 7 missing. Tools to add: property-rule CRUD + import tools
 - **LogSources** — 7 missing. Tools to add: logsource CRUD + import tools
@@ -170,27 +169,6 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 | `PUT` | `updateDeviceGroupClusterAlertConfById` | `/device/groups/{deviceGroupId}/clusterAlertConf/{id}` |
 | `PUT` | `updateDeviceGroupDatasourceAlertSetting` | `/device/groups/{deviceGroupId}/datasources/{dsId}/alertsettings` |
 | `PUT` | `updateDeviceGroupDatasourceById` | `/device/groups/{deviceGroupId}/datasources/{id}` |
-
-### 🔴 Alert Automation — Action Chains & Rules
-
-**Coverage:** 0/14 operations.  **Proposed tools:** action-chain and action-rule CRUD + status tools
-
-| Method | Operation | Endpoint |
-|--------|-----------|----------|
-| `DELETE` | `deleteActionChainById` | `/setting/action/chains/{id}` |
-| `DELETE` | `deleteActionRuleById` | `/setting/action/rules/{id}` |
-| `GET` | `getActionChainById` | `/setting/action/chains/{id}` |
-| `GET` | `getActionChainsList` | `/setting/action/chains` |
-| `GET` | `getActionRuleById` | `/setting/action/rules/{id}` |
-| `GET` | `getActionRulesList` | `/setting/action/rules` |
-| `PATCH` | `patchActionChainById` | `/setting/action/chains/{id}` |
-| `PATCH` | `patchActionRuleById` | `/setting/action/rules/{id}` |
-| `PATCH` | `patchActionRuleStatusById` | `/setting/action/rules/{id}/status` |
-| `POST` | `addActionChain` | `/setting/action/chains` |
-| `POST` | `addActionRule` | `/setting/action/rules` |
-| `PUT` | `updateActionChainById` | `/setting/action/chains/{id}` |
-| `PUT` | `updateActionRuleById` | `/setting/action/rules/{id}` |
-| `PUT` | `updateActionRuleStatusById` | `/setting/action/rules/{id}/status` |
 
 ### 🔴 DataSource Management (write/import)
 
@@ -648,6 +626,7 @@ Only operations **not yet implemented** are listed. Categories that are 100% cov
 
 These categories have every Swagger operation backed by an MCP tool:
 
+- **Alert Automation — Action Chains & Rules** (14/14)
 - **Alert Rules & Escalation Chains** (12/12)
 - **Audit / Access Logs** (2/2)
 - **Cost Optimization** (3/3)
@@ -672,8 +651,8 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 
 | Phase | Focus | Operations to add | Cumulative coverage |
 |-------|-------|:-----------------:|:-------------------:|
-| Current | — | — | 48% |
-| Phase 1 (HIGH) | Core monitoring & config mgmt | +62 | 64% |
+| Current | — | — | 52% |
+| Phase 1 (HIGH) | Core monitoring & config mgmt | +48 | 64% |
 | Phase 2 (MEDIUM) | Admin, automation, infra | +77 | 84% |
 | Phase 3 (LOW) | Cloud onboarding & niche | +64 | 100% |
 
@@ -686,4 +665,4 @@ Four link-generation helpers prevent AI assistants from guessing URLs:
 3. Marked every Swagger operation as covered/missing and grouped by resource category.
 4. Assigned priority tiers by user value and scripting frequency.
 
-*Coverage figures are computed directly from the spec (393 operations) against 190 covered operations.*
+*Coverage figures are computed directly from the spec (393 operations) against 204 covered operations.*

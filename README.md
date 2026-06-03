@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **184 MCP Tools** for comprehensive LogicMonitor operations (101 read-only, 83 write)
+- **195 MCP Tools** for comprehensive LogicMonitor operations (105 read-only, 90 write)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -505,6 +505,10 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `generate_alert_link` - Generate direct link to alert in LM UI
 - `list_alert_rules` - List alert routing rules
 - `get_alert_rule` - Get alert rule details
+- `list_action_chains` - List notification/escalation action chains
+- `get_action_chain` - Get action chain details
+- `list_action_rules` - List alert action rules (route alerts to chains)
+- `get_action_rule` - Get action rule details
 
 **Write Operations:**
 - `acknowledge_alert` - Acknowledge alert (stops escalation)
@@ -512,6 +516,13 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 - `create_alert_rule` - Create new alert routing rule
 - `update_alert_rule` - Modify alert rule
 - `delete_alert_rule` - Delete alert rule
+- `create_action_chain` - Create a notification/escalation action chain
+- `update_action_chain` - Modify an action chain
+- `delete_action_chain` - Delete an action chain
+- `create_action_rule` - Create an alert action rule
+- `update_action_rule` - Modify an action rule
+- `delete_action_rule` - Delete an action rule
+- `set_action_rule_status` - Enable or disable an action rule
 
 ### DataSources & Monitoring
 
@@ -752,9 +763,9 @@ The server provides 122 tools for comprehensive LogicMonitor operations. Tools a
 
 ### Summary
 
-- **101 read-only tools** - Safe for production monitoring
-- **83 write tools** - Require caution (disabled by default with `--read-only`)
-- **184 total tools**
+- **105 read-only tools** - Safe for production monitoring
+- **90 write tools** - Require caution (disabled by default with `--read-only`)
+- **195 total tools**
 
 ## Security Considerations
 

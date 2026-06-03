@@ -6013,6 +6013,243 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
     },
   },
 
+  // Action Chains & Action Rules (Alert Automation)
+  {
+    name: 'list_action_chains',
+    description: 'List alert action chains in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are action chains:** Ordered escalation/notification sequences (stages) that alert rules invoke to deliver notifications (email, SMS, integrations) and to escalate if not acknowledged. ' +
+      '\n\n**Returns:** Array of action chains with id, name, description, and stages. ' +
+      '\n\n**Related tools:** "get\\_action\\_chain", "create\\_action\\_chain", "list\\_action\\_rules" (rules reference chains via actionChainId).',
+    annotations: { title: 'List action chains', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_action_chain',
+    description: 'Get details of a specific alert action chain in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Full chain config: name, description, and the ordered stages (recipients/integrations per stage). ' +
+      '\n\n**Related tools:** "list\\_action\\_chains", "update\\_action\\_chain".',
+    annotations: { title: 'Get action chain', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionChainId: { type: 'number', description: 'The action chain ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['actionChainId'],
+    },
+  },
+  {
+    name: 'create_action_chain',
+    description: 'Create an alert action chain in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Defines a reusable notification/escalation sequence that alert rules can reference. ' +
+      '\n\n**Required:** name and stages. Each stage is a list of recipients/integration targets; alerts escalate from one stage to the next if not acknowledged. ' +
+      '\n\n**Tip:** Use "get\\_action\\_chain" on an existing chain to see the exact `stages` structure, then adapt it via `config`. ' +
+      '\n\n**Related tools:** "create\\_action\\_rule" (wire the chain to alerts), "update\\_action\\_chain".',
+    annotations: { title: 'Create action chain', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The action chain name' },
+        description: { type: 'string', description: 'The action chain description' },
+        stages: {
+          type: 'array',
+          description: 'Ordered list of stages; each stage lists the recipients/integration targets to notify.',
+          items: { type: 'object', additionalProperties: true },
+        },
+        config: {
+          type: 'object',
+          description: 'Additional action chain attributes merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name', 'stages'],
+    },
+  },
+  {
+    name: 'update_action_chain',
+    description: 'Update an alert action chain in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** actionChainId plus any of name, description, stages (or additional fields via `config`). Partial update. ' +
+      '\n\n**Best practice:** Use "get\\_action\\_chain" first to review the current `stages` before modifying. ' +
+      '\n\n**Related tools:** "get\\_action\\_chain", "list\\_action\\_chains".',
+    annotations: { title: 'Update action chain', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionChainId: { type: 'number', description: 'The action chain ID' },
+        name: { type: 'string', description: 'New action chain name' },
+        description: { type: 'string', description: 'New action chain description' },
+        stages: {
+          type: 'array',
+          description: 'Replacement ordered list of stages.',
+          items: { type: 'object', additionalProperties: true },
+        },
+        config: {
+          type: 'object',
+          description: 'Additional action chain attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['actionChainId'],
+    },
+  },
+  {
+    name: 'delete_action_chain',
+    description: 'Delete an alert action chain in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ Warning:** Action rules referencing this chain will lose their notification target. Verify no active action rule depends on it first. ' +
+      '\n\n**Related tools:** "list\\_action\\_rules" (check dependencies), "get\\_action\\_chain".',
+    annotations: { title: 'Delete action chain', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionChainId: { type: 'number', description: 'The action chain ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['actionChainId'],
+    },
+  },
+  {
+    name: 'list_action_rules',
+    description: 'List alert action rules in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What are action rules:** Rules that match alerts (by device groups, devices, datasource, datapoint, severity) and route them to an action chain for notification/escalation. ' +
+      '\n\n**Returns:** Array of action rules with id, name, levelStr, deviceGroups, actionChainId, enabled. ' +
+      '\n\n**Related tools:** "get\\_action\\_rule", "create\\_action\\_rule", "list\\_action\\_chains".',
+    annotations: { title: 'List action rules', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: [],
+    },
+  },
+  {
+    name: 'get_action_rule',
+    description: 'Get details of a specific alert action rule in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Returns:** Match criteria (deviceGroups, devices, datasource, datapoint, instance, severity levelStr), the linked actionChainId, and enabled status. ' +
+      '\n\n**Related tools:** "list\\_action\\_rules", "update\\_action\\_rule", "set\\_action\\_rule\\_status".',
+    annotations: { title: 'Get action rule', readOnlyHint: true },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionRuleId: { type: 'number', description: 'The action rule ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['actionRuleId'],
+    },
+  },
+  {
+    name: 'create_action_rule',
+    description: 'Create an alert action rule in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Routes matching alerts to an action chain for notification/escalation. ' +
+      '\n\n**Required:** name, actionChainId (from "list\\_action\\_chains"), deviceGroups (array of group filters), and levelStr (severity levels, e.g., "Warn,Error,Critical"). ' +
+      '\n\n**Optional match criteria:** devices, datasource, datapoint, instance, resourceProperties, enabled. ' +
+      '\n\n**Related tools:** "list\\_action\\_chains", "update\\_action\\_rule", "set\\_action\\_rule\\_status".',
+    annotations: { title: 'Create action rule', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'The action rule name' },
+        actionChainId: { type: 'number', description: 'The action chain ID this rule routes alerts to' },
+        deviceGroups: {
+          type: 'array',
+          description: 'Device groups the rule matches (e.g., ["*"] for all).',
+          items: { type: 'string' },
+        },
+        levelStr: { type: 'string', description: 'Severity levels to match (e.g., "Warn,Error,Critical").' },
+        devices: { type: 'array', description: 'Specific devices to match.', items: { type: 'string' } },
+        datasource: { type: 'string', description: 'Datasource to match.' },
+        datapoint: { type: 'string', description: 'Datapoint to match.' },
+        instance: { type: 'string', description: 'Instance to match.' },
+        enabled: { type: 'boolean', description: 'Whether the rule is enabled.' },
+        config: {
+          type: 'object',
+          description: 'Additional action rule attributes (e.g., resourceProperties) merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['name', 'actionChainId', 'deviceGroups', 'levelStr'],
+    },
+  },
+  {
+    name: 'update_action_rule',
+    description: 'Update an alert action rule in LogicMonitor (LM) monitoring. ' +
+      '\n\n**Parameters:** actionRuleId plus any fields to change (name, actionChainId, deviceGroups, levelStr, devices, datasource, datapoint, instance, enabled, or additional fields via `config`). Partial update. ' +
+      '\n\n**Tip:** To only toggle enabled/disabled, prefer "set\\_action\\_rule\\_status". ' +
+      '\n\n**Related tools:** "get\\_action\\_rule", "list\\_action\\_rules".',
+    annotations: { title: 'Update action rule', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionRuleId: { type: 'number', description: 'The action rule ID' },
+        name: { type: 'string', description: 'New action rule name' },
+        actionChainId: { type: 'number', description: 'New action chain ID' },
+        deviceGroups: { type: 'array', description: 'Device groups the rule matches.', items: { type: 'string' } },
+        levelStr: { type: 'string', description: 'Severity levels to match.' },
+        devices: { type: 'array', description: 'Specific devices to match.', items: { type: 'string' } },
+        datasource: { type: 'string', description: 'Datasource to match.' },
+        datapoint: { type: 'string', description: 'Datapoint to match.' },
+        instance: { type: 'string', description: 'Instance to match.' },
+        enabled: { type: 'boolean', description: 'Whether the rule is enabled.' },
+        config: {
+          type: 'object',
+          description: 'Additional action rule attributes to update, merged into the request body.',
+          additionalProperties: true,
+        },
+      },
+      additionalProperties: false,
+      required: ['actionRuleId'],
+    },
+  },
+  {
+    name: 'delete_action_rule',
+    description: 'Delete an alert action rule in LogicMonitor (LM) monitoring. ' +
+      '\n\n**⚠️ Warning:** Alerts previously matched by this rule will no longer trigger its notifications/escalations. ' +
+      '\n\n**Related tools:** "get\\_action\\_rule" (review before delete), "list\\_action\\_rules".',
+    annotations: { title: 'Delete action rule', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionRuleId: { type: 'number', description: 'The action rule ID to delete' },
+      },
+      additionalProperties: false,
+      required: ['actionRuleId'],
+    },
+  },
+  {
+    name: 'set_action_rule_status',
+    description: 'Enable or disable an alert action rule in LogicMonitor (LM) monitoring. ' +
+      '\n\n**What this does:** Toggles only the enabled status of an action rule without modifying its other configuration. ' +
+      '\n\n**Parameters:** actionRuleId, enabled (true to enable, false to disable). ' +
+      '\n\n**Related tools:** "update\\_action\\_rule" (full edit), "get\\_action\\_rule".',
+    annotations: { title: 'Set action rule status', readOnlyHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionRuleId: { type: 'number', description: 'The action rule ID' },
+        enabled: { type: 'boolean', description: 'true to enable, false to disable the rule' },
+      },
+      additionalProperties: false,
+      required: ['actionRuleId', 'enabled'],
+    },
+  },
+
   // OpsNotes
   {
     name: 'list_opsnotes',

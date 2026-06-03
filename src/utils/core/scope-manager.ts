@@ -151,6 +151,18 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'schedule_resource_auto_discovery': ['mcp:tools', 'lm:write'],
   'get_resources_delta_id': ['mcp:tools', 'lm:read'],
   'get_resources_delta': ['mcp:tools', 'lm:read'],
+  // Alert automation: action chains & rules
+  'list_action_chains': ['mcp:tools', 'lm:read'],
+  'get_action_chain': ['mcp:tools', 'lm:read'],
+  'create_action_chain': ['mcp:tools', 'lm:write'],
+  'update_action_chain': ['mcp:tools', 'lm:write'],
+  'delete_action_chain': ['mcp:tools', 'lm:write'],
+  'list_action_rules': ['mcp:tools', 'lm:read'],
+  'get_action_rule': ['mcp:tools', 'lm:read'],
+  'create_action_rule': ['mcp:tools', 'lm:write'],
+  'update_action_rule': ['mcp:tools', 'lm:write'],
+  'delete_action_rule': ['mcp:tools', 'lm:write'],
+  'set_action_rule_status': ['mcp:tools', 'lm:write'],
 
   // Administrative operations
   'list_users': ['mcp:tools', 'lm:admin'],

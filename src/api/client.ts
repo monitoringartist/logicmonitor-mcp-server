@@ -1892,6 +1892,74 @@ export class LogicMonitorClient {
     return this.request<LMResponse<any>>('DELETE', `/setting/alert/rules/${ruleId}`);
   }
 
+  // Action Chains
+  async listActionChains(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/action/chains', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/action/chains', undefined, cleanedParams);
+  }
+
+  async getActionChain(actionChainId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/action/chains/${actionChainId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createActionChain(actionChain: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/action/chains', actionChain);
+  }
+
+  async updateActionChain(actionChainId: number, actionChain: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/action/chains/${actionChainId}`, actionChain);
+  }
+
+  async deleteActionChain(actionChainId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/action/chains/${actionChainId}`);
+  }
+
+  // Action Rules
+  async listActionRules(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/setting/action/rules', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/setting/action/rules', undefined, cleanedParams);
+  }
+
+  async getActionRule(actionRuleId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>('GET', `/setting/action/rules/${actionRuleId}`, undefined, this.cleanParams(params || {}));
+  }
+
+  async createActionRule(actionRule: any) {
+    return this.request<LMResponse<any>>('POST', '/setting/action/rules', actionRule);
+  }
+
+  async updateActionRule(actionRuleId: number, actionRule: any) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/action/rules/${actionRuleId}`, actionRule);
+  }
+
+  async deleteActionRule(actionRuleId: number) {
+    return this.request<LMResponse<any>>('DELETE', `/setting/action/rules/${actionRuleId}`);
+  }
+
+  async setActionRuleStatus(actionRuleId: number, enabled: boolean) {
+    return this.request<LMResponse<any>>('PATCH', `/setting/action/rules/${actionRuleId}/status`, { enabled });
+  }
+
   // OpsNotes
   async listOpsNotes(params?: {
     size?: number;
