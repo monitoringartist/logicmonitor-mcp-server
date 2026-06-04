@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **356 MCP Tools** for comprehensive LogicMonitor operations (178 read-only, 178 write) — **100% LogicMonitor API v3 coverage**
+- **352 MCP Tools** for comprehensive LogicMonitor operations (177 read-only, 175 write) — **100% LogicMonitor API v3 coverage**
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -470,7 +470,7 @@ npm run start:http
 
 ## Available Tools
 
-The server provides 356 tools for comprehensive LogicMonitor operations (100% LogicMonitor API v3 coverage). Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
+The server provides 352 tools for comprehensive LogicMonitor operations (100% LogicMonitor API v3 coverage). Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
 ### Resource/Device Management
 
@@ -881,9 +881,9 @@ The server provides 356 tools for comprehensive LogicMonitor operations (100% Lo
 
 ### Summary
 
-- **178 read-only tools** - Safe for production monitoring
-- **178 write tools** - Require caution (disabled by default with `--read-only`)
-- **356 total tools** (100% LogicMonitor API v3 coverage)
+- **177 read-only tools** - Safe for production monitoring
+- **175 write tools** - Require caution (disabled by default with `--read-only`)
+- **352 total tools** (100% LogicMonitor API v3 coverage)
 
 ## Security Considerations
 
@@ -907,7 +907,7 @@ export MCP_READ_ONLY=true
 npm start
 ```
 
-This disables all 178 write operations, leaving only 178 safe read-only tools.
+This disables all 175 write operations, leaving only 177 safe read-only tools.
 
 ### Authentication Setup
 
