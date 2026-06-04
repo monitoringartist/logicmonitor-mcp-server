@@ -42,7 +42,6 @@ describe('CLI Configuration Parser', () => {
     delete process.env.MCP_LOG_LEVEL;
     delete process.env.MCP_ENABLED_TOOLS;
     delete process.env.MCP_READ_ONLY;
-    delete process.env.MCP_DISABLE_SEARCH;
     delete process.env.MCP_BEARER_TOKEN;
     delete process.env.MCP_ALLOW_UNAUTHENTICATED;
     delete process.env.TLS_CERT_FILE;
@@ -94,7 +93,6 @@ describe('CLI Configuration Parser', () => {
         expect(config.logFormat).toBe('human');
         expect(config.logLevel).toBe('info');
         expect(config.readOnly).toBe(true);
-        expect(config.disableSearch).toBe(false);
       });
 
       it('should have empty LM credentials by default', () => {
@@ -182,13 +180,6 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.readOnly).toBe(false);
-      });
-
-      it('should parse disable-search flag from env', () => {
-        process.env.MCP_DISABLE_SEARCH = 'true';
-        const config = parseConfig();
-        
-        expect(config.disableSearch).toBe(true);
       });
 
       it('should parse LM credentials from env', () => {
@@ -298,13 +289,6 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.readOnly).toBe(true);
-      });
-
-      it('should parse disable-search flag from CLI', () => {
-        process.argv = ['node', 'script.js', '--disable-search'];
-        const config = parseConfig();
-        
-        expect(config.disableSearch).toBe(true);
       });
 
       it('should parse LM credentials from CLI', () => {
@@ -574,7 +558,6 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
-        disableSearch: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
         allowUnauthenticated: false,
@@ -728,7 +711,6 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
-        disableSearch: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
         allowUnauthenticated: false,
@@ -801,14 +783,6 @@ describe('CLI Configuration Parser', () => {
       displayConfig(config);
       
       expect(consoleOutput.some(o => o.includes('Mode: read-write'))).toBe(true);
-    });
-
-    it('should show search disabled status', () => {
-      config.disableSearch = true;
-      
-      displayConfig(config);
-      
-      expect(consoleOutput.some(o => o.includes('Search: disabled'))).toBe(true);
     });
 
     it('should show enabled tools when configured', () => {

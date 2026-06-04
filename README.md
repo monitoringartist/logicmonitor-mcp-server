@@ -431,9 +431,6 @@ npm start
 ```bash
 # Enable specific tools only
 npm start -- --enabled-tools "list_resources,get_resource,list_alerts,get_alert"
-
-# Disable search functionality
-npm start -- --disable-search
 ```
 
 ### JSON Logging for Production

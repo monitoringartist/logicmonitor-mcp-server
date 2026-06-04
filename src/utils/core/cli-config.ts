@@ -24,7 +24,6 @@ export interface ServerConfig {
   // Tool configuration
   enabledTools?: string[];
   readOnly: boolean;
-  disableSearch: boolean;
 
   // LM credentials
   lmCompany: string;
@@ -126,7 +125,6 @@ export function parseConfig(): ServerConfig {
   const enabledToolsStr = process.env.MCP_ENABLED_TOOLS || getFlag('', '--enabled-tools');
   const enabledTools = enabledToolsStr ? enabledToolsStr.split(',').map(t => t.trim()) : undefined;
   const readOnly = process.env.MCP_READ_ONLY === 'false' ? false : (process.env.MCP_READ_ONLY === 'true' || hasFlag('', '--read-only') || true);
-  const disableSearch = process.env.MCP_DISABLE_SEARCH === 'true' || hasFlag('', '--disable-search');
 
   // LM credentials (env takes precedence over flags)
   const lmCompany = process.env.LM_COMPANY || getFlag('', '--lm-company') || '';
@@ -153,7 +151,6 @@ export function parseConfig(): ServerConfig {
     logLevel,
     enabledTools,
     readOnly,
-    disableSearch,
     lmCompany,
     lmBearerToken,
     mcpBearerToken,
@@ -279,7 +276,6 @@ export function displayConfig(config: ServerConfig): void {
       debug: config.debug,
       logLevel: config.logLevel,
       readOnly: config.readOnly,
-      disableSearch: config.disableSearch,
       enabledTools: config.enabledTools?.length || 'all',
     }));
   } else {
@@ -296,9 +292,6 @@ export function displayConfig(config: ServerConfig): void {
     console.log(`${emoji ? '📊 ' : ''}Log Level: ${config.logLevel}`);
     console.log(`${emoji ? '🏢 ' : ''}LM Account: ${config.lmCompany}`);
     console.log(`${emoji ? '🔒 ' : ''}Mode: ${config.readOnly ? 'read-only' : 'read-write'}`);
-    if (config.disableSearch) {
-      console.log(`${emoji ? '🚫 ' : ''}Search: disabled`);
-    }
     if (config.enabledTools) {
       console.log(`${emoji ? '🛠️  ' : ''}Enabled Tools: ${config.enabledTools.join(', ')}`);
     }
@@ -359,9 +352,6 @@ TOOL CONFIGURATION:
                              Default: true (safer)
                              To enable write operations: MCP_READ_ONLY=false
                              Env: MCP_READ_ONLY
-
-  --disable-search           Disable search tools
-                             Env: MCP_DISABLE_SEARCH=true
 
 AUTHENTICATION (sse/streamable-http transports):
   --mcp-bearer-token <token> Static bearer token required for MCP requests
