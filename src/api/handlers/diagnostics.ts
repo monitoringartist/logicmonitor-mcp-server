@@ -86,7 +86,7 @@ export const diagnosticsToolHandlers: ToolHandlerMap = {
 
   'get_diagnostic_remediation_results': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.getDiagnosticRemediationResults({
-      resourceId: args.resourceId, alertId: args.alertId, taskId: args.taskId,
+      hostId: args.resourceId, alertId: args.alertId, moduleType: args.moduleType,
     });
   },
 };

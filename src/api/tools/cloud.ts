@@ -16,7 +16,8 @@ export const cloudTools: Tool[] = [
   },
   {
     name: 'test_aws_account',
-    description: 'Test AWS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation; does not mutate resources. Provide payload via "config".',
+    description: 'Test AWS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation; does not mutate resources. ' +
+      '\n\n**Required:** A `config` with AWS account credentials (an empty config returns "Missing AWS account credentials"). Typically `externalId` + `assumedRoleArn` for IAM role access, or `accessId` + `accessKey` for key-based access, plus the `services`/regions to check.',
     annotations: { title: 'Test AWS account', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -27,7 +28,8 @@ export const cloudTools: Tool[] = [
   },
   {
     name: 'verify_aws_billing_permissions',
-    description: 'Verify AWS billing/CUR permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    description: 'Verify AWS billing/CUR permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. ' +
+      '\n\n**Required:** A `config` with AWS account credentials (empty config returns "Missing AWS account credentials"): IAM access (`externalId` + `assumedRoleArn`) or keys (`accessId` + `accessKey`), plus the billing/CUR S3 bucket details to verify.',
     annotations: { title: 'Verify AWS billing permissions', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -59,7 +61,8 @@ export const cloudTools: Tool[] = [
   },
   {
     name: 'test_azure_account',
-    description: 'Test Azure account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    description: 'Test Azure account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. ' +
+      '\n\n**Required:** A `config` with Azure service-principal credentials (empty config returns "Missing required Azure account credentials"): `clientId`, `secretKey`, `tenantId`, and the `subscriptionIds` to check.',
     annotations: { title: 'Test Azure account', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -70,7 +73,8 @@ export const cloudTools: Tool[] = [
   },
   {
     name: 'verify_azure_storage_permissions',
-    description: 'Verify Azure storage account permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    description: 'Verify Azure storage account permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. ' +
+      '\n\n**Required:** A `config` describing the storage account to verify (empty config returns "Missing fields to verify storage account"): the service-principal credentials (`clientId`, `secretKey`, `tenantId`) plus the storage account name/resource group/subscription.',
     annotations: { title: 'Verify Azure storage permissions', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -83,7 +87,8 @@ export const cloudTools: Tool[] = [
   // Cloud Onboarding - GCP
   {
     name: 'test_gcp_account',
-    description: 'Test GCP account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    description: 'Test GCP account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. ' +
+      '\n\n**Required:** A `config` with GCP service-account credentials (empty config returns "Missing required GCP Account credentials"): `clientEmail`, `privateKey`, and `projectId` (i.e., the fields from the service-account JSON key).',
     annotations: { title: 'Test GCP account', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -96,7 +101,8 @@ export const cloudTools: Tool[] = [
   // SaaS account
   {
     name: 'test_saas_account',
-    description: 'Test SaaS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. Provide payload via "config".',
+    description: 'Test SaaS account credentials/permissions for LogicMonitor (LM) cloud onboarding. Read-oriented validation. ' +
+      '\n\n**Required:** A `config` with the SaaS account credentials AND the resource types to check (empty config returns "Missing checked resource types"): include `checkedResourceTypes` (the SaaS modules to validate) plus the relevant API credentials/tokens.',
     annotations: { title: 'Test SaaS account', readOnlyHint: true },
     inputSchema: {
       type: 'object',

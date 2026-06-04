@@ -460,10 +460,10 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        id: { type: 'number', description: 'The cluster alert configuration ID' },
+        clusterAlertConfId: { type: 'number', description: 'The cluster alert configuration ID (from "list_resource_group_cluster_alert_confs").' },
       },
       additionalProperties: false,
-      required: ['groupId', 'id'],
+      required: ['groupId', 'clusterAlertConfId'],
     },
   },
   {
@@ -488,11 +488,11 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        id: { type: 'number', description: 'The cluster alert configuration ID' },
+        clusterAlertConfId: { type: 'number', description: 'The cluster alert configuration ID (from "list_resource_group_cluster_alert_confs").' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['groupId', 'id', 'config'],
+      required: ['groupId', 'clusterAlertConfId', 'config'],
     },
   },
   {
@@ -503,10 +503,10 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        id: { type: 'number', description: 'The cluster alert configuration ID' },
+        clusterAlertConfId: { type: 'number', description: 'The cluster alert configuration ID (from "list_resource_group_cluster_alert_confs").' },
       },
       additionalProperties: false,
-      required: ['groupId', 'id'],
+      required: ['groupId', 'clusterAlertConfId'],
     },
   },
 

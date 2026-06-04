@@ -451,7 +451,7 @@ export const instancesTools: Tool[] = [
         instanceId: { type: 'number', description: 'The instance ID' },
         configId: { type: 'string', description: 'The config version ID' },
         format: { type: 'string', description: 'Response format' },
-        startEpoch: { type: 'number', description: 'Start epoch for diff context' },
+        startEpoch: { type: 'number', description: 'Start epoch (seconds). The LM config API requires this; defaults to 0 (all history) when omitted.' },
         ...fieldsSchema,
       },
       additionalProperties: false,
@@ -736,7 +736,8 @@ export const instancesTools: Tool[] = [
     name: 'fetch_instances_data',
     description: 'Fetch recent metric data for multiple device datasource instances in a single bulk request in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** the instances selector via `config` (the DeviceInstances body), plus optional time controls: period, start, end, aggregate. ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_data" (single instance), "get\\_instance\\_graph\\_data\\_by\\_id".',
+      '\n\n**Required in `config`:** `instanceIds` (a comma-separated string or array of device datasource instance IDs) — the request fails with "instanceIds can\'t be null" if omitted. Optionally include `dataPoints` to limit which datapoints are returned. ' +
+      '\n\n**Related tools:** "list\\_resource\\_instances" (find instance IDs), "get\\_resource\\_instance\\_data" (single instance), "get\\_instance\\_graph\\_data\\_by\\_id".',
     annotations: { title: 'Fetch bulk instances data', readOnlyHint: true },
     inputSchema: {
       type: 'object',

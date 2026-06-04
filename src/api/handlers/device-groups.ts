@@ -85,7 +85,7 @@ export const deviceGroupsToolHandlers: ToolHandlerMap = {
   },
 
   'get_resource_group_cluster_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getDeviceGroupClusterAlertConf(args.groupId, args.id);
+    return await client.getDeviceGroupClusterAlertConf(args.groupId, args.clusterAlertConfId);
   },
 
   'create_resource_group_cluster_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -94,12 +94,12 @@ export const deviceGroupsToolHandlers: ToolHandlerMap = {
   },
 
   'update_resource_group_cluster_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { groupId, id, config, ...rest } = args;
-    return await client.updateDeviceGroupClusterAlertConf(groupId, id, { ...rest, ...(config || {}) });
+    const { groupId, clusterAlertConfId, config, ...rest } = args;
+    return await client.updateDeviceGroupClusterAlertConf(groupId, clusterAlertConfId, { ...rest, ...(config || {}) });
   },
 
   'delete_resource_group_cluster_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteDeviceGroupClusterAlertConf(args.groupId, args.id);
+    return await client.deleteDeviceGroupClusterAlertConf(args.groupId, args.clusterAlertConfId);
   },
 
   'list_resource_group_datasources': async ({ client, args }: ToolHandlerContext): Promise<any> => {

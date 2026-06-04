@@ -208,14 +208,15 @@ export const diagnosticsTools: Tool[] = [
   },
   {
     name: 'get_diagnostic_remediation_results',
-    description: 'Get diagnostic remediation execution results in LogicMonitor (LM).',
+    description: 'Get diagnostic remediation execution results in LogicMonitor (LM). ' +
+      '\n\n**Required:** Provide exactly one of `resourceId` (the device/host ID) or `alertId`. Optionally narrow by `moduleType`.',
     annotations: { title: 'Get diagnostic remediation results', readOnlyHint: true },
     inputSchema: {
       type: 'object',
       properties: {
-        resourceId: { type: 'number', description: 'The resource/device ID.' },
-        alertId: { type: 'string', description: 'The alert ID.' },
-        taskId: { type: 'string', description: 'The remediation task ID.' },
+        resourceId: { type: 'number', description: 'The resource/device (host) ID. Provide exactly one of resourceId or alertId.' },
+        alertId: { type: 'string', description: 'The alert ID. Provide exactly one of resourceId or alertId.' },
+        moduleType: { type: 'string', description: 'Optional module type to filter results.' },
       },
       additionalProperties: false,
     },

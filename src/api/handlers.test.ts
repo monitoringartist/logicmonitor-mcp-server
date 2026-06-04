@@ -1706,7 +1706,7 @@ describe('LogicMonitorHandlers', () => {
       await handlers.handleToolCall('get_resource_instance_config', {
         deviceId: 1, deviceDataSourceId: 2, instanceId: 3, configId: 'abc', format: 'raw',
       });
-      expect(mockClient.getDeviceInstanceConfig).toHaveBeenCalledWith(1, 2, 3, 'abc', { format: 'raw', startEpoch: undefined, fields: undefined });
+      expect(mockClient.getDeviceInstanceConfig).toHaveBeenCalledWith(1, 2, 3, 'abc', { format: 'raw', startEpoch: 0, fields: undefined });
     });
 
     it('collect_resource_instance_config triggers collection', async () => {
@@ -2160,7 +2160,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('get_resource_group_cluster_alert_conf passes ids', async () => {
       mockClient.getDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
-      await handlers.handleToolCall('get_resource_group_cluster_alert_conf', { groupId: 5, id: 7 });
+      await handlers.handleToolCall('get_resource_group_cluster_alert_conf', { groupId: 5, clusterAlertConfId: 7 });
       expect(mockClient.getDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7);
     });
 
@@ -2172,13 +2172,13 @@ describe('LogicMonitorHandlers', () => {
 
     it('update_resource_group_cluster_alert_conf merges config', async () => {
       mockClient.updateDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_resource_group_cluster_alert_conf', { groupId: 5, id: 7, config: { name: 'c2' } });
+      await handlers.handleToolCall('update_resource_group_cluster_alert_conf', { groupId: 5, clusterAlertConfId: 7, config: { name: 'c2' } });
       expect(mockClient.updateDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7, expect.objectContaining({ name: 'c2' }));
     });
 
     it('delete_resource_group_cluster_alert_conf passes ids', async () => {
       mockClient.deleteDeviceGroupClusterAlertConf.mockResolvedValue({} as never);
-      await handlers.handleToolCall('delete_resource_group_cluster_alert_conf', { groupId: 5, id: 7 });
+      await handlers.handleToolCall('delete_resource_group_cluster_alert_conf', { groupId: 5, clusterAlertConfId: 7 });
       expect(mockClient.deleteDeviceGroupClusterAlertConf).toHaveBeenCalledWith(5, 7);
     });
 

@@ -275,7 +275,7 @@ export const devicesToolHandlers: ToolHandlerMap = {
       args.deviceDataSourceId,
       args.instanceId,
       args.configId,
-      { format: args.format, startEpoch: args.startEpoch, fields: args.fields },
+      { format: args.format, startEpoch: args.startEpoch ?? 0, fields: args.fields },
     );
   },
 

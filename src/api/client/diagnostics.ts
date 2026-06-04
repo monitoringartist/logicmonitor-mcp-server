@@ -91,7 +91,7 @@ export class DiagnosticsClient extends BaseClient {
     return this.request<LMResponse<any>>('GET', '/setting/diagnosticRemediation/list', undefined, this.cleanParams(params || {}));
   }
 
-  async getDiagnosticRemediationResults(params?: Record<string, string | number | boolean>) {
+  async getDiagnosticRemediationResults(params?: { hostId?: number; alertId?: string; moduleType?: string }) {
     return this.request<LMResponse<any>>('GET', '/setting/diagnosticRemediation/executionResults', undefined, this.cleanParams(params || {}));
   }
 }
