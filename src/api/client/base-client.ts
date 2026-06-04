@@ -47,6 +47,27 @@ export interface LMListResponse<T> {
   isMin?: boolean;
 }
 
+/**
+ * Shape of a parsed LogicMonitor API JSON response body.
+ *
+ * The API returns either a resource/list payload or an error envelope. This
+ * captures the envelope fields the client actually inspects (status + error
+ * details, list `total`/`items`); the index signature keeps access to
+ * resource-specific fields ergonomic while still being far safer than `any`.
+ * The typed result is cast to the caller's `T` on return.
+ */
+export interface LMApiResponseBody {
+  status?: number;
+  errmsg?: string;
+  errorMessage?: string;
+  errorCode?: number;
+  errorDetail?: string | null;
+  data?: unknown;
+  total?: number;
+  items?: unknown[];
+  [key: string]: unknown;
+}
+
 export class BaseClient {
   protected baseUrl: string;
   protected bearerToken: string;
@@ -148,11 +169,11 @@ export class BaseClient {
       }
 
       let response: Response;
-      let data: any;
+      let data: LMApiResponseBody;
 
       try {
         response = await fetch(url.toString(), options);
-        data = await response.json();
+        data = await response.json() as LMApiResponseBody;
 
         const duration = Date.now() - startTime;
 
@@ -235,7 +256,7 @@ export class BaseClient {
           );
         }
 
-        return data;
+        return data as unknown as T;
       } catch (error) {
         const duration = Date.now() - startTime;
 
@@ -314,7 +335,7 @@ export class BaseClient {
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
       let response: Response;
-      let data: any;
+      let data: LMApiResponseBody;
 
       try {
         response = await fetch(url.toString(), {
@@ -323,7 +344,7 @@ export class BaseClient {
           body: form,
           signal: controller.signal,
         });
-        data = await response.json();
+        data = await response.json() as LMApiResponseBody;
 
         if (!response.ok) {
           if (response.status === 429 && attempt < this.maxRetries) {
@@ -356,7 +377,7 @@ export class BaseClient {
           );
         }
 
-        return data;
+        return data as unknown as T;
       } catch (error) {
         const isTimeout = error instanceof Error && error.name === 'AbortError';
         this.logger?.('error', 'LM API Multipart Request Failed', {
