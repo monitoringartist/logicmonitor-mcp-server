@@ -1,6 +1,7 @@
 # Changelog
 
 ## [v0.1.0] - 2025-12-04
+## [v1.0.0] - 2026-06-06
 
 ### 📦 Other Changes
 - Update changelog before release (71a4007)
@@ -13,7 +14,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.0.0] - full LM API coverage
 
 ### Added
 - Strict `fields` validation against the Swagger v3 spec. For 42 canonical list/get tools (devices, device groups, alerts, dashboards, dashboard groups, widgets, websites, website groups, collectors, collector groups, users, roles, datasources, eventsources, configsources, SDTs, opsnotes, reports, recipient groups, alert rules, escalation chains), an invalid `fields` name now raises a clear `INVALID_PARAMETERS` error with closest-match suggestions instead of being silently ignored by the API. Valid field names are generated from the spec via `npm run generate:field-schemas` (`scripts/generate-field-schemas.mjs` → `src/api/field-schemas.ts`), so allow-lists stay in lock-step with the API. Tools without a known response model are unaffected (fail-open).
@@ -64,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - None
 
-## [0.0.1] - Initial Release
+## [0.1.0] - Initial Release
 
 ### Added
 - Initial implementation of LogicMonitor MCP Server
@@ -76,7 +77,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Batch operations support
 - TLS/HTTPS support
 - Docker support
-
-[Unreleased]: https://github.com/monitoringartist/logicmonitor-mcp-server/compare/v0.0.1...HEAD
-[0.0.1]: https://github.com/monitoringartist/logicmonitor-mcp-server/releases/tag/v0.0.1
-
