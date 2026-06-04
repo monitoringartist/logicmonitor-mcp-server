@@ -702,21 +702,16 @@ The server provides 356 tools for comprehensive LogicMonitor operations (100% Lo
 
 **Read-Only:**
 - `get_escalation_chain` - Get escalation chain details
-- `get_recipient` - Get recipient details
 - `get_recipient_group` - Get recipient group details
 - `list_escalation_chains` - List alert escalation chains
 - `list_recipient_groups` - List recipient groups
-- `list_recipients` - List alert recipients
 
 **Write Operations:**
 - `create_escalation_chain` - Create escalation chain
-- `create_recipient` - Create alert recipient
 - `create_recipient_group` - Create recipient group
 - `delete_escalation_chain` - Delete escalation chain
-- `delete_recipient` - Delete recipient
 - `delete_recipient_group` - Delete recipient group
 - `update_escalation_chain` - Modify escalation chain
-- `update_recipient` - Modify recipient
 - `update_recipient_group` - Modify recipient group
 
 ### Integrations

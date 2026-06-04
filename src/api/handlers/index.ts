@@ -12,6 +12,7 @@ import { LogicMonitorClient } from '../client.js';
 import { MCPError, ErrorCodes } from '../../utils/core/error-handler.js';
 import { ToolHandlerMap, validateFields, handleToolError } from './shared.js';
 import type { ProgressCallback } from './shared.js';
+import { normalizeToolArgs } from '../param-aliases.js';
 import { devicesToolHandlers } from './devices.js';
 import { deviceGroupsToolHandlers } from './device-groups.js';
 import { alertsToolHandlers } from './alerts.js';
@@ -114,10 +115,13 @@ export class LogicMonitorHandlers {
       );
     }
     try {
+      // Map common parameter-name aliases (e.g. deviceGroupId -> groupId) onto the
+      // canonical names that handlers read.
+      const normalizedArgs = normalizeToolArgs(name, args);
       // Strict validation of the optional `fields` parameter against the Swagger
       // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
-      return await handler({ client: this.client, args, progressCallback });
+      validateFields(name, normalizedArgs?.fields);
+      return await handler({ client: this.client, args: normalizedArgs, progressCallback });
     } catch (error) {
       handleToolError(error, name);
     }

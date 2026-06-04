@@ -37,6 +37,7 @@ import { integrationsTools } from './integrations.js';
 import { miscTools } from './misc.js';
 import { netscansTools } from './netscans.js';
 import { costOptimizationTools } from './cost-optimization.js';
+import { applyToolParamAliases } from '../param-aliases.js';
 
 const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   ...devicesTools,
@@ -69,6 +70,10 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   ...netscansTools,
   ...costOptimizationTools,
 ];
+
+// Make tools forgiving of common LM-native parameter-name variants
+// (e.g. deviceGroupId -> groupId, hdsId -> deviceDataSourceId).
+applyToolParamAliases(ALL_LOGICMONITOR_TOOLS);
 
 /**
  * Get LogicMonitor tools, optionally filtered by read-only status

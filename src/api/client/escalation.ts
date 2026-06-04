@@ -34,40 +34,11 @@ export class EscalationClient extends BaseClient {
     return this.request<LMResponse<any>>('DELETE', `/setting/alert/chains/${chainId}`);
   }
 
-  // Recipients
-  async listRecipients(params?: {
-    size?: number;
-    offset?: number;
-    filter?: string;
-    fields?: string;
-    autoPaginate?: boolean;
-  }) {
-    const { autoPaginate = false, ...otherParams } = params || {};
-    const cleanedParams = this.cleanParams(otherParams);
-
-    if (autoPaginate) {
-      return this.paginateAll<any>('/setting/recipients', cleanedParams);
-    }
-    return this.request<LMListResponse<any>>('GET', '/setting/recipients', undefined, cleanedParams);
-  }
-
-  async getRecipient(recipientId: number, params?: { fields?: string }) {
-    return this.request<LMResponse<any>>('GET', `/setting/recipients/${recipientId}`, undefined, params);
-  }
-
-  async createRecipient(recipient: any) {
-    return this.request<LMResponse<any>>('POST', '/setting/recipients', recipient);
-  }
-
-  async updateRecipient(recipientId: number, recipient: any) {
-    return this.request<LMResponse<any>>('PATCH', `/setting/recipients/${recipientId}`, recipient);
-  }
-
-  async deleteRecipient(recipientId: number) {
-    return this.request<LMResponse<any>>('DELETE', `/setting/recipients/${recipientId}`);
-  }
-
   // Recipient Groups
+  //
+  // NOTE: LogicMonitor API v3 has no standalone "recipients" resource
+  // (`/setting/recipients` does not exist). Individual recipients are managed
+  // as members of recipient groups and within escalation-chain stages.
   async listRecipientGroups(params?: {
     size?: number;
     offset?: number;

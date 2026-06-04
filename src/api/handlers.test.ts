@@ -188,11 +188,6 @@ describe('LogicMonitorHandlers', () => {
       createEscalationChain: jest.fn(),
       updateEscalationChain: jest.fn(),
       deleteEscalationChain: jest.fn(),
-      listRecipients: jest.fn(),
-      getRecipient: jest.fn(),
-      createRecipient: jest.fn(),
-      updateRecipient: jest.fn(),
-      deleteRecipient: jest.fn(),
       listRecipientGroups: jest.fn(),
       getRecipientGroup: jest.fn(),
       createRecipientGroup: jest.fn(),
@@ -921,6 +916,17 @@ describe('LogicMonitorHandlers', () => {
         });
 
         expect(result).toEqual(mockDataSource);
+      });
+
+      it('should accept the lowercase datasourceId alias', async () => {
+        const mockDataSource = { id: 50, name: 'test-datasource' };
+        mockClient.getDataSource.mockResolvedValue(mockDataSource);
+
+        await handlers.handleToolCall('get_datasource', {
+          datasourceId: 50,
+        });
+
+        expect(mockClient.getDataSource).toHaveBeenCalledWith(50, expect.any(Object));
       });
     });
 
@@ -3187,26 +3193,13 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.deleteEscalationChain).toHaveBeenCalled();
     });
 
-    it('should handle recipients and recipient groups', async () => {
-      const mockRecipient = { id: 1, type: 'email', addr: 'test@example.com' };
+    it('should handle recipient groups', async () => {
       const mockGroup = { id: 1, name: 'test-group' };
 
-      mockClient.createRecipient.mockResolvedValue(mockRecipient);
-      mockClient.updateRecipient.mockResolvedValue(mockRecipient);
-      mockClient.deleteRecipient.mockResolvedValue({});
       mockClient.createRecipientGroup.mockResolvedValue(mockGroup);
       mockClient.updateRecipientGroup.mockResolvedValue(mockGroup);
       mockClient.deleteRecipientGroup.mockResolvedValue({});
 
-      await handlers.handleToolCall('create_recipient', {
-        type: 'email',
-        addr: 'test@example.com',
-      });
-      await handlers.handleToolCall('update_recipient', {
-        recipientId: 1,
-        addr: 'new@example.com',
-      });
-      await handlers.handleToolCall('delete_recipient', { recipientId: 1 });
       await handlers.handleToolCall('create_recipient_group', { name: 'test-group' });
       await handlers.handleToolCall('update_recipient_group', {
         groupId: 1,
@@ -3214,9 +3207,6 @@ describe('LogicMonitorHandlers', () => {
       });
       await handlers.handleToolCall('delete_recipient_group', { groupId: 1 });
 
-      expect(mockClient.createRecipient).toHaveBeenCalled();
-      expect(mockClient.updateRecipient).toHaveBeenCalled();
-      expect(mockClient.deleteRecipient).toHaveBeenCalled();
       expect(mockClient.createRecipientGroup).toHaveBeenCalled();
       expect(mockClient.updateRecipientGroup).toHaveBeenCalled();
       expect(mockClient.deleteRecipientGroup).toHaveBeenCalled();

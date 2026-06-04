@@ -25,7 +25,7 @@ export const escalationTools: Tool[] = [
       '\n- "Why didn\'t I get notified?" → Verify you\'re in the escalation chain ' +
       '\n- "Update on-call rotation" → Modify escalation chain recipients ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_escalation\\_chain" (detailed stages), "list\\_alert\\_rules" (see which rules use chain), "list\\_recipients" (available notification targets).',
+      '\n\n**Related tools:** "get\\_escalation\\_chain" (detailed stages), "list\\_alert\\_rules" (see which rules use chain), "list\\_recipient\\_groups" (available notification targets).',
     annotations: {
       title: 'List escalation chains',
       readOnlyHint: true,
@@ -63,7 +63,7 @@ export const escalationTools: Tool[] = [
       'Stage 2 (15 min): PagerDuty integration, Email "team-lead@company.com" ' +
       'Stage 3 (30 min): Slack webhook, Email "engineering-manager@company.com" ' +
       '\n\n**Workflow:** Use "list\\_escalation\\_chains" to find chainId, then use this tool to review complete notification workflow. ' +
-      '\n\n**Related tools:** "list\\_escalation\\_chains" (find chains), "update\\_escalation\\_chain" (modify), "list\\_recipients" (see recipients).',
+      '\n\n**Related tools:** "list\\_escalation\\_chains" (find chains), "update\\_escalation\\_chain" (modify), "list\\_recipient\\_groups" (see recipient groups).',
     annotations: {
       title: 'Get escalation chain details',
       readOnlyHint: true,
@@ -156,7 +156,7 @@ export const escalationTools: Tool[] = [
       '\n- Business hours chains for non-critical alerts (reduce after-hours noise) ' +
       '\n- Test escalation chains before production use ' +
       '\n- Document who is in each stage for on-call handoffs ' +
-      '\n\n**Related tools:** "list\\_recipients" (find recipients), "list\\_recipient\\_groups" (find groups), "list\\_integrations" (find integrations), "create\\_alert\\_rule" (route alerts to chain), "list\\_escalation\\_chains" (view all).',
+      '\n\n**Related tools:** "list\\_recipient\\_groups" (find groups), "list\\_integrations" (find integrations), "create\\_alert\\_rule" (route alerts to chain), "list\\_escalation\\_chains" (view all).',
     annotations: {
       title: 'Create escalation chain',
       readOnlyHint: false,
@@ -219,7 +219,7 @@ export const escalationTools: Tool[] = [
       '2. Use "list\\_alert\\_rules" to see which rules use this chain (impact analysis) ' +
       '3. Update escalation chain ' +
       '4. Monitor alerts to verify new configuration works ' +
-      '\n\n**Related tools:** "get\\_escalation\\_chain" (review), "list\\_alert\\_rules" (impact analysis), "list\\_recipients" (find new recipients).',
+      '\n\n**Related tools:** "get\\_escalation\\_chain" (review), "list\\_alert\\_rules" (impact analysis), "list\\_recipient\\_groups" (find recipient groups).',
     annotations: {
       title: 'Update escalation chain',
       readOnlyHint: false,
@@ -318,284 +318,6 @@ export const escalationTools: Tool[] = [
     },
   },
 
-  // Recipients
-  {
-    name: 'list_recipients',
-    description: 'List all alert recipients (individual notification targets) in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Returns:** Array of recipients with: id, type (email/SMS/webhook), contact information, method (email address, phone number, webhook URL), name, status. ' +
-      '\n\n**What are recipients:** Individual notification endpoints used in escalation chains. Can be: email addresses, SMS/phone numbers, webhook URLs, or integration endpoints (Slack, PagerDuty, etc.). ' +
-      '\n\n**When to use:**' +
-      '\n- Find recipient IDs for escalation chain configuration' +
-      '\n- Audit who can receive alerts' +
-      '\n- Verify contact information is current' +
-      '\n- Review notification endpoints before updating escalation chains' +
-      '\n' +
-      '\n\n**Recipient types explained:** ' +
-      '\n- **Email:** Email address (e.g., oncall@company.com, john.doe@company.com) ' +
-      '\n- **SMS:** Mobile phone number (e.g., +1-555-123-4567) ' +
-      '\n- **Voice:** Phone number for voice calls ' +
-      '\n- **Arbitrary:** Custom webhooks for external integrations ' +
-      '\n\n**Common use cases:** ' +
-      '\n- "Who can receive critical production alerts?" → List recipients used in escalation chains ' +
-      '\n- "Update on-call phone number" → Find recipient by name, update contact info ' +
-      '\n- "Add new team member to alerts" → Create recipient, add to escalation chain ' +
-      '\n- "Remove former employee" → Find and delete recipient ' +
-      '\n\n**Recipients vs Recipient Groups:** ' +
-      '\n- Recipients: Individual targets (one email, one phone) ' +
-      '\n- Recipient Groups: Collections of recipients (notify entire team at once) ' +
-      '\n\n**Workflow:** Use this tool to find available recipients, then use in "create\\_escalation\\_chain" or "update\\_escalation\\_chain" to set up notifications. ' +
-      '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_recipient" (details), "list\\_recipient\\_groups" (group management), "list\\_escalation\\_chains" (see who gets notified).',
-    annotations: {
-      title: 'List alert recipients',
-      readOnlyHint: true,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        ...paginationSchema,
-        ...filterSchema,
-        ...fieldsSchema,
-      },
-      additionalProperties: false,
-    },
-  },
-  {
-    name: 'get_recipient',
-    description: 'Get detailed information about a specific recipient by ID in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Returns:** Complete recipient details: type, name, contact information (email/phone/URL), notification method, timezone, schedule restrictions, rate limiting settings. ' +
-      '\n\n**When to use:**' +
-      '\n- Verify contact information before escalation' +
-      '\n- Check notification schedule (business hours vs 24/7)' +
-      '\n- Review rate limiting settings' +
-      '\n- Audit recipient configuration' +
-      '\n' +
-      '\n\n**Details returned:** ' +
-      '\n- Contact info: Exact email/phone/webhook URL ' +
-      '\n- Schedule: When notifications are sent (always vs business hours) ' +
-      '\n- Rate limit: Max notifications per time period (prevent notification fatigue) ' +
-      '\n- Method: Delivery mechanism (SMTP, Twilio, webhook) ' +
-      '\n\n**Workflow:** Use "list\\_recipients" to find recipientId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list\\_recipients" (find recipient), "update\\_recipient" (modify), "list\\_escalation\\_chains" (usage).',
-    annotations: {
-      title: 'Get recipient details',
-      readOnlyHint: true,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        recipientId: {
-          type: 'number',
-          description: 'The ID of the recipient to retrieve',
-        },
-        ...fieldsSchema,
-      },
-      additionalProperties: false,
-      required: ['recipientId'],
-    },
-  },
-  {
-    name: 'create_recipient',
-    description: 'Create a new alert recipient (notification endpoint) in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Creates individual notification target (email address, phone number, webhook URL, etc.) that can receive alert notifications via escalation chains. ' +
-      '\n\n**When to use:**' +
-      '\n- Add new team member to alert notifications' +
-      '\n- Set up on-call phone numbers' +
-      '\n- Configure webhook for Slack/Teams integration' +
-      '\n- Add email distribution lists' +
-      '\n- Set up SMS alerts for critical issues' +
-      '\n' +
-      '\n\n**Required parameters:** ' +
-      '\n- type: Recipient type - "email", "sms", "voice", "webhook" ' +
-      '\n- address: Contact information (email address, phone number, webhook URL) ' +
-      '\n\n**Optional parameters:** ' +
-      '\n- name: Friendly name (e.g., "John Doe - Mobile", "Team Slack Channel") ' +
-      '\n- schedule: Notification schedule (24/7, business hours only, custom) ' +
-      '\n- rateLimit: Max notifications per time period (prevent alert fatigue) ' +
-      '\n\n**Recipient types and examples:** ' +
-      '\n\n**Email recipient:** ' +
-      '{type: "email", address: "oncall@company.com", name: "On-Call Team Email"} ' +
-      '{type: "email", address: "john.doe@company.com", name: "John Doe"} ' +
-      '\n\n**SMS recipient (mobile alerts):** ' +
-      '{type: "sms", address: "+1-555-123-4567", name: "John - Mobile", schedule: "24/7"} ' +
-      '{type: "sms", address: "+1-555-987-6543", name: "On-Call Phone"} ' +
-      '\n\n**Voice recipient (phone calls):** ' +
-      '{type: "voice", address: "+1-555-111-2222", name: "Emergency Contact"} ' +
-      '\n\n**Webhook recipient (integrations):** ' +
-      '{type: "webhook", address: "https://hooks.slack.com/...", name: "DevOps Slack Channel"} ' +
-      '{type: "webhook", address: "https://custom-app.com/alerts", name: "Custom Integration"} ' +
-      '\n\n**Schedule options:** ' +
-      '\n- "24/7" or null: Always receive notifications ' +
-      '\n- "business-hours": Mon-Fri 9am-5pm only (reduce after-hours noise) ' +
-      '\n- Custom schedule: Define specific days/times ' +
-      '\n\n**Rate limiting (prevent notification fatigue):** ' +
-      '\n- rateLimit: 10 = Max 10 notifications per hour ' +
-      '\n- rateLimit: 5 = Max 5 notifications per hour (for SMS/voice - cost control) ' +
-      '\n- Prevents alert storms from flooding recipient ' +
-      '\n\n**Common recipient patterns:** ' +
-      '\n\n**On-call engineer (multiple contact methods):** ' +
-      '1. Create email: {type: "email", address: "engineer@company.com"} ' +
-      '2. Create SMS: {type: "sms", address: "+1-555-1234"} ' +
-      '3. Create voice: {type: "voice", address: "+1-555-1234"} ' +
-      '4. Add all to escalation chain for redundancy ' +
-      '\n\n**Team notification (prefer groups):** ' +
-      'For multiple people, better to: ' +
-      '1. Create individual recipients for each team member ' +
-      '2. Create recipient group containing all members ' +
-      '3. Use group in escalation chains (easier to manage) ' +
-      '\n\n**After creation workflow:** ' +
-      '1. Create recipient(s) ' +
-      '2. Optionally create recipient group to organize ' +
-      '3. Add to escalation chain stages ' +
-      '4. Escalation chain used by alert rules ' +
-      '5. Recipient receives notifications when alerts match ' +
-      '\n\n**Best practices:** ' +
-      '\n- Descriptive names: "John Doe - Mobile" not just phone number ' +
-      '\n- Use business hours schedule for non-critical alerts ' +
-      '\n- Rate limit SMS/voice to control costs ' +
-      '\n- Group related recipients (easier management) ' +
-      '\n- Test with sample alert before production use ' +
-      '\n\n**Related tools:** "create\\_recipient\\_group" (organize recipients), "create\\_escalation\\_chain" (use recipients), "list\\_recipients" (view all).',
-    annotations: {
-      title: 'Create recipient',
-      readOnlyHint: false,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        type: {
-          type: 'string',
-          description: 'Recipient type (e.g., "email", "sms")',
-        },
-        addr: {
-          type: 'string',
-          description: 'Recipient address (email or phone number)',
-        },
-        name: {
-          type: 'string',
-          description: 'Recipient name',
-        },
-        method: {
-          type: 'string',
-          description: 'Notification method',
-        },
-      },
-      additionalProperties: false,
-      required: ['type', 'addr'],
-    },
-  },
-  {
-    name: 'update_recipient',
-    description: 'Update an existing alert recipient in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Modify recipient contact information, notification schedule, rate limits, or name. Changes affect all escalation chains using this recipient. ' +
-      '\n\n**When to use:**' +
-      '\n- Update phone number/email after personnel changes' +
-      '\n- Change notification schedule' +
-      '\n- Adjust rate limits' +
-      '\n- Update recipient name' +
-      '\n- Switch from email to SMS' +
-      '\n' +
-      '\n\n**Required parameters:** ' +
-      '\n- recipientId: Recipient ID (from "list\\_recipients") ' +
-      '\n\n**Optional parameters (what to change):** ' +
-      '\n- address: New contact info (email, phone, webhook URL) ' +
-      '\n- name: New friendly name ' +
-      '\n- schedule: Update notification hours ' +
-      '\n- rateLimit: Change max notifications per hour ' +
-      '\n\n**Common update scenarios:** ' +
-      '\n\n**Update on-call phone number:** ' +
-      '{recipientId: 123, address: "+1-555-999-8888", name: "John Doe - New Mobile"} ' +
-      '\n\n**Change to business hours only:** ' +
-      '{recipientId: 123, schedule: "business-hours"} // Stop after-hours alerts ' +
-      '\n\n**Reduce SMS rate limit (cost control):** ' +
-      '{recipientId: 123, rateLimit: 5} // Max 5 SMS per hour ' +
-      '\n\n**Update webhook URL:** ' +
-      '{recipientId: 123, address: "https://new-webhook-url.com/alerts"} ' +
-      '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_recipient" to review current configuration ' +
-      '2. Update recipient information ' +
-      '3. Changes take effect immediately for new notifications ' +
-      '\n\n**Related tools:** "get\\_recipient" (review), "list\\_recipients" (find recipient), "list\\_escalation\\_chains" (see usage).',
-    annotations: {
-      title: 'Update recipient',
-      readOnlyHint: false,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        recipientId: {
-          type: 'number',
-          description: 'The ID of the recipient to update',
-        },
-        name: {
-          type: 'string',
-          description: 'New name',
-        },
-        addr: {
-          type: 'string',
-          description: 'New address',
-        },
-        method: {
-          type: 'string',
-          description: 'New notification method',
-        },
-      },
-      additionalProperties: false,
-      required: ['recipientId'],
-    },
-  },
-  {
-    name: 'delete_recipient',
-    description: 'Delete an alert recipient from LogicMonitor (LM) monitoring. ' +
-      '\n\n**⚠️ WARNING: BREAKS ESCALATION CHAINS** ' +
-      '\n- Escalation chains using this recipient will have gaps in notification ' +
-      '\n- Stages referencing this recipient stop notifying (silently) ' +
-      '\n- No error shown - notifications just don\'t arrive ' +
-      '\n- Cannot be undone ' +
-      '\n\n**What this does:** Permanently removes recipient. Escalation chains referencing this recipient lose that notification endpoint. ' +
-      '\n\n**When to use:**' +
-      '\n- Employee left company' +
-      '\n- Phone number decommissioned' +
-      '\n- Email no longer valid' +
-      '\n- Webhook endpoint retired' +
-      '\n- Consolidating duplicate recipients' +
-      '\n' +
-      '\n\n**Required parameters:** ' +
-      '\n- recipientId: Recipient ID to delete (from "list\\_recipients") ' +
-      '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list\\_escalation\\_chains" to find chains using this recipient ' +
-      '2. Create/identify replacement recipient ' +
-      '3. Update escalation chains to use new recipient BEFORE deleting ' +
-      '4. Verify no chains reference this recipient ' +
-      '\n\n**Impact of deletion:** ' +
-      '\n- Escalation chain stages with this recipient stop sending notifications ' +
-      '\n- No error or warning - notifications silently fail ' +
-      '\n- Active alerts may skip escalation stages ' +
-      '\n\n**Safe deletion workflow:** ' +
-      '1. Find which escalation chains use this recipient ' +
-      '2. Create new recipient for replacement ' +
-      '3. Update all escalation chains to use new recipient ' +
-      '4. Verify updated ' +
-      '5. Delete old recipient ' +
-      '\n\n**Best practice:** Replace recipient in all escalation chains BEFORE deleting to prevent notification gaps. ' +
-      '\n\n**Related tools:** "list\\_escalation\\_chains" (find usage), "create\\_recipient" (replacement), "update\\_escalation\\_chain" (migrate).',
-    annotations: {
-      title: 'Delete recipient',
-      readOnlyHint: false,
-    },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        recipientId: {
-          type: 'number',
-          description: 'The ID of the recipient to delete',
-        },
-      },
-      additionalProperties: false,
-      required: ['recipientId'],
-    },
-  },
-
   // Recipient Groups
   {
     name: 'list_recipient_groups',
@@ -623,7 +345,7 @@ export const escalationTools: Tool[] = [
       '\n- "Add new team member" → Add to group, automatically included in alerts ' +
       '\n\n**Workflow:** Use this tool to find groups, then use in escalation chains to notify multiple people at once. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_recipient\\_group" (details), "list\\_recipients" (individual members), "list\\_escalation\\_chains" (see usage).',
+      '\n\n**Related tools:** "get\\_recipient\\_group" (details), "list\\_escalation\\_chains" (see usage).',
     annotations: {
       title: 'List recipient groups',
       readOnlyHint: true,
@@ -727,7 +449,7 @@ export const escalationTools: Tool[] = [
       '\n- Use groups in escalation chains instead of individual recipients ' +
       '\n- Keep groups small (3-10 members) for manageability ' +
       '\n- Document group purpose in description ' +
-      '\n\n**Related tools:** "list\\_recipients" (find recipients), "update\\_recipient\\_group" (change members), "create\\_escalation\\_chain" (use groups).',
+      '\n\n**Related tools:** "update\\_recipient\\_group" (change members), "create\\_escalation\\_chain" (use groups).',
     annotations: {
       title: 'Create recipient group',
       readOnlyHint: false,
@@ -787,7 +509,7 @@ export const escalationTools: Tool[] = [
       '1. Use "get\\_recipient\\_group" to see current members ' +
       '2. Update group with new membership ' +
       '3. Changes take effect for next alerts ' +
-      '\n\n**Related tools:** "get\\_recipient\\_group" (review), "list\\_recipient\\_groups" (find group), "list\\_recipients" (find recipients).',
+      '\n\n**Related tools:** "get\\_recipient\\_group" (review), "list\\_recipient\\_groups" (find group).',
     annotations: {
       title: 'Update recipient group',
       readOnlyHint: false,
