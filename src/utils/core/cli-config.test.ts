@@ -44,6 +44,7 @@ describe('CLI Configuration Parser', () => {
     delete process.env.MCP_READ_ONLY;
     delete process.env.MCP_DISABLE_SEARCH;
     delete process.env.MCP_BEARER_TOKEN;
+    delete process.env.MCP_ALLOW_UNAUTHENTICATED;
     delete process.env.TLS_CERT_FILE;
     delete process.env.TLS_KEY_FILE;
     delete process.env.OAUTH_PROVIDER;
@@ -205,6 +206,19 @@ describe('CLI Configuration Parser', () => {
         
         expect(config.mcpBearerToken).toBe('mcp-token-456');
       });
+
+      it('should default allowUnauthenticated to false', () => {
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(false);
+      });
+
+      it('should parse allowUnauthenticated from env', () => {
+        process.env.MCP_ALLOW_UNAUTHENTICATED = 'true';
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(true);
+      });
     });
 
     describe('CLI flags', () => {
@@ -306,6 +320,13 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.mcpBearerToken).toBe('mcp-test-token');
+      });
+
+      it('should parse allowUnauthenticated from CLI flag', () => {
+        process.argv = ['node', 'script.js', '--allow-unauthenticated'];
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(true);
       });
     });
 
@@ -556,6 +577,7 @@ describe('CLI Configuration Parser', () => {
         disableSearch: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
+        allowUnauthenticated: false,
       };
     });
 
@@ -609,9 +631,73 @@ describe('CLI Configuration Parser', () => {
     });
 
     it('should validate all transport types', () => {
+      // Opt in to unauthenticated so the network-auth gate doesn't interfere here.
+      config.allowUnauthenticated = true;
       ['stdio', 'sse', 'streamable-http'].forEach(transport => {
         config.transport = transport as any;
         expect(() => validateConfig(config)).not.toThrow();
+      });
+    });
+
+    describe('network transport authentication gate', () => {
+      it('should fail closed for sse without auth or opt-in', () => {
+        config.transport = 'sse';
+
+        validateConfig(config);
+
+        expect(process.exit).toHaveBeenCalledWith(1);
+        expect(consoleErrors.some(e => e.includes('without authentication'))).toBe(true);
+        expect(consoleErrors.some(e => e.includes('MCP_ALLOW_UNAUTHENTICATED=true'))).toBe(true);
+      });
+
+      it('should fail closed for streamable-http without auth or opt-in', () => {
+        config.transport = 'streamable-http';
+
+        validateConfig(config);
+
+        expect(process.exit).toHaveBeenCalledWith(1);
+      });
+
+      it('should allow stdio without auth or opt-in', () => {
+        config.transport = 'stdio';
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with a static bearer token', () => {
+        config.transport = 'sse';
+        config.mcpBearerToken = 'secret';
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with OAuth configured', () => {
+        config.transport = 'streamable-http';
+        config.oauth = {
+          provider: 'github',
+          clientId: 'id',
+          clientSecret: 'secret',
+          callbackUrl: 'http://localhost:3000/auth/callback',
+          sessionSecret: 'session',
+          tokenRefreshEnabled: true,
+        };
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with explicit unauthenticated opt-in', () => {
+        config.transport = 'sse';
+        config.allowUnauthenticated = true;
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
       });
     });
 
@@ -645,6 +731,7 @@ describe('CLI Configuration Parser', () => {
         disableSearch: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
+        allowUnauthenticated: false,
       };
     });
 

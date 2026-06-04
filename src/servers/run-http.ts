@@ -53,23 +53,25 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
   // SSE/HTTP Transport Modes
   // ===========================
 
-  // Authentication is optional for network transports
-  // If neither OAuth nor bearer token is configured, allow unauthenticated access
+  // Authentication for network transports.
+  // Running without auth requires an explicit opt-in (validated in validateConfig),
+  // so reaching this point unauthenticated means the operator chose MCP_ALLOW_UNAUTHENTICATED.
   const oauthConfig = appConfig.oauth;
   const hasAuthentication = !!(oauthConfig || appConfig.mcpBearerToken);
 
   if (!hasAuthentication) {
-    console.error('⚠️  WARNING: No authentication configured - allowing unauthenticated access!');
+    console.error('⚠️  WARNING: Running WITHOUT authentication (MCP_ALLOW_UNAUTHENTICATED=true).');
+    console.error('   Any client that can reach this server may delete devices, alert rules, etc.');
     console.error('');
-    console.error('For production use, configure authentication:');
+    console.error('   For production use, configure authentication instead:');
     console.error('');
-    console.error('Option 1: Static Bearer Token');
-    console.error('   export MCP_BEARER_TOKEN=your-secret-token-here');
+    console.error('   Option 1: Static Bearer Token');
+    console.error('      export MCP_BEARER_TOKEN=your-secret-token-here');
     console.error('');
-    console.error('Option 2: OAuth/OIDC');
-    console.error('   export OAUTH_PROVIDER=github');
-    console.error('   export OAUTH_CLIENT_ID=your-client-id');
-    console.error('   export OAUTH_CLIENT_SECRET=your-client-secret');
+    console.error('   Option 2: OAuth/OIDC');
+    console.error('      export OAUTH_PROVIDER=github');
+    console.error('      export OAUTH_CLIENT_ID=your-client-id');
+    console.error('      export OAUTH_CLIENT_SECRET=your-client-secret');
     console.error('');
   }
 

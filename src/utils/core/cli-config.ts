@@ -33,6 +33,11 @@ export interface ServerConfig {
   // MCP Server authentication
   mcpBearerToken?: string; // Optional static bearer token for MCP server authentication
 
+  // Explicit opt-in to run network transports (sse/streamable-http) without any
+  // authentication. Required because the tools can perform destructive operations
+  // (delete devices, alert rules, etc.) and must not be exposed unauthenticated by accident.
+  allowUnauthenticated: boolean;
+
   // OAuth/OIDC configuration (for remote servers)
   oauth?: OAuthConfig;
 }
@@ -130,6 +135,9 @@ export function parseConfig(): ServerConfig {
   // MCP Server authentication (static bearer token)
   const mcpBearerToken = process.env.MCP_BEARER_TOKEN || getFlag('', '--mcp-bearer-token') || undefined;
 
+  // Explicit opt-in to allow unauthenticated network access
+  const allowUnauthenticated = process.env.MCP_ALLOW_UNAUTHENTICATED === 'true' || hasFlag('', '--allow-unauthenticated');
+
   // OAuth configuration (optional, for remote servers)
   const oauth = parseOAuthConfig(address);
 
@@ -149,6 +157,7 @@ export function parseConfig(): ServerConfig {
     lmCompany,
     lmBearerToken,
     mcpBearerToken,
+    allowUnauthenticated,
     oauth,
   };
 }
@@ -221,6 +230,27 @@ export function validateConfig(config: ServerConfig): void {
     console.error(`❌ Error: Invalid transport '${config.transport}'`);
     console.error('   Valid options: stdio, sse, streamable-http');
     process.exit(1);
+  }
+
+  // Network transports must not run unauthenticated unless explicitly opted in.
+  // These tools can perform destructive operations, so we fail closed by default.
+  if (config.transport !== 'stdio') {
+    const hasAuthentication = !!(config.oauth || config.mcpBearerToken);
+    if (!hasAuthentication && !config.allowUnauthenticated) {
+      console.error('❌ Error: refusing to start a network transport without authentication');
+      console.error('');
+      console.error(`   The '${config.transport}' transport exposes tools that can modify and delete`);
+      console.error('   LogicMonitor resources. Running without authentication is disabled by default.');
+      console.error('');
+      console.error('   Configure authentication (recommended):');
+      console.error('     export MCP_BEARER_TOKEN=your-secret-token-here');
+      console.error('   or set up OAuth/OIDC (OAUTH_PROVIDER, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET).');
+      console.error('');
+      console.error('   To intentionally run WITHOUT authentication (not recommended), opt in:');
+      console.error('     export MCP_ALLOW_UNAUTHENTICATED=true');
+      console.error('');
+      process.exit(1);
+    }
   }
 
   if (!['json', 'human'].includes(config.logFormat)) {
@@ -332,6 +362,18 @@ TOOL CONFIGURATION:
 
   --disable-search           Disable search tools
                              Env: MCP_DISABLE_SEARCH=true
+
+AUTHENTICATION (sse/streamable-http transports):
+  --mcp-bearer-token <token> Static bearer token required for MCP requests
+                             Env: MCP_BEARER_TOKEN
+
+  --allow-unauthenticated    Explicitly allow running a network transport with no
+                             authentication. Disabled by default because the tools
+                             can delete devices, alert rules, etc.
+                             Env: MCP_ALLOW_UNAUTHENTICATED=true
+
+  OAuth/OIDC can also be configured via OAUTH_PROVIDER, OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET (and related OAUTH_* variables).
 
 LOGICMONITOR API (REQUIRED):
   --lm-company <name>        LogicMonitor company/account name (subdomain)
