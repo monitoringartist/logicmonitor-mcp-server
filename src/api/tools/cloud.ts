@@ -40,11 +40,19 @@ export const cloudTools: Tool[] = [
   // Cloud Onboarding - Azure
   {
     name: 'discover_azure_subscriptions',
-    description: 'Discover Azure subscriptions available for LogicMonitor (LM) cloud onboarding. Read-oriented; does not mutate resources. Provide payload via "config".',
+    description: 'Discover Azure subscriptions available for LogicMonitor (LM) cloud onboarding. Read-oriented; does not mutate resources. ' +
+      '\n\n**Required:** A `config` containing the Azure service-principal credentials. An empty `config` returns "Missing Azure account". ' +
+      '\n\n**Expected config fields:** `clientId`, `secretKey`, and `tenantId` (Azure AD application/service-principal used by LM to enumerate subscriptions).',
     annotations: { title: 'Discover Azure subscriptions', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { config: { type: 'object', additionalProperties: true, description: 'Azure credentials payload (clientId, secretKey, tenantId).' } },
+      properties: {
+        config: {
+          type: 'object',
+          additionalProperties: true,
+          description: 'Azure service-principal credentials. Must include clientId, secretKey, and tenantId.',
+        },
+      },
       additionalProperties: false,
       required: ['config'],
     },

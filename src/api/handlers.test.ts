@@ -1953,7 +1953,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('get_log_alert_group passes id', async () => {
       mockClient.getLogAlertGroup.mockResolvedValue({} as never);
-      await handlers.handleToolCall('get_log_alert_group', { pipelineId: 5 });
+      await handlers.handleToolCall('get_log_alert_group', { logAlertGroupId: 5 });
       expect(mockClient.getLogAlertGroup).toHaveBeenCalledWith(5, expect.any(Object));
     });
 
@@ -1965,13 +1965,13 @@ describe('LogicMonitorHandlers', () => {
 
     it('update_log_alert_group merges config into body', async () => {
       mockClient.updateLogAlertGroup.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_log_alert_group', { pipelineId: 5, config: { name: 'P2' } });
+      await handlers.handleToolCall('update_log_alert_group', { logAlertGroupId: 5, config: { name: 'P2' } });
       expect(mockClient.updateLogAlertGroup).toHaveBeenCalledWith(5, expect.objectContaining({ name: 'P2' }));
     });
 
     it('delete_log_alert_group passes id', async () => {
       mockClient.deleteLogAlertGroup.mockResolvedValue({} as never);
-      await handlers.handleToolCall('delete_log_alert_group', { pipelineId: 5 });
+      await handlers.handleToolCall('delete_log_alert_group', { logAlertGroupId: 5 });
       expect(mockClient.deleteLogAlertGroup).toHaveBeenCalledWith(5);
     });
 
@@ -1983,7 +1983,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('set_log_alert_status passes action + body', async () => {
       mockClient.setLogAlertStatus.mockResolvedValue({} as never);
-      await handlers.handleToolCall('set_log_alert_status', { processorId: 3, action: 'enable', config: { x: 1 } });
+      await handlers.handleToolCall('set_log_alert_status', { logAlertId: 3, action: 'enable', config: { x: 1 } });
       expect(mockClient.setLogAlertStatus).toHaveBeenCalledWith(3, 'enable', expect.objectContaining({ x: 1 }));
     });
   });
@@ -2003,7 +2003,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('move_log_queries passes group id + body', async () => {
       mockClient.moveLogQueries.mockResolvedValue({} as never);
-      await handlers.handleToolCall('move_log_queries', { groupId: 7, config: { ids: [1, 2] } });
+      await handlers.handleToolCall('move_log_queries', { logQueryGroupId: 7, config: { ids: [1, 2] } });
       expect(mockClient.moveLogQueries).toHaveBeenCalledWith(7, expect.objectContaining({ ids: [1, 2] }));
     });
   });
@@ -2023,7 +2023,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('log_partition_action passes action + body', async () => {
       mockClient.logPartitionAction.mockResolvedValue({} as never);
-      await handlers.handleToolCall('log_partition_action', { partitionId: 2, action: 'pause', config: { y: 1 } });
+      await handlers.handleToolCall('log_partition_action', { logPartitionId: 2, action: 'pause', config: { y: 1 } });
       expect(mockClient.logPartitionAction).toHaveBeenCalledWith(2, 'pause', expect.objectContaining({ y: 1 }));
     });
   });
@@ -2037,7 +2037,7 @@ describe('LogicMonitorHandlers', () => {
 
     it('delete_tracked_query_group passes id', async () => {
       mockClient.deleteTrackedQueryGroup.mockResolvedValue({} as never);
-      await handlers.handleToolCall('delete_tracked_query_group', { groupId: 9 });
+      await handlers.handleToolCall('delete_tracked_query_group', { trackedQueryGroupId: 9 });
       expect(mockClient.deleteTrackedQueryGroup).toHaveBeenCalledWith(9);
     });
   });

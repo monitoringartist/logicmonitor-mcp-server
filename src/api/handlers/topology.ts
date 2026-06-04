@@ -39,8 +39,18 @@ export const topologyToolHandlers: ToolHandlerMap = {
     });
   },
 
+  'list_topologies': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listTopologies({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
   'get_topology': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getTopology({
+    return await client.getTopology(args.topologyId, {
       fields: args.fields,
     });
   },

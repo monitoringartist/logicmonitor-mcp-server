@@ -47,7 +47,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'get_log_alert_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getLogAlertGroup(args.pipelineId, { fields: args.fields });
+    return await client.getLogAlertGroup(args.logAlertGroupId, { fields: args.fields });
   },
 
   'create_log_alert_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -56,12 +56,12 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'update_log_alert_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { pipelineId, config, ...rest } = args;
-    return await client.updateLogAlertGroup(pipelineId, { ...rest, ...(config || {}) });
+    const { logAlertGroupId, config, ...rest } = args;
+    return await client.updateLogAlertGroup(logAlertGroupId, { ...rest, ...(config || {}) });
   },
 
   'delete_log_alert_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteLogAlertGroup(args.pipelineId);
+    return await client.deleteLogAlertGroup(args.logAlertGroupId);
   },
 
   'list_log_alerts': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -71,7 +71,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'get_log_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getLogAlert(args.processorId, { fields: args.fields });
+    return await client.getLogAlert(args.logAlertId, { fields: args.fields });
   },
 
   'create_log_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -80,16 +80,16 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'update_log_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { processorId, config, ...rest } = args;
-    return await client.updateLogAlert(processorId, { ...rest, ...(config || {}) });
+    const { logAlertId, config, ...rest } = args;
+    return await client.updateLogAlert(logAlertId, { ...rest, ...(config || {}) });
   },
 
   'delete_log_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteLogAlert(args.processorId);
+    return await client.deleteLogAlert(args.logAlertId);
   },
 
   'set_log_alert_status': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.setLogAlertStatus(args.processorId, args.action, args.config || {});
+    return await client.setLogAlertStatus(args.logAlertId, args.action, args.config || {});
   },
 
   'list_log_query_groups': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -99,7 +99,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'get_log_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getLogQueryGroup(args.groupId, { fields: args.fields });
+    return await client.getLogQueryGroup(args.logQueryGroupId, { fields: args.fields });
   },
 
   'create_log_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -108,16 +108,16 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'update_log_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { groupId, config, ...rest } = args;
-    return await client.updateLogQueryGroup(groupId, { ...rest, ...(config || {}) });
+    const { logQueryGroupId, config, ...rest } = args;
+    return await client.updateLogQueryGroup(logQueryGroupId, { ...rest, ...(config || {}) });
   },
 
   'delete_log_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteLogQueryGroup(args.groupId);
+    return await client.deleteLogQueryGroup(args.logQueryGroupId);
   },
 
   'list_log_query_group_queries': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.listLogQueryGroupQueries(args.groupId, {
+    return await client.listLogQueryGroupQueries(args.logQueryGroupId, {
       size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
     });
   },
@@ -129,7 +129,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'move_log_queries': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.moveLogQueries(args.groupId, args.config || {});
+    return await client.moveLogQueries(args.logQueryGroupId, args.config || {});
   },
 
   'list_log_partitions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -139,7 +139,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'get_log_partition': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getLogPartition(args.partitionId, { fields: args.fields });
+    return await client.getLogPartition(args.logPartitionId, { fields: args.fields });
   },
 
   'create_log_partition': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -148,12 +148,12 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'update_log_partition': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { partitionId, config, ...rest } = args;
-    return await client.updateLogPartition(partitionId, { ...rest, ...(config || {}) });
+    const { logPartitionId, config, ...rest } = args;
+    return await client.updateLogPartition(logPartitionId, { ...rest, ...(config || {}) });
   },
 
   'delete_log_partition': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteLogPartition(args.partitionId);
+    return await client.deleteLogPartition(args.logPartitionId);
   },
 
   'get_log_partition_retentions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -161,7 +161,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'log_partition_action': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.logPartitionAction(args.partitionId, args.action, args.config || {});
+    return await client.logPartitionAction(args.logPartitionId, args.action, args.config || {});
   },
 
   'list_tracked_query_groups': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -171,7 +171,7 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'get_tracked_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getTrackedQueryGroup(args.groupId, { fields: args.fields });
+    return await client.getTrackedQueryGroup(args.trackedQueryGroupId, { fields: args.fields });
   },
 
   'create_tracked_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -180,11 +180,11 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   },
 
   'update_tracked_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { groupId, config, ...rest } = args;
-    return await client.updateTrackedQueryGroup(groupId, { ...rest, ...(config || {}) });
+    const { trackedQueryGroupId, config, ...rest } = args;
+    return await client.updateTrackedQueryGroup(trackedQueryGroupId, { ...rest, ...(config || {}) });
   },
 
   'delete_tracked_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.deleteTrackedQueryGroup(args.groupId);
+    return await client.deleteTrackedQueryGroup(args.trackedQueryGroupId);
   },
 };

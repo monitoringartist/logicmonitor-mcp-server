@@ -46,8 +46,37 @@ export class TopologyClient extends BaseClient {
     );
   }
 
-  // Topology
-  async getTopology(params?: { fields?: string }) {
-    return this.request<LMResponse<any>>('GET', '/topology', undefined, params);
+  // Topology maps (dynamically generated topology data)
+  //
+  // NOTE: The topology *data* endpoints live under `/topology/topologies/*` and
+  // are served by the santaba REST API with `X-Version: 3` (already sent by the
+  // base client). They are not published in the v3 Swagger spec, which only
+  // documents TopologySource management under `/setting/topologysources`. The old
+  // `GET /topology` path used here previously does not exist and returned HTTP 404.
+
+  /** List available topology maps (paginated). Use to discover a map `id`. */
+  async listTopologies(params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    if (autoPaginate) {
+      return this.paginateAll<any>('/topology/topologies', cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', '/topology/topologies', undefined, cleanedParams);
+  }
+
+  /** Get the vertex/edge data for a specific topology map by its ID. */
+  async getTopology(topologyId: number, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/topology/topologies/${topologyId}/data`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
   }
 }

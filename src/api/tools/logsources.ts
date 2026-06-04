@@ -139,9 +139,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Get log alert group', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { pipelineId: { type: 'number', description: 'The log pipeline ID' }, ...fieldsSchema },
+      properties: { logAlertGroupId: { type: 'number', description: 'The log alert group (pipeline) ID' }, ...fieldsSchema },
       additionalProperties: false,
-      required: ['pipelineId'],
+      required: ['logAlertGroupId'],
     },
   },
   {
@@ -162,11 +162,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        pipelineId: { type: 'number', description: 'The log pipeline ID' },
+        logAlertGroupId: { type: 'number', description: 'The log alert group (pipeline) ID' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['pipelineId', 'config'],
+      required: ['logAlertGroupId', 'config'],
     },
   },
   {
@@ -175,9 +175,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Delete log alert group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
-      properties: { pipelineId: { type: 'number', description: 'The log pipeline ID' } },
+      properties: { logAlertGroupId: { type: 'number', description: 'The log alert group (pipeline) ID' } },
       additionalProperties: false,
-      required: ['pipelineId'],
+      required: ['logAlertGroupId'],
     },
   },
   {
@@ -196,9 +196,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Get log alert', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { processorId: { type: 'number', description: 'The log processor ID' }, ...fieldsSchema },
+      properties: { logAlertId: { type: 'number', description: 'The log alert (pipeline processor) ID' }, ...fieldsSchema },
       additionalProperties: false,
-      required: ['processorId'],
+      required: ['logAlertId'],
     },
   },
   {
@@ -219,11 +219,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        processorId: { type: 'number', description: 'The log processor ID' },
+        logAlertId: { type: 'number', description: 'The log alert (pipeline processor) ID' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['processorId', 'config'],
+      required: ['logAlertId', 'config'],
     },
   },
   {
@@ -232,25 +232,25 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Delete log alert', readOnlyHint: false },
     inputSchema: {
       type: 'object',
-      properties: { processorId: { type: 'number', description: 'The log processor ID' } },
+      properties: { logAlertId: { type: 'number', description: 'The log alert (pipeline processor) ID' } },
       additionalProperties: false,
-      required: ['processorId'],
+      required: ['logAlertId'],
     },
   },
   {
     name: 'set_log_alert_status',
     description: 'Enable or disable a log alert (log pipeline processor) in LogicMonitor (LM). ' +
-      '\n\n**Parameters:** processorId and action (e.g., "enable"/"disable"); optional "config" body.',
+      '\n\n**Parameters:** logAlertId and action (e.g., "enable"/"disable"); optional "config" body.',
     annotations: { title: 'Set log alert status', readOnlyHint: false },
     inputSchema: {
       type: 'object',
       properties: {
-        processorId: { type: 'number', description: 'The log processor ID' },
+        logAlertId: { type: 'number', description: 'The log alert (pipeline processor) ID' },
         action: { type: 'string', description: 'The action to perform (e.g., enable, disable).' },
         config: { type: 'object', additionalProperties: true, description: 'Optional request body.' },
       },
       additionalProperties: false,
-      required: ['processorId', 'action'],
+      required: ['logAlertId', 'action'],
     },
   },
 
@@ -271,9 +271,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Get log query group', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { groupId: { type: 'number', description: 'The log query group ID' }, ...fieldsSchema },
+      properties: { logQueryGroupId: { type: 'number', description: 'The log query group ID' }, ...fieldsSchema },
       additionalProperties: false,
-      required: ['groupId'],
+      required: ['logQueryGroupId'],
     },
   },
   {
@@ -294,11 +294,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        groupId: { type: 'number', description: 'The log query group ID' },
+        logQueryGroupId: { type: 'number', description: 'The log query group ID' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['groupId', 'config'],
+      required: ['logQueryGroupId', 'config'],
     },
   },
   {
@@ -307,9 +307,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Delete log query group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
-      properties: { groupId: { type: 'number', description: 'The log query group ID' } },
+      properties: { logQueryGroupId: { type: 'number', description: 'The log query group ID' } },
       additionalProperties: false,
-      required: ['groupId'],
+      required: ['logQueryGroupId'],
     },
   },
   {
@@ -318,9 +318,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'List log query group queries', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { groupId: { type: 'number', description: 'The log query group ID' }, ...paginationSchema, ...filterSchema, ...fieldsSchema },
+      properties: { logQueryGroupId: { type: 'number', description: 'The log query group ID' }, ...paginationSchema, ...filterSchema, ...fieldsSchema },
       additionalProperties: false,
-      required: ['groupId'],
+      required: ['logQueryGroupId'],
     },
   },
   {
@@ -345,11 +345,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        groupId: { type: 'number', description: 'The target log query group ID' },
+        logQueryGroupId: { type: 'number', description: 'The target log query group ID' },
         config: { type: 'object', additionalProperties: true, description: 'Move payload (e.g., list of query IDs).' },
       },
       additionalProperties: false,
-      required: ['groupId', 'config'],
+      required: ['logQueryGroupId', 'config'],
     },
   },
 
@@ -370,9 +370,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Get log partition', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { partitionId: { type: 'number', description: 'The log partition ID' }, ...fieldsSchema },
+      properties: { logPartitionId: { type: 'number', description: 'The log partition ID' }, ...fieldsSchema },
       additionalProperties: false,
-      required: ['partitionId'],
+      required: ['logPartitionId'],
     },
   },
   {
@@ -393,11 +393,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        partitionId: { type: 'number', description: 'The log partition ID' },
+        logPartitionId: { type: 'number', description: 'The log partition ID' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['partitionId', 'config'],
+      required: ['logPartitionId', 'config'],
     },
   },
   {
@@ -406,9 +406,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Delete log partition', readOnlyHint: false },
     inputSchema: {
       type: 'object',
-      properties: { partitionId: { type: 'number', description: 'The log partition ID' } },
+      properties: { logPartitionId: { type: 'number', description: 'The log partition ID' } },
       additionalProperties: false,
-      required: ['partitionId'],
+      required: ['logPartitionId'],
     },
   },
   {
@@ -424,17 +424,17 @@ export const logsourcesTools: Tool[] = [
   {
     name: 'log_partition_action',
     description: 'Perform an action on a log partition (e.g., pause/resume) in LogicMonitor (LM). ' +
-      '\n\n**Parameters:** partitionId and action; optional "config" body.',
+      '\n\n**Parameters:** logPartitionId and action; optional "config" body.',
     annotations: { title: 'Log partition action', readOnlyHint: false },
     inputSchema: {
       type: 'object',
       properties: {
-        partitionId: { type: 'number', description: 'The log partition ID' },
+        logPartitionId: { type: 'number', description: 'The log partition ID' },
         action: { type: 'string', description: 'The action to perform.' },
         config: { type: 'object', additionalProperties: true, description: 'Optional request body.' },
       },
       additionalProperties: false,
-      required: ['partitionId', 'action'],
+      required: ['logPartitionId', 'action'],
     },
   },
 
@@ -455,9 +455,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Get tracked query group', readOnlyHint: true },
     inputSchema: {
       type: 'object',
-      properties: { groupId: { type: 'number', description: 'The tracked query group ID' }, ...fieldsSchema },
+      properties: { trackedQueryGroupId: { type: 'number', description: 'The tracked query group ID' }, ...fieldsSchema },
       additionalProperties: false,
-      required: ['groupId'],
+      required: ['trackedQueryGroupId'],
     },
   },
   {
@@ -478,11 +478,11 @@ export const logsourcesTools: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        groupId: { type: 'number', description: 'The tracked query group ID' },
+        trackedQueryGroupId: { type: 'number', description: 'The tracked query group ID' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['groupId', 'config'],
+      required: ['trackedQueryGroupId', 'config'],
     },
   },
   {
@@ -491,9 +491,9 @@ export const logsourcesTools: Tool[] = [
     annotations: { title: 'Delete tracked query group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
-      properties: { groupId: { type: 'number', description: 'The tracked query group ID' } },
+      properties: { trackedQueryGroupId: { type: 'number', description: 'The tracked query group ID' } },
       additionalProperties: false,
-      required: ['groupId'],
+      required: ['trackedQueryGroupId'],
     },
   },
 
