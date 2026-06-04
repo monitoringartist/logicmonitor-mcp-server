@@ -636,6 +636,7 @@ The server provides 356 tools for comprehensive LogicMonitor operations (100% Lo
 - `get_collector` - Get collector details
 - `get_collector_agent_log_level` - Get a collector component's log level
 - `get_collector_events` - Get recent events for a collector
+- `get_collector_group` - Get collector group details by ID
 - `get_collector_installer` - Get the installer download URL for a collector
 - `get_collector_status_check` - Run a status check on a collector's services
 - `get_netscan` - Get NetScan details
