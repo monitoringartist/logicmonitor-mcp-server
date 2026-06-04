@@ -17,6 +17,7 @@ export default {
     '**/__tests__/**/*.test.ts',
     '**/?(*.)+(spec|test).ts',
   ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
