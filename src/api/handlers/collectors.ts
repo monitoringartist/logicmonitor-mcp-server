@@ -1,145 +1,141 @@
-import { LogicMonitorClient } from '../client.js';
-import { validateFields, handleToolError, filterFields, DEFAULT_COLLECTOR_FIELDS } from './shared.js';
-import type { ProgressCallback } from './shared.js';
+import { filterFields, DEFAULT_COLLECTOR_FIELDS, ToolHandlerMap, ToolHandlerContext } from './shared.js';
 
-export class CollectorsHandlers {
-  constructor(private client: LogicMonitorClient) {}
+export const collectorsToolHandlers: ToolHandlerMap = {
+  'list_collectors': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const result = await client.listCollectors({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
 
-  async handle(name: string, args: any, _progressCallback?: ProgressCallback): Promise<any> {
-    try {
-      // Strict validation of the optional `fields` parameter against the Swagger
-      // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
-
-      switch (name) {
-        // Collectors
-        case 'list_collectors': {
-          const result = await this.client.listCollectors({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
-
-          if (args.fields) {
-            return result;
-          }
-
-          return {
-            ...result,
-            items: result.items.map((collector: any) =>
-              filterFields(collector, DEFAULT_COLLECTOR_FIELDS),
-            ),
-          };
-        }
-
-        case 'get_collector':
-          return await this.client.getCollector(args.collectorId, {
-            fields: args.fields,
-          });
-
-        case 'create_collector': {
-          const { config, ...rest } = args;
-          const collector = { ...rest, ...(config || {}) };
-          return await this.client.createCollector(collector);
-        }
-
-        case 'update_collector': {
-          const {
-            collectorId,
-            config,
-            autoBalanceMonitoredDevices,
-            forceUpdateFailedOverDevices,
-            opType,
-            ...rest
-          } = args;
-          const collector = { ...rest, ...(config || {}) };
-          return await this.client.updateCollector(collectorId, collector, {
-            autoBalanceMonitoredDevices,
-            forceUpdateFailedOverDevices,
-            opType,
-          });
-        }
-
-        case 'delete_collector':
-          return await this.client.deleteCollector(args.collectorId);
-
-        case 'get_collector_installer':
-          return this.client.getCollectorInstallerUrl(args.collectorId, args.osAndArch, {
-            collectorVersion: args.collectorVersion,
-            collectorSize: args.collectorSize,
-            useEA: args.useEA,
-            monitorOthers: args.monitorOthers,
-            token: args.token,
-          });
-
-        case 'acknowledge_collector_down_alert':
-          return await this.client.acknowledgeCollectorDownAlert(args.collectorId, args.comment);
-
-        case 'execute_debug_command':
-          return await this.client.executeDebugCommand(args.collectorId, args.cmdline);
-
-        case 'get_debug_command_result':
-          return await this.client.getDebugCommandResult(args.sessionId, args.collectorId);
-
-        // Collector Groups
-        case 'list_collector_groups':
-          return await this.client.listCollectorGroups({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
-
-        case 'get_collector_group':
-          return await this.client.getCollectorGroup(args.groupId, {
-            fields: args.fields,
-          });
-
-        case 'create_collector_group': {
-          const { config, ...rest } = args;
-          return await this.client.createCollectorGroup({ ...rest, ...(config || {}) });
-        }
-
-        case 'update_collector_group': {
-          const { groupId, autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType, config, ...rest } = args;
-          return await this.client.updateCollectorGroup(
-            groupId,
-            { ...rest, ...(config || {}) },
-            { autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType },
-          );
-        }
-
-        case 'delete_collector_group':
-          return await this.client.deleteCollectorGroup(args.groupId);
-
-        case 'list_collector_agent_log_levels':
-          return await this.client.listCollectorAgentLogLevels(args.collectorId);
-
-        case 'get_collector_agent_log_level':
-          return await this.client.getCollectorAgentLogLevel(args.collectorId, args.component);
-
-        case 'update_collector_agent_log_level':
-          return await this.client.updateCollectorAgentLogLevel(args.collectorId, args.component, args.config || {});
-
-        case 'get_collector_events':
-          return await this.client.getCollectorEvents(args.collectorId);
-
-        case 'get_collector_status_check':
-          return await this.client.getCollectorStatusCheck(args.collectorId);
-
-        // Collector Versions
-        case 'list_collector_versions':
-          return await this.client.listCollectorVersions({
-            size: args.size,
-            offset: args.offset,
-            fields: args.fields,
-          });
-      }
-    } catch (error) {
-      handleToolError(error, name);
+    if (args.fields) {
+      return result;
     }
-  }
-}
+
+    return {
+      ...result,
+      items: result.items.map((collector: any) =>
+        filterFields(collector, DEFAULT_COLLECTOR_FIELDS),
+      ),
+    };
+  },
+
+  'get_collector': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollector(args.collectorId, {
+      fields: args.fields,
+    });
+  },
+
+  'create_collector': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { config, ...rest } = args;
+    const collector = { ...rest, ...(config || {}) };
+    return await client.createCollector(collector);
+  },
+
+  'update_collector': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const {
+      collectorId,
+      config,
+      autoBalanceMonitoredDevices,
+      forceUpdateFailedOverDevices,
+      opType,
+      ...rest
+    } = args;
+    const collector = { ...rest, ...(config || {}) };
+    return await client.updateCollector(collectorId, collector, {
+      autoBalanceMonitoredDevices,
+      forceUpdateFailedOverDevices,
+      opType,
+    });
+  },
+
+  'delete_collector': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteCollector(args.collectorId);
+  },
+
+  'get_collector_installer': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return client.getCollectorInstallerUrl(args.collectorId, args.osAndArch, {
+      collectorVersion: args.collectorVersion,
+      collectorSize: args.collectorSize,
+      useEA: args.useEA,
+      monitorOthers: args.monitorOthers,
+      token: args.token,
+    });
+  },
+
+  'acknowledge_collector_down_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.acknowledgeCollectorDownAlert(args.collectorId, args.comment);
+  },
+
+  'execute_debug_command': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.executeDebugCommand(args.collectorId, args.cmdline);
+  },
+
+  'get_debug_command_result': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDebugCommandResult(args.sessionId, args.collectorId);
+  },
+
+  'list_collector_groups': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorGroups({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'get_collector_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorGroup(args.groupId, {
+      fields: args.fields,
+    });
+  },
+
+  'create_collector_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { config, ...rest } = args;
+    return await client.createCollectorGroup({ ...rest, ...(config || {}) });
+  },
+
+  'update_collector_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { groupId, autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType, config, ...rest } = args;
+    return await client.updateCollectorGroup(
+      groupId,
+      { ...rest, ...(config || {}) },
+      { autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType },
+    );
+  },
+
+  'delete_collector_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteCollectorGroup(args.groupId);
+  },
+
+  'list_collector_agent_log_levels': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorAgentLogLevels(args.collectorId);
+  },
+
+  'get_collector_agent_log_level': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorAgentLogLevel(args.collectorId, args.component);
+  },
+
+  'update_collector_agent_log_level': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.updateCollectorAgentLogLevel(args.collectorId, args.component, args.config || {});
+  },
+
+  'get_collector_events': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorEvents(args.collectorId);
+  },
+
+  'get_collector_status_check': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorStatusCheck(args.collectorId);
+  },
+
+  'list_collector_versions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorVersions({
+      size: args.size,
+      offset: args.offset,
+      fields: args.fields,
+    });
+  },
+};

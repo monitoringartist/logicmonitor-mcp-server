@@ -1,60 +1,47 @@
-import { LogicMonitorClient } from '../client.js';
-import { validateFields, handleToolError } from './shared.js';
-import type { ProgressCallback } from './shared.js';
+import { ToolHandlerMap, ToolHandlerContext } from './shared.js';
 
-export class TopologyHandlers {
-  constructor(private client: LogicMonitorClient) {}
+export const topologyToolHandlers: ToolHandlerMap = {
+  'list_topologysources': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listTopologySources({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-  async handle(name: string, args: any, _progressCallback?: ProgressCallback): Promise<any> {
-    try {
-      // Strict validation of the optional `fields` parameter against the Swagger
-      // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
+  'get_topologysource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getTopologySource(args.topologySourceId, {
+      format: args.format,
+      fields: args.fields,
+    });
+  },
 
-      switch (name) {
-        // TopologySources
-        case 'list_topologysources':
-          return await this.client.listTopologySources({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_topologysource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { config, ...rest } = args;
+    return await client.createTopologySource({ ...rest, ...(config || {}) });
+  },
 
-        case 'get_topologysource':
-          return await this.client.getTopologySource(args.topologySourceId, {
-            format: args.format,
-            fields: args.fields,
-          });
+  'update_topologysource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { topologySourceId, reason, config, ...rest } = args;
+    return await client.updateTopologySource(topologySourceId, { ...rest, ...(config || {}) }, { reason });
+  },
 
-        case 'create_topologysource': {
-          const { config, ...rest } = args;
-          return await this.client.createTopologySource({ ...rest, ...(config || {}) });
-        }
+  'delete_topologysource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteTopologySource(args.topologySourceId);
+  },
 
-        case 'update_topologysource': {
-          const { topologySourceId, reason, config, ...rest } = args;
-          return await this.client.updateTopologySource(topologySourceId, { ...rest, ...(config || {}) }, { reason });
-        }
+  'import_topologysource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.importTopologySource(args.content, {
+      handleConflict: args.handleConflict,
+      fieldsToPreserve: args.fieldsToPreserve,
+    });
+  },
 
-        case 'delete_topologysource':
-          return await this.client.deleteTopologySource(args.topologySourceId);
-
-        case 'import_topologysource':
-          return await this.client.importTopologySource(args.content, {
-            handleConflict: args.handleConflict,
-            fieldsToPreserve: args.fieldsToPreserve,
-          });
-
-        // Topology
-        case 'get_topology':
-          return await this.client.getTopology({
-            fields: args.fields,
-          });
-      }
-    } catch (error) {
-      handleToolError(error, name);
-    }
-  }
-}
+  'get_topology': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getTopology({
+      fields: args.fields,
+    });
+  },
+};

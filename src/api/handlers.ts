@@ -5,4 +5,4 @@
  * a shared helpers module and a routing `index.ts`.
  */
 
-export { LogicMonitorHandlers } from './handlers/index.js';
+export { LogicMonitorHandlers, getRegisteredToolNames } from './handlers/index.js';

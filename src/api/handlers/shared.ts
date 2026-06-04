@@ -6,8 +6,27 @@
 
 import { LogicMonitorApiError } from '../../utils/core/lm-error.js';
 import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../../utils/core/error-handler.js';
+import { LogicMonitorClient } from '../client.js';
 
 export { validateFields } from '../../utils/helpers/validate-fields.js';
+
+// Type for progress notification callback
+export type ProgressCallback = (progress: number, total: number) => Promise<void>;
+
+/**
+ * Context passed to every tool handler in the registry.
+ */
+export interface ToolHandlerContext {
+  client: LogicMonitorClient;
+  args: any;
+  progressCallback?: ProgressCallback;
+}
+
+/** A single tool handler. */
+export type ToolHandler = (ctx: ToolHandlerContext) => Promise<any>;
+
+/** Map of tool name -> handler. Per-domain maps are merged into one registry. */
+export type ToolHandlerMap = Record<string, ToolHandler>;
 
 // Default field sets for curated responses (when no fields parameter specified)
 export const DEFAULT_DEVICE_FIELDS = [
@@ -113,9 +132,6 @@ export function filterFields<T extends Record<string, any>>(obj: T, fields: stri
   }
   return filtered;
 }
-
-// Type for progress notification callback
-export type ProgressCallback = (progress: number, total: number) => Promise<void>;
 
 /**
  * Convert LogicMonitor API error to MCPError with contextual suggestions

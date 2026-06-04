@@ -1,100 +1,92 @@
-import { LogicMonitorClient } from '../client.js';
-import { validateFields, handleToolError } from './shared.js';
-import type { ProgressCallback } from './shared.js';
+import { ToolHandlerMap, ToolHandlerContext } from './shared.js';
 
-export class DiagnosticsHandlers {
-  constructor(private client: LogicMonitorClient) {}
+export const diagnosticsToolHandlers: ToolHandlerMap = {
+  'list_diagnosticsources': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listDiagnosticSources({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-  async handle(name: string, args: any, _progressCallback?: ProgressCallback): Promise<any> {
-    try {
-      // Strict validation of the optional `fields` parameter against the Swagger
-      // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
+  'get_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDiagnosticSource(args.diagnosticSourceId, {
+      format: args.format,
+      fields: args.fields,
+    });
+  },
 
-      switch (name) {
-        // DiagnosticSources
-        case 'list_diagnosticsources':
-          return await this.client.listDiagnosticSources({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { config, ...rest } = args;
+    return await client.createDiagnosticSource({ ...rest, ...(config || {}) });
+  },
 
-        case 'get_diagnosticsource':
-          return await this.client.getDiagnosticSource(args.diagnosticSourceId, {
-            format: args.format,
-            fields: args.fields,
-          });
+  'update_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { diagnosticSourceId, reason, config, ...rest } = args;
+    return await client.updateDiagnosticSource(diagnosticSourceId, { ...rest, ...(config || {}) }, { reason });
+  },
 
-        case 'create_diagnosticsource': {
-          const { config, ...rest } = args;
-          return await this.client.createDiagnosticSource({ ...rest, ...(config || {}) });
-        }
+  'delete_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteDiagnosticSource(args.diagnosticSourceId);
+  },
 
-        case 'update_diagnosticsource': {
-          const { diagnosticSourceId, reason, config, ...rest } = args;
-          return await this.client.updateDiagnosticSource(diagnosticSourceId, { ...rest, ...(config || {}) }, { reason });
-        }
+  'import_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.importDiagnosticSource(args.content, {
+      handleConflict: args.handleConflict,
+      fieldsToPreserve: args.fieldsToPreserve,
+    });
+  },
 
-        case 'delete_diagnosticsource':
-          return await this.client.deleteDiagnosticSource(args.diagnosticSourceId);
+  'execute_diagnosticsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.executeDiagnosticSource(args.config || {});
+  },
 
-        case 'import_diagnosticsource':
-          return await this.client.importDiagnosticSource(args.content, {
-            handleConflict: args.handleConflict,
-            fieldsToPreserve: args.fieldsToPreserve,
-          });
+  'list_remediationsources': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listRemediationSources({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-        case 'execute_diagnosticsource':
-          return await this.client.executeDiagnosticSource(args.config || {});
+  'get_remediationsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getRemediationSource(args.remediationSourceId, {
+      format: args.format,
+      fields: args.fields,
+    });
+  },
 
-        // RemediationSources
-        case 'list_remediationsources':
-          return await this.client.listRemediationSources({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_remediationsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { config, ...rest } = args;
+    return await client.createRemediationSource({ ...rest, ...(config || {}) });
+  },
 
-        case 'get_remediationsource':
-          return await this.client.getRemediationSource(args.remediationSourceId, {
-            format: args.format,
-            fields: args.fields,
-          });
+  'update_remediationsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const { remediationSourceId, reason, config, ...rest } = args;
+    return await client.updateRemediationSource(remediationSourceId, { ...rest, ...(config || {}) }, { reason });
+  },
 
-        case 'create_remediationsource': {
-          const { config, ...rest } = args;
-          return await this.client.createRemediationSource({ ...rest, ...(config || {}) });
-        }
+  'delete_remediationsource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteRemediationSource(args.remediationSourceId);
+  },
 
-        case 'update_remediationsource': {
-          const { remediationSourceId, reason, config, ...rest } = args;
-          return await this.client.updateRemediationSource(remediationSourceId, { ...rest, ...(config || {}) }, { reason });
-        }
+  'execute_remediation': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.executeRemediation(args.config || {});
+  },
 
-        case 'delete_remediationsource':
-          return await this.client.deleteRemediationSource(args.remediationSourceId);
+  'get_diagnostic_remediation_sources': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDiagnosticRemediationSources({
+      resourceId: args.resourceId, alertId: args.alertId, moduleType: args.moduleType,
+    });
+  },
 
-        case 'execute_remediation':
-          return await this.client.executeRemediation(args.config || {});
-
-        // Diagnostic Remediation
-        case 'get_diagnostic_remediation_sources':
-          return await this.client.getDiagnosticRemediationSources({
-            resourceId: args.resourceId, alertId: args.alertId, moduleType: args.moduleType,
-          });
-
-        case 'get_diagnostic_remediation_results':
-          return await this.client.getDiagnosticRemediationResults({
-            resourceId: args.resourceId, alertId: args.alertId, taskId: args.taskId,
-          });
-      }
-    } catch (error) {
-      handleToolError(error, name);
-    }
-  }
-}
+  'get_diagnostic_remediation_results': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDiagnosticRemediationResults({
+      resourceId: args.resourceId, alertId: args.alertId, taskId: args.taskId,
+    });
+  },
+};

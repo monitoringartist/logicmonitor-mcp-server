@@ -1,50 +1,39 @@
-import { LogicMonitorClient } from '../client.js';
-import { validateFields, handleToolError } from './shared.js';
-import type { ProgressCallback } from './shared.js';
+import { ToolHandlerMap, ToolHandlerContext } from './shared.js';
 
-export class CloudHandlers {
-  constructor(private client: LogicMonitorClient) {}
+export const cloudToolHandlers: ToolHandlerMap = {
+  'get_aws_account_id': async ({ client }: ToolHandlerContext): Promise<any> => {
+    return await client.getAwsAccountId();
+  },
 
-  async handle(name: string, args: any, _progressCallback?: ProgressCallback): Promise<any> {
-    try {
-      // Strict validation of the optional `fields` parameter against the Swagger
-      // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
+  'get_aws_external_id': async ({ client }: ToolHandlerContext): Promise<any> => {
+    return await client.getAwsExternalId();
+  },
 
-      switch (name) {
-        // Cloud Onboarding - AWS
-        case 'get_aws_account_id':
-          return await this.client.getAwsAccountId();
+  'test_aws_account': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.testAwsAccount(args.config || {});
+  },
 
-        case 'get_aws_external_id':
-          return await this.client.getAwsExternalId();
+  'verify_aws_billing_permissions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.verifyAwsBillingPermissions(args.config || {});
+  },
 
-        case 'test_aws_account':
-          return await this.client.testAwsAccount(args.config || {});
+  'discover_azure_subscriptions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.discoverAzureSubscriptions(args.config || {});
+  },
 
-        case 'verify_aws_billing_permissions':
-          return await this.client.verifyAwsBillingPermissions(args.config || {});
+  'test_azure_account': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.testAzureAccount(args.config || {});
+  },
 
-        // Cloud Onboarding - Azure
-        case 'discover_azure_subscriptions':
-          return await this.client.discoverAzureSubscriptions(args.config || {});
+  'verify_azure_storage_permissions': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.verifyAzureStoragePermissions(args.config || {});
+  },
 
-        case 'test_azure_account':
-          return await this.client.testAzureAccount(args.config || {});
+  'test_gcp_account': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.testGcpAccount(args.config || {});
+  },
 
-        case 'verify_azure_storage_permissions':
-          return await this.client.verifyAzureStoragePermissions(args.config || {});
-
-        // Cloud Onboarding - GCP
-        case 'test_gcp_account':
-          return await this.client.testGcpAccount(args.config || {});
-
-        // SaaS account
-        case 'test_saas_account':
-          return await this.client.testSaaSAccount(args.config || {});
-      }
-    } catch (error) {
-      handleToolError(error, name);
-    }
-  }
-}
+  'test_saas_account': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.testSaaSAccount(args.config || {});
+  },
+};

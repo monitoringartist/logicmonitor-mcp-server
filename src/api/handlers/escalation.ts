@@ -1,125 +1,115 @@
-import { LogicMonitorClient } from '../client.js';
-import { validateFields, handleToolError } from './shared.js';
-import type { ProgressCallback } from './shared.js';
+import { ToolHandlerMap, ToolHandlerContext } from './shared.js';
 
-export class EscalationHandlers {
-  constructor(private client: LogicMonitorClient) {}
+export const escalationToolHandlers: ToolHandlerMap = {
+  'list_escalation_chains': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listEscalationChains({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-  async handle(name: string, args: any, _progressCallback?: ProgressCallback): Promise<any> {
-    try {
-      // Strict validation of the optional `fields` parameter against the Swagger
-      // schema (no-op for tools without a known response model).
-      validateFields(name, args?.fields);
+  'get_escalation_chain': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getEscalationChain(args.chainId, {
+      fields: args.fields,
+    });
+  },
 
-      switch (name) {
-        // Escalation Chains
-        case 'list_escalation_chains':
-          return await this.client.listEscalationChains({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_escalation_chain': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const chain: any = {
+      name: args.name,
+      description: args.description || '',
+    };
+    if (args.stages) chain.stages = args.stages;
+    return await client.createEscalationChain(chain);
+  },
 
-        case 'get_escalation_chain':
-          return await this.client.getEscalationChain(args.chainId, {
-            fields: args.fields,
-          });
+  'update_escalation_chain': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const chain: any = {};
+    if (args.name) chain.name = args.name;
+    if (args.description !== undefined) chain.description = args.description;
+    if (args.stages) chain.stages = args.stages;
+    return await client.updateEscalationChain(args.chainId, chain);
+  },
 
-        case 'create_escalation_chain': {
-          const chain: any = {
-            name: args.name,
-            description: args.description || '',
-          };
-          if (args.stages) chain.stages = args.stages;
-          return await this.client.createEscalationChain(chain);
-        }
+  'delete_escalation_chain': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteEscalationChain(args.chainId);
+  },
 
-        case 'update_escalation_chain': {
-          const chain: any = {};
-          if (args.name) chain.name = args.name;
-          if (args.description !== undefined) chain.description = args.description;
-          if (args.stages) chain.stages = args.stages;
-          return await this.client.updateEscalationChain(args.chainId, chain);
-        }
+  'list_recipients': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listRecipients({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-        case 'delete_escalation_chain':
-          return await this.client.deleteEscalationChain(args.chainId);
+  'get_recipient': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getRecipient(args.recipientId, {
+      fields: args.fields,
+    });
+  },
 
-        // Recipients
-        case 'list_recipients':
-          return await this.client.listRecipients({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_recipient': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const recipient: any = {
+      type: args.type,
+      addr: args.addr,
+    };
+    if (args.name) recipient.name = args.name;
+    if (args.method) recipient.method = args.method;
+    return await client.createRecipient(recipient);
+  },
 
-        case 'get_recipient':
-          return await this.client.getRecipient(args.recipientId, {
-            fields: args.fields,
-          });
+  'update_recipient': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const recipient: any = {};
+    if (args.name) recipient.name = args.name;
+    if (args.addr) recipient.addr = args.addr;
+    if (args.method) recipient.method = args.method;
+    return await client.updateRecipient(args.recipientId, recipient);
+  },
 
-        case 'create_recipient': {
-          const recipient: any = {
-            type: args.type,
-            addr: args.addr,
-          };
-          if (args.name) recipient.name = args.name;
-          if (args.method) recipient.method = args.method;
-          return await this.client.createRecipient(recipient);
-        }
+  'delete_recipient': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteRecipient(args.recipientId);
+  },
 
-        case 'update_recipient': {
-          const recipient: any = {};
-          if (args.name) recipient.name = args.name;
-          if (args.addr) recipient.addr = args.addr;
-          if (args.method) recipient.method = args.method;
-          return await this.client.updateRecipient(args.recipientId, recipient);
-        }
+  'list_recipient_groups': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listRecipientGroups({
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 
-        case 'delete_recipient':
-          return await this.client.deleteRecipient(args.recipientId);
+  'get_recipient_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getRecipientGroup(args.groupId, {
+      fields: args.fields,
+    });
+  },
 
-        // Recipient Groups
-        case 'list_recipient_groups':
-          return await this.client.listRecipientGroups({
-            size: args.size,
-            offset: args.offset,
-            filter: args.filter,
-            fields: args.fields,
-            autoPaginate: args.autoPaginate,
-          });
+  'create_recipient_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const group: any = {
+      name: args.name,
+    };
+    if (args.description) group.description = args.description;
+    if (args.recipientIds) group.recipientIds = args.recipientIds;
+    return await client.createRecipientGroup(group);
+  },
 
-        case 'get_recipient_group':
-          return await this.client.getRecipientGroup(args.groupId, {
-            fields: args.fields,
-          });
+  'update_recipient_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const group: any = {};
+    if (args.name) group.name = args.name;
+    if (args.description !== undefined) group.description = args.description;
+    if (args.recipientIds) group.recipientIds = args.recipientIds;
+    return await client.updateRecipientGroup(args.groupId, group);
+  },
 
-        case 'create_recipient_group': {
-          const group: any = {
-            name: args.name,
-          };
-          if (args.description) group.description = args.description;
-          if (args.recipientIds) group.recipientIds = args.recipientIds;
-          return await this.client.createRecipientGroup(group);
-        }
-
-        case 'update_recipient_group': {
-          const group: any = {};
-          if (args.name) group.name = args.name;
-          if (args.description !== undefined) group.description = args.description;
-          if (args.recipientIds) group.recipientIds = args.recipientIds;
-          return await this.client.updateRecipientGroup(args.groupId, group);
-        }
-
-        case 'delete_recipient_group':
-          return await this.client.deleteRecipientGroup(args.groupId);
-      }
-    } catch (error) {
-      handleToolError(error, name);
-    }
-  }
-}
+  'delete_recipient_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.deleteRecipientGroup(args.groupId);
+  },
+};
