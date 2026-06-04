@@ -47,6 +47,17 @@ const fieldsSchema = {
   },
 };
 
+const clearedSchema = {
+  cleared: {
+    type: 'boolean',
+    description: 'Filter alerts by their cleared (resolved) status. ' +
+      'By default the LogicMonitor (LM) API returns only active (non-cleared) alerts. ' +
+      'Set true to return only cleared/historical alerts, or false to return only active alerts. ' +
+      'Omit to use the LM default (active alerts only). ' +
+      'To retrieve BOTH active and cleared alerts, omit this and pass filter:"cleared:*" instead.',
+  },
+};
+
 const ALL_LOGICMONITOR_TOOLS: Tool[] = [
   // Device Management Tools
   {
@@ -740,6 +751,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- CPU alerts: filter:"resourceTemplateName\\~\\*CPU\\*"' +
       '\n- Recent alerts: filter:"startEpoch>1730851200" (epoch seconds)' +
       '\n- Combined: filter:"severity:critical,acked:false" (AND logic)' +
+      '\n- Cleared/historical alerts: set cleared:true (or filter:"cleared:true"); active only: cleared:false; both: filter:"cleared:*"' +
       '\n\n**Query vs Filter:** ' +
       '\n- query: Simple text search by resource/device name only (e.g., query:"production", query:"k8s-cluster")' +
       '\n- filter: Precise LM filter syntax with any alert field. Use for severity, acked status, etc.' +
@@ -761,6 +773,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         ...paginationSchema,
         ...filterSchema,
         ...fieldsSchema,
+        ...clearedSchema,
         needMessage: {
           type: 'boolean',
           description: 'Whether to include alert message details',
@@ -2215,6 +2228,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         ...paginationSchema,
         ...filterSchema,
         ...fieldsSchema,
+        ...clearedSchema,
       },
       additionalProperties: false,
       required: ['deviceId'],
@@ -9918,7 +9932,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         groupId: { type: 'number', description: 'The resource/device group ID' },
         needMessage: { type: 'boolean', description: 'Include the alert message body.' },
         customColumns: { type: 'string', description: 'Comma-separated custom columns to include.' },
-        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+        ...paginationSchema, ...filterSchema, ...fieldsSchema, ...clearedSchema,
       },
       additionalProperties: false,
       required: ['groupId'],

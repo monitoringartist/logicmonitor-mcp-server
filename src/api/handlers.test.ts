@@ -767,6 +767,49 @@ describe('LogicMonitorHandlers', () => {
           autoPaginate: undefined,
         });
       });
+
+      it('should inject cleared:true into the filter when cleared is true', async () => {
+        mockClient.listAlerts.mockResolvedValue({ items: [], total: 0 });
+
+        await handlers.handleToolCall('list_alerts', { cleared: true });
+
+        expect(mockClient.listAlerts).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: 'cleared:true' }),
+        );
+      });
+
+      it('should inject cleared:false into the filter when cleared is false', async () => {
+        mockClient.listAlerts.mockResolvedValue({ items: [], total: 0 });
+
+        await handlers.handleToolCall('list_alerts', { cleared: false });
+
+        expect(mockClient.listAlerts).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: 'cleared:false' }),
+        );
+      });
+
+      it('should combine cleared with an existing filter using AND', async () => {
+        mockClient.listAlerts.mockResolvedValue({ items: [], total: 0 });
+
+        await handlers.handleToolCall('list_alerts', {
+          filter: 'severity:critical',
+          cleared: true,
+        });
+
+        expect(mockClient.listAlerts).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: 'severity:critical,cleared:true' }),
+        );
+      });
+
+      it('should not add a cleared filter when cleared is omitted', async () => {
+        mockClient.listAlerts.mockResolvedValue({ items: [], total: 0 });
+
+        await handlers.handleToolCall('list_alerts', {});
+
+        expect(mockClient.listAlerts).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: undefined }),
+        );
+      });
     });
 
     describe('get_alert', () => {
@@ -2173,6 +2216,18 @@ describe('LogicMonitorHandlers', () => {
       mockClient.listDeviceGroupAlerts.mockResolvedValue({} as never);
       await handlers.handleToolCall('list_resource_group_alerts', { groupId: 5, needMessage: true });
       expect(mockClient.listDeviceGroupAlerts).toHaveBeenCalledWith(5, expect.objectContaining({ needMessage: true }));
+    });
+
+    it('list_resource_group_alerts injects cleared into the filter', async () => {
+      mockClient.listDeviceGroupAlerts.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_group_alerts', { groupId: 5, cleared: true });
+      expect(mockClient.listDeviceGroupAlerts).toHaveBeenCalledWith(5, expect.objectContaining({ filter: 'cleared:true' }));
+    });
+
+    it('list_resource_alerts injects cleared into the filter', async () => {
+      mockClient.listDeviceAlerts.mockResolvedValue({} as never);
+      await handlers.handleToolCall('list_resource_alerts', { deviceId: 7, filter: 'severity:error', cleared: true });
+      expect(mockClient.listDeviceAlerts).toHaveBeenCalledWith(7, expect.objectContaining({ filter: 'severity:error,cleared:true' }));
     });
 
     it('list_resource_group_sdts forwards pagination', async () => {

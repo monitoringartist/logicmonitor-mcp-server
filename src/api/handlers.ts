@@ -383,6 +383,11 @@ export class LogicMonitorHandlers {
             }
           }
 
+          if (args.cleared !== undefined) {
+            const clearedFilter = `cleared:${args.cleared}`;
+            filter = filter ? `${filter},${clearedFilter}` : clearedFilter;
+          }
+
           const result = await this.client.listAlerts({
             size: args.size,
             offset: args.offset,
@@ -1313,16 +1318,22 @@ export class LogicMonitorHandlers {
           );
 
         // Device alerts / eventsources / discovery / delta
-        case 'list_resource_alerts':
+        case 'list_resource_alerts': {
+          let filter = args.filter;
+          if (args.cleared !== undefined) {
+            const clearedFilter = `cleared:${args.cleared}`;
+            filter = filter ? `${filter},${clearedFilter}` : clearedFilter;
+          }
           return await this.client.listDeviceAlerts(args.deviceId, {
             start: args.start,
             end: args.end,
             needMessage: args.needMessage,
             size: args.size,
             offset: args.offset,
-            filter: args.filter,
+            filter: filter,
             fields: args.fields,
           });
+        }
 
         case 'list_resource_eventsources':
           return await this.client.listDeviceEventSources(args.deviceId);
@@ -2495,11 +2506,17 @@ export class LogicMonitorHandlers {
         }
 
         // Device Group - Alerts / SDTs
-        case 'list_resource_group_alerts':
+        case 'list_resource_group_alerts': {
+          let filter = args.filter;
+          if (args.cleared !== undefined) {
+            const clearedFilter = `cleared:${args.cleared}`;
+            filter = filter ? `${filter},${clearedFilter}` : clearedFilter;
+          }
           return await this.client.listDeviceGroupAlerts(args.groupId, {
             needMessage: args.needMessage, customColumns: args.customColumns,
-            size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+            size: args.size, offset: args.offset, filter: filter, fields: args.fields, autoPaginate: args.autoPaginate,
           });
+        }
 
         case 'list_resource_group_sdts':
           return await this.client.listDeviceGroupSDTs(args.groupId, {
