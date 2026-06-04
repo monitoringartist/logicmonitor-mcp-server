@@ -1,4 +1,4 @@
-import { BaseClient, LMResponse, LMListResponse, escapeFilterValue } from './base-client.js';
+import { BaseClient, LMResponse, LMListResponse } from './base-client.js';
 
 export class DevicesClient extends BaseClient {
   // Device Management

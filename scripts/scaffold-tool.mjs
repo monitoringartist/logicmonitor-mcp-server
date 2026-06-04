@@ -51,6 +51,17 @@ function toTitleCase(snake) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+// Escape a value for safe embedding inside a single-quoted JS string literal.
+// Backslashes must be escaped first, otherwise an input backslash could combine
+// with the following escape sequence and break out of the literal.
+function escapeSingleQuoted(value) {
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+}
+
 function fail(message) {
   // eslint-disable-next-line no-console
   console.error(`Error: ${message}\n`);
@@ -131,8 +142,8 @@ if (verb === 'list') {
 
 const toolStub = `  {
     name: '${name}',
-    description: '${description.replace(/'/g, "\\'")}',
-    annotations: { title: '${title.replace(/'/g, "\\'")}', readOnlyHint: ${readOnly} },
+    description: '${escapeSingleQuoted(description)}',
+    annotations: { title: '${escapeSingleQuoted(title)}', readOnlyHint: ${readOnly} },
     inputSchema: {
       type: 'object',
       properties: {
