@@ -535,11 +535,11 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        id: { type: 'number', description: 'The group datasource ID' },
+        dataSourceId: { type: 'number', description: 'The DataSource ID applied to the group (from "list_resource_group_datasources").' },
         ...fieldsSchema,
       },
       additionalProperties: false,
-      required: ['groupId', 'id'],
+      required: ['groupId', 'dataSourceId'],
     },
   },
   {
@@ -550,11 +550,11 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        id: { type: 'number', description: 'The group datasource ID' },
+        dataSourceId: { type: 'number', description: 'The DataSource ID applied to the group (from "list_resource_group_datasources").' },
         config: { type: 'object', additionalProperties: true, description: 'Fields to update.' },
       },
       additionalProperties: false,
-      required: ['groupId', 'id', 'config'],
+      required: ['groupId', 'dataSourceId', 'config'],
     },
   },
 
@@ -567,11 +567,11 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        dsId: { type: 'number', description: 'The group datasource ID' },
+        dataSourceId: { type: 'number', description: 'The DataSource ID applied to the group (from "list_resource_group_datasources").' },
         ...fieldsSchema,
       },
       additionalProperties: false,
-      required: ['groupId', 'dsId'],
+      required: ['groupId', 'dataSourceId'],
     },
   },
   {
@@ -582,11 +582,11 @@ export const deviceGroupsTools: Tool[] = [
       type: 'object',
       properties: {
         groupId: { type: 'number', description: 'The resource/device group ID' },
-        dsId: { type: 'number', description: 'The group datasource ID' },
+        dataSourceId: { type: 'number', description: 'The DataSource ID applied to the group (from "list_resource_group_datasources").' },
         config: { type: 'object', additionalProperties: true, description: 'Alert setting fields to update (e.g., disableAlerting, datapoint thresholds).' },
       },
       additionalProperties: false,
-      required: ['groupId', 'dsId', 'config'],
+      required: ['groupId', 'dataSourceId', 'config'],
     },
   },
 

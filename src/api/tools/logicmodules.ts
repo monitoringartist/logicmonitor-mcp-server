@@ -177,7 +177,9 @@ export const logicmodulesTools: Tool[] = [
   // LogicModule metadata
   {
     name: 'get_logicmodule_metadata',
-    description: 'Get metadata about LogicModules available in the LogicMonitor (LM) portal.',
+    description: 'Get portal-wide metadata about LogicModules available in the LogicMonitor (LM) portal. ' +
+      '\n\n**No identifier:** This endpoint returns aggregate metadata for all module types and takes no module type/ID. ' +
+      'To fetch a specific module, use the type-specific tools instead (e.g., "get\\_datasource", "get\\_logsource", "get\\_property\\_rule", "get\\_eventsource", "get\\_configsource").',
     annotations: { title: 'Get LogicModule metadata', readOnlyHint: true },
     inputSchema: {
       type: 'object',

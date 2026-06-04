@@ -110,21 +110,21 @@ export const deviceGroupsToolHandlers: ToolHandlerMap = {
   },
 
   'get_resource_group_datasource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getDeviceGroupDatasource(args.groupId, args.id, { fields: args.fields });
+    return await client.getDeviceGroupDatasource(args.groupId, args.dataSourceId, { fields: args.fields });
   },
 
   'update_resource_group_datasource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { groupId, id, config, ...rest } = args;
-    return await client.updateDeviceGroupDatasource(groupId, id, { ...rest, ...(config || {}) });
+    const { groupId, dataSourceId, config, ...rest } = args;
+    return await client.updateDeviceGroupDatasource(groupId, dataSourceId, { ...rest, ...(config || {}) });
   },
 
   'get_resource_group_datasource_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    return await client.getDeviceGroupDatasourceAlertSetting(args.groupId, args.dsId, { fields: args.fields });
+    return await client.getDeviceGroupDatasourceAlertSetting(args.groupId, args.dataSourceId, { fields: args.fields });
   },
 
   'update_resource_group_datasource_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
-    const { groupId, dsId, config, ...rest } = args;
-    return await client.updateDeviceGroupDatasourceAlertSetting(groupId, dsId, { ...rest, ...(config || {}) });
+    const { groupId, dataSourceId, config, ...rest } = args;
+    return await client.updateDeviceGroupDatasourceAlertSetting(groupId, dataSourceId, { ...rest, ...(config || {}) });
   },
 
   'list_resource_group_alerts': async ({ client, args }: ToolHandlerContext): Promise<any> => {

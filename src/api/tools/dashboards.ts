@@ -663,6 +663,7 @@ export const dashboardsTools: Tool[] = [
     description: 'Get the rendered data for a specific dashboard widget in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** The widget\'s computed data payload. The shape depends on the widget type (e.g., graph series/datapoints, alert lists, big-number values, gauge readings). ' +
       '\n\n**What this does:** Unlike "get\\_widget" (which returns configuration), this returns the actual values the widget would display, optionally for a specific time range. ' +
+      '\n\n**⚠️ Not all widget types have data:** Only data-bearing widgets (graphs, gauges, big-number/alert/table widgets, etc.) are supported. Static widgets such as "html"/"text" return an "Unsupported widget type" error from LM — use "get\\_widget" for their configuration instead. ' +
       '\n\n**When to use:**' +
       '\n- Read current metric values shown by a graph/gauge/big-number widget' +
       '\n- Pull widget data for a custom time window' +

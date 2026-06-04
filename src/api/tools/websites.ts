@@ -496,7 +496,8 @@ export const websitesTools: Tool[] = [
   {
     name: 'get_website_graph_by_name',
     description: 'Get rendered graph data for a website by graph name in LogicMonitor (LM). ' +
-      '\n\n**Parameters:** websiteId, graphName, optional start/end (epoch seconds) and format.',
+      '\n\n**Parameters:** websiteId, graphName, optional start/end (epoch seconds) and format. ' +
+      '\n\n**⚠️ graphName must be an exact existing graph name** for the website (LM returns "No such graph(name=...)" otherwise). Names depend on the check type, e.g. "Response Time", "Rendering Time", "Status" — they are not datapoint names like "ping". Inspect the website config via "get\\_website" to find valid graph names.',
     annotations: { title: 'Get website graph by name', readOnlyHint: true },
     inputSchema: {
       type: 'object',

@@ -5,7 +5,9 @@ export const integrationsTools: Tool[] = [
   // Integration audit logs
   {
     name: 'get_integration_audit_logs',
-    description: 'Get integration audit logs for the LogicMonitor (LM) portal.',
+    description: 'Get integration audit logs for the LogicMonitor (LM) portal. ' +
+      '\n\n**Portal-wide:** Returns audit logs across all integrations; there is no per-integration filter (do not pass an integrationId). ' +
+      'The only supported parameter is `format` (e.g., "csv").',
     annotations: { title: 'Get integration audit logs', readOnlyHint: true },
     inputSchema: {
       type: 'object',

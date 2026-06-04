@@ -1,4 +1,24 @@
 import { BaseClient, LMResponse, LMListResponse } from './base-client.js';
+import { LogicMonitorApiError } from '../../utils/core/lm-error.js';
+
+const VALID_OS_AND_ARCH = ['linux64', 'linux32', 'win64', 'win32'];
+
+/**
+ * Normalize a user-supplied OS/architecture string to the token the LM installer
+ * endpoint expects (e.g. "Windows64" -> "win64", "Linux 64" -> "linux64").
+ * Unknown values are passed through unchanged so the API can validate them.
+ */
+function normalizeOsAndArch(osAndArch: string): string {
+  const compact = osAndArch.toLowerCase().replace(/[\s_-]/g, '');
+  const bits = compact.includes('32') ? '32' : compact.includes('64') ? '64' : '';
+  if ((compact.startsWith('win') || compact.startsWith('windows')) && bits) {
+    return `win${bits}`;
+  }
+  if (compact.startsWith('linux') && bits) {
+    return `linux${bits}`;
+  }
+  return osAndArch;
+}
 
 export class CollectorsClient extends BaseClient {
   // Collectors
@@ -58,6 +78,18 @@ export class CollectorsClient extends BaseClient {
     monitorOthers?: boolean;
     token?: string;
   }): { url: string; collectorId: number; osAndArch: string; downloadInstructions: string; note: string } {
+    if (osAndArch === undefined || osAndArch === null || String(osAndArch).trim() === '') {
+      throw new LogicMonitorApiError(
+        `Missing required "osAndArch" parameter. Provide the OS and architecture for the installer, e.g. one of: ${VALID_OS_AND_ARCH.join(', ')}.`,
+        {
+          status: 400,
+          path: `/setting/collector/collectors/${collectorId}/installers/{osAndArch}`,
+          errorMessage: 'osAndArch is required (e.g. linux64, win64).',
+        },
+      );
+    }
+
+    osAndArch = normalizeOsAndArch(String(osAndArch));
     const path = `/setting/collector/collectors/${collectorId}/installers/${encodeURIComponent(osAndArch)}`;
     const url = new URL(`${this.baseUrl}${path}`);
 

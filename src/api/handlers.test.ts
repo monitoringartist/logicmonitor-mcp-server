@@ -2190,25 +2190,25 @@ describe('LogicMonitorHandlers', () => {
 
     it('get_resource_group_datasource passes ids', async () => {
       mockClient.getDeviceGroupDatasource.mockResolvedValue({} as never);
-      await handlers.handleToolCall('get_resource_group_datasource', { groupId: 5, id: 8 });
+      await handlers.handleToolCall('get_resource_group_datasource', { groupId: 5, dataSourceId: 8 });
       expect(mockClient.getDeviceGroupDatasource).toHaveBeenCalledWith(5, 8, expect.any(Object));
     });
 
     it('update_resource_group_datasource merges config', async () => {
       mockClient.updateDeviceGroupDatasource.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_resource_group_datasource', { groupId: 5, id: 8, config: { disableAlerting: true } });
+      await handlers.handleToolCall('update_resource_group_datasource', { groupId: 5, dataSourceId: 8, config: { disableAlerting: true } });
       expect(mockClient.updateDeviceGroupDatasource).toHaveBeenCalledWith(5, 8, expect.objectContaining({ disableAlerting: true }));
     });
 
     it('get_resource_group_datasource_alert_setting passes ids', async () => {
       mockClient.getDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
-      await handlers.handleToolCall('get_resource_group_datasource_alert_setting', { groupId: 5, dsId: 9 });
+      await handlers.handleToolCall('get_resource_group_datasource_alert_setting', { groupId: 5, dataSourceId: 9 });
       expect(mockClient.getDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.any(Object));
     });
 
     it('update_resource_group_datasource_alert_setting merges config', async () => {
       mockClient.updateDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_resource_group_datasource_alert_setting', { groupId: 5, dsId: 9, config: { disableAlerting: false } });
+      await handlers.handleToolCall('update_resource_group_datasource_alert_setting', { groupId: 5, dataSourceId: 9, config: { disableAlerting: false } });
       expect(mockClient.updateDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.objectContaining({ disableAlerting: false }));
     });
 
