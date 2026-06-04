@@ -100,6 +100,60 @@ export class RateLimiter {
   }
 
   /**
+     * Parse the standard HTTP `Retry-After` header into milliseconds.
+     *
+     * Supports both supported formats:
+     * - delta-seconds (e.g. `Retry-After: 30`)
+     * - an HTTP-date (e.g. `Retry-After: Wed, 21 Oct 2015 07:28:00 GMT`)
+     *
+     * Returns null when the header is absent or unparseable.
+     */
+  parseRetryAfter(headers: Headers): number | null {
+    const value = headers.get('retry-after');
+    if (!value) return null;
+
+    // delta-seconds form
+    const seconds = Number(value);
+    if (!isNaN(seconds)) {
+      return Math.max(0, Math.floor(seconds * 1000));
+    }
+
+    // HTTP-date form
+    const dateMs = Date.parse(value);
+    if (!isNaN(dateMs)) {
+      return Math.max(0, dateMs - Date.now());
+    }
+
+    return null;
+  }
+
+  /**
+     * Determine how long to wait before retrying a rate-limited (429) response.
+     *
+     * Preference order:
+     * 1. `Retry-After` header (authoritative server signal)
+     * 2. `X-Rate-Limit-Window` header (wait out the rolling window)
+     * 3. Exponential backoff with jitter
+     *
+     * The result is always bounded by `maxDelay`.
+     */
+  getRetryDelay(headers: Headers, attempt: number, options?: RetryOptions): number {
+    const opts = { ...this.defaultOptions, ...options };
+
+    const retryAfter = this.parseRetryAfter(headers);
+    if (retryAfter !== null) {
+      return Math.min(retryAfter, opts.maxDelay);
+    }
+
+    const info = this.extractRateLimitInfo(headers);
+    if (info && info.window > 0) {
+      return Math.min(info.window * 1000, opts.maxDelay);
+    }
+
+    return this.calculateBackoff(attempt, options);
+  }
+
+  /**
      * Check if error is a rate limit error
      */
   isRateLimitError(error: unknown): boolean {
@@ -169,7 +223,7 @@ export class RateLimiter {
   /**
      * Sleep for specified milliseconds
      */
-  private sleep(ms: number): Promise<void> {
+  sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

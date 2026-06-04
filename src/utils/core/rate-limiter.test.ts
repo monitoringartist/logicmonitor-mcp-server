@@ -162,6 +162,71 @@ describe('Rate Limiter', () => {
     });
   });
 
+  describe('parseRetryAfter', () => {
+    it('should parse delta-seconds into milliseconds', () => {
+      const headers = new Headers({ 'retry-after': '30' });
+      expect(rateLimiter.parseRetryAfter(headers)).toBe(30000);
+    });
+
+    it('should parse 0 seconds as 0ms', () => {
+      const headers = new Headers({ 'retry-after': '0' });
+      expect(rateLimiter.parseRetryAfter(headers)).toBe(0);
+    });
+
+    it('should parse an HTTP-date into a future delay', () => {
+      const future = new Date(Date.now() + 10000).toUTCString();
+      const headers = new Headers({ 'retry-after': future });
+      const delay = rateLimiter.parseRetryAfter(headers);
+      expect(delay).toBeGreaterThan(8000);
+      expect(delay).toBeLessThanOrEqual(11000);
+    });
+
+    it('should clamp a past HTTP-date to 0', () => {
+      const past = new Date(Date.now() - 10000).toUTCString();
+      const headers = new Headers({ 'retry-after': past });
+      expect(rateLimiter.parseRetryAfter(headers)).toBe(0);
+    });
+
+    it('should return null when header is absent', () => {
+      expect(rateLimiter.parseRetryAfter(new Headers())).toBeNull();
+    });
+
+    it('should return null for an unparseable value', () => {
+      const headers = new Headers({ 'retry-after': 'not-a-date' });
+      expect(rateLimiter.parseRetryAfter(headers)).toBeNull();
+    });
+  });
+
+  describe('getRetryDelay', () => {
+    it('should prefer the Retry-After header', () => {
+      const headers = new Headers({
+        'retry-after': '5',
+        'x-rate-limit-window': '60',
+      });
+      expect(rateLimiter.getRetryDelay(headers, 1)).toBe(5000);
+    });
+
+    it('should bound Retry-After by maxDelay', () => {
+      const headers = new Headers({ 'retry-after': '120' });
+      expect(rateLimiter.getRetryDelay(headers, 1, { maxDelay: 30000 })).toBe(30000);
+    });
+
+    it('should fall back to the rate-limit window when no Retry-After', () => {
+      const headers = new Headers({
+        'x-rate-limit-limit': '100',
+        'x-rate-limit-remaining': '0',
+        'x-rate-limit-window': '15',
+      });
+      expect(rateLimiter.getRetryDelay(headers, 1)).toBe(15000);
+    });
+
+    it('should fall back to exponential backoff with no headers', () => {
+      const delay = rateLimiter.getRetryDelay(new Headers(), 1);
+      expect(delay).toBeGreaterThan(900);
+      expect(delay).toBeLessThan(1200);
+    });
+  });
+
   describe('isRateLimitError', () => {
     it('should detect 429 errors', () => {
       const error = new Error('HTTP 429: Rate limit exceeded');

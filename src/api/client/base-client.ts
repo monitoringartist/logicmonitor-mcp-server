@@ -15,6 +15,12 @@ export interface LogicMonitorConfig {
   company: string;
   bearerToken: string;
   timeout?: number; // Request timeout in milliseconds (default: 30000)
+  /**
+   * Maximum number of automatic retries for rate-limited (HTTP 429) responses.
+   * The initial attempt is not counted, so `maxRetries: 3` performs up to 4 total
+   * requests. Set to 0 to disable retrying. Default: 3.
+   */
+  maxRetries?: number;
   logger?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: any, requestId?: string) => void;
 }
 
@@ -45,12 +51,15 @@ export class BaseClient {
   protected baseUrl: string;
   protected bearerToken: string;
   protected timeout: number;
+  protected maxRetries: number;
   protected logger?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: any, requestId?: string) => void;
 
   constructor(config: LogicMonitorConfig) {
     this.baseUrl = `https://${config.company}.logicmonitor.com/santaba/rest`;
     this.bearerToken = config.bearerToken;
     this.timeout = config.timeout || 30000; // Default 30 seconds
+    // Default to 3 retries; allow explicit 0 to disable.
+    this.maxRetries = config.maxRetries ?? 3;
     this.logger = config.logger;
   }
 
@@ -102,21 +111,9 @@ export class BaseClient {
       headers['Content-Type'] = 'application/json';
     }
 
-    // Setup timeout with AbortController
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    const serializedBody = body ? JSON.stringify(body) : undefined;
 
-    const options: RequestInit = {
-      method,
-      headers,
-      signal: controller.signal,
-    };
-
-    if (body) {
-      options.body = JSON.stringify(body);
-    }
-
-    // Log API request
+    // Log API request (once; retries are logged separately below)
     const startTime = Date.now();
     this.logger?.('debug', 'LM API Request', {
       method,
@@ -130,99 +127,139 @@ export class BaseClient {
         'X-Version': headers['X-Version'],
         'Authorization': headers['Authorization'] ? `${headers['Authorization'].substring(0, 20)}...` : 'none',
       },
-      body: body ? (JSON.stringify(body).length > 500 ? `${JSON.stringify(body).substring(0, 500)}... (truncated)` : body) : undefined,
+      body: body ? (serializedBody!.length > 500 ? `${serializedBody!.substring(0, 500)}... (truncated)` : body) : undefined,
     });
 
-    let response: Response;
-    let data: any;
+    // Retry loop: re-issue the request on HTTP 429 with a bounded backoff.
+    // `attempt` is 0-based; up to `this.maxRetries` retries follow the initial try.
+    for (let attempt = 0; ; attempt++) {
+      // Setup per-attempt timeout with AbortController
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-    try {
-      response = await fetch(url.toString(), options);
-      data = await response.json();
+      const options: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
 
-      const duration = Date.now() - startTime;
-
-      // Extract and update rate limit info from headers
-      const rateLimitInfo = rateLimiter.extractRateLimitInfo(response.headers);
-      if (rateLimitInfo) {
-        rateLimiter.updateRateLimitInfo('api-request', rateLimitInfo);
-        this.logger?.('debug', 'Rate limit info', rateLimitInfo);
+      if (serializedBody !== undefined) {
+        options.body = serializedBody;
       }
 
-      // Log API response
-      if (response.ok) {
-        this.logger?.('debug', 'LM API Response', {
-          status: response.status,
-          duration_ms: duration,
-          path,
-          dataSize: JSON.stringify(data).length,
-          responseStructure: {
-            hasStatus: !!data.status,
-            hasErrmsg: !!data.errmsg,
-            hasData: !!data.data,
-            topLevelKeys: Object.keys(data),
-          },
-          rateLimit: rateLimitInfo,
-        });
-      } else {
-        this.logger?.('warn', 'LM API Error Response', {
-          status: response.status,
-          duration_ms: duration,
-          path,
-          url: url.toString(),
-          error: data.errmsg || response.statusText,
-          errorMessage: data.errorMessage,
-          errorCode: data.errorCode,
-          errorDetail: data.errorDetail,
-          fullResponse: data,
-          rateLimit: rateLimitInfo,
-        });
-      }
+      let response: Response;
+      let data: any;
 
-      if (!response.ok) {
-        // Special handling for rate limit errors
-        if (response.status === 429) {
-          this.logger?.('warn', 'Rate limit exceeded', { rateLimitInfo });
+      try {
+        response = await fetch(url.toString(), options);
+        data = await response.json();
+
+        const duration = Date.now() - startTime;
+
+        // Extract and update rate limit info from headers
+        const rateLimitInfo = rateLimiter.extractRateLimitInfo(response.headers);
+        if (rateLimitInfo) {
+          rateLimiter.updateRateLimitInfo('api-request', rateLimitInfo);
+          this.logger?.('debug', 'Rate limit info', rateLimitInfo);
         }
 
-        // Throw detailed error with all LM API error information
-        throw new LogicMonitorApiError(
-          `LogicMonitor API Error: ${response.status}`,
-          {
+        // Log API response
+        if (response.ok) {
+          this.logger?.('debug', 'LM API Response', {
             status: response.status,
-            errorCode: data.errorCode,
-            errorMessage: data.errorMessage || data.errmsg || response.statusText,
-            errorDetail: data.errorDetail,
+            duration_ms: duration,
             path,
-            duration,
-          },
-        );
+            dataSize: JSON.stringify(data).length,
+            responseStructure: {
+              hasStatus: !!data.status,
+              hasErrmsg: !!data.errmsg,
+              hasData: !!data.data,
+              topLevelKeys: Object.keys(data),
+            },
+            rateLimit: rateLimitInfo,
+          });
+        } else {
+          this.logger?.('warn', 'LM API Error Response', {
+            status: response.status,
+            duration_ms: duration,
+            path,
+            url: url.toString(),
+            error: data.errmsg || response.statusText,
+            errorMessage: data.errorMessage,
+            errorCode: data.errorCode,
+            errorDetail: data.errorDetail,
+            fullResponse: data,
+            rateLimit: rateLimitInfo,
+          });
+        }
+
+        if (!response.ok) {
+          // Rate limited: back off and retry while attempts remain.
+          if (response.status === 429 && attempt < this.maxRetries) {
+            const delay = rateLimiter.getRetryDelay(
+              response.headers,
+              attempt + 1,
+              { maxRetries: this.maxRetries },
+            );
+            this.logger?.('warn', 'Rate limit exceeded, backing off before retry', {
+              path,
+              attempt: attempt + 1,
+              maxRetries: this.maxRetries,
+              delayMs: delay,
+              rateLimitInfo,
+            });
+            clearTimeout(timeoutId);
+            await rateLimiter.sleep(delay);
+            continue;
+          }
+
+          if (response.status === 429) {
+            this.logger?.('warn', 'Rate limit exceeded, retries exhausted', {
+              path,
+              attempts: attempt + 1,
+              rateLimitInfo,
+            });
+          }
+
+          // Throw detailed error with all LM API error information
+          throw new LogicMonitorApiError(
+            `LogicMonitor API Error: ${response.status}`,
+            {
+              status: response.status,
+              errorCode: data.errorCode,
+              errorMessage: data.errorMessage || data.errmsg || response.statusText,
+              errorDetail: data.errorDetail,
+              path,
+              duration,
+            },
+          );
+        }
+
+        return data;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+
+        // Check if error is due to timeout
+        const isTimeout = error instanceof Error && error.name === 'AbortError';
+
+        this.logger?.('error', 'LM API Request Failed', {
+          method,
+          path,
+          duration_ms: duration,
+          timeout: isTimeout,
+          error: error instanceof Error ? error.message : String(error),
+        });
+
+        if (isTimeout) {
+          throw new Error(`Request timeout after ${this.timeout}ms: ${method} ${path}`);
+        }
+
+        throw error;
+      } finally {
+        // Always clear timeout to prevent memory leaks
+        clearTimeout(timeoutId);
       }
-    } catch (error) {
-      const duration = Date.now() - startTime;
-
-      // Check if error is due to timeout
-      const isTimeout = error instanceof Error && error.name === 'AbortError';
-
-      this.logger?.('error', 'LM API Request Failed', {
-        method,
-        path,
-        duration_ms: duration,
-        timeout: isTimeout,
-        error: error instanceof Error ? error.message : String(error),
-      });
-
-      if (isTimeout) {
-        throw new Error(`Request timeout after ${this.timeout}ms: ${method} ${path}`);
-      }
-
-      throw error;
-    } finally {
-      // Always clear timeout to prevent memory leaks
-      clearTimeout(timeoutId);
     }
-
-    return data;
   }
 
   /**
@@ -250,17 +287,12 @@ export class BaseClient {
       });
     }
 
-    const form = new FormData();
-    form.append('file', new Blob([fileContent], { type: contentType }), fileName);
-
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${this.bearerToken}`,
       'Accept': 'application/json',
       'X-Version': '3',
     };
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
     const startTime = Date.now();
 
     this.logger?.('debug', 'LM API Multipart Request', {
@@ -272,47 +304,74 @@ export class BaseClient {
       params,
     });
 
-    let response: Response;
-    let data: any;
+    // Retry loop: re-issue on HTTP 429 with a bounded backoff. The multipart body
+    // is rebuilt each attempt so the request stream is fresh.
+    for (let attempt = 0; ; attempt++) {
+      const form = new FormData();
+      form.append('file', new Blob([fileContent], { type: contentType }), fileName);
 
-    try {
-      response = await fetch(url.toString(), {
-        method: 'POST',
-        headers,
-        body: form,
-        signal: controller.signal,
-      });
-      data = await response.json();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      if (!response.ok) {
-        throw new LogicMonitorApiError(
-          `LogicMonitor API Error: ${response.status}`,
-          {
-            status: response.status,
-            errorCode: data.errorCode,
-            errorMessage: data.errorMessage || data.errmsg || response.statusText,
-            errorDetail: data.errorDetail,
-            path,
-            duration: Date.now() - startTime,
-          },
-        );
+      let response: Response;
+      let data: any;
+
+      try {
+        response = await fetch(url.toString(), {
+          method: 'POST',
+          headers,
+          body: form,
+          signal: controller.signal,
+        });
+        data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 429 && attempt < this.maxRetries) {
+            const delay = rateLimiter.getRetryDelay(
+              response.headers,
+              attempt + 1,
+              { maxRetries: this.maxRetries },
+            );
+            this.logger?.('warn', 'Rate limit exceeded on multipart, backing off before retry', {
+              path,
+              attempt: attempt + 1,
+              maxRetries: this.maxRetries,
+              delayMs: delay,
+            });
+            clearTimeout(timeoutId);
+            await rateLimiter.sleep(delay);
+            continue;
+          }
+
+          throw new LogicMonitorApiError(
+            `LogicMonitor API Error: ${response.status}`,
+            {
+              status: response.status,
+              errorCode: data.errorCode,
+              errorMessage: data.errorMessage || data.errmsg || response.statusText,
+              errorDetail: data.errorDetail,
+              path,
+              duration: Date.now() - startTime,
+            },
+          );
+        }
+
+        return data;
+      } catch (error) {
+        const isTimeout = error instanceof Error && error.name === 'AbortError';
+        this.logger?.('error', 'LM API Multipart Request Failed', {
+          path,
+          timeout: isTimeout,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        if (isTimeout) {
+          throw new Error(`Request timeout after ${this.timeout}ms: POST ${path}`);
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
       }
-    } catch (error) {
-      const isTimeout = error instanceof Error && error.name === 'AbortError';
-      this.logger?.('error', 'LM API Multipart Request Failed', {
-        path,
-        timeout: isTimeout,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      if (isTimeout) {
-        throw new Error(`Request timeout after ${this.timeout}ms: POST ${path}`);
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeoutId);
     }
-
-    return data;
   }
 
   /**
