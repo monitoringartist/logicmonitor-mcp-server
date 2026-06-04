@@ -618,6 +618,73 @@ describe('getLogicMonitorTools', () => {
     });
   });
 
+  // Guards the read-only mode boundary. getLogicMonitorTools(true) filters on
+  // readOnlyHint === true, so a missing or incorrect hint would either leak a
+  // mutating tool into read-only mode or hide a safe tool. These assertions make
+  // any such drift fail loudly.
+  describe('Read-Only Annotation Coverage', () => {
+    it('should have a strictly boolean readOnlyHint on every tool', () => {
+      const tools = getLogicMonitorTools(false);
+
+      const offenders = tools.filter(
+        tool => tool.annotations?.readOnlyHint !== true && tool.annotations?.readOnlyHint !== false,
+      );
+
+      expect(offenders.map(t => t.name)).toEqual([]);
+    });
+
+    it('should partition every tool into exactly read-only or write (no gaps, no overlap)', () => {
+      const allTools = getLogicMonitorTools(false);
+      const readOnlyCount = allTools.filter(t => t.annotations?.readOnlyHint === true).length;
+      const writeCount = allTools.filter(t => t.annotations?.readOnlyHint === false).length;
+
+      expect(readOnlyCount + writeCount).toBe(allTools.length);
+    });
+
+    it('should return exactly the read-only tools from getLogicMonitorTools(true)', () => {
+      const allTools = getLogicMonitorTools(false);
+      const readOnlyTools = getLogicMonitorTools(true);
+
+      const expectedNames = allTools
+        .filter(t => t.annotations?.readOnlyHint === true)
+        .map(t => t.name)
+        .sort();
+      const actualNames = readOnlyTools.map(t => t.name).sort();
+
+      expect(actualNames).toEqual(expectedNames);
+      // Defense in depth: nothing in the read-only set may be a write tool.
+      readOnlyTools.forEach(tool => {
+        expect(tool.annotations?.readOnlyHint).toBe(true);
+      });
+    });
+
+    it('should never mark a mutating-verb tool as read-only', () => {
+      const tools = getLogicMonitorTools(false);
+      // Prefixes whose operations always modify state in the LM API.
+      const mutatingPrefixes = [
+        'acknowledge_', 'add_', 'clone_', 'collect_', 'create_', 'delete_',
+        'escalate_', 'execute_', 'import_', 'log_', 'map_', 'move_',
+        'schedule_', 'set_', 'update_',
+      ];
+
+      const leaked = tools.filter(
+        tool => mutatingPrefixes.some(p => tool.name.startsWith(p)) && tool.annotations?.readOnlyHint === true,
+      );
+
+      expect(leaked.map(t => t.name)).toEqual([]);
+    });
+
+    it('should always mark pure read tools (list_/get_) as read-only', () => {
+      const tools = getLogicMonitorTools(false);
+
+      const misflagged = tools.filter(
+        tool => (tool.name.startsWith('list_') || tool.name.startsWith('get_')) && tool.annotations?.readOnlyHint !== true,
+      );
+
+      expect(misflagged.map(t => t.name)).toEqual([]);
+    });
+  });
+
   describe('Tool Count', () => {
     it('should have a reasonable number of tools', () => {
       const allTools = getLogicMonitorTools(false);
