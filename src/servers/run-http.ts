@@ -311,29 +311,53 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
     next();
   });
 
-  // CORS configuration - restrict origins in production
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
+  // CORS configuration - fail closed in production; never reflect arbitrary origins with credentials.
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) || [];
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowAllOrigins = allowedOrigins.includes('*');
+  const hasExplicitAllowlist = allowedOrigins.length > 0 && !allowAllOrigins;
+
+  // Credentials are only safe alongside an explicit origin allowlist. Reflecting an
+  // arbitrary request origin (or '*') together with `credentials: true` lets any site
+  // make authenticated cross-origin requests, so credentials are enabled only when
+  // origins are explicitly listed.
+  const corsCredentials = hasExplicitAllowlist;
+
+  if (!hasExplicitAllowlist) {
+    if (isProduction) {
+      log('warn', 'ALLOWED_ORIGINS is not set in production: cross-origin browser requests will be denied. Set ALLOWED_ORIGINS to a comma-separated list of trusted origins to permit them.');
+    } else if (allowAllOrigins) {
+      log('warn', "ALLOWED_ORIGINS includes '*': reflecting all origins without credentials. Avoid wildcard origins in production.");
+    } else {
+      log('warn', 'ALLOWED_ORIGINS is not set: reflecting all origins without credentials (development default). Set ALLOWED_ORIGINS for production deployments.');
+    }
+  }
+
   app.use(cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, Postman)
+      // Allow non-browser clients (curl, Postman, server-to-server) which send no Origin.
       if (!origin) {
         return callback(null, true);
       }
 
-      // If no allowed origins configured, allow all (dev mode)
-      if (allowedOrigins.length === 0) {
+      // Explicit allowlist: only permit listed origins (credentials enabled).
+      if (hasExplicitAllowlist) {
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      }
+
+      // Wildcard ('*') allowlist, or no allowlist in development: reflect the origin.
+      // Credentials are disabled in this mode (see corsCredentials), so this is safe.
+      if (allowAllOrigins || !isProduction) {
         return callback(null, true);
       }
 
-      // Check if origin is allowed
-      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-        return callback(null, true);
-      }
-
-      // Reject other origins
-      callback(new Error('Not allowed by CORS'));
+      // Production with no allowlist: fail closed and deny cross-origin requests.
+      return callback(new Error('Not allowed by CORS'));
     },
-    credentials: true,
+    credentials: corsCredentials,
     // Expose Mcp-Session-Id header for browser-based MCP clients (streamable-http transport)
     exposedHeaders: ['Mcp-Session-Id'],
     // Allow Mcp-Session-Id header in requests
