@@ -142,6 +142,42 @@ describe('getLogicMonitorTools', () => {
         expect(tool.inputSchema.additionalProperties).toBe(false);
       });
     });
+
+    it('should declare items for every array-typed schema node', () => {
+      const tools = getLogicMonitorTools(false);
+
+      // MCP clients reject `{ type: 'array' }` without an `items` definition.
+      // Recursively assert that every array node (at any nesting depth) has items.
+      const findArraysMissingItems = (node: unknown, path: string): string[] => {
+        if (!node || typeof node !== 'object') {
+          return [];
+        }
+        const offenders: string[] = [];
+        const schema = node as Record<string, unknown>;
+
+        if (schema.type === 'array' && schema.items === undefined) {
+          offenders.push(path);
+        }
+
+        const properties = schema.properties as Record<string, unknown> | undefined;
+        if (properties) {
+          for (const [key, value] of Object.entries(properties)) {
+            offenders.push(...findArraysMissingItems(value, `${path}.${key}`));
+          }
+        }
+        if (schema.items) {
+          offenders.push(...findArraysMissingItems(schema.items, `${path}.items`));
+        }
+
+        return offenders;
+      };
+
+      const offenders = tools.flatMap(tool =>
+        findArraysMissingItems(tool.inputSchema, tool.name),
+      );
+
+      expect(offenders).toEqual([]);
+    });
   });
 
   describe('Specific Tool Categories', () => {

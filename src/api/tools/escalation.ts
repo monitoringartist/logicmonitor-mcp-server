@@ -175,6 +175,7 @@ export const escalationTools: Tool[] = [
         stages: {
           type: 'array',
           description: 'Array of escalation stages with recipients and timing',
+          items: { type: 'object', additionalProperties: true },
         },
       },
       additionalProperties: false,
@@ -241,6 +242,7 @@ export const escalationTools: Tool[] = [
         stages: {
           type: 'array',
           description: 'Updated array of escalation stages',
+          items: { type: 'object', additionalProperties: true },
         },
       },
       additionalProperties: false,
@@ -744,6 +746,7 @@ export const escalationTools: Tool[] = [
         recipientIds: {
           type: 'array',
           description: 'Array of recipient IDs to include in this group',
+          items: { type: 'number' },
         },
       },
       additionalProperties: false,
@@ -807,6 +810,7 @@ export const escalationTools: Tool[] = [
         recipientIds: {
           type: 'array',
           description: 'Updated array of recipient IDs',
+          items: { type: 'number' },
         },
       },
       additionalProperties: false,

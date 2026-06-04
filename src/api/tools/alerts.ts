@@ -384,10 +384,12 @@ export const alertsTools: Tool[] = [
         devices: {
           type: 'array',
           description: 'Array of resource/device criteria for this rule',
+          items: { type: 'string' },
         },
         datasources: {
           type: 'array',
           description: 'Array of datasource criteria for this rule',
+          items: { type: 'string' },
         },
       },
       additionalProperties: false,
@@ -468,10 +470,12 @@ export const alertsTools: Tool[] = [
         devices: {
           type: 'array',
           description: 'Updated resource/device criteria',
+          items: { type: 'string' },
         },
         datasources: {
           type: 'array',
           description: 'Updated datasource criteria',
+          items: { type: 'string' },
         },
       },
       additionalProperties: false,

@@ -164,10 +164,12 @@ export const opsnotesTools: Tool[] = [
         scopes: {
           type: 'array',
           description: 'Array of scopes (resources/devices, groups) this note applies to',
+          items: { type: 'object', additionalProperties: true },
         },
         tags: {
           type: 'array',
           description: 'Array of tags for categorizing the note',
+          items: { type: 'object', additionalProperties: true },
         },
         happenOnInSec: {
           type: 'number',
@@ -233,10 +235,12 @@ export const opsnotesTools: Tool[] = [
         scopes: {
           type: 'array',
           description: 'Updated scopes',
+          items: { type: 'object', additionalProperties: true },
         },
         tags: {
           type: 'array',
           description: 'Updated tags',
+          items: { type: 'object', additionalProperties: true },
         },
       },
       additionalProperties: false,
