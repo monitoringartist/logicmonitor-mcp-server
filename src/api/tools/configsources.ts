@@ -9,7 +9,7 @@ export const configsourcesTools: Tool[] = [
       '\n\n**Returns:** Array of ConfigSources with: id, name, displayName, description, appliesTo logic, collection method. ' +
       '\n\n**What are ConfigSources:** Track configuration file changes for compliance and change management. Similar to datasources, but for configs instead of metrics. Alert when configs change unexpectedly. ' +
       '\n\n**When to use:** ' +
-      '\n- Find ConfigSource for specific resource/device type (e.g., Cisco\\_IOS\\_Config)' +
+      '\n- Find ConfigSource for specific resource/device type (e.g., Cisco_IOS_Config)' +
       '\n- Discover what configs are being tracked' +
       '\n- Get ConfigSource IDs for API operations' +
       '\n- Audit configuration monitoring coverage' +
@@ -24,12 +24,12 @@ export const configsourcesTools: Tool[] = [
       '\n- Rollback: Compare current config to previous version' +
       '\n- Audit: "Show all config changes in last 30 days"' +
       '\n\n**Common ConfigSources:** ' +
-      '\n- Cisco\\_IOS\_Config: Cisco router/switch configs' +
-      '\n- F5\\_LTM\\_Config: F5 load balancer configs' +
-      '\n- Palo\\_Alto\\_Config: Palo Alto firewall rules' +
-      '\n- Linux\\_Config\\_Files: Monitor /etc files' +
+      '\n- Cisco_IOS_Config: Cisco router/switch configs' +
+      '\n- F5_LTM_Config: F5 load balancer configs' +
+      '\n- Palo_Alto_Config: Palo Alto firewall rules' +
+      '\n- Linux_Config_Files: Monitor /etc files' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_configsource" (details), "list\\_device\\_configs" (see configs for device).',
+      '\n\n**Related tools:** "get_configsource" (details), "list_device_configs" (see configs for device).',
     annotations: {
       title: 'List ConfigSources',
       readOnlyHint: true,
@@ -58,8 +58,8 @@ export const configsourcesTools: Tool[] = [
       '\n- collectMethod: How config is retrieved (CLI commands, SNMP, API)' +
       '\n- configAlerts: Settings for when to alert on changes' +
       '\n- lineageId: Built-in (LogicMonitor) vs custom ConfigSource' +
-      '\n\n**Workflow:** Use "list\\_configsources" to find configSourceId, then use this tool to understand how it works. ' +
-      '\n\n**Related tools:** "list\\_configsources" (find ConfigSource), "list\\_device\\_configs" (see configs for device).',
+      '\n\n**Workflow:** Use "list_configsources" to find configSourceId, then use this tool to understand how it works. ' +
+      '\n\n**Related tools:** "list_configsources" (find ConfigSource), "list_device_configs" (see configs for device).',
     annotations: {
       title: 'Get ConfigSource details',
       readOnlyHint: true,
@@ -81,7 +81,7 @@ export const configsourcesTools: Tool[] = [
     name: 'create_configsource',
     description: 'Create a new ConfigSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines a new configuration-monitoring module (ConfigSource) that collects and version-tracks device configuration files (e.g., network device running-config). ' +
-      '\n\n**⚠️ ConfigSource definitions are complex.** They include collection scripts, appliesTo logic, config-change alerting, and collection schedules. The most reliable way to create one is to model it on an existing ConfigSource: use "get\\_configsource" to export a similar definition, adapt it, and pass the fields here (use `config` for any attributes not listed below). To re-import an exported ConfigSource file, use "import\\_configsource" instead. ' +
+      '\n\n**⚠️ ConfigSource definitions are complex.** They include collection scripts, appliesTo logic, config-change alerting, and collection schedules. The most reliable way to create one is to model it on an existing ConfigSource: use "get_configsource" to export a similar definition, adapt it, and pass the fields here (use `config` for any attributes not listed below). To re-import an exported ConfigSource file, use "import_configsource" instead. ' +
       '\n\n**Common parameters:**' +
       '\n- name: Unique ConfigSource name' +
       '\n- displayName: Human-friendly display name' +
@@ -89,7 +89,7 @@ export const configsourcesTools: Tool[] = [
       '\n- appliesTo: AppliesTo expression selecting which resources it runs on' +
       '\n- collectionMethod / collectionAttribute: How configuration is collected' +
       '\n- config: Any additional ConfigSource attributes (merged into the request body)' +
-      '\n\n**Related tools:** "get\\_configsource" (export a template), "import\\_configsource" (import a file), "update\\_configsource", "delete\\_configsource".',
+      '\n\n**Related tools:** "get_configsource" (export a template), "import_configsource" (import a file), "update_configsource", "delete_configsource".',
     annotations: {
       title: 'Create ConfigSource',
       readOnlyHint: false,
@@ -128,13 +128,13 @@ export const configsourcesTools: Tool[] = [
     description: 'Update an existing ConfigSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies a ConfigSource definition (partial update - only the fields you provide are changed). ' +
       '\n\n**Required parameters:**' +
-      '\n- configSourceId: The ID of the ConfigSource to update (from "list\\_configsources")' +
+      '\n- configSourceId: The ID of the ConfigSource to update (from "list_configsources")' +
       '\n\n**Optional parameters:**' +
       '\n- name, displayName, description, appliesTo' +
       '\n- reason: An audit note recording why the ConfigSource was changed (stored in its update history)' +
       '\n- config: Any additional ConfigSource attributes to update (merged into the body)' +
-      '\n\n**Best practice:** Use "get\\_configsource" first to review the current definition, then change only the needed fields. ' +
-      '\n\n**Related tools:** "get\\_configsource" (review before update), "list\\_configsources" (find it), "delete\\_configsource".',
+      '\n\n**Best practice:** Use "get_configsource" first to review the current definition, then change only the needed fields. ' +
+      '\n\n**Related tools:** "get_configsource" (review before update), "list_configsources" (find it), "delete_configsource".',
     annotations: {
       title: 'Update ConfigSource',
       readOnlyHint: false,
@@ -185,9 +185,9 @@ export const configsourcesTools: Tool[] = [
       '\n- Historical config data associated with it may be lost' +
       '\n- Cannot be undone' +
       '\n\n**Required parameters:**' +
-      '\n- configSourceId: The ID of the ConfigSource to delete (from "list\\_configsources")' +
-      '\n\n**Before deleting:** Use "get\\_configsource" to verify it is the correct module and consider exporting its definition for backup. ' +
-      '\n\n**Related tools:** "get\\_configsource" (backup/verify before delete), "list\\_configsources" (find it).',
+      '\n- configSourceId: The ID of the ConfigSource to delete (from "list_configsources")' +
+      '\n\n**Before deleting:** Use "get_configsource" to verify it is the correct module and consider exporting its definition for backup. ' +
+      '\n\n**Related tools:** "get_configsource" (backup/verify before delete), "list_configsources" (find it).',
     annotations: {
       title: 'Delete ConfigSource',
       readOnlyHint: false,
@@ -214,8 +214,8 @@ export const configsourcesTools: Tool[] = [
       '\n\n**Optional parameters (JSON import only):**' +
       '\n- handleConflict: How to resolve conflicts with an existing module, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS"' +
       '\n- fieldsToPreserve: Comma-separated fields to preserve when overwriting (e.g. "APPLIES_TO,COLLECTION_INTERVAL")' +
-      '\n\n**Tip:** To get a definition to import, use "get\\_configsource" on an existing module (export), or paste an exported file\'s contents. ' +
-      '\n\n**Related tools:** "get\\_configsource" (export), "create\\_configsource" (create from structured fields), "list\\_configsources".',
+      '\n\n**Tip:** To get a definition to import, use "get_configsource" on an existing module (export), or paste an exported file\'s contents. ' +
+      '\n\n**Related tools:** "get_configsource" (export), "create_configsource" (create from structured fields), "list_configsources".',
     annotations: {
       title: 'Import ConfigSource',
       readOnlyHint: false,

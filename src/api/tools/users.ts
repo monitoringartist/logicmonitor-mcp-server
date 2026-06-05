@@ -20,7 +20,7 @@ export const usersTools: Tool[] = [
       '\n- Recent logins: filter:"lastLoginOn>{epoch}"' +
       '\n- Never logged in: filter:"lastLoginOn:0"' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_user" (details), "list\\_roles" (available roles), "list\\_api\\_tokens" (user\'s API tokens).',
+      '\n\n**Related tools:** "get_user" (details), "list_roles" (available roles), "list_api_tokens" (user\'s API tokens).',
     annotations: {
       title: 'List users',
       readOnlyHint: true,
@@ -56,8 +56,8 @@ export const usersTools: Tool[] = [
       '\n- Review which users have admin roles' +
       '\n- Check if former employees still have access' +
       '\n- Verify API token usage per user' +
-      '\n\n**Workflow:** Use "list\\_users" to find userId, then use this tool for complete user profile. ' +
-      '\n\n**Related tools:** "list\\_users" (find user), "list\\_roles" (see available roles), "list\\_api\\_tokens" (view user\'s tokens), "update\\_user" (modify).',
+      '\n\n**Workflow:** Use "list_users" to find userId, then use this tool for complete user profile. ' +
+      '\n\n**Related tools:** "list_users" (find user), "list_roles" (see available roles), "list_api_tokens" (view user\'s tokens), "update_user" (modify).',
     annotations: {
       title: 'Get user details',
       readOnlyHint: true,
@@ -97,9 +97,9 @@ export const usersTools: Tool[] = [
       '\n- "What roles exist?" → List all to see options' +
       '\n- "Who can delete resources/devices?" → Check which roles have delete permissions' +
       '\n- "Create read-only user" → Find "readonly" role ID for user creation' +
-      '\n\n**Workflow:** Use this tool to discover roles, then "get\\_role" for detailed permissions, then use in "create\\_user" or "update\\_user". ' +
+      '\n\n**Workflow:** Use this tool to discover roles, then "get_role" for detailed permissions, then use in "create_user" or "update_user". ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_role" (detailed permissions), "list\\_users" (see user assignments), "create\\_user" (assign roles to new users).',
+      '\n\n**Related tools:** "get_role" (detailed permissions), "list_users" (see user assignments), "create_user" (assign roles to new users).',
     annotations: {
       title: 'List roles',
       readOnlyHint: true,
@@ -136,8 +136,8 @@ export const usersTools: Tool[] = [
       '\n- Least privilege: Choose role with minimal required permissions' +
       '\n- Documentation: Export role permissions for compliance' +
       '\n- Role comparison: Compare multiple roles to find right fit' +
-      '\n\n**Workflow:** Use "list\\_roles" to find roleId, then use this tool to review detailed permissions before assigning to users. ' +
-      '\n\n**Related tools:** "list\\_roles" (find roles), "list\\_users" (see who has this role), "create\\_role" (create custom role).',
+      '\n\n**Workflow:** Use "list_roles" to find roleId, then use this tool to review detailed permissions before assigning to users. ' +
+      '\n\n**Related tools:** "list_roles" (find roles), "list_users" (see who has this role), "create_role" (create custom role).',
     annotations: {
       title: 'Get role details',
       readOnlyHint: true,
@@ -160,9 +160,9 @@ export const usersTools: Tool[] = [
     description: 'Create a new role in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines a custom role with a specific set of privileges that can then be assigned to users. ' +
       '\n\n**Required:** name and privileges (the array of privilege objects granting access to specific resources/features). ' +
-      '\n\n**Privilege structure:** Each privilege typically has `objectType` (e.g., "dashboard\\_group", "device\\_group", "setting"), `objectId`, `objectName`, and `operation` ("read"/"write"/"ack"). Pass the full privileges array (and any other Role fields) via `config`. ' +
-      '\n\n**Tip:** Use "get\\_role" on an existing role as a template for the privileges array. ' +
-      '\n\n**Related tools:** "get\\_role" (template/verify), "list\\_roles", "update\\_role", "create\\_user" (assign the role).',
+      '\n\n**Privilege structure:** Each privilege typically has `objectType` (e.g., "dashboard_group", "device_group", "setting"), `objectId`, `objectName`, and `operation` ("read"/"write"/"ack"). Pass the full privileges array (and any other Role fields) via `config`. ' +
+      '\n\n**Tip:** Use "get_role" on an existing role as a template for the privileges array. ' +
+      '\n\n**Related tools:** "get_role" (template/verify), "list_roles", "update_role", "create_user" (assign the role).',
     annotations: { title: 'Create role', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -183,8 +183,8 @@ export const usersTools: Tool[] = [
     name: 'update_role',
     description: 'Update a role in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** roleId plus any of name, description, or additional fields (e.g., the `privileges` array) via `config`. Partial update. ' +
-      '\n\n**⚠️ Note:** Replacing the `privileges` array changes what every user assigned this role can access. Use "get\\_role" first to retrieve the current privileges and modify from there. ' +
-      '\n\n**Related tools:** "get\\_role" (retrieve current config), "list\\_roles".',
+      '\n\n**⚠️ Note:** Replacing the `privileges` array changes what every user assigned this role can access. Use "get_role" first to retrieve the current privileges and modify from there. ' +
+      '\n\n**Related tools:** "get_role" (retrieve current config), "list_roles".',
     annotations: { title: 'Update role', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -207,9 +207,9 @@ export const usersTools: Tool[] = [
     description: 'Delete a role from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. A role that still has users assigned to it generally cannot be deleted — reassign those users first. ' +
       '\n\n**Required parameters:**' +
-      '\n- roleId: The ID of the role to delete (from "list\\_roles")' +
-      '\n\n**Before deleting:** Use "get\\_role" to check `associatedUserCount`. ' +
-      '\n\n**Related tools:** "get\\_role" (check user count), "list\\_roles", "update_user" (reassign users).',
+      '\n- roleId: The ID of the role to delete (from "list_roles")' +
+      '\n\n**Before deleting:** Use "get_role" to check `associatedUserCount`. ' +
+      '\n\n**Related tools:** "get_role" (check user count), "list_roles", "update_user" (reassign users).',
     annotations: { title: 'Delete role', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -249,13 +249,13 @@ export const usersTools: Tool[] = [
       '\n- Regularly audit and remove unused tokens (check lastUsedOn timestamp)' +
       '\n- Use least-privilege: Create users with minimal required permissions, then create tokens for those users' +
       '\n\n**Security workflow:** ' +
-      '\n- List all users with "list\\_users"' +
+      '\n- List all users with "list_users"' +
       '\n- For each user, use this tool to check their API tokens' +
       '\n- Review lastUsedOn - if >90 days, consider revoking' +
       '\n- Check note field to understand token purpose' +
-      '\n\n**Workflow:** Use this tool with userId from "list\\_users" to audit that user\'s API access. ' +
+      '\n\n**Workflow:** Use this tool with userId from "list_users" to audit that user\'s API access. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "list\\_users" (find userId), "create\\_api\\_token" (generate new), "delete\\_api\\_token" (revoke access).',
+      '\n\n**Related tools:** "list_users" (find userId), "create_api_token" (generate new), "delete_api_token" (revoke access).',
     annotations: {
       title: 'Get API tokens',
       readOnlyHint: true,
@@ -280,7 +280,7 @@ export const usersTools: Tool[] = [
     description: 'Create a new user (admin) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates a LogicMonitor user account and assigns roles. ' +
       '\n\n**Required:** the user definition via `config` — at minimum username and roles (array of role names or {id} objects). May include email, firstName, lastName, password, etc. ' +
-      '\n\n**Related tools:** "list\\_users", "list\\_roles" (find role names), "create\\_api\\_token" (issue API credentials).',
+      '\n\n**Related tools:** "list_users", "list_roles" (find role names), "create_api_token" (issue API credentials).',
     annotations: { title: 'Create user', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -295,7 +295,7 @@ export const usersTools: Tool[] = [
     name: 'update_user',
     description: 'Update a user (admin) in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** userId, `config` (fields to change), optional changePassword, validationOnly. ' +
-      '\n\n**Related tools:** "get\\_user", "list\\_users".',
+      '\n\n**Related tools:** "get_user", "list_users".',
     annotations: { title: 'Update user', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -313,7 +313,7 @@ export const usersTools: Tool[] = [
     name: 'delete_user',
     description: 'Delete a user (admin) from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. Any API tokens owned by the user are also removed. ' +
-      '\n\n**Related tools:** "get\\_user", "list\\_users".',
+      '\n\n**Related tools:** "get_user", "list_users".',
     annotations: { title: 'Delete user', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -329,7 +329,7 @@ export const usersTools: Tool[] = [
     description: 'Create an API token for a user in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Security:** The response includes the Access Key — store it securely; it cannot be retrieved again. The token inherits the user\'s permissions. ' +
       '\n\n**Parameters:** userId, `config` (e.g., { "note": "Terraform automation" }), optional type. ' +
-      '\n\n**Related tools:** "list\\_api\\_tokens", "delete\\_api\\_token".',
+      '\n\n**Related tools:** "list_api_tokens", "delete_api_token".',
     annotations: { title: 'Create API token', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -346,7 +346,7 @@ export const usersTools: Tool[] = [
     name: 'update_api_token',
     description: 'Update an API token (e.g., note or status) for a user in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** userId, apiTokenId, `config` (fields to change, e.g., { "status": 2 } to disable). ' +
-      '\n\n**Related tools:** "list\\_api\\_tokens".',
+      '\n\n**Related tools:** "list_api_tokens".',
     annotations: { title: 'Update API token', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -363,7 +363,7 @@ export const usersTools: Tool[] = [
     name: 'delete_api_token',
     description: 'Delete (revoke) an API token for a user in LogicMonitor (LM) monitoring. Cannot be undone. ' +
       '\n\n**Parameters:** userId, apiTokenId. ' +
-      '\n\n**Related tools:** "list\\_api\\_tokens" (find the token ID).',
+      '\n\n**Related tools:** "list_api_tokens" (find the token ID).',
     annotations: { title: 'Delete API token', readOnlyHint: false },
     inputSchema: {
       type: 'object',

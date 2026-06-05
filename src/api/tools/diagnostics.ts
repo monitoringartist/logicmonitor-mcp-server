@@ -7,7 +7,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'list_diagnosticsources',
     description: 'List DiagnosticSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are DiagnosticSources:** LogicModules that gather diagnostic data on demand (e.g., when an alert fires) to aid troubleshooting. ' +
-      '\n\n**Related tools:** "get\\_diagnosticsource", "create\\_diagnosticsource".',
+      '\n\n**Related tools:** "get_diagnosticsource", "create_diagnosticsource".',
     annotations: { title: 'List diagnosticsources', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -19,7 +19,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'get_diagnosticsource',
     description: 'Get details of a specific DiagnosticSource in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_diagnosticsources".',
+      '\n\n**Related tools:** "list_diagnosticsources".',
     annotations: { title: 'Get diagnosticsource', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -35,7 +35,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'create_diagnosticsource',
     description: 'Create a DiagnosticSource in LogicMonitor (LM) monitoring. Definition passed via `config`. ' +
-      '\n\n**Related tools:** "get\\_diagnosticsource" (template), "import\\_diagnosticsource".',
+      '\n\n**Related tools:** "get_diagnosticsource" (template), "import_diagnosticsource".',
     annotations: { title: 'Create diagnosticsource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -110,7 +110,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'list_remediationsources',
     description: 'List RemediationSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are RemediationSources:** LogicModules that run automated remediation actions (scripts) in response to alerts. ' +
-      '\n\n**Related tools:** "get\\_remediationsource", "execute\\_remediation".',
+      '\n\n**Related tools:** "get_remediationsource", "execute_remediation".',
     annotations: { title: 'List remediationsources', readOnlyHint: true },
     inputSchema: {
       type: 'object',

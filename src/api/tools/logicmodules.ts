@@ -7,7 +7,7 @@ export const logicmodulesTools: Tool[] = [
     name: 'list_applies_to_functions',
     description: 'List AppliesTo Functions in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are AppliesTo Functions:** Reusable named expressions used in LogicModule AppliesTo logic to target groups of resources. ' +
-      '\n\n**Related tools:** "get\\_applies\\_to\\_function", "create\\_applies\\_to\\_function".',
+      '\n\n**Related tools:** "get_applies_to_function", "create_applies_to_function".',
     annotations: { title: 'List appliesto functions', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -95,7 +95,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'list_oids',
     description: 'List SNMP OIDs (MIB definitions) in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "get\\_oid", "create\\_oid".',
+      '\n\n**Related tools:** "get_oid", "create_oid".',
     annotations: { title: 'List SNMP OIDs', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -179,7 +179,7 @@ export const logicmodulesTools: Tool[] = [
     name: 'get_logicmodule_metadata',
     description: 'Get portal-wide metadata about LogicModules available in the LogicMonitor (LM) portal. ' +
       '\n\n**No identifier:** This endpoint returns aggregate metadata for all module types and takes no module type/ID. ' +
-      'To fetch a specific module, use the type-specific tools instead (e.g., "get\\_datasource", "get\\_logsource", "get\\_property\\_rule", "get\\_eventsource", "get\\_configsource").',
+      'To fetch a specific module, use the type-specific tools instead (e.g., "get_datasource", "get_logsource", "get_property_rule", "get_eventsource", "get_configsource").',
     annotations: { title: 'Get LogicModule metadata', readOnlyHint: true },
     inputSchema: {
       type: 'object',

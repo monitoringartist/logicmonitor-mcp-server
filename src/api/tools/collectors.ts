@@ -18,9 +18,9 @@ export const collectorsTools: Tool[] = [
       '\n- By platform: filter:"platform:Linux" or filter:"platform:Windows"' +
       '\n- By name: filter:"description\\~\\*prod\\*"' +
       '\n- Low capacity: filter:"numberOfHosts<100"' +
-      '\n\n**Before creating resources/devices:** Use this tool to find collectorId for the "preferredCollectorId" parameter in "create\\_resource". ' +
+      '\n\n**Before creating resources/devices:** Use this tool to find collectorId for the "preferredCollectorId" parameter in "create_resource". ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_collector" (details), "list\\_collector\\_groups" (browse groups), "list\\_collector\\_versions" (check updates).',
+      '\n\n**Related tools:** "get_collector" (details), "list_collector_groups" (browse groups), "list_collector_versions" (check updates).',
     annotations: {
       title: 'List collectors',
       readOnlyHint: true,
@@ -49,10 +49,10 @@ export const collectorsTools: Tool[] = [
       '\n- status: "alive" (healthy) vs "dead" (offline/problem)' +
       '\n- numberOfHosts: How many resource/device this collector monitors (capacity planning)' +
       '\n- freeDiskSpace: Disk space available (needs GB for data buffering)' +
-      '\n- build: Version number (compare with "list\\_collector\\_versions" for updates)' +
+      '\n- build: Version number (compare with "list_collector_versions" for updates)' +
       '\n- lastHeartbeatTime: Recent = healthy, old = potential issue' +
-      '\n\n**Workflow:** Use "list\\_collectors" to find collectorId, then use this tool for detailed health check. ' +
-      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_collector\\_versions" (check updates), "list\\_resources" (see assigned resources/devices).',
+      '\n\n**Workflow:** Use "list_collectors" to find collectorId, then use this tool for detailed health check. ' +
+      '\n\n**Related tools:** "list_collectors" (find collector), "list_collector_versions" (check updates), "list_resources" (see assigned resources/devices).',
     annotations: {
       title: 'Get collector details',
       readOnlyHint: true,
@@ -81,7 +81,7 @@ export const collectorsTools: Tool[] = [
       '\n4. `get_collector` / `list_collectors` to verify it comes online' +
       '\n\n**Optional parameters:**' +
       '\n- description: The Collector\'s description/name' +
-      '\n- collectorGroupId: The collector group to place it in (from "list\\_collector\\_groups")' +
+      '\n- collectorGroupId: The collector group to place it in (from "list_collector_groups")' +
       '\n- backupAgentId: ID of a backup Collector for failover' +
       '\n- escalatingChainId: Escalation chain ID for Collector-down alerts' +
       '\n- resendIval: Alert notification resend interval (minutes)' +
@@ -90,7 +90,7 @@ export const collectorsTools: Tool[] = [
       '\n- specifiedCollectorDeviceGroupId: Device group for the auto-created Collector device' +
       '\n- needAutoCreateCollectorDevice: Whether to auto-create a Collector device' +
       '\n- config: An object with any additional Collector attributes (merged into the request body)' +
-      '\n\n**Related tools:** "get\\_collector\\_installer" (download installer), "list\\_collector\\_groups" (find group), "update\\_collector", "delete\\_collector".',
+      '\n\n**Related tools:** "get_collector_installer" (download installer), "list_collector_groups" (find group), "update_collector", "delete_collector".',
     annotations: {
       title: 'Create collector',
       readOnlyHint: false,
@@ -148,7 +148,7 @@ export const collectorsTools: Tool[] = [
     description: 'Update an existing collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies a Collector\'s settings such as description, collector group, backup Collector, escalation chain, failover/failback behavior, and alerting options. Uses a partial update (only the fields you provide are changed). ' +
       '\n\n**Required parameters:**' +
-      '\n- collectorId: The ID of the Collector to update (from "list\\_collectors")' +
+      '\n- collectorId: The ID of the Collector to update (from "list_collectors")' +
       '\n\n**Optional parameters (what to change):**' +
       '\n- description, collectorGroupId, backupAgentId, escalatingChainId, resendIval, suppressAlertClear, enableFailBack, specifiedCollectorDeviceGroupId, needAutoCreateCollectorDevice' +
       '\n- config: An object with any additional Collector attributes to update (merged into the body)' +
@@ -156,8 +156,8 @@ export const collectorsTools: Tool[] = [
       '\n- autoBalanceMonitoredDevices: Rebalance monitored devices across the Auto-Balanced Collector Group' +
       '\n- forceUpdateFailedOverDevices: Force update of failed-over devices' +
       '\n- opType: Operation type for how the update is applied (e.g., "refresh", "add", "replace")' +
-      '\n\n**Best practice:** Call "get\\_collector" first to review current settings, then send only the fields you want to change. ' +
-      '\n\n**Related tools:** "get\\_collector" (review before update), "list\\_collectors" (find Collector), "delete\\_collector".',
+      '\n\n**Best practice:** Call "get_collector" first to review current settings, then send only the fields you want to change. ' +
+      '\n\n**Related tools:** "get_collector" (review before update), "list_collectors" (find Collector), "delete_collector".',
     annotations: {
       title: 'Update collector',
       readOnlyHint: false,
@@ -236,12 +236,12 @@ export const collectorsTools: Tool[] = [
       '\n- Cannot be undone' +
       '\n\n**What this does:** Removes the Collector registration from your portal. The Collector should ideally be uninstalled from the host as well. ' +
       '\n\n**Required parameters:**' +
-      '\n- collectorId: The ID of the Collector to delete (from "list\\_collectors")' +
+      '\n- collectorId: The ID of the Collector to delete (from "list_collectors")' +
       '\n\n**Before deleting:**' +
-      '\n- Use "get\\_collector" to verify it is the correct Collector and check `numberOfHosts`' +
+      '\n- Use "get_collector" to verify it is the correct Collector and check `numberOfHosts`' +
       '\n- Reassign monitored resources/devices to another Collector if needed' +
       '\n- Ensure a backup/failover Collector is available for critical monitoring' +
-      '\n\n**Related tools:** "get\\_collector" (verify before delete), "list\\_collectors" (find Collector), "update\\_collector" (reconfigure instead of delete).',
+      '\n\n**Related tools:** "get_collector" (verify before delete), "list_collectors" (find Collector), "update_collector" (reconfigure instead of delete).',
     annotations: {
       title: 'Delete collector',
       readOnlyHint: false,
@@ -265,7 +265,7 @@ export const collectorsTools: Tool[] = [
       '\n\n**⚠️ Important:** The installer is a large binary file. This tool intentionally returns the download URL rather than the binary itself. ' +
       'The URL requires your LogicMonitor bearer token in the `Authorization` header, so download it with the provided curl command (not a browser). ' +
       '\n\n**Required parameters:**' +
-      '\n- collectorId: The ID of the Collector to install (from "create\\_collector" or "list\\_collectors")' +
+      '\n- collectorId: The ID of the Collector to install (from "create_collector" or "list_collectors")' +
       '\n- osAndArch: The OS and architecture of the installer, e.g. "linux64", "linux32", "win64", "win32".' +
       '\n\n**Optional parameters:**' +
       '\n- collectorVersion: Specific installer version to download (defaults to the latest GD Collector)' +
@@ -273,7 +273,7 @@ export const collectorsTools: Tool[] = [
       '\n- useEA: If true, use the latest EA Collector version (defaults to false)' +
       '\n- monitorOthers: Whether the Collector should monitor other resources' +
       '\n- token: Optional installer token' +
-      '\n\n**Related tools:** "create\\_collector" (register the Collector first), "list\\_collector\\_versions" (find a version), "get\\_collector" (status).',
+      '\n\n**Related tools:** "create_collector" (register the Collector first), "list_collector_versions" (find a version), "get_collector" (status).',
     annotations: {
       title: 'Get collector installer download URL',
       readOnlyHint: true,
@@ -322,10 +322,10 @@ export const collectorsTools: Tool[] = [
       '\n- A Collector is down and you want to acknowledge the alert to stop repeated notifications' +
       '\n- Record an investigation note for the Collector-down condition' +
       '\n\n**Required parameters:**' +
-      '\n- collectorId: The ID of the down Collector (from "list\\_collectors", where `isDown` is true)' +
+      '\n- collectorId: The ID of the down Collector (from "list_collectors", where `isDown` is true)' +
       '\n\n**Optional parameters:**' +
       '\n- comment: A note explaining the acknowledgement (e.g., "Investigating network outage at DC1")' +
-      '\n\n**Related tools:** "get\\_collector" (check `isDown`/`acked` status), "list\\_collectors" (find down Collectors), "acknowledge\\_alert" (acknowledge regular alerts).',
+      '\n\n**Related tools:** "get_collector" (check `isDown`/`acked` status), "list_collectors" (find down Collectors), "acknowledge_alert" (acknowledge regular alerts).',
     annotations: {
       title: 'Acknowledge collector down alert',
       readOnlyHint: false,
@@ -349,13 +349,13 @@ export const collectorsTools: Tool[] = [
   {
     name: 'execute_debug_command',
     description: 'Execute a Collector debug command in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Submits a debug command (e.g., `!account`, `!tlist`, `!ping <host>`, `!checkcredential`) to run on a specific Collector. Execution is asynchronous: this returns a `sessionId` that you pass to "get\\_debug\\_command\\_result" to retrieve the output. ' +
+      '\n\n**What this does:** Submits a debug command (e.g., `!account`, `!tlist`, `!ping <host>`, `!checkcredential`) to run on a specific Collector. Execution is asynchronous: this returns a `sessionId` that you pass to "get_debug_command_result" to retrieve the output. ' +
       '\n\n**⚠️ Note:** Debug commands run directly on the Collector host and are primarily a troubleshooting/diagnostics tool. Use with care. ' +
       '\n\n**Required parameters:**' +
-      '\n- collectorId: The ID of the Collector to run the command on (from "list\\_collectors")' +
+      '\n- collectorId: The ID of the Collector to run the command on (from "list_collectors")' +
       '\n- cmdline: The debug command line to execute (e.g., "!tlist", "!ping 8.8.8.8")' +
-      '\n\n**Workflow:** Call this tool, then poll "get\\_debug\\_command\\_result" with the returned `sessionId` until output is available. ' +
-      '\n\n**Related tools:** "get\\_debug\\_command\\_result" (fetch output), "list\\_collectors" (find collectorId).',
+      '\n\n**Workflow:** Call this tool, then poll "get_debug_command_result" with the returned `sessionId` until output is available. ' +
+      '\n\n**Related tools:** "get_debug_command_result" (fetch output), "list_collectors" (find collectorId).',
     annotations: {
       title: 'Execute collector debug command',
       readOnlyHint: false,
@@ -379,11 +379,11 @@ export const collectorsTools: Tool[] = [
   {
     name: 'get_debug_command_result',
     description: 'Get the result of a previously executed Collector debug command in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Retrieves the output of a debug command submitted via "execute\\_debug\\_command", using the `sessionId` returned by that call. The result may not be ready immediately; poll until `output` is populated. ' +
+      '\n\n**What this does:** Retrieves the output of a debug command submitted via "execute_debug_command", using the `sessionId` returned by that call. The result may not be ready immediately; poll until `output` is populated. ' +
       '\n\n**Required parameters:**' +
-      '\n- sessionId: The session ID returned by "execute\\_debug\\_command"' +
+      '\n- sessionId: The session ID returned by "execute_debug_command"' +
       '\n- collectorId: The ID of the Collector the command was run on' +
-      '\n\n**Related tools:** "execute\\_debug\\_command" (submit a command).',
+      '\n\n**Related tools:** "execute_debug_command" (submit a command).',
     annotations: {
       title: 'Get collector debug command result',
       readOnlyHint: true,
@@ -428,9 +428,9 @@ export const collectorsTools: Tool[] = [
       '\n- Group collectors by customer or tenant ' +
       '\n- Separate production vs non-production collectors ' +
       '\n- Structure multi-datacenter collector deployments ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_collectors" filtered by groupId to see collectors in specific folder. ' +
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_collectors" filtered by groupId to see collectors in specific folder. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_collector\\_group" (details), "list\\_collectors" (collectors in group), "create\\_collector\\_group" (create folder).',
+      '\n\n**Related tools:** "get_collector_group" (details), "list_collectors" (collectors in group), "create_collector_group" (create folder).',
     annotations: {
       title: 'List collector groups',
       readOnlyHint: true,
@@ -455,8 +455,8 @@ export const collectorsTools: Tool[] = [
       '\n- Verify group hierarchy' +
       '\n- Review group structure before deploying collectors' +
       '\n' +
-      '\n\n**Workflow:** Use "list\\_collector\\_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_collector\\_groups" (find groups), "list\\_collectors" (collectors in group), "create\\_collector\\_group" (create new).',
+      '\n\n**Workflow:** Use "list_collector_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_collector_groups" (find groups), "list_collectors" (collectors in group), "create_collector_group" (create new).',
     annotations: {
       title: 'Get collector group details',
       readOnlyHint: true,
@@ -479,7 +479,7 @@ export const collectorsTools: Tool[] = [
     description: 'Create a new collector group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates a folder to organize Collectors into a hierarchy. ' +
       '\n\n**Required:** name. **Optional:** description, customProperties, autoBalance settings via `config`. ' +
-      '\n\n**Related tools:** "list\\_collector\\_groups", "update\\_collector\\_group".',
+      '\n\n**Related tools:** "list_collector_groups", "update_collector_group".',
     annotations: { title: 'Create collector group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -497,7 +497,7 @@ export const collectorsTools: Tool[] = [
     description: 'Update a collector group in LogicMonitor (LM) monitoring. Partial update. ' +
       '\n\n**Parameters:** groupId plus name, description, or additional fields via `config`. ' +
       '\n\n**Optional query flags:** autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType. ' +
-      '\n\n**Related tools:** "get\\_collector\\_group", "list\\_collector\\_groups".',
+      '\n\n**Related tools:** "get_collector_group", "list_collector_groups".',
     annotations: { title: 'Update collector group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -518,7 +518,7 @@ export const collectorsTools: Tool[] = [
     name: 'delete_collector_group',
     description: 'Delete a collector group from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. The group should generally be empty (no Collectors) before deletion. ' +
-      '\n\n**Related tools:** "get\\_collector\\_group", "list\\_collector\\_groups".',
+      '\n\n**Related tools:** "get_collector_group", "list_collector_groups".',
     annotations: { title: 'Delete collector group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -533,7 +533,7 @@ export const collectorsTools: Tool[] = [
     name: 'list_collector_agent_log_levels',
     description: 'List the agent log levels for each component of a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of components with their current log level (trace/debug/info/warn/error). ' +
-      '\n\n**Related tools:** "get\\_collector\\_agent\\_log\\_level", "update\\_collector\\_agent\\_log\\_level".',
+      '\n\n**Related tools:** "get_collector_agent_log_level", "update_collector_agent_log_level".',
     annotations: { title: 'List collector agent log levels', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -547,7 +547,7 @@ export const collectorsTools: Tool[] = [
   {
     name: 'get_collector_agent_log_level',
     description: 'Get the agent log level for a specific component of a Collector in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_collector\\_agent\\_log\\_levels", "update\\_collector\\_agent\\_log\\_level".',
+      '\n\n**Related tools:** "list_collector_agent_log_levels", "update_collector_agent_log_level".',
     annotations: { title: 'Get collector agent log level', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -564,7 +564,7 @@ export const collectorsTools: Tool[] = [
     description: 'Update the agent log level for a specific component of a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Note:** Verbose levels (trace/debug) increase log volume; revert when finished troubleshooting. ' +
       '\n\n**Parameters:** collectorId, component, and the new level via `config` (e.g., `{ "level": "debug" }`). ' +
-      '\n\n**Related tools:** "get\\_collector\\_agent\\_log\\_level".',
+      '\n\n**Related tools:** "get_collector_agent_log_level".',
     annotations: { title: 'Update collector agent log level', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -581,7 +581,7 @@ export const collectorsTools: Tool[] = [
     name: 'get_collector_events',
     description: 'Get recent events for a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Collector event entries (restarts, failovers, config changes, errors). ' +
-      '\n\n**Related tools:** "get\\_collector", "get\\_collector\\_status\\_check".',
+      '\n\n**Related tools:** "get_collector", "get_collector_status_check".',
     annotations: { title: 'Get collector events', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -596,7 +596,7 @@ export const collectorsTools: Tool[] = [
     name: 'get_collector_status_check',
     description: 'Run a status check on a Collector\'s services in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Health/status information about the Collector services. ' +
-      '\n\n**Related tools:** "get\\_collector", "get\\_collector\\_events".',
+      '\n\n**Related tools:** "get_collector", "get_collector_events".',
     annotations: { title: 'Get collector status check', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -630,7 +630,7 @@ export const collectorsTools: Tool[] = [
       '1. Use this tool to check available versions ' +
       '2. Review changelog for breaking changes ' +
       '3. Test new version on non-production collector first ' +
-      '4. Use "get\\_collector" to check current version on your collectors ' +
+      '4. Use "get_collector" to check current version on your collectors ' +
       '5. Update collectors via LogicMonitor UI or API ' +
       '6. Monitor collector health after upgrade ' +
       '\n\n**Version numbering:** Format is typically X.Y.Z (e.g., 34.100.0) where: ' +
@@ -648,7 +648,7 @@ export const collectorsTools: Tool[] = [
       '\n- "Plan upgrade" → Review changelog, schedule maintenance ' +
       '\n- "Rollback needed" → Find previous stable version ' +
       '\n- "Platform migration" → Verify version supports new OS ' +
-      '\n\n**Related tools:** "get\\_collector" (check current version on collector), "list\\_collectors" (find collectors to upgrade).',
+      '\n\n**Related tools:** "get_collector" (check current version on collector), "list_collectors" (find collectors to upgrade).',
     annotations: {
       title: 'List collector versions',
       readOnlyHint: true,

@@ -7,7 +7,7 @@ export const topologyTools: Tool[] = [
     name: 'list_topologysources',
     description: 'List TopologySources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are TopologySources:** LogicModules that discover relationships between resources to build topology maps. ' +
-      '\n\n**Related tools:** "get\\_topologysource", "create\\_topologysource".',
+      '\n\n**Related tools:** "get_topologysource", "create_topologysource".',
     annotations: { title: 'List topologysources', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -92,12 +92,12 @@ export const topologyTools: Tool[] = [
   {
     name: 'list_topologies',
     description: 'List available topology maps in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Returns:** Array of topology maps with: id, name, type, and configuration. Use the returned `id` with "get\\_topology" to fetch a map\'s vertex/edge data. ' +
+      '\n\n**Returns:** Array of topology maps with: id, name, type, and configuration. Use the returned `id` with "get_topology" to fetch a map\'s vertex/edge data. ' +
       '\n\n**What are topology maps:** Dynamically generated network relationship maps built by TopologySources from LLDP/CDP/BGP/OSPF/EIGRP discovery and ERIs. ' +
       '\n\n**Common filter patterns:** ' +
       '\n- By name: filter:"name~\\*core\\*" ' +
-      '\n\n**Workflow:** Use this tool to find a map `id`, then "get\\_topology" for its connectivity data. ' +
-      '\n\n**Related tools:** "get\\_topology" (map data), "list\\_topologysources" (discovery modules).',
+      '\n\n**Workflow:** Use this tool to find a map `id`, then "get_topology" for its connectivity data. ' +
+      '\n\n**Related tools:** "get_topology" (map data), "list_topologysources" (discovery modules).',
     annotations: { title: 'List topology maps', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -109,7 +109,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'get_topology',
     description: 'Get the data (vertices and edges) for a specific topology map in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Requires:** A topology map `topologyId`. Use "list\\_topologies" first to discover available map IDs. ' +
+      '\n\n**Requires:** A topology map `topologyId`. Use "list_topologies" first to discover available map IDs. ' +
       '\n\n**Returns:** Network topology data with: resource/device relationships (vertices), network connections (edges), parent-child hierarchies, Layer 2/Layer 3 connectivity maps. ' +
       '\n\n**What is topology:** Automatically discovered network relationship map showing how resource/device connect to each other. LogicMonitor uses SNMP, CDP (Cisco Discovery Protocol), LLDP (Link Layer Discovery Protocol), and other methods to build network topology maps. ' +
       '\n\n**When to use:**' +
@@ -135,7 +135,7 @@ export const topologyTools: Tool[] = [
       '\n- SNMP: Query resource/device interface tables, ARP tables, routing tables ' +
       '\n- Traceroute: Active probing to discover paths ' +
       '\n- Parent/child relationships: Based on gateway configuration ' +
-      '\n\n**Related tools:** "list\\_resources" (view resources/devices), "get\\_resource" (device details including connections).',
+      '\n\n**Related tools:** "list_resources" (view resources/devices), "get_resource" (device details including connections).',
     annotations: {
       title: 'Get network topology',
       readOnlyHint: true,

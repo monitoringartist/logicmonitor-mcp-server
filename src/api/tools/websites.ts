@@ -23,7 +23,7 @@ export const websitesTools: Tool[] = [
       '\n- By name: filter:"name\\~\\*production\\*"' +
       '\n\n**Use cases:** Monitor public websites, API endpoints, login pages, load balancer health checks, SaaS service availability. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_website" (details), "create\\_website" (add new), "generate\\_website\\_link" (get URL).',
+      '\n\n**Related tools:** "get_website" (details), "create_website" (add new), "generate_website_link" (get URL).',
     annotations: {
       title: 'List website monitors',
       readOnlyHint: true,
@@ -61,8 +61,8 @@ export const websitesTools: Tool[] = [
       '\n- Review response time thresholds (too strict? too lenient?)' +
       '\n- Troubleshoot why website checks are failing' +
       '\n- Document what endpoints are monitored' +
-      '\n\n**Workflow:** Use "list\\_websites" to find websiteId, then use this tool for complete monitoring configuration. ' +
-      '\n\n**Related tools:** "list\\_websites" (find website), "update\\_website" (modify), "generate\\_website\\_link" (get URL), "list\\_website\\_checkpoints" (available locations).',
+      '\n\n**Workflow:** Use "list_websites" to find websiteId, then use this tool for complete monitoring configuration. ' +
+      '\n\n**Related tools:** "list_websites" (find website), "update_website" (modify), "generate_website_link" (get URL), "list_website_checkpoints" (available locations).',
     annotations: {
       title: 'Get website monitor details',
       readOnlyHint: true,
@@ -96,9 +96,9 @@ export const websitesTools: Tool[] = [
       '\n- domain: URL or hostname (e.g., "example.com", "https://api.example.com")' +
       '\n- type: "webcheck" (HTTP/HTTPS) or "pingcheck" (ICMP ping")' +
       '\n\n**Optional parameters:** ' +
-      '\n- groupId: Website folder ID (from "list\\_website\\_groups", default: root)' +
+      '\n- groupId: Website folder ID (from "list_website_groups", default: root)' +
       '\n- description: Monitor purpose/notes' +
-      '\n- checkpoints: Array of checkpoint IDs (from "list\\_website\\_checkpoints") for multi-region testing' +
+      '\n- checkpoints: Array of checkpoint IDs (from "list_website_checkpoints") for multi-region testing' +
       '\n- steps: Array of HTTP steps for multi-step transactions (login, add to cart, checkout)' +
       '\n- testLocation: "external" (from cloud) or "internal" (from collector)' +
       '\n- schema: "https" or "http"' +
@@ -135,8 +135,8 @@ export const websitesTools: Tool[] = [
       '\n- Use internal testLocation for private/VPN applications' +
       '\n- Test multi-step transactions for critical user flows' +
       '\n- Set failedCount >=2 to reduce false alarms' +
-      '\n\n**After creation:** Use "generate\\_website\\_link" to get direct URL to view monitor results. ' +
-      '\n\n**Related tools:** "list\\_website\\_checkpoints" (find locations), "generate\\_website\\_link" (get URL), "update\\_website" (modify), "list\\_websites" (browse existing).',
+      '\n\n**After creation:** Use "generate_website_link" to get direct URL to view monitor results. ' +
+      '\n\n**Related tools:** "list_website_checkpoints" (find locations), "generate_website_link" (get URL), "update_website" (modify), "list_websites" (browse existing).',
     annotations: {
       title: 'Create website monitor',
       readOnlyHint: false,
@@ -181,7 +181,7 @@ export const websitesTools: Tool[] = [
       '\n- Update multi-step transaction steps' +
       '\n- Enable/disable monitoring' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID (from "list\\_websites")' +
+      '\n- websiteId: Website monitor ID (from "list_websites")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New monitor name' +
       '\n- domain: New URL/hostname' +
@@ -206,9 +206,9 @@ export const websitesTools: Tool[] = [
       '{websiteId: 123, stopMonitoring: true} // During maintenance ' +
       '\n\n**Update multi-step transaction:** ' +
       '{websiteId: 123, steps: [{url: "/api/v2/health"}, {url: "/api/v2/status"}]} // New API version ' +
-      '\n\n**Best practice:** Use "get\\_website" first to review current configuration, then update specific fields. ' +
+      '\n\n**Best practice:** Use "get_website" first to review current configuration, then update specific fields. ' +
       '\n\n**After update:** Monitor may take 1-2 minutes to reflect changes in next check cycle. ' +
-      '\n\n**Related tools:** "get\\_website" (review before update), "list\\_websites" (find website), "generate\\_website\\_link" (get updated URL).',
+      '\n\n**Related tools:** "get_website" (review before update), "list_websites" (find website), "generate_website_link" (get updated URL).',
     annotations: {
       title: 'Update website monitor',
       readOnlyHint: false,
@@ -248,9 +248,9 @@ export const websitesTools: Tool[] = [
       '\n- Duplicate monitors cleanup' +
       '\n- Replacing with different monitoring approach' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID to delete (from "list\\_websites")' +
+      '\n- websiteId: Website monitor ID to delete (from "list_websites")' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get\\_website" to verify correct monitor' +
+      '\n- Use "get_website" to verify correct monitor' +
       '\n- Check if others depend on this monitor (dashboards, reports)' +
       '\n- Consider exporting historical data if needed' +
       '\n- Verify no active incidents related to this monitor' +
@@ -261,13 +261,13 @@ export const websitesTools: Tool[] = [
       '\n- Reports including this monitor need updating' +
       '\n- Alert rules filtering on this monitor may break' +
       '\n\n**Alternatives to deletion:** ' +
-      '\n- **Pause instead:** Use "update\\_website" with stopMonitoring:true (preserves history)' +
+      '\n- **Pause instead:** Use "update_website" with stopMonitoring:true (preserves history)' +
       '\n- **Rename:** Mark as "DISABLED - [name]" instead of deleting' +
       '\n- **Move to archive folder:** Keep monitor but organize differently' +
       '\n- **Reduce check frequency:** Update to check less often instead of deleting' +
-      '\n\n**Best practice:** Use "update\\_website" to pause monitoring (stopMonitoring:true) instead of deleting if you might need to resume monitoring later. ' +
-      '\n\n**Workflow:** Use "get\\_website" to verify, export historical data if needed, then delete. ' +
-      '\n\n**Related tools:** "get\\_website" (verify before delete), "list\\_websites" (find website), "update\\_website" (pause instead of delete).',
+      '\n\n**Best practice:** Use "update_website" to pause monitoring (stopMonitoring:true) instead of deleting if you might need to resume monitoring later. ' +
+      '\n\n**Workflow:** Use "get_website" to verify, export historical data if needed, then delete. ' +
+      '\n\n**Related tools:** "get_website" (verify before delete), "list_websites" (find website), "update_website" (pause instead of delete).',
     annotations: {
       title: 'Delete website monitor',
       readOnlyHint: false,
@@ -307,9 +307,9 @@ export const websitesTools: Tool[] = [
       '\n- Group customer-facing vs internal endpoints' +
       '\n- Separate production vs non-production monitoring' +
       '\n- Structure multi-region website monitoring' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_websites" filtered by groupId to see monitors in specific folder. ' +
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_websites" filtered by groupId to see monitors in specific folder. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_website\\_group" (details), "list\\_websites" (websites in group), "create\\_website\\_group" (create folder).',
+      '\n\n**Related tools:** "get_website_group" (details), "list_websites" (websites in group), "create_website_group" (create folder).',
     annotations: {
       title: 'List website groups',
       readOnlyHint: true,
@@ -333,8 +333,8 @@ export const websitesTools: Tool[] = [
       '\n- Check website membership counts' +
       '\n- Verify group hierarchy' +
       '\n- Review group structure before creating monitors' +
-      '\n\n**Workflow:** Use "list\\_website\\_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_website\\_groups" (find groups), "list\\_websites" (websites in group), "create\\_website\\_group" (create new).',
+      '\n\n**Workflow:** Use "list_website_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_website_groups" (find groups), "list_websites" (websites in group), "create_website_group" (create new).',
     annotations: {
       title: 'Get website group details',
       readOnlyHint: true,
@@ -358,7 +358,7 @@ export const websitesTools: Tool[] = [
       '\n\n**What this does:** Creates a folder to organize website monitors (web checks / ping checks) into a hierarchy. ' +
       '\n\n**Required:** name. ' +
       '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), disableAlerting, stopMonitoring, plus properties/testLocation via `config`. ' +
-      '\n\n**Related tools:** "list\\_website\\_groups", "create\\_website" (place monitors in the group).',
+      '\n\n**Related tools:** "list_website_groups", "create_website" (place monitors in the group).',
     annotations: { title: 'Create website group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -383,7 +383,7 @@ export const websitesTools: Tool[] = [
     description: 'Update a website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), disableAlerting, stopMonitoring, or additional fields via `config`. Partial update. ' +
       '\n\n**Optional:** opType ("refresh"/"add"/"replace") controls how `properties` are merged when supplied. ' +
-      '\n\n**Related tools:** "get\\_website\\_group", "list\\_website\\_groups".',
+      '\n\n**Related tools:** "get_website_group", "list_website_groups".',
     annotations: { title: 'Update website group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -410,8 +410,8 @@ export const websitesTools: Tool[] = [
     description: 'Delete a website group from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. By default a non-empty group cannot be deleted; set deleteChildren=1 to also delete its websites and subgroups. ' +
       '\n\n**Parameters:** groupId; optional deleteChildren (1 = delete contained websites/subgroups too, 0 = only an empty group). ' +
-      '\n\n**Before deleting:** Use "get\\_website\\_group" to check the website/subgroup counts. ' +
-      '\n\n**Related tools:** "get\\_website\\_group", "list\\_website\\_groups".',
+      '\n\n**Before deleting:** Use "get_website_group" to check the website/subgroup counts. ' +
+      '\n\n**Related tools:** "get_website_group", "list_website_groups".',
     annotations: { title: 'Delete website group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -427,7 +427,7 @@ export const websitesTools: Tool[] = [
     name: 'list_website_group_websites',
     description: 'List the website monitors that belong directly to a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of website monitors (web/ping checks) in the group, with id, name, type, status. ' +
-      '\n\n**Related tools:** "list\\_website\\_groups", "get\\_website\\_group", "list\\_websites".',
+      '\n\n**Related tools:** "list_website_groups", "get_website_group", "list_websites".',
     annotations: { title: 'List websites in group', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -445,7 +445,7 @@ export const websitesTools: Tool[] = [
     name: 'list_website_group_sdts',
     description: 'List the active/scheduled down times (SDTs) configured on a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of SDT entries affecting the group: id, type, start/end time, comment. ' +
-      '\n\n**Related tools:** "get\\_website\\_group\\_sdt\\_history" (past SDTs), "create\\_sdt", "list\\_website\\_groups".',
+      '\n\n**Related tools:** "get_website_group_sdt_history" (past SDTs), "create_sdt", "list_website_groups".',
     annotations: { title: 'List website group SDTs', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -463,7 +463,7 @@ export const websitesTools: Tool[] = [
     name: 'get_website_group_sdt_history',
     description: 'Get the scheduled down time (SDT) history for a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of historical (expired) SDT entries for the group: id, type, start/end time, comment. ' +
-      '\n\n**Related tools:** "list\\_website\\_group\\_sdts" (active SDTs), "list\\_website\\_groups".',
+      '\n\n**Related tools:** "list_website_group_sdts" (active SDTs), "list_website_groups".',
     annotations: { title: 'Get website group SDT history', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -497,7 +497,7 @@ export const websitesTools: Tool[] = [
     name: 'get_website_graph_by_name',
     description: 'Get rendered graph data for a website by graph name in LogicMonitor (LM). ' +
       '\n\n**Parameters:** websiteId, graphName, optional start/end (epoch seconds) and format. ' +
-      '\n\n**⚠️ graphName must be an exact existing graph name** for the website (LM returns "No such graph(name=...)" otherwise). Names depend on the check type, e.g. "Response Time", "Rendering Time", "Status" — they are not datapoint names like "ping". Inspect the website config via "get\\_website" to find valid graph names.',
+      '\n\n**⚠️ graphName must be an exact existing graph name** for the website (LM returns "No such graph(name=...)" otherwise). Names depend on the check type, e.g. "Response Time", "Rendering Time", "Status" — they are not datapoint names like "ping". Inspect the website config via "get_website" to find valid graph names.',
     annotations: { title: 'Get website graph by name', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -544,8 +544,8 @@ export const websitesTools: Tool[] = [
       '\n- Use multiple checkpoints for critical services (avoid false positives from single location issues) ' +
       '\n- Mix internal and external checkpoints for comprehensive coverage ' +
       '\n- Consider timezone differences for result interpretation ' +
-      '\n\n**Workflow:** Use this tool to discover available locations, then use those checkpoint IDs when creating website monitors via "create\\_website". ' +
-      '\n\n**Related tools:** "list\\_websites" (existing monitors), "create\\_website" (configure checkpoints), "get\\_website" (verify checkpoint configuration).',
+      '\n\n**Workflow:** Use this tool to discover available locations, then use those checkpoint IDs when creating website monitors via "create_website". ' +
+      '\n\n**Related tools:** "list_websites" (existing monitors), "create_website" (configure checkpoints), "get_website" (verify checkpoint configuration).',
     annotations: {
       title: 'List checkpoint locations',
       readOnlyHint: true,
@@ -568,8 +568,8 @@ export const websitesTools: Tool[] = [
       '\n- Compare raw datapoint values across regions' +
       '\n- Export checkpoint measurements for custom analysis' +
       '\n\n**Required parameters:**' +
-      '\n- websiteId: The website monitor ID (from "list\\_websites")' +
-      '\n- checkpointId: The checkpoint location ID (from "list\\_website\\_checkpoints" or the website\'s configuration)' +
+      '\n- websiteId: The website monitor ID (from "list_websites")' +
+      '\n- checkpointId: The checkpoint location ID (from "list_website_checkpoints" or the website\'s configuration)' +
       '\n\n**Optional parameters:**' +
       '\n- period: Number of periods of data to return (alternative to start/end)' +
       '\n- start: Start of the time range, in epoch seconds' +
@@ -577,7 +577,7 @@ export const websitesTools: Tool[] = [
       '\n- datapoints: Comma-separated datapoint names to return (e.g., "responseTime,status")' +
       '\n- aggregate: Aggregation option for the returned values' +
       '\n- format: Response format for the data payload' +
-      '\n\n**Related tools:** "get\\_website\\_graph\\_data" (rendered graph series), "list\\_website\\_checkpoints" (find checkpoint IDs), "get\\_website" (website configuration).',
+      '\n\n**Related tools:** "get_website_graph_data" (rendered graph series), "list_website_checkpoints" (find checkpoint IDs), "get_website" (website configuration).',
     annotations: {
       title: 'Get website checkpoint data',
       readOnlyHint: true,
@@ -632,14 +632,14 @@ export const websitesTools: Tool[] = [
       '\n- Visualize response time / availability trends from a checkpoint' +
       '\n- Feed website graph data into downstream analysis' +
       '\n\n**Required parameters:**' +
-      '\n- websiteId: The website monitor ID (from "list\\_websites")' +
-      '\n- checkpointId: The checkpoint location ID (from "list\\_website\\_checkpoints")' +
+      '\n- websiteId: The website monitor ID (from "list_websites")' +
+      '\n- checkpointId: The checkpoint location ID (from "list_website_checkpoints")' +
       '\n- graphName: The name of the graph to retrieve (as configured on the website monitor)' +
       '\n\n**Optional parameters:**' +
       '\n- start: Start of the time range, in epoch seconds' +
       '\n- end: End of the time range, in epoch seconds' +
       '\n- format: Response format for the data payload' +
-      '\n\n**Related tools:** "get\\_website\\_checkpoint\\_data" (raw datapoint values), "list\\_website\\_checkpoints" (find checkpoint IDs), "get\\_website" (website configuration).',
+      '\n\n**Related tools:** "get_website_checkpoint_data" (raw datapoint values), "list_website_checkpoints" (find checkpoint IDs), "get_website" (website configuration).',
     annotations: {
       title: 'Get website graph data',
       readOnlyHint: true,

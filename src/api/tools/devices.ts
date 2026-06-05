@@ -28,7 +28,7 @@ export const devicesTools: Tool[] = [
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
-      '\n\n**Related tools:** "get\\_resource" (details), "generate\\_resource\\_link" (get UI link).',
+      '\n\n**Related tools:** "get_resource" (details), "generate_resource_link" (get UI link).',
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
@@ -52,12 +52,12 @@ export const devicesTools: Tool[] = [
     description: 'Get detailed information about a specific resource/device in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete resource/device details including: displayName, IP/hostname, hostStatus, alertStatus, collector assignment, resource/device type, custom properties, applied datasources, group memberships, last data time, creation date. ' +
       '\n\n**When to use:** ' +
-      '\n- Get full details after finding resource/device ID via "list\\_resources"' +
+      '\n- Get full details after finding resource/device ID via "list_resources"' +
       '\n- Check resource/device configuration' +
       '\n- Verify collector assignment' +
       '\n- Review custom properties before updating' +
-      '\n\n**Workflow:** Use "list\\_resources" or "search\\_resources" first to find the deviceId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_resource\\_datasources" (see what\'s monitored), "list\\_resource\\_properties" (view all properties), "generate\\_resource\\_link" (get UI link).',
+      '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "generate_resource_link" (get UI link).',
     annotations: {
       title: 'Get resource/device details',
       readOnlyHint: true,
@@ -80,7 +80,7 @@ export const devicesTools: Tool[] = [
     description: 'Add a new resource/device or multiple resources/devices to LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch creation** ' +
       '\n\n**Single resource/device mode (most common):** ' +
-      '\n- Required: displayName (friendly name), name (IP/hostname), preferredCollectorId (from "list\\_collectors")' +
+      '\n- Required: displayName (friendly name), name (IP/hostname), preferredCollectorId (from "list_collectors")' +
       '\n- Optional: hostGroupIds (folder location), description, disableAlerting, customProperties' +
       '\n- Example: Add "prod-web-01" at 192.168.1.100 to Production folder monitored by collector 5' +
       '\n\n**Batch mode (for multiple resources/devices):** ' +
@@ -94,16 +94,16 @@ export const devicesTools: Tool[] = [
       '\n- Bulk import from CMDB/inventory' +
       '\n- Auto-discovery integration' +
       '\n\n**Before creating:** ' +
-      '\n- Use "list\\_collectors" to find available collectorId (must be alive/healthy)' +
-      '\n- Use "list\\_resource\\_groups" to find hostGroupIds for folder placement' +
+      '\n- Use "list_collectors" to find available collectorId (must be alive/healthy)' +
+      '\n- Use "list_resource_groups" to find hostGroupIds for folder placement' +
       '\n- Verify IP/hostname is reachable from collector' +
       '\n\n**Custom properties examples:** ' +
       '\n- Environment: {name: "env", value: "production"}' +
       '\n- Owner: {name: "owner", value: "platform-team"}' +
       '\n- Credentials: {name: "ssh.user", value: "monitoring"} (for authentication)' +
       '\n\n**Performance tip:** For >50 resources/devices, use batch mode to avoid rate limits. ' +
-      '\n\n**After creation:** Use "list\\_resources" to verify resource/device was added, check hostStatus. ' +
-      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_resource\\_groups" (find folder), "update\\_resource" (modify), "generate\\_resource\\_link" (get URL).',
+      '\n\n**After creation:** Use "list_resources" to verify resource/device was added, check hostStatus. ' +
+      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find folder), "update_resource" (modify), "generate_resource_link" (get URL).',
     annotations: {
       title: 'Add resource/device(s)',
       readOnlyHint: false,
@@ -197,7 +197,7 @@ export const devicesTools: Tool[] = [
     description: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch update** ' +
       '\n\n**Single resource/device mode:** ' +
-      '\n- Required: deviceId (from "list\\_resources" or "search\\_resources")' +
+      '\n- Required: deviceId (from "list_resources" or "search_resources")' +
       '\n- Optional: displayName, description, disableAlerting, preferredCollectorId, customProperties' +
       '\n- opType: "replace" (default) overwrites all, "add" merges with existing' +
       '\n\n**Batch mode:** ' +
@@ -217,8 +217,8 @@ export const devicesTools: Tool[] = [
       '\n\n**opType explained:** ' +
       '\n- "replace": Overwrites entire field (careful with customProperties!)' +
       '\n- "add": Merges/appends to existing values (safer for properties)' +
-      '\n\n**Workflow:** First find deviceId using "list\\_resources" or "search\\_resources", then update. ' +
-      '\n\n**Related tools:** "list\\_resources" (find device), "get\\_resource" (verify before update), "update\\_resource\\_property" (simpler property updates).',
+      '\n\n**Workflow:** First find deviceId using "list_resources" or "search_resources", then update. ' +
+      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (verify before update), "update_resource_property" (simpler property updates).',
     annotations: {
       title: 'Update resource/device(s)',
       readOnlyHint: false,
@@ -317,7 +317,7 @@ export const devicesTools: Tool[] = [
       '\n- This action CANNOT be undone' +
       '\n\n**Two modes: Single resource/device OR Batch deletion** ' +
       '\n\n**Single resource/device mode:** ' +
-      '\n- Required: deviceId (from "list\\_resources")' +
+      '\n- Required: deviceId (from "list_resources")' +
       '\n- Optional: deleteFromSystem (true = complete removal including history)' +
       '\n\n**Batch mode:** ' +
       '\n- Provide deviceIds array [123, 456, 789]' +
@@ -329,16 +329,16 @@ export const devicesTools: Tool[] = [
       '\n- Remove duplicate entries' +
       '\n- Bulk decommissioning' +
       '\n\n**⚠️ CONSIDER ALTERNATIVES FIRST:** ' +
-      '\n- Need temporary suppression? Use "create\\_resource\\_sdt" instead (reversible!)' +
-      '\n- Need to stop monitoring but keep history? Use "update\\_resource" with disableAlerting:true' +
-      '\n- Moving to different collector? Use "update\\_resource" to change collector' +
+      '\n- Need temporary suppression? Use "create_resource_sdt" instead (reversible!)' +
+      '\n- Need to stop monitoring but keep history? Use "update_resource" with disableAlerting:true' +
+      '\n- Moving to different collector? Use "update_resource" to change collector' +
       '\n\n**Best practice workflow:** ' +
-      '\n- Use "get\\_resource" to verify you have correct resource/device' +
+      '\n- Use "get_resource" to verify you have correct resource/device' +
       '\n- Consider if SDT or disableAlerting is better option' +
       '\n- If deletion necessary, delete resource/device' +
       '\n- No verification step possible (irreversible)' +
       '\n\n**Batch deletion tip:** For >50 resources/devices, use batch mode with continueOnError:true to handle any failures gracefully. ' +
-      '\n\n**Related tools:** "create\\_resource\\_sdt" (temporary alternative), "update\\_resource" (disable without deleting), "list\\_resources" (find resource/device to delete).',
+      '\n\n**Related tools:** "create_resource_sdt" (temporary alternative), "update_resource" (disable without deleting), "list_resources" (find resource/device to delete).',
     annotations: {
       title: 'Delete resource/device(s)',
       readOnlyHint: false,
@@ -407,10 +407,10 @@ export const devicesTools: Tool[] = [
       '\n\n**Property inheritance:** ' +
       'Properties can be set at: Device level (highest priority) → Group level → Parent group (inherited). ' +
       '\n\n**Datasource appliesTo logic uses properties:** ' +
-      'Many datasources check properties to decide if they should monitor device. Example: AWS\\_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
-      '\n\n**Workflow:** Use "list\\_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
+      'Many datasources check properties to decide if they should monitor device. Example: AWS_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
+      '\n\n**Workflow:** Use "list_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "update\\_device\\_property" (modify), "get\\_resource" (see summary), "list\\_datasources" (see how properties affect monitoring).',
+      '\n\n**Related tools:** "update_device_property" (modify), "get_resource" (see summary), "list_datasources" (see how properties affect monitoring).',
     annotations: {
       title: 'List resource/device properties',
       readOnlyHint: true,
@@ -433,7 +433,7 @@ export const devicesTools: Tool[] = [
   {
     name: 'update_resource_property',
     description: 'Update or create a custom property for a specific resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Set/update a single resource/device-level custom property. Simpler alternative to "update\\_resource" when only changing one property. ' +
+      '\n\n**What this does:** Set/update a single resource/device-level custom property. Simpler alternative to "update_resource" when only changing one property. ' +
       '\n\n**When to use:** ' +
       '\n- Update single property value' +
       '\n- Add new property to device' +
@@ -441,7 +441,7 @@ export const devicesTools: Tool[] = [
       '\n- Update credentials for one resource/device' +
       '\n- Change resource/device tags/metadata' +
       '\n\n**Required parameters:** ' +
-      '\n- deviceId: Device ID (from "list\\_resources")' +
+      '\n- deviceId: Device ID (from "list_resources")' +
       '\n- name: Property name (e.g., "ssh.user", "env", "owner")' +
       '\n- value: Property value' +
       '\n\n**Property types and examples:** ' +
@@ -476,8 +476,8 @@ export const devicesTools: Tool[] = [
       '{deviceId: 123, name: "servicenow.ci_id", value: "ci-web-01"} ' +
       '\n\n**Set custom alert threshold:** ' +
       '{deviceId: 123, name: "cpu.threshold", value: "85"} ' +
-      '\n\n**Workflow:** Use "list\\_device\\_properties" to see current properties, then update or add new ones. ' +
-      '\n\n**Related tools:** "list\\_device\\_properties" (view all properties), "update\\_resource" (update multiple properties), "update\\_resource\\_group" (set group-level properties).',
+      '\n\n**Workflow:** Use "list_device_properties" to see current properties, then update or add new ones. ' +
+      '\n\n**Related tools:** "list_device_properties" (view all properties), "update_resource" (update multiple properties), "update_resource_group" (set group-level properties).',
     annotations: {
       title: 'Update resource/device properties',
       readOnlyHint: false,

@@ -15,13 +15,13 @@ export const instancesTools: Tool[] = [
       '\n- Get instance IDs for metric retrieval' +
       '\n\n**Example workflow:** ' +
       'Device "web-server-01" has datasource "WinVolumeUsage-" → instances: C:, D:, E: (each disk is an instance) ' +
-      'Device "router-01" has datasource "SNMP\\_Network\\_Interfaces" → instances: GigabitEthernet0/1, GigabitEthernet0/2 (each interface is an instance) ' +
+      'Device "router-01" has datasource "SNMP_Network_Interfaces" → instances: GigabitEthernet0/1, GigabitEthernet0/2 (each interface is an instance) ' +
       '\n\n**Complete workflow to get metrics:** ' +
-      '\n- Use "list\\_resource\\_datasources" to get deviceDataSourceId' +
+      '\n- Use "list_resource_datasources" to get deviceDataSourceId' +
       '\n- Use this tool to list instances and get instanceId' +
-      '\n- Use "get\\_resource\\_instance\\_data" with instanceId to get actual metrics' +
+      '\n- Use "get_resource_instance_data" with instanceId to get actual metrics' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "list\\_resource\\_datasources" (first step), "get\\_resource\\_instance\\_data" (get metrics).',
+      '\n\n**Related tools:** "list_resource_datasources" (first step), "get_resource_instance_data" (get metrics).',
     annotations: {
       title: 'List datasource instances',
       readOnlyHint: true,
@@ -56,18 +56,18 @@ export const instancesTools: Tool[] = [
       '\n- Export metrics for analysis' +
       '\n- Build custom dashboards/reports' +
       '\n\n**Required workflow (3 steps):** ' +
-      '\n- Use "list\\_resource\\_datasources" → get deviceDataSourceId for datasource (e.g., WinCPU)' +
-      '\n- Use "list\\_resource\\_instances" → get instanceId for specific instance (e.g., CPU Core 0)' +
+      '\n- Use "list_resource_datasources" → get deviceDataSourceId for datasource (e.g., WinCPU)' +
+      '\n- Use "list_resource_instances" → get instanceId for specific instance (e.g., CPU Core 0)' +
       '\n- Use this tool → get actual metric values for that instance' +
       '\n\n**Parameters:** ' +
-      '\n- deviceId: Device ID from "get\\_resource" or "list\\_resources"' +
-      '\n- deviceDataSourceId: From "get\\_resource\\_datasource" or "list\\_resource\\_datasources"' +
-      '\n- instanceId: From "list\\_resource\\_instances"' +
+      '\n- deviceId: Device ID from "get_resource" or "list_resources"' +
+      '\n- deviceDataSourceId: From "get_resource_datasource" or "list_resource_datasources"' +
+      '\n- instanceId: From "list_resource_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
       '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
       '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
-      '\n\n**Related tools:** "list\\_resource\\_datasources", "list\\_resource\\_instances".',
+      '\n\n**Related tools:** "list_resource_datasources", "list_resource_instances".',
     annotations: {
       title: 'Get time-series metric data',
       readOnlyHint: true,
@@ -113,7 +113,7 @@ export const instancesTools: Tool[] = [
     description: 'Add a new datasource instance to a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Manually creates a monitored instance (e.g., a specific URL, port, process, or table) under a device datasource that supports manual/active discovery instances. ' +
       '\n\n**Required:** deviceId, deviceDataSourceId, and a `config` with at least the instance `wildValue` (and usually `displayName`). ' +
-      '\n\n**Related tools:** "list\\_resource\\_datasources" (get deviceDataSourceId), "list\\_resource\\_instances", "update\\_resource\\_instance", "delete\\_resource\\_instance".',
+      '\n\n**Related tools:** "list_resource_datasources" (get deviceDataSourceId), "list_resource_instances", "update_resource_instance", "delete_resource_instance".',
     annotations: { title: 'Create datasource instance', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -135,7 +135,7 @@ export const instancesTools: Tool[] = [
     description: 'Update an existing datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Partially updates instance fields such as displayName, description, properties, or disableAlerting. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, and a `config` with the fields to change. Optional `opType` (add/refresh/replace) controls property merge behavior. ' +
-      '\n\n**Related tools:** "list\\_resource\\_instances", "delete\\_resource\\_instance".',
+      '\n\n**Related tools:** "list_resource_instances", "delete_resource_instance".',
     annotations: { title: 'Update datasource instance', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -158,7 +158,7 @@ export const instancesTools: Tool[] = [
     name: 'delete_resource_instance',
     description: 'Delete a datasource instance from a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Permanent:** Removes the instance and stops its monitoring/data collection. ' +
-      '\n\n**Related tools:** "list\\_resource\\_instances" (find instanceId).',
+      '\n\n**Related tools:** "list_resource_instances" (find instanceId).',
     annotations: { title: 'Delete datasource instance', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -176,7 +176,7 @@ export const instancesTools: Tool[] = [
     description: 'Get rendered graph data for a specific datasource instance graph in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Graph series data (lines, datapoints, timestamps) for the given graphId on an instance. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, graphId, optional start/end (epoch seconds) and format. ' +
-      '\n\n**Tip:** For raw datapoint values use "get\\_resource\\_instance\\_data" instead.',
+      '\n\n**Tip:** For raw datapoint values use "get_resource_instance_data" instead.',
     annotations: { title: 'Get instance graph data', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -198,7 +198,7 @@ export const instancesTools: Tool[] = [
     description: 'Get aggregated time-series data for all instances of a datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Datapoint values across the datasource instances. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, optional period, start/end (epoch seconds), datapoints (comma-separated), format, aggregate. ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_data" (single instance).',
+      '\n\n**Related tools:** "get_resource_instance_data" (single instance).',
     annotations: { title: 'Get datasource data', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -220,7 +220,7 @@ export const instancesTools: Tool[] = [
     name: 'list_resource_instance_groups',
     description: 'List instance groups for a datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are instance groups:** Logical groupings of datasource instances (e.g., grouping interfaces by role). ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_group", "create\\_resource\\_instance\\_group".',
+      '\n\n**Related tools:** "get_resource_instance_group", "create_resource_instance_group".',
     annotations: { title: 'List instance groups', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -238,7 +238,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_resource_instance_group',
     description: 'Get details of a specific datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_resource\\_instance\\_groups", "update\\_resource\\_instance\\_group".',
+      '\n\n**Related tools:** "list_resource_instance_groups", "update_resource_instance_group".',
     annotations: { title: 'Get instance group', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -256,7 +256,7 @@ export const instancesTools: Tool[] = [
     name: 'create_resource_instance_group',
     description: 'Create a datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Required:** deviceId, deviceDataSourceId, and a `config` with at least `name`. ' +
-      '\n\n**Related tools:** "update\\_resource\\_instance\\_group", "list\\_resource\\_instance\\_groups".',
+      '\n\n**Related tools:** "update_resource_instance_group", "list_resource_instance_groups".',
     annotations: { title: 'Create instance group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -277,7 +277,7 @@ export const instancesTools: Tool[] = [
     name: 'update_resource_instance_group',
     description: 'Update a datasource instance group on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceGroupId, and a `config` with fields to change. ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_group".',
+      '\n\n**Related tools:** "get_resource_instance_group".',
     annotations: { title: 'Update instance group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -319,7 +319,7 @@ export const instancesTools: Tool[] = [
     name: 'update_instance_group_alert_threshold',
     description: 'Set or update the alert threshold for a datapoint within a datasource instance group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceGroupId, datapointId, and a `config` with the alert threshold expression (e.g., {"alertExpr": "> 90 95 99"}). ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_group".',
+      '\n\n**Related tools:** "get_resource_instance_group".',
     annotations: { title: 'Update instance group alert threshold', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -342,7 +342,7 @@ export const instancesTools: Tool[] = [
     name: 'list_resource_alert_settings',
     description: 'List datasource instance alert settings across an entire resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Alert threshold/configuration settings for the device\'s monitored instances. ' +
-      '\n\n**Related tools:** "list\\_instance\\_alert\\_settings", "get\\_instance\\_alert\\_setting".',
+      '\n\n**Related tools:** "list_instance_alert_settings", "get_instance_alert_setting".',
     annotations: { title: 'List device alert settings', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -360,7 +360,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'list_instance_alert_settings',
     description: 'List alert settings for a specific datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "get\\_instance\\_alert\\_setting", "update\\_instance\\_alert\\_setting".',
+      '\n\n**Related tools:** "get_instance_alert_setting", "update_instance_alert_setting".',
     annotations: { title: 'List instance alert settings', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -378,7 +378,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_instance_alert_setting',
     description: 'Get a specific alert setting for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_instance\\_alert\\_settings", "update\\_instance\\_alert\\_setting".',
+      '\n\n**Related tools:** "list_instance_alert_settings", "update_instance_alert_setting".',
     annotations: { title: 'Get instance alert setting', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -397,7 +397,7 @@ export const instancesTools: Tool[] = [
     name: 'update_instance_alert_setting',
     description: 'Update an alert setting (threshold) for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, alertSettingId, and a `config` with fields to change (e.g., alertExpr, disableAlerting). ' +
-      '\n\n**Related tools:** "get\\_instance\\_alert\\_setting".',
+      '\n\n**Related tools:** "get_instance_alert_setting".',
     annotations: { title: 'Update instance alert setting', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -420,8 +420,8 @@ export const instancesTools: Tool[] = [
     name: 'list_resource_instance_configs',
     description: 'List collected configuration files for a ConfigSource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Config versions/snapshots metadata (id, pollTimestamp, version, change status). ' +
-      '\n\n**Workflow:** Find the ConfigSource deviceDataSourceId via "list\\_resource\\_datasources", the instance via "list\\_resource\\_instances", then list its configs. ' +
-      '\n\n**Related tools:** "get\\_resource\\_instance\\_config".',
+      '\n\n**Workflow:** Find the ConfigSource deviceDataSourceId via "list_resource_datasources", the instance via "list_resource_instances", then list its configs. ' +
+      '\n\n**Related tools:** "get_resource_instance_config".',
     annotations: { title: 'List instance configs', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -440,7 +440,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_resource_instance_config',
     description: 'Get a specific collected configuration file (and its content) for a ConfigSource instance in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, configId (the config version id from "list\\_resource\\_instance\\_configs"), optional format/startEpoch. ' +
+      '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, configId (the config version id from "list_resource_instance_configs"), optional format/startEpoch. ' +
       '\n\n**Returns:** The config content and metadata, useful for auditing config changes.',
     annotations: { title: 'Get instance config', readOnlyHint: true },
     inputSchema: {
@@ -462,7 +462,7 @@ export const instancesTools: Tool[] = [
     name: 'collect_resource_instance_config',
     description: 'Trigger an immediate configuration collection for a ConfigSource instance in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Forces LM to poll the device now for the latest config (instead of waiting for the next schedule). ' +
-      '\n\n**Related tools:** "list\\_resource\\_instance\\_configs" (view results afterward).',
+      '\n\n**Related tools:** "list_resource_instance_configs" (view results afterward).',
     annotations: { title: 'Collect instance config now', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -480,7 +480,7 @@ export const instancesTools: Tool[] = [
     description: 'List NetFlow traffic flows for a NetFlow-enabled resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Flow records (source/destination, application, bytes, percentage). ' +
       '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), netflowFilter, pagination. ' +
-      '\n\n**Related tools:** "list\\_resource\\_netflow\\_ports", "list\\_resource\\_netflow\\_endpoints".',
+      '\n\n**Related tools:** "list_resource_netflow_ports", "list_resource_netflow_endpoints".',
     annotations: { title: 'List NetFlow flows', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -562,7 +562,7 @@ export const instancesTools: Tool[] = [
     name: 'get_resource_sdt_history',
     description: 'Get the Scheduled Down Time (SDT) history for a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Past SDT windows applied to the device. ' +
-      '\n\n**Related tools:** "get\\_resource\\_datasource\\_sdt\\_history", "get\\_instance\\_sdt\\_history".',
+      '\n\n**Related tools:** "get_resource_datasource_sdt_history", "get_instance_sdt_history".',
     annotations: { title: 'Get device SDT history', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -579,7 +579,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_resource_datasource_sdt_history',
     description: 'Get the SDT history for a specific datasource on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "get\\_resource\\_sdt\\_history", "get\\_instance\\_sdt\\_history".',
+      '\n\n**Related tools:** "get_resource_sdt_history", "get_instance_sdt_history".',
     annotations: { title: 'Get datasource SDT history', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -597,7 +597,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_instance_sdt_history',
     description: 'Get the SDT history for a specific datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "get\\_resource\\_sdt\\_history", "get\\_resource\\_datasource\\_sdt\\_history".',
+      '\n\n**Related tools:** "get_resource_sdt_history", "get_resource_datasource_sdt_history".',
     annotations: { title: 'Get instance SDT history', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -617,7 +617,7 @@ export const instancesTools: Tool[] = [
     name: 'create_resource_property',
     description: 'Add a custom property to a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, name (property key), value. ' +
-      '\n\n**Related tools:** "list\\_resource\\_properties", "update\\_resource\\_property", "delete\\_resource\\_property".',
+      '\n\n**Related tools:** "list_resource_properties", "update_resource_property", "delete_resource_property".',
     annotations: { title: 'Create device property', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -634,7 +634,7 @@ export const instancesTools: Tool[] = [
     name: 'delete_resource_property',
     description: 'Delete a custom property from a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, propertyName. ' +
-      '\n\n**Related tools:** "list\\_resource\\_properties".',
+      '\n\n**Related tools:** "list_resource_properties".',
     annotations: { title: 'Delete device property', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -651,7 +651,7 @@ export const instancesTools: Tool[] = [
     description: 'List alerts for a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Active/historical alerts scoped to the device. ' +
       '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), needMessage, pagination/filter. ' +
-      '\n\n**Related tools:** "list\\_alerts" (account-wide), "get\\_alert".',
+      '\n\n**Related tools:** "list_alerts" (account-wide), "get_alert".',
     annotations: { title: 'List device alerts', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -673,7 +673,7 @@ export const instancesTools: Tool[] = [
     name: 'list_resource_eventsources',
     description: 'List the EventSources applied to a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** EventSources monitoring the device (e.g., Windows Event Logs, SNMP traps). ' +
-      '\n\n**Related tools:** "list\\_eventsources" (definitions).',
+      '\n\n**Related tools:** "list_eventsources" (definitions).',
     annotations: { title: 'List device eventsources', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -689,7 +689,7 @@ export const instancesTools: Tool[] = [
     name: 'schedule_resource_auto_discovery',
     description: 'Trigger Active Discovery for a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Forces LM to re-run instance discovery now (find new disks/interfaces/etc.) instead of waiting for the schedule. ' +
-      '\n\n**Related tools:** "list\\_resource\\_instances" (view discovered instances).',
+      '\n\n**Related tools:** "list_resource_instances" (view discovered instances).',
     annotations: { title: 'Schedule active discovery', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -703,7 +703,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_resources_delta_id',
     description: 'Begin a device delta-tracking session in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Returns a deltaId snapshot token (and current devices) that can later be passed to "get\\_resources\\_delta" to fetch only what changed. ' +
+      '\n\n**What this does:** Returns a deltaId snapshot token (and current devices) that can later be passed to "get_resources_delta" to fetch only what changed. ' +
       '\n\n**Parameters:** optional deltaId to refresh an existing token.',
     annotations: { title: 'Get devices delta ID', readOnlyHint: true },
     inputSchema: {
@@ -718,7 +718,7 @@ export const instancesTools: Tool[] = [
   {
     name: 'get_resources_delta',
     description: 'Fetch device changes since a previous delta snapshot in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Parameters:** deltaId (from "get\\_resources\\_delta\\_id"). ' +
+      '\n\n**Parameters:** deltaId (from "get_resources_delta_id"). ' +
       '\n\n**Returns:** Added/updated/deleted devices since the snapshot.',
     annotations: { title: 'Get devices delta', readOnlyHint: true },
     inputSchema: {
@@ -737,7 +737,7 @@ export const instancesTools: Tool[] = [
     description: 'Fetch recent metric data for multiple device datasource instances in a single bulk request in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** the instances selector via `config` (the DeviceInstances body), plus optional time controls: period, start, end, aggregate. ' +
       '\n\n**Required in `config`:** `instanceIds` (a comma-separated string or array of device datasource instance IDs) — the request fails with "instanceIds can\'t be null" if omitted. Optionally include `dataPoints` to limit which datapoints are returned. ' +
-      '\n\n**Related tools:** "list\\_resource\\_instances" (find instance IDs), "get\\_resource\\_instance\\_data" (single instance), "get\\_instance\\_graph\\_data\\_by\\_id".',
+      '\n\n**Related tools:** "list_resource_instances" (find instance IDs), "get_resource_instance_data" (single instance), "get_instance_graph_data_by_id".',
     annotations: { title: 'Fetch bulk instances data', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -757,7 +757,7 @@ export const instancesTools: Tool[] = [
     description: 'Get rendered graph data for a device datasource instance graph using only the instance ID in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Retrieves the time-series data for a specific graph on an instance, addressed directly by instanceId + graphId (no device/datasource path needed). ' +
       '\n\n**Parameters:** instanceId, graphId, optional start/end (epoch seconds) and format. ' +
-      '\n\n**Related tools:** "get\\_instance\\_graph\\_data" (full device/datasource path), "list\\_resource\\_instances".',
+      '\n\n**Related tools:** "get_instance_graph_data" (full device/datasource path), "list_resource_instances".',
     annotations: { title: 'Get instance graph data by id', readOnlyHint: true },
     inputSchema: {
       type: 'object',

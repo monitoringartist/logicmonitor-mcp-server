@@ -7,7 +7,7 @@ export const jobMonitorsTools: Tool[] = [
     name: 'list_job_monitors',
     description: 'List Job Monitors (BatchJobs) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are Job Monitors:** Definitions for monitoring scheduled/batch jobs (cron tasks, ETL jobs) — tracking execution status, duration, and output. ' +
-      '\n\n**Related tools:** "get\\_job\\_monitor", "create\\_job\\_monitor".',
+      '\n\n**Related tools:** "get_job_monitor", "create_job_monitor".',
     annotations: { title: 'List job monitors', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -24,7 +24,7 @@ export const jobMonitorsTools: Tool[] = [
   {
     name: 'get_job_monitor',
     description: 'Get details of a specific Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_job\\_monitors", "update\\_job\\_monitor".',
+      '\n\n**Related tools:** "list_job_monitors", "update_job_monitor".',
     annotations: { title: 'Get job monitor', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -41,7 +41,7 @@ export const jobMonitorsTools: Tool[] = [
     name: 'create_job_monitor',
     description: 'Create a Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Required:** the BatchJob definition via `config` (name, collector, command/script, schedule, alert thresholds, etc.). ' +
-      '\n\n**Related tools:** "get\\_job\\_monitor" (template), "import\\_job\\_monitor".',
+      '\n\n**Related tools:** "get_job_monitor" (template), "import_job_monitor".',
     annotations: { title: 'Create job monitor', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -56,7 +56,7 @@ export const jobMonitorsTools: Tool[] = [
     name: 'update_job_monitor',
     description: 'Update a Job Monitor (BatchJob) in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** jobMonitorId, `config` (fields to change), optional reason (audit note). ' +
-      '\n\n**Related tools:** "get\\_job\\_monitor".',
+      '\n\n**Related tools:** "get_job_monitor".',
     annotations: { title: 'Update job monitor', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -72,7 +72,7 @@ export const jobMonitorsTools: Tool[] = [
   {
     name: 'delete_job_monitor',
     description: 'Delete a Job Monitor (BatchJob) from LogicMonitor (LM) monitoring. Cannot be undone. ' +
-      '\n\n**Related tools:** "get\\_job\\_monitor", "list\\_job\\_monitors".',
+      '\n\n**Related tools:** "get_job_monitor", "list_job_monitors".',
     annotations: { title: 'Delete job monitor', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -87,7 +87,7 @@ export const jobMonitorsTools: Tool[] = [
     name: 'import_job_monitor',
     description: 'Import a Job Monitor (BatchJob) definition into LogicMonitor (LM) monitoring from JSON or XML content. ' +
       '\n\n**Parameters:** content (the JSON/XML text), format ("json" or "xml"), optional handleConflict/fieldsToPreserve (JSON only). ' +
-      '\n\n**Related tools:** "create\\_job\\_monitor".',
+      '\n\n**Related tools:** "create_job_monitor".',
     annotations: { title: 'Import job monitor', readOnlyHint: false },
     inputSchema: {
       type: 'object',

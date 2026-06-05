@@ -21,18 +21,18 @@ export const eventsourcesTools: Tool[] = [
       '\n- Application logs: Custom app logs, web server logs ' +
       '\n- Cloud events: CloudWatch logs, Azure events ' +
       '\n\n**Common EventSources:** ' +
-      '\n- Windows\\_Application\\_EventLog: Windows application events ' +
-      '\n- Windows\\_Security\\_EventLog: Security/audit logs ' +
-      '\n- Linux\\_Syslog: Linux system logs via syslog ' +
-      '\n- SNMP\\_Traps: Network resource/device SNMP traps ' +
-      '\n- VMware\\_Events: vCenter events ' +
+      '\n- Windows_Application_EventLog: Windows application events ' +
+      '\n- Windows_Security_EventLog: Security/audit logs ' +
+      '\n- Linux_Syslog: Linux system logs via syslog ' +
+      '\n- SNMP_Traps: Network resource/device SNMP traps ' +
+      '\n- VMware_Events: vCenter events ' +
       '\n\n**Use cases:** ' +
       '\n- Monitor Windows failed login attempts ' +
       '\n- Alert on ERROR/CRITICAL in application logs ' +
       '\n- Collect network resource/device syslog for troubleshooting ' +
       '\n- Track security events for compliance ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_eventsource" (details), "list\\_device\\_eventsources" (events for device).',
+      '\n\n**Related tools:** "get_eventsource" (details), "list_device_eventsources" (events for device).',
     annotations: {
       title: 'List EventSources',
       readOnlyHint: true,
@@ -63,8 +63,8 @@ export const eventsourcesTools: Tool[] = [
       '\n- filters: Rules for parsing/matching events ' +
       '\n- severityMapping: Map event levels (INFO/WARN/ERROR) to LM alert levels ' +
       '\n- schedule: When event collection runs ' +
-      '\n\n**Workflow:** Use "list\\_eventsources" to find eventSourceId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list\\_eventsources" (find EventSource), "list\\_device\\_eventsources" (events for device).',
+      '\n\n**Workflow:** Use "list_eventsources" to find eventSourceId, then use this tool for complete configuration. ' +
+      '\n\n**Related tools:** "list_eventsources" (find EventSource), "list_device_eventsources" (events for device).',
     annotations: {
       title: 'Get EventSource details',
       readOnlyHint: true,
@@ -86,14 +86,14 @@ export const eventsourcesTools: Tool[] = [
     name: 'create_eventsource',
     description: 'Create a new EventSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines a new event-monitoring module (EventSource) that collects events (e.g., SNMP traps, Windows event logs, syslog) and maps them to LogicMonitor alerts. ' +
-      '\n\n**⚠️ EventSource definitions are complex** (collection method, filters, severity mapping, appliesTo). The most reliable way to create one is to model it on an existing EventSource: use "get\\_eventsource" to export a similar definition, adapt it, and pass the fields here (use `config` for attributes not listed below). To re-import an exported EventSource file, use "import\\_eventsource". ' +
+      '\n\n**⚠️ EventSource definitions are complex** (collection method, filters, severity mapping, appliesTo). The most reliable way to create one is to model it on an existing EventSource: use "get_eventsource" to export a similar definition, adapt it, and pass the fields here (use `config` for attributes not listed below). To re-import an exported EventSource file, use "import_eventsource". ' +
       '\n\n**Common parameters:**' +
       '\n- name: Unique EventSource name' +
       '\n- description: What events this collects' +
       '\n- appliesTo: AppliesTo expression selecting which resources it runs on' +
       '\n- collector: The collection mechanism (e.g., "scriptevent", "snmptrap", "eventlog", "syslog")' +
       '\n- config: Any additional EventSource attributes (filters, severity mapping, schedule), merged into the request body' +
-      '\n\n**Related tools:** "get\\_eventsource" (export a template), "import\\_eventsource" (import a file), "update\\_eventsource", "delete\\_eventsource".',
+      '\n\n**Related tools:** "get_eventsource" (export a template), "import_eventsource" (import a file), "update_eventsource", "delete_eventsource".',
     annotations: {
       title: 'Create EventSource',
       readOnlyHint: false,
@@ -132,12 +132,12 @@ export const eventsourcesTools: Tool[] = [
     description: 'Update an existing EventSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies an EventSource definition (partial update - only the fields you provide are changed). ' +
       '\n\n**Required parameters:**' +
-      '\n- eventSourceId: The ID of the EventSource to update (from "list\\_eventsources")' +
+      '\n- eventSourceId: The ID of the EventSource to update (from "list_eventsources")' +
       '\n\n**Optional parameters:**' +
       '\n- name, description, appliesTo, collector' +
       '\n- config: Any additional EventSource attributes to update (merged into the body)' +
-      '\n\n**Best practice:** Use "get\\_eventsource" first to review the current definition, then change only the needed fields. ' +
-      '\n\n**Related tools:** "get\\_eventsource" (review before update), "list\\_eventsources" (find it), "delete\\_eventsource".',
+      '\n\n**Best practice:** Use "get_eventsource" first to review the current definition, then change only the needed fields. ' +
+      '\n\n**Related tools:** "get_eventsource" (review before update), "list_eventsources" (find it), "delete_eventsource".',
     annotations: {
       title: 'Update EventSource',
       readOnlyHint: false,
@@ -183,9 +183,9 @@ export const eventsourcesTools: Tool[] = [
       '\n- Event collection for matching resources stops' +
       '\n- Cannot be undone' +
       '\n\n**Required parameters:**' +
-      '\n- eventSourceId: The ID of the EventSource to delete (from "list\\_eventsources")' +
-      '\n\n**Before deleting:** Use "get\\_eventsource" to verify it is the correct module and consider exporting its definition for backup. ' +
-      '\n\n**Related tools:** "get\\_eventsource" (backup/verify before delete), "list\\_eventsources" (find it).',
+      '\n- eventSourceId: The ID of the EventSource to delete (from "list_eventsources")' +
+      '\n\n**Before deleting:** Use "get_eventsource" to verify it is the correct module and consider exporting its definition for backup. ' +
+      '\n\n**Related tools:** "get_eventsource" (backup/verify before delete), "list_eventsources" (find it).',
     annotations: {
       title: 'Delete EventSource',
       readOnlyHint: false,
@@ -212,8 +212,8 @@ export const eventsourcesTools: Tool[] = [
       '\n\n**Optional parameters (JSON import only):**' +
       '\n- handleConflict: How to resolve conflicts with an existing module, e.g. "FORCE_OVERWRITE" or "PRESERVE_FIELDS"' +
       '\n- fieldsToPreserve: Comma-separated fields to preserve when overwriting (e.g. "APPLIES_TO,ACTIVE_DISCOVERY")' +
-      '\n\n**Tip:** To get a definition to import, use "get\\_eventsource" on an existing module (export), or paste an exported file\'s contents. ' +
-      '\n\n**Related tools:** "get\\_eventsource" (export), "create\\_eventsource" (create from structured fields), "list\\_eventsources".',
+      '\n\n**Tip:** To get a definition to import, use "get_eventsource" on an existing module (export), or paste an exported file\'s contents. ' +
+      '\n\n**Related tools:** "get_eventsource" (export), "create_eventsource" (create from structured fields), "list_eventsources".',
     annotations: {
       title: 'Import EventSource',
       readOnlyHint: false,

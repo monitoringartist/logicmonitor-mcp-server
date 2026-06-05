@@ -34,7 +34,7 @@ export const auditTools: Tool[] = [
       '\n- Use autoPaginate:true for complete history (may take time for large datasets)' +
       `\n\n**Web UI access:** https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs (Settings → Audit Logs) ` +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_audit\\_log" (details of specific entry).',
+      '\n\n**Related tools:** "get_audit_log" (details of specific entry).',
     annotations: {
       title: 'List audit logs',
       readOnlyHint: true,
@@ -58,11 +58,11 @@ export const auditTools: Tool[] = [
     description: 'Get detailed information about a specific audit log entry in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete audit log details: username, IP address, exact timestamp, full description of action, session ID, affected resources, before/after values (for updates). ' +
       '\n\n**When to use:** ' +
-      '\n- Get complete details after finding log ID via "list\\_audit\\_logs"' +
+      '\n- Get complete details after finding log ID via "list_audit_logs"' +
       '\n- Review exact changes made (old vs new values)' +
       '\n- Investigate specific incident with full context' +
-      '\n\n**Workflow:** First use "list\\_audit\\_logs" with filters to find relevant entries, then use this tool with the log ID for complete details. ' +
-      '\n\n**Related tools:** "list\\_audit\\_logs" (search logs), "search\\_audit\\_logs" (text search).',
+      '\n\n**Workflow:** First use "list_audit_logs" with filters to find relevant entries, then use this tool with the log ID for complete details. ' +
+      '\n\n**Related tools:** "list_audit_logs" (search logs), "search_audit_logs" (text search).',
     annotations: {
       title: 'Get audit details',
       readOnlyHint: true,

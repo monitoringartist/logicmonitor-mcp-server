@@ -34,9 +34,9 @@ export const servicesTools: Tool[] = [
       '\n\n**Common filter patterns:** ' +
       '\n- By status: filter:"status:normal" or filter:"status:dead" ' +
       '\n- By name: filter:"name~*production*" ' +
-      '\n\n**Workflow:** Use this tool to find services, then "get\\_service" for detailed dependency tree and health status. ' +
+      '\n\n**Workflow:** Use this tool to find services, then "get_service" for detailed dependency tree and health status. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_service" (details and dependencies), "list\\_service\\_groups" (organization), "create\\_service" (define new business service).',
+      '\n\n**Related tools:** "get_service" (details and dependencies), "list_service_groups" (organization), "create_service" (define new business service).',
     annotations: {
       title: 'List services',
       readOnlyHint: true,
@@ -70,8 +70,8 @@ export const servicesTools: Tool[] = [
       '\n- **Alert configuration:** When to alert on service issues ' +
       '\n\n**Troubleshooting workflow:** ' +
       'Service shows "Down" → Check dependency tree → Identify which specific resource(s) failed → Address those resources → Service auto-recovers when dependencies healthy ' +
-      '\n\n**Workflow:** Use "list\\_services" to find serviceId, then use this tool for complete dependency analysis. ' +
-      '\n\n**Related tools:** "list\\_services" (find service), "update\\_service" (modify dependencies), "list\\_resources" (see health of dependent resources).',
+      '\n\n**Workflow:** Use "list_services" to find serviceId, then use this tool for complete dependency analysis. ' +
+      '\n\n**Related tools:** "list_services" (find service), "update_service" (modify dependencies), "list_resources" (see health of dependent resources).',
     annotations: {
       title: 'Get service details',
       readOnlyHint: true,
@@ -102,7 +102,7 @@ export const servicesTools: Tool[] = [
       '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: Service name (e.g., "E-commerce Website", "Payment API", "Mobile App Backend") ' +
-      '\n- groupId: Service group ID for organization (from "list\\_service\\_groups") ' +
+      '\n- groupId: Service group ID for organization (from "list_service_groups") ' +
       '\n\n**Optional parameters:** ' +
       '\n- description: Service purpose/details ' +
       '\n- resources/devices: Array of resource/device IDs that comprise this service ' +
@@ -154,8 +154,8 @@ export const servicesTools: Tool[] = [
       '\n- **Use service groups:** Organize by department, product, or region ' +
       '\n- **Document SLAs:** Add SLA targets to description ' +
       '\n\n**After creation:** ' +
-      'Service appears in Services view with aggregated health status. Use in dashboards to show business-level health. Use "update\\_service" to modify membership as infrastructure changes. ' +
-      '\n\n**Related tools:** "list\\_service\\_groups" (create groups first), "update\\_service" (modify), "list\\_resources" (find resources/devices), "create\\_service\\_dashboard" (visualize).',
+      'Service appears in Services view with aggregated health status. Use in dashboards to show business-level health. Use "update_service" to modify membership as infrastructure changes. ' +
+      '\n\n**Related tools:** "list_service_groups" (create groups first), "update_service" (modify), "list_resources" (find resources/devices), "create_service_dashboard" (visualize).',
     annotations: {
       title: 'Create service',
       readOnlyHint: false,
@@ -196,7 +196,7 @@ export const servicesTools: Tool[] = [
       '\n- Reflect architecture changes' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- serviceId: Service ID (from "list\\_services") ' +
+      '\n- serviceId: Service ID (from "list_services") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New service name ' +
       '\n- description: Updated description ' +
@@ -215,10 +215,10 @@ export const servicesTools: Tool[] = [
       '\n\n**⚠️ Important:** ' +
       'Updating resource/device array REPLACES all members. Include existing + new resources/devices, or resource/device will be removed from service. ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_service" to see current membership ' +
+      '1. Use "get_service" to see current membership ' +
       '2. Update service with complete resource/device list ' +
       '3. Service health recalculates immediately ' +
-      '\n\n**Related tools:** "get\\_service" (review), "list\\_services" (find service), "list\\_resources" (find resources/devices).',
+      '\n\n**Related tools:** "get_service" (review), "list_services" (find service), "list_resources" (find resources/devices).',
     annotations: {
       title: 'Update service',
       readOnlyHint: false,
@@ -254,7 +254,7 @@ export const servicesTools: Tool[] = [
       '\n- Restructuring service hierarchy' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- serviceId: Service ID to delete (from "list\\_services") ' +
+      '\n- serviceId: Service ID to delete (from "list_services") ' +
       '\n\n**Impact:** ' +
       '\n- Service removed from all dashboards ' +
       '\n- Service health history deleted ' +
@@ -269,7 +269,7 @@ export const servicesTools: Tool[] = [
       '2. Check if service used in alert rules (will break routing) ' +
       '3. Verify service no longer represents active business function ' +
       '\n\n**Best practice:** Update dashboards to remove service widgets BEFORE deleting service. ' +
-      '\n\n**Related tools:** "list\\_services" (find service), "get\\_service" (verify before delete), "list\\_dashboards" (check usage).',
+      '\n\n**Related tools:** "list_services" (find service), "get_service" (verify before delete), "list_dashboards" (check usage).',
     annotations: {
       title: 'Delete service',
       readOnlyHint: false,
@@ -309,9 +309,9 @@ export const servicesTools: Tool[] = [
       '\n- Group services by SLA tiers ' +
       '\n- Separate internal vs customer-facing services ' +
       '\n- Structure multi-tenant service monitoring ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_services" filtered by groupId to see services in specific folder. ' +
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_services" filtered by groupId to see services in specific folder. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_service\\_group" (details), "list\\_services" (services in group), "create\\_service\\_group" (create folder).',
+      '\n\n**Related tools:** "get_service_group" (details), "list_services" (services in group), "create_service_group" (create folder).',
     annotations: {
       title: 'List service groups',
       readOnlyHint: true,
@@ -336,8 +336,8 @@ export const servicesTools: Tool[] = [
       '\n- Verify group hierarchy' +
       '\n- Review group structure before creating services' +
       '\n' +
-      '\n\n**Workflow:** Use "list\\_service\\_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_service\\_groups" (find groups), "list\\_services" (services in group), "create\\_service\\_group" (create new).',
+      '\n\n**Workflow:** Use "list_service_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_service_groups" (find groups), "list_services" (services in group), "create_service_group" (create new).',
     annotations: {
       title: 'Get service group details',
       readOnlyHint: true,
@@ -394,7 +394,7 @@ export const servicesTools: Tool[] = [
       '\n- Organize by how business views applications ' +
       '\n- Keep hierarchy shallow (2-3 levels max) ' +
       '\n\n**After creation:** Use groupId when creating services to place them in appropriate folder. ' +
-      '\n\n**Related tools:** "list\\_service\\_groups" (view hierarchy), "create\\_service" (add services to group), "update\\_service\\_group" (modify).',
+      '\n\n**Related tools:** "list_service_groups" (view hierarchy), "create_service" (add services to group), "update_service_group" (modify).',
     annotations: {
       title: 'Create service group',
       readOnlyHint: false,
@@ -430,7 +430,7 @@ export const servicesTools: Tool[] = [
       '\n- Reorganize service structure' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Service group ID (from "list\\_service\\_groups") ' +
+      '\n- groupId: Service group ID (from "list_service_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
@@ -443,10 +443,10 @@ export const servicesTools: Tool[] = [
       '\n\n**Update description:** ' +
       '{groupId: 123, description: "Updated to include new microservices"} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list\\_service\\_groups" to find group ' +
+      '1. Use "list_service_groups" to find group ' +
       '2. Update group settings ' +
       '3. Services within group unaffected ' +
-      '\n\n**Related tools:** "list\\_service\\_groups" (find group), "get\\_service\\_group" (verify), "list\\_services" (services in group).',
+      '\n\n**Related tools:** "list_service_groups" (find group), "get_service_group" (verify), "list_services" (services in group).',
     annotations: {
       title: 'Update service group',
       readOnlyHint: false,
@@ -485,13 +485,13 @@ export const servicesTools: Tool[] = [
       '\n- Simplify service hierarchy' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Service group ID to delete (from "list\\_service\\_groups") ' +
+      '\n- groupId: Service group ID to delete (from "list_service_groups") ' +
       '\n\n**Before deleting:** ' +
       '1. Move all services to different group (or delete services) ' +
       '2. Move or delete all subgroups ' +
       '3. Verify group is empty ' +
       '\n\n**Safe deletion workflow:** ' +
-      '1. Use "list\\_services" to find services in this group ' +
+      '1. Use "list_services" to find services in this group ' +
       '2. Move services: update_service(serviceId: X, groupId: NEW_GROUP) ' +
       '3. Check for subgroups in group ' +
       '4. Delete empty subgroups first ' +
@@ -500,7 +500,7 @@ export const servicesTools: Tool[] = [
       'If deletion fails, group likely not empty. Check for: ' +
       '\n- Services still in group ' +
       '\n- Subgroups still under this group ' +
-      '\n\n**Related tools:** "list\\_services" (check for services), "list\\_service\\_groups" (check for subgroups), "update\\_service" (move services).',
+      '\n\n**Related tools:** "list_services" (check for services), "list_service_groups" (check for subgroups), "update_service" (move services).',
     annotations: {
       title: 'Delete service group',
       readOnlyHint: false,

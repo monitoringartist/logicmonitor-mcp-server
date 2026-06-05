@@ -19,8 +19,8 @@ export const costOptimizationTools: Tool[] = [
       '\n- Single category: `recommendationCategory:"EC2 Right Sizing"`' +
       '\n- Multiple statuses: `recommendationStatus:"active"|"snoozed"`' +
       '\n- Combined: `recommendationCategory:"EBS Unattached",recommendationStatus:"active"`' +
-      '\n\n**Tip:** Use "list\\_cost\\_optimization\\_recommendation\\_categories" first to discover valid category names. ' +
-      '\n\n**Related tools:** "get\\_cost\\_optimization\\_recommendation" (full details for one recommendation), "list\\_cost\\_optimization\\_recommendation\\_categories" (available categories).',
+      '\n\n**Tip:** Use "list_cost_optimization_recommendation_categories" first to discover valid category names. ' +
+      '\n\n**Related tools:** "get_cost_optimization_recommendation" (full details for one recommendation), "list_cost_optimization_recommendation_categories" (available categories).',
     annotations: {
       title: 'List cost optimization recommendations',
       readOnlyHint: true,
@@ -54,10 +54,10 @@ export const costOptimizationTools: Tool[] = [
     description: 'Get detailed information about a specific cloud cost optimization recommendation in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Full recommendation object including recommendation details, category, status, annualSavings (USD), cloud provider/account/service, the associated resource (resourceDisplayName, resourceId, deviceSubtype), criteria, providerConsoleUrl, and timestamps (createdAtMS, updatedAtMS). ' +
       '\n\n**When to use:**' +
-      '\n- Inspect a single recommendation surfaced by "list\\_cost\\_optimization\\_recommendations"' +
+      '\n- Inspect a single recommendation surfaced by "list_cost_optimization_recommendations"' +
       '\n- Get the cloud provider console URL to act on a recommendation' +
       '\n- Review the exact criteria behind a savings recommendation' +
-      '\n\n**Related tools:** "list\\_cost\\_optimization\\_recommendations" (find recommendation IDs).',
+      '\n\n**Related tools:** "list_cost_optimization_recommendations" (find recommendation IDs).',
     annotations: {
       title: 'Get cost optimization recommendation details',
       readOnlyHint: true,
@@ -70,7 +70,7 @@ export const costOptimizationTools: Tool[] = [
           description: 'The composite recommendation identifier, made up of the recommendation\'s ' +
             'database ID, the associated resource ID, and the recommendation type, delimited by ' +
             'hyphens (e.g., "123-456-EBS_UNATTACHED"). Obtain this from ' +
-            '"list\\_cost\\_optimization\\_recommendations".',
+            '"list_cost_optimization_recommendations".',
         },
         ...fieldsSchema,
       },
@@ -83,9 +83,9 @@ export const costOptimizationTools: Tool[] = [
     description: 'List the available cloud cost optimization recommendation categories in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of categories, each with: name (category name, e.g. "EBS Unattached", "EC2 Right Sizing") and description. ' +
       '\n\n**When to use:**' +
-      '\n- Discover valid category names before filtering "list\\_cost\\_optimization\\_recommendations"' +
+      '\n- Discover valid category names before filtering "list_cost_optimization_recommendations"' +
       '\n- Understand the kinds of savings opportunities LogicMonitor detects' +
-      '\n\n**Related tools:** "list\\_cost\\_optimization\\_recommendations" (filter by a category name).',
+      '\n\n**Related tools:** "list_cost_optimization_recommendations" (filter by a category name).',
     annotations: {
       title: 'List cost optimization recommendation categories',
       readOnlyHint: true,

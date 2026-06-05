@@ -8,7 +8,7 @@ export const logsourcesTools: Tool[] = [
     description: 'List LogSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are LogSources:** Modules that define how logs are collected, parsed, filtered, and mapped to resources for LM Logs. ' +
       '\n\n**Returns:** Array of logsources with id, name, description, collectionMethod, appliesTo. ' +
-      '\n\n**Related tools:** "get\\_logsource", "create\\_logsource".',
+      '\n\n**Related tools:** "get_logsource", "create_logsource".',
     annotations: { title: 'List logsources', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -26,7 +26,7 @@ export const logsourcesTools: Tool[] = [
     name: 'get_logsource',
     description: 'Get details of a specific LogSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Full config: name, collectionMethod, appliesToScript, resourceMapping, filters, logFields, sensitiveDataMaskingRules. ' +
-      '\n\n**Related tools:** "list\\_logsources", "update\\_logsource".',
+      '\n\n**Related tools:** "list_logsources", "update_logsource".',
     annotations: { title: 'Get logsource', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -43,10 +43,10 @@ export const logsourcesTools: Tool[] = [
     name: 'create_logsource',
     description: 'Create a LogSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines how logs are collected, parsed, filtered, and mapped to resources for LM Logs. ' +
-      '\n\n**⚠️ LogSources are complex modules.** The most reliable approach is to export an existing one via "get\\_logsource", adapt it, and pass the full definition via `config`. ' +
+      '\n\n**⚠️ LogSources are complex modules.** The most reliable approach is to export an existing one via "get_logsource", adapt it, and pass the full definition via `config`. ' +
       '\n\n**Required:** a `config` containing at least `name`, `collectionMethod`, and `appliesToScript`. ' +
-      '\n\n**Tip:** For sharing/distributing prefer "import\\_logsource" with official JSON. ' +
-      '\n\n**Related tools:** "get\\_logsource", "update\\_logsource", "import\\_logsource".',
+      '\n\n**Tip:** For sharing/distributing prefer "import_logsource" with official JSON. ' +
+      '\n\n**Related tools:** "get_logsource", "update_logsource", "import_logsource".',
     annotations: { title: 'Create logsource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -65,8 +65,8 @@ export const logsourcesTools: Tool[] = [
     name: 'update_logsource',
     description: 'Update a LogSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** logSourceId and a `config` with fields to change. Partial update. Optional `reason` (audit note). ' +
-      '\n\n**Best practice:** Review with "get\\_logsource" first. ' +
-      '\n\n**Related tools:** "get\\_logsource", "list\\_logsources".',
+      '\n\n**Best practice:** Review with "get_logsource" first. ' +
+      '\n\n**Related tools:** "get_logsource", "list_logsources".',
     annotations: { title: 'Update logsource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -87,7 +87,7 @@ export const logsourcesTools: Tool[] = [
     name: 'delete_logsource',
     description: 'Delete a LogSource from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Permanently removes the module; log collection it provided will stop. Cannot be undone. ' +
-      '\n\n**Related tools:** "get\\_logsource" (review before delete).',
+      '\n\n**Related tools:** "get_logsource" (review before delete).',
     annotations: { title: 'Delete logsource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -106,7 +106,7 @@ export const logsourcesTools: Tool[] = [
       '\n- content: The full JSON module definition (as a string)' +
       '\n- handleConflict: how to resolve name conflicts (e.g., "all", "ignore")' +
       '\n- fieldsToPreserve: comma-separated fields to keep from the existing module' +
-      '\n\n**Related tools:** "create\\_logsource" (build from scratch).',
+      '\n\n**Related tools:** "create_logsource" (build from scratch).',
     annotations: { title: 'Import logsource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -125,7 +125,7 @@ export const logsourcesTools: Tool[] = [
     name: 'list_log_alert_groups',
     description: 'List log alert pipelines (log alert groups) in LogicMonitor (LM). ' +
       '\n\n**What this does:** Returns log pipelines used to organize log alert processors. ' +
-      '\n\n**Related tools:** "get\\_log\\_alert\\_group", "list\\_log\\_alerts".',
+      '\n\n**Related tools:** "get_log_alert_group", "list_log_alerts".',
     annotations: { title: 'List log alert groups', readOnlyHint: true },
     inputSchema: {
       type: 'object',

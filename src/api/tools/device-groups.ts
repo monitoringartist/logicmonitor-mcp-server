@@ -24,7 +24,7 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Non-empty: filter:"numOfDirectDevices>0"' +
       '\n\n**Groups inherit properties:** Custom properties set on group are inherited by all resource/device in that group (useful for credentials, location tags). ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_resource\\_group" (details), "create\\_resource\\_group" (create new), "list\\_resource\\_group\\_properties" (group properties).',
+      '\n\n**Related tools:** "get_resource_group" (details), "create_resource_group" (create new), "list_resource_group_properties" (group properties).',
     annotations: {
       title: 'List resource/device groups',
       readOnlyHint: true,
@@ -60,8 +60,8 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Credentials: {name: "ssh.user", value: "monitoring"}' +
       '\n- Environment tags: {name: "env", value: "production"}' +
       '\n- Owner: {name: "team", value: "platform-engineering"}' +
-      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, then use this tool for complete details including inherited properties. ' +
-      '\n\n**Related tools:** "list\\_resource\\_groups" (find groups), "create\\_resource\\_group" (create new), "list\\_resources" (devices in group).',
+      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, then use this tool for complete details including inherited properties. ' +
+      '\n\n**Related tools:** "list_resource_groups" (find groups), "create_resource_group" (create new), "list_resources" (devices in group).',
     annotations: {
       title: 'Get resource/device group details',
       readOnlyHint: true,
@@ -122,8 +122,8 @@ export const deviceGroupsTools: Tool[] = [
       '\n- appliesTo: "isWindows()" - All Windows resource/device' +
       '\n- appliesTo: "system.hostname =\\~ \\"\\*prod\\*\\"" - Hostnames containing "prod"' +
       '\n- appliesTo: "hasCategory(\\"AWS/EC2\\")" - All AWS EC2 instances' +
-      '\n\n**Workflow:** Create group hierarchy first, then add resource/device to groups via "create\\_resource" or move existing resource/device via "update\\_resource". ' +
-      '\n\n**Related tools:** "list\\_resource\\_groups" (browse hierarchy), "update\\_resource\\_group" (modify), "delete\\_resource\\_group" (remove empty groups).',
+      '\n\n**Workflow:** Create group hierarchy first, then add resource/device to groups via "create_resource" or move existing resource/device via "update_resource". ' +
+      '\n\n**Related tools:** "list_resource_groups" (browse hierarchy), "update_resource_group" (modify), "delete_resource_group" (remove empty groups).',
     annotations: {
       title: 'Create resource/device group',
       readOnlyHint: false,
@@ -174,7 +174,7 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Modify dynamic membership (appliesTo)' +
       '\n- Move group to different parent' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Group ID to update (from "list\\_resource\\_groups")' +
+      '\n- groupId: Group ID to update (from "list_resource_groups")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name' +
       '\n- description: New description' +
@@ -197,9 +197,9 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Devices inherit properties - changes propagate immediately' +
       '\n- Moving group (changing parentId) moves all resource/device and subgroups with it' +
       '\n- Changing appliesTo can cause resource/device to auto-add or auto-remove' +
-      '\n\n**Best practice:** Use "get\\_resource\\_group" first to review current configuration and see which resource/device will be affected. ' +
-      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, review with "get\\_resource\\_group", then update. ' +
-      '\n\n**Related tools:** "get\\_resource\\_group" (review before update), "list\\_resources" (see affected resources/devices), "list\\_resource\\_groups" (find group).',
+      '\n\n**Best practice:** Use "get_resource_group" first to review current configuration and see which resource/device will be affected. ' +
+      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, review with "get_resource_group", then update. ' +
+      '\n\n**Related tools:** "get_resource_group" (review before update), "list_resources" (see affected resources/devices), "list_resource_groups" (find group).',
     annotations: {
       title: 'Update resource/device group',
       readOnlyHint: false,
@@ -247,13 +247,13 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Remove temporary groupings' +
       '\n- Consolidate duplicate groups' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Group ID to delete (from "list\\_resource\\_groups")' +
+      '\n- groupId: Group ID to delete (from "list_resource_groups")' +
       '\n\n**Optional parameters:** ' +
       '\n- deleteHardFlag: true = delete even if has resource/device (moves resource/device to root), false = fail if not empty (safer, default)' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get\\_resource\\_group" to see how many resource/device and subgroups' +
-      '\n- Use "list\\_resources" with filter to see which resource/device are in group' +
-      '\n- Move resource/device to another group via "update\\_resource" if needed' +
+      '\n- Use "get_resource_group" to see how many resource/device and subgroups' +
+      '\n- Use "list_resources" with filter to see which resource/device are in group' +
+      '\n- Move resource/device to another group via "update_resource" if needed' +
       '\n- Delete or move subgroups first' +
       '\n\n**Common workflow for cleanup:** ' +
       '\n\n**Safe deletion (empty group only):** ' +
@@ -270,8 +270,8 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Dashboards filtering by group may show no data' +
       '\n- Reports scoped to this group need updating' +
       '\n\n**Best practice:** Move resource/device to new group before deleting old group to avoid losing custom properties. ' +
-      '\n\n**Workflow:** Use "get\\_resource\\_group" to verify empty, then delete. Or move resource/device first via "update\\_resource". ' +
-      '\n\n**Related tools:** "get\\_resource\\_group" (check before delete), "list\\_resources" (find resource/device in group), "update\\_resource" (move resource/device first).',
+      '\n\n**Workflow:** Use "get_resource_group" to verify empty, then delete. Or move resource/device first via "update_resource". ' +
+      '\n\n**Related tools:** "get_resource_group" (check before delete), "list_resources" (find resource/device in group), "update_resource" (move resource/device first).',
     annotations: {
       title: 'Delete resource/device group',
       readOnlyHint: false,
@@ -321,9 +321,9 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Before bulk update: See current values before changing ' +
       '\n- Troubleshoot authentication: Verify credentials applied to resource/device ' +
       '\n- Document configuration: Export group settings ' +
-      '\n\n**Workflow:** Use "list\\_resource\\_groups" to find groupId, then use this tool to see properties, then "update\\_device\\_group\\_property" to modify. ' +
+      '\n\n**Workflow:** Use "list_resource_groups" to find groupId, then use this tool to see properties, then "update_device_group_property" to modify. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "update\\_device\\_group\\_property" (modify property), "get\\_resource\\_group" (group details), "list\\_device\\_properties" (device-level properties).',
+      '\n\n**Related tools:** "update_device_group_property" (modify property), "get_resource_group" (group details), "list_device_properties" (device-level properties).',
     annotations: {
       title: 'List resource/device group properties',
       readOnlyHint: true,
@@ -355,7 +355,7 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Bulk property updates' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Device group ID (from "list\\_resource\\_groups") ' +
+      '\n- groupId: Device group ID (from "list_resource_groups") ' +
       '\n- name: Property name (e.g., "ssh.user", "env", "owner") ' +
       '\n- value: New property value ' +
       '\n\n**Common update scenarios:** ' +
@@ -373,11 +373,11 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Subgroup resource/device also inherit unless overridden ' +
       '\n- Credential changes affect monitoring immediately ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list\\_device\\_group\\_properties" to see current properties ' +
+      '1. Use "list_device_group_properties" to see current properties ' +
       '2. Update property value ' +
       '3. Changes propagate to all member resource/device immediately ' +
       '4. Test monitoring still works (especially for credential changes) ' +
-      '\n\n**Related tools:** "list\\_device\\_group\\_properties" (view all), "list\\_device\\_properties" (device-level view), "get\\_resource\\_group" (group details).',
+      '\n\n**Related tools:** "list_device_group_properties" (view all), "list_device_properties" (device-level view), "get_resource_group" (group details).',
     annotations: {
       title: 'Update resource/device group property',
       readOnlyHint: false,
@@ -406,7 +406,7 @@ export const deviceGroupsTools: Tool[] = [
     name: 'create_resource_group_property',
     description: 'Add a custom property to a resource/device group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates a new group-level property that is inherited by all resources/devices in the group (unless overridden at a lower level). ' +
-      '\n\n**Related tools:** "update\\_resource\\_group\\_property" (modify existing), "delete\\_resource\\_group\\_property" (remove), "list\\_resource\\_group\\_properties" (view all).',
+      '\n\n**Related tools:** "update_resource_group_property" (modify existing), "delete_resource_group_property" (remove), "list_resource_group_properties" (view all).',
     annotations: { title: 'Create resource/device group property', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -422,7 +422,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'delete_resource_group_property',
     description: 'Delete a custom property from a resource/device group in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "update\\_resource\\_group\\_property", "create\\_resource\\_group\\_property", "list\\_resource\\_group\\_properties".',
+      '\n\n**Related tools:** "update_resource_group_property", "create_resource_group_property", "list_resource_group_properties".',
     annotations: { title: 'Delete resource/device group property', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -440,7 +440,7 @@ export const deviceGroupsTools: Tool[] = [
     name: 'list_resource_group_cluster_alert_confs',
     description: 'List cluster alert configurations for a resource/device group in LogicMonitor (LM). ' +
       '\n\n**What this does:** Cluster alerts trigger when a threshold number of instances across the group meet a condition (e.g., "more than 5 servers down"). ' +
-      '\n\n**Related tools:** "get\\_resource\\_group\\_cluster\\_alert\\_conf", "create\\_resource\\_group\\_cluster\\_alert\\_conf".',
+      '\n\n**Related tools:** "get_resource_group_cluster_alert_conf", "create_resource_group_cluster_alert_conf".',
     annotations: { title: 'List resource/device group cluster alert configs', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -514,7 +514,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'list_resource_group_datasources',
     description: 'List the datasources applied to a resource/device group in LogicMonitor (LM). ' +
-      '\n\n**Related tools:** "get\\_resource\\_group\\_datasource", "update\\_resource\\_group\\_datasource", "get\\_resource\\_group\\_datasource\\_alert\\_setting".',
+      '\n\n**Related tools:** "get_resource_group_datasource", "update_resource_group_datasource", "get_resource_group_datasource_alert_setting".',
     annotations: { title: 'List resource/device group datasources', readOnlyHint: true },
     inputSchema: {
       type: 'object',

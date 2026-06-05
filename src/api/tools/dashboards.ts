@@ -16,10 +16,10 @@ export const dashboardsTools: Tool[] = [
       '\n- By name: filter:"name\\~\\*AWS\\*" (find all AWS dashboards)' +
       '\n- By group: filter:"groupId:5" or filter:"groupName\\~\\*Cloud\\*"' +
       '\n- By owner: filter:"owner:john.doe"' +
-      '\n\n**Next step:** Use "generate\\_dashboard\\_link" with the dashboard ID to get the full clickable URL for sharing. ' +
-      '\n\n**Tip:** Dashboards are organized in groups. Use "list\\_dashboard\\_groups" to browse the hierarchy. ' +
+      '\n\n**Next step:** Use "generate_dashboard_link" with the dashboard ID to get the full clickable URL for sharing. ' +
+      '\n\n**Tip:** Dashboards are organized in groups. Use "list_dashboard_groups" to browse the hierarchy. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_dashboard" (details), "generate\\_dashboard\\_link" (get URL), "list\\_dashboard\\_groups" (browse hierarchy).',
+      '\n\n**Related tools:** "get_dashboard" (details), "generate_dashboard_link" (get URL), "list_dashboard_groups" (browse hierarchy).',
     annotations: {
       title: 'List dashboards',
       readOnlyHint: true,
@@ -54,8 +54,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Export dashboard configuration for backup' +
       '\n- Audit which resources/devices/metrics are being visualized' +
       '\n- Document dashboard purpose and widgets' +
-      '\n\n**Workflow:** Use "list\\_dashboards" to find dashboardId, then get details, then "generate\\_dashboard\\_link" to get shareable URL. ' +
-      '\n\n**Related tools:** "list\\_dashboards" (find dashboard), "generate\\_dashboard\\_link" (get URL), "update\\_dashboard" (modify), "list\\_dashboard\\_groups" (browse folders).',
+      '\n\n**Workflow:** Use "list_dashboards" to find dashboardId, then get details, then "generate_dashboard_link" to get shareable URL. ' +
+      '\n\n**Related tools:** "list_dashboards" (find dashboard), "generate_dashboard_link" (get URL), "update_dashboard" (modify), "list_dashboard_groups" (browse folders).',
     annotations: {
       title: 'Get dashboard details',
       readOnlyHint: true,
@@ -86,7 +86,7 @@ export const dashboardsTools: Tool[] = [
       '\n\n**Required parameters:** ' +
       '\n- name: Dashboard name (e.g., "Production Infrastructure", "Executive Summary")' +
       '\n\n**Optional parameters:** ' +
-      '\n- groupId: Dashboard folder ID (from "list\\_dashboard\\_groups", use 1 for root)' +
+      '\n- groupId: Dashboard folder ID (from "list_dashboard_groups", use 1 for root)' +
       '\n- description: Dashboard purpose/audience' +
       '\n- widgetsConfig: JSON array of widget configurations (graphs, alerts, gauges, maps)' +
       '\n- sharable: true (public link) or false (private, login required)' +
@@ -94,8 +94,8 @@ export const dashboardsTools: Tool[] = [
       '\n\n**Dashboard workflow:** ' +
       '\n- Create empty dashboard with name and folder' +
       '\n- Use LogicMonitor UI to add widgets visually (easier than JSON)' +
-      '\n- Use "get\\_dashboard" to export widgetsConfig for cloning' +
-      '\n- Use "generate\\_dashboard\\_link" to get shareable URL' +
+      '\n- Use "get_dashboard" to export widgetsConfig for cloning' +
+      '\n- Use "generate_dashboard_link" to get shareable URL' +
       '\n\n**Common dashboard types:** ' +
       '\n\n**NOC/SOC Dashboard:** ' +
       '\n- Alert widgets showing critical alerts' +
@@ -117,9 +117,9 @@ export const dashboardsTools: Tool[] = [
       '\n- Use groups to organize dashboards by team/function' +
       '\n- Make critical dashboards "sharable" for NOC displays' +
       '\n- Use widgetTokens for dynamic filtering (##defaultDeviceGroup##)' +
-      '\n- Clone existing dashboards using "get\\_dashboard" widgetsConfig' +
-      '\n\n**After creation:** Use "generate\\_dashboard\\_link" to get the full URL for sharing or embedding. ' +
-      '\n\n**Related tools:** "generate\\_dashboard\\_link" (get URL), "list\\_dashboards" (browse existing), "get\\_dashboard" (export for cloning), "update\\_dashboard" (modify).',
+      '\n- Clone existing dashboards using "get_dashboard" widgetsConfig' +
+      '\n\n**After creation:** Use "generate_dashboard_link" to get the full URL for sharing or embedding. ' +
+      '\n\n**Related tools:** "generate_dashboard_link" (get URL), "list_dashboards" (browse existing), "get_dashboard" (export for cloning), "update_dashboard" (modify).',
     annotations: {
       title: 'Create dashboard',
       readOnlyHint: false,
@@ -159,7 +159,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Change sharing settings' +
       '\n- Bulk update widgets (advanced)' +
       '\n\n**Required parameters:** ' +
-      '\n- id: Dashboard ID (from "list\\_dashboards")' +
+      '\n- id: Dashboard ID (from "list_dashboards")' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New dashboard name' +
       '\n- description: Updated description' +
@@ -180,10 +180,10 @@ export const dashboardsTools: Tool[] = [
       'Updating widgetsConfig directly is complex (large JSON). Easier to: ' +
       '\n- Modify widgets in LogicMonitor UI' +
       '\n- Use API only for name/description/folder changes' +
-      '\n- Or use "get\\_dashboard" to export, modify JSON, then update' +
-      '\n\n**Best practice:** Use "get\\_dashboard" first to see current configuration, then update specific fields. ' +
-      '\n\n**After update:** Use "generate\\_dashboard\\_link" to get updated URL if needed. ' +
-      '\n\n**Related tools:** "get\\_dashboard" (review before update), "list\\_dashboards" (find dashboard), "generate\\_dashboard\\_link" (get new URL).',
+      '\n- Or use "get_dashboard" to export, modify JSON, then update' +
+      '\n\n**Best practice:** Use "get_dashboard" first to see current configuration, then update specific fields. ' +
+      '\n\n**After update:** Use "generate_dashboard_link" to get updated URL if needed. ' +
+      '\n\n**Related tools:** "get_dashboard" (review before update), "list_dashboards" (find dashboard), "generate_dashboard_link" (get new URL).',
     annotations: {
       title: 'Update dashboard',
       readOnlyHint: false,
@@ -223,11 +223,11 @@ export const dashboardsTools: Tool[] = [
       '\n- Delete test/temporary dashboards' +
       '\n- Consolidate similar dashboards' +
       '\n\n**Required parameters:** ' +
-      '\n- id: Dashboard ID to delete (from "list\\_dashboards")' +
+      '\n- id: Dashboard ID to delete (from "list_dashboards")' +
       '\n\n**Before deleting - check:** ' +
-      '\n- Use "get\\_dashboard" to verify it\'s the correct dashboard' +
+      '\n- Use "get_dashboard" to verify it\'s the correct dashboard' +
       '\n- Check if dashboard is widely shared/used' +
-      '\n- Consider exporting configuration for backup (via "get\\_dashboard")' +
+      '\n- Consider exporting configuration for backup (via "get_dashboard")' +
       '\n- Notify users if it\'s a team dashboard' +
       '\n\n**Impact of deletion:** ' +
       '\n- NOC/SOC displays showing this dashboard will break' +
@@ -238,10 +238,10 @@ export const dashboardsTools: Tool[] = [
       '\n- Rename to "ARCHIVED - [name]" instead of deleting' +
       '\n- Move to "Archived" folder' +
       '\n- Make private (sharable: false) instead of deleting' +
-      '\n- Export configuration via "get\\_dashboard" before deleting' +
+      '\n- Export configuration via "get_dashboard" before deleting' +
       '\n\n**Best practice:** Export dashboard configuration before deletion in case you need to recreate it. ' +
-      '\n\n**Workflow:** Use "get\\_dashboard" to backup/verify, then delete. ' +
-      '\n\n**Related tools:** "get\\_dashboard" (backup before delete), "list\\_dashboards" (find dashboard), "update\\_dashboard" (archive instead of delete).',
+      '\n\n**Workflow:** Use "get_dashboard" to backup/verify, then delete. ' +
+      '\n\n**Related tools:** "get_dashboard" (backup before delete), "list_dashboards" (find dashboard), "update_dashboard" (archive instead of delete).',
     annotations: {
       title: 'Delete dashboard',
       readOnlyHint: false,
@@ -270,8 +270,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Embed dashboard URLs in runbooks' +
       '\n- Build custom reports with clickable links' +
       '\n\n**Why use this:** Provides the complete navigable URL including all parent group IDs, so the link opens the dashboard in correct context within the UI navigation tree. ' +
-      '\n\n**Workflow:** First use "list\\_dashboards" to find dashboard ID, then use this tool to generate the shareable link. ' +
-      '\n\n**Related tools:** "list\\_dashboards" (find dashboard), "get\\_dashboard" (get details).',
+      '\n\n**Workflow:** First use "list_dashboards" to find dashboard ID, then use this tool to generate the shareable link. ' +
+      '\n\n**Related tools:** "list_dashboards" (find dashboard), "get_dashboard" (get details).',
     annotations: {
       title: 'Generate dashboard link',
       readOnlyHint: true,
@@ -298,8 +298,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Build reports with clickable resource/device references' +
       '\n- Document infrastructure with direct LM links' +
       '\n\n**Why use this:** Provides the canonical resource details URL so clicking the link navigates directly to the resource/device details view. ' +
-      '\n\n**Workflow:** First find resource/device using "list\\_resources" or "search\\_resources", then use this tool with deviceId to generate shareable link. ' +
-      '\n\n**Related tools:** "list\\_resources" (find device), "get\\_resource" (get details), "generate\\_alert\\_link" (link to resource/device alerts).',
+      '\n\n**Workflow:** First find resource/device using "list_resources" or "search_resources", then use this tool with deviceId to generate shareable link. ' +
+      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "generate_alert_link" (link to resource/device alerts).',
     annotations: {
       title: 'Generate resource/device link',
       readOnlyHint: true,
@@ -326,8 +326,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Create incident tickets with direct alert references' +
       '\n- Build alert reports with clickable links' +
       '\n\n**Why use this:** Simplifies alert investigation by providing direct navigation to the alert details page with full context, history, and acknowledgement options. ' +
-      '\n\n**Workflow:** Get alertId from "list\\_alerts", then use this tool to generate the shareable link for team collaboration. ' +
-      '\n\n**Related tools:** "list\\_alerts" (find alerts), "get\\_alert" (get details), "acknowledge\\_alert" (acknowledge).',
+      '\n\n**Workflow:** Get alertId from "list_alerts", then use this tool to generate the shareable link for team collaboration. ' +
+      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (get details), "acknowledge_alert" (acknowledge).',
     annotations: {
       title: 'Generate alert link',
       readOnlyHint: true,
@@ -358,7 +358,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Reference in incident tickets' +
       '\n- Bookmark frequently accessed monitors' +
       '\n\n**Required parameters:** ' +
-      '\n- websiteId: Website monitor ID (from "list\\_websites" or "search\\_websites")' +
+      '\n- websiteId: Website monitor ID (from "list_websites" or "search_websites")' +
       '\n\n**Common use cases:** ' +
       '\n\n**Share in Slack/Teams:** ' +
       '"Production API health check is failing: [View Monitor](generated-url-here)" ' +
@@ -393,7 +393,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Include in runbooks for quick troubleshooting access' +
       '\n- Add to monitoring dashboards for drill-down capability' +
       '\n- Share with stakeholders who have LM access' +
-      '\n\n**Related tools:** "list\\_websites" (find website), "get\\_website" (verify details), "generate\\_dashboard\\_link" (for dashboards), "generate\\_resource\\_link" (for resources/devices), "generate\\_alert\\_link" (for alerts).',
+      '\n\n**Related tools:** "list_websites" (find website), "get_website" (verify details), "generate_dashboard_link" (for dashboards), "generate_resource_link" (for resources/devices), "generate_alert_link" (for alerts).',
     annotations: {
       title: 'Generate website monitor link',
       readOnlyHint: true,
@@ -425,9 +425,9 @@ export const dashboardsTools: Tool[] = [
       '\n- By environment: "Production", "Staging", "Development"' +
       '\n- By application: "Web App", "API Services", "Background Jobs"' +
       '\n- By cloud provider: "AWS Dashboards", "Azure Dashboards"' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_dashboards" filtered by groupId to see dashboards in specific folder. ' +
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_dashboards" filtered by groupId to see dashboards in specific folder. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_dashboard\\_group" (details), "list\\_dashboards" (dashboards in group), "create\\_dashboard\\_group" (create folder).',
+      '\n\n**Related tools:** "get_dashboard_group" (details), "list_dashboards" (dashboards in group), "create_dashboard_group" (create folder).',
     annotations: {
       title: 'List dashboard groups',
       readOnlyHint: true,
@@ -451,8 +451,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Check group membership counts' +
       '\n- Verify group hierarchy' +
       '\n- Review permissions before creating dashboards in it' +
-      '\n\n**Workflow:** Use "list\\_dashboard\\_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_dashboard\\_groups" (find groups), "list\\_dashboards" (dashboards in group), "create\\_dashboard\\_group" (create new).',
+      '\n\n**Workflow:** Use "list_dashboard_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_dashboard_groups" (find groups), "list_dashboards" (dashboards in group), "create_dashboard_group" (create new).',
     annotations: {
       title: 'Get dashboard group details',
       readOnlyHint: true,
@@ -476,7 +476,7 @@ export const dashboardsTools: Tool[] = [
       '\n\n**What this does:** Creates a folder to organize dashboards into a hierarchy. ' +
       '\n\n**Required:** name. ' +
       '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), plus widgetTokens/template via `config`. ' +
-      '\n\n**Related tools:** "list\\_dashboard\\_groups", "create\\_dashboard" (place dashboards in the group).',
+      '\n\n**Related tools:** "list_dashboard_groups", "create_dashboard" (place dashboards in the group).',
     annotations: { title: 'Create dashboard group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -498,7 +498,7 @@ export const dashboardsTools: Tool[] = [
     name: 'update_dashboard_group',
     description: 'Update a dashboard group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), or additional fields via `config`. Partial update. ' +
-      '\n\n**Related tools:** "get\\_dashboard\\_group", "list\\_dashboard\\_groups".',
+      '\n\n**Related tools:** "get_dashboard_group", "list_dashboard_groups".',
     annotations: { title: 'Update dashboard group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -522,8 +522,8 @@ export const dashboardsTools: Tool[] = [
     description: 'Delete a dashboard group from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Deleting a non-empty group (with dashboards or subgroups) requires allowNonEmptyGroup=true and will remove its contents. Cannot be undone. ' +
       '\n\n**Parameters:** groupId; optional allowNonEmptyGroup (default false). ' +
-      '\n\n**Before deleting:** Use "get\\_dashboard\\_group" to check dashboard/subgroup counts. ' +
-      '\n\n**Related tools:** "get\\_dashboard\\_group", "list\\_dashboard\\_groups".',
+      '\n\n**Before deleting:** Use "get_dashboard_group" to check dashboard/subgroup counts. ' +
+      '\n\n**Related tools:** "get_dashboard_group", "list_dashboard_groups".',
     annotations: { title: 'Delete dashboard group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -540,7 +540,7 @@ export const dashboardsTools: Tool[] = [
     description: 'Clone a dashboard group (and optionally its contents) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Asynchronously copies an existing dashboard group into a new group. ' +
       '\n\n**Parameters:** groupId (source group), a `config` describing the new group (at least `name`, and `parentId` for placement), and optional recursive (clone subgroups/dashboards too). ' +
-      '\n\n**Related tools:** "create\\_dashboard\\_group", "get\\_dashboard\\_group".',
+      '\n\n**Related tools:** "create_dashboard_group", "get_dashboard_group".',
     annotations: { title: 'Clone dashboard group', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -584,8 +584,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Inventory all widgets in your portal' +
       '\n- Find widgets of a particular type or name' +
       '\n- Locate a widget id to inspect or modify' +
-      '\n\n**Tip:** To list widgets belonging to one dashboard, use "list\\_dashboard\\_widgets" instead. ' +
-      '\n\n**Related tools:** "list\\_dashboard\\_widgets" (widgets of one dashboard), "get\\_widget" (details), "get\\_widget\\_data" (rendered data).',
+      '\n\n**Tip:** To list widgets belonging to one dashboard, use "list_dashboard_widgets" instead. ' +
+      '\n\n**Related tools:** "list_dashboard_widgets" (widgets of one dashboard), "get_widget" (details), "get_widget_data" (rendered data).',
     annotations: {
       title: 'List widgets',
       readOnlyHint: true,
@@ -609,8 +609,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Enumerate widgets to clone or reorganize' +
       '\n- Find a widget id within a known dashboard' +
       '\n\n**Required parameters:**' +
-      '\n- dashboardId: The dashboard ID (from "list\\_dashboards")' +
-      '\n\n**Related tools:** "list\\_dashboards" (find dashboard IDs), "get\\_widget" (widget details), "create\\_widget" (add a widget to this dashboard).',
+      '\n- dashboardId: The dashboard ID (from "list_dashboards")' +
+      '\n\n**Related tools:** "list_dashboards" (find dashboard IDs), "get_widget" (widget details), "create_widget" (add a widget to this dashboard).',
     annotations: {
       title: 'List widgets on a dashboard',
       readOnlyHint: true,
@@ -636,11 +636,11 @@ export const dashboardsTools: Tool[] = [
       '\n\n**Returns:** Full widget object including type-specific configuration (e.g., graph datapoints, alert filters, gauge thresholds), name, type, dashboardId, description, theme, interval, timescale, and timestamps. ' +
       '\n\n**When to use:**' +
       '\n- Inspect a widget\'s configuration' +
-      '\n- Export a widget\'s config to clone it (the returned object can be adapted and passed to "create\\_widget")' +
-      '\n- Discover the type-specific attributes required for "create\\_widget"/"update\\_widget"' +
+      '\n- Export a widget\'s config to clone it (the returned object can be adapted and passed to "create_widget")' +
+      '\n- Discover the type-specific attributes required for "create_widget"/"update_widget"' +
       '\n\n**Required parameters:**' +
-      '\n- widgetId: The widget ID (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
-      '\n\n**Related tools:** "get\\_widget\\_data" (rendered data values), "update\\_widget" (modify), "create\\_widget" (clone).',
+      '\n- widgetId: The widget ID (from "list_widgets" or "list_dashboard_widgets")' +
+      '\n\n**Related tools:** "get_widget_data" (rendered data values), "update_widget" (modify), "create_widget" (clone).',
     annotations: {
       title: 'Get widget details',
       readOnlyHint: true,
@@ -662,19 +662,19 @@ export const dashboardsTools: Tool[] = [
     name: 'get_widget_data',
     description: 'Get the rendered data for a specific dashboard widget in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** The widget\'s computed data payload. The shape depends on the widget type (e.g., graph series/datapoints, alert lists, big-number values, gauge readings). ' +
-      '\n\n**What this does:** Unlike "get\\_widget" (which returns configuration), this returns the actual values the widget would display, optionally for a specific time range. ' +
-      '\n\n**⚠️ Not all widget types have data:** Only data-bearing widgets (graphs, gauges, big-number/alert/table widgets, etc.) are supported. Static widgets such as "html"/"text" return an "Unsupported widget type" error from LM — use "get\\_widget" for their configuration instead. ' +
+      '\n\n**What this does:** Unlike "get_widget" (which returns configuration), this returns the actual values the widget would display, optionally for a specific time range. ' +
+      '\n\n**⚠️ Not all widget types have data:** Only data-bearing widgets (graphs, gauges, big-number/alert/table widgets, etc.) are supported. Static widgets such as "html"/"text" return an "Unsupported widget type" error from LM — use "get_widget" for their configuration instead. ' +
       '\n\n**When to use:**' +
       '\n- Read current metric values shown by a graph/gauge/big-number widget' +
       '\n- Pull widget data for a custom time window' +
       '\n- Feed dashboard data into downstream analysis' +
       '\n\n**Required parameters:**' +
-      '\n- widgetId: The widget ID (from "list\\_widgets")' +
+      '\n- widgetId: The widget ID (from "list_widgets")' +
       '\n\n**Optional parameters:**' +
       '\n- start: Start of the time range, in epoch seconds' +
       '\n- end: End of the time range, in epoch seconds' +
       '\n- format: Response format for the data payload' +
-      '\n\n**Related tools:** "get\\_widget" (configuration), "list\\_widgets" (find widget IDs).',
+      '\n\n**Related tools:** "get_widget" (configuration), "list_widgets" (find widget IDs).',
     annotations: {
       title: 'Get widget data',
       readOnlyHint: true,
@@ -708,7 +708,7 @@ export const dashboardsTools: Tool[] = [
     description: 'Create a new widget on a dashboard in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Adds a visual component (graph, alert table, gauge, big number, map, pie chart, SLA, NOC, etc.) to an existing dashboard. ' +
       '\n\n**Required parameters:**' +
-      '\n- dashboardId: The dashboard to add the widget to (from "list\\_dashboards")' +
+      '\n- dashboardId: The dashboard to add the widget to (from "list_dashboards")' +
       '\n- name: The widget name' +
       '\n- type: The widget type. One of: alert, batchjob, flash, gmap, ngraph, ograph, cgraph, sgraph, netflowgraph, groupNetflowGraph, netflow, groupNetflow, html, bigNumber, gauge, pieChart, table, dynamicTable, deviceSLA, text, statsd, deviceStatus, serviceAlert, noc, websiteOverview, websiteOverallStatus, websiteIndividualStatus, websiteSLA, savedMap.' +
       '\n\n**Optional parameters:**' +
@@ -719,9 +719,9 @@ export const dashboardsTools: Tool[] = [
       '\n- config: An object with type-specific attributes (merged into the widget body). Different widget types require different attributes.' +
       '\n\n**⚠️ Widget configuration is type-specific and can be complex.** The easiest reliable workflow is: ' +
       '\n1. Create a widget of the desired type in the LogicMonitor UI (or find an existing one) ' +
-      '\n2. Call "get\\_widget" to export its full configuration ' +
+      '\n2. Call "get_widget" to export its full configuration ' +
       '\n3. Adapt that configuration and pass the type-specific fields via "config" here ' +
-      '\n\n**Related tools:** "get\\_widget" (export a template), "list\\_dashboards" (find dashboardId), "update\\_widget" (modify), "delete\\_widget" (remove).',
+      '\n\n**Related tools:** "get_widget" (export a template), "list_dashboards" (find dashboardId), "update_widget" (modify), "delete_widget" (remove).',
     annotations: {
       title: 'Create widget',
       readOnlyHint: false,
@@ -773,7 +773,7 @@ export const dashboardsTools: Tool[] = [
     description: 'Update an existing dashboard widget in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies a widget\'s name, description, theme, refresh interval, timescale, dashboard placement, or type-specific configuration. Uses a partial update (only the fields you provide are changed). ' +
       '\n\n**Required parameters:**' +
-      '\n- widgetId: The widget ID to update (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
+      '\n- widgetId: The widget ID to update (from "list_widgets" or "list_dashboard_widgets")' +
       '\n\n**Optional parameters (what to change):**' +
       '\n- name: New widget name' +
       '\n- description: New description' +
@@ -783,8 +783,8 @@ export const dashboardsTools: Tool[] = [
       '\n- dashboardId: Move the widget to a different dashboard' +
       '\n- type: The widget type (some configuration changes require the type)' +
       '\n- config: An object with type-specific attributes to update (merged into the widget body)' +
-      '\n\n**Best practice:** Call "get\\_widget" first to review the current configuration, then send only the fields you want to change. For complex type-specific edits, export via "get\\_widget", adapt, and pass through "config". ' +
-      '\n\n**Related tools:** "get\\_widget" (review before update), "list\\_widgets" (find widget), "delete\\_widget" (remove).',
+      '\n\n**Best practice:** Call "get_widget" first to review the current configuration, then send only the fields you want to change. For complex type-specific edits, export via "get_widget", adapt, and pass through "config". ' +
+      '\n\n**Related tools:** "get_widget" (review before update), "list_widgets" (find widget), "delete_widget" (remove).',
     annotations: {
       title: 'Update widget',
       readOnlyHint: false,
@@ -842,11 +842,11 @@ export const dashboardsTools: Tool[] = [
       '\n- Cannot be undone - no recovery possible' +
       '\n\n**What this does:** Permanently removes a single widget from its dashboard. The dashboard itself is not deleted. ' +
       '\n\n**Required parameters:**' +
-      '\n- widgetId: The widget ID to delete (from "list\\_widgets" or "list\\_dashboard\\_widgets")' +
+      '\n- widgetId: The widget ID to delete (from "list_widgets" or "list_dashboard_widgets")' +
       '\n\n**Before deleting:**' +
-      '\n- Use "get\\_widget" to verify it is the correct widget' +
-      '\n- Consider exporting its configuration via "get\\_widget" for backup' +
-      '\n\n**Related tools:** "get\\_widget" (backup/verify before delete), "list\\_dashboard\\_widgets" (find widget), "update\\_widget" (modify instead of delete).',
+      '\n- Use "get_widget" to verify it is the correct widget' +
+      '\n- Consider exporting its configuration via "get_widget" for backup' +
+      '\n\n**Related tools:** "get_widget" (backup/verify before delete), "list_dashboard_widgets" (find widget), "update_widget" (modify instead of delete).',
     annotations: {
       title: 'Delete widget',
       readOnlyHint: false,

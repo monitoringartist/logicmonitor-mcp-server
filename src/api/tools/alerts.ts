@@ -30,7 +30,7 @@ export const alertsTools: Tool[] = [
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Important:** Alert API does NOT support OR operator (||). Use comma for AND only. For complex queries, make multiple calls. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_alert" (full details), "acknowledge\\_alert" (acknowledge), "add\\_alert\\_note" (add notes), "generate\\_alert\\_link" (get URL).',
+      '\n\n**Related tools:** "get_alert" (full details), "acknowledge_alert" (acknowledge), "add_alert_note" (add notes), "generate_alert_link" (get URL).',
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
@@ -60,12 +60,12 @@ export const alertsTools: Tool[] = [
     description: 'Get detailed information about a specific alert in LogicMonitor (LM) monitoring by its ID. ' +
       '\n\n**Returns:** Complete alert details: alert message, severity, threshold crossed, current value, alert history, escalation chain triggered, acknowledgement details, resource details, datasource/datapoint info, alert rule applied. ' +
       '\n\n**When to use:** ' +
-      '\n- Investigate specific alert after getting ID from "list\\_alerts"' +
+      '\n- Investigate specific alert after getting ID from "list_alerts"' +
       '\n- Check threshold and current values' +
       '\n- Review alert history and escalation' +
       '\n- Get context before acknowledging' +
-      '\n\n**Workflow:** First use "list\\_alerts" to find the alertId, then use this tool for complete investigation details. ' +
-      '\n\n**Related tools:** "acknowledge\\_alert" (acknowledge alert), "add\\_alert\\_note" (document findings), "generate\\_alert\\_link" (share with team).',
+      '\n\n**Workflow:** First use "list_alerts" to find the alertId, then use this tool for complete investigation details. ' +
+      '\n\n**Related tools:** "acknowledge_alert" (acknowledge alert), "add_alert_note" (document findings), "generate_alert_link" (share with team).',
     annotations: {
       title: 'Get alert details',
       readOnlyHint: true,
@@ -103,12 +103,12 @@ export const alertsTools: Tool[] = [
       '\n- Before scheduling maintenance' +
       '\n- During incident response' +
       '\n\n**Required parameters:** ' +
-      '\n- alertId: Alert ID from "list\\_alerts" or "search\\_alerts"' +
+      '\n- alertId: Alert ID from "list_alerts" or "search_alerts"' +
       '\n- comment: REQUIRED - Explain what you\'re doing (e.g., "Investigating high CPU. Checking processes.")' +
       '\n\n**Best practices:** ' +
       '\n- Acknowledge immediately when starting investigation' +
       '\n- Add meaningful comment for team communication' +
-      '\n- Use "add\\_alert\\_note" to document findings as you investigate' +
+      '\n- Use "add_alert_note" to document findings as you investigate' +
       '\n- If false alarm, acknowledge with explanation' +
       '\n\n**Comment examples:** ' +
       '\n- "Investigating. Appears to be batch job. Monitoring."' +
@@ -116,13 +116,13 @@ export const alertsTools: Tool[] = [
       '\n- "Working on fix. ETA 30 minutes. - John"' +
       '\n- "Escalated to network team. Ticket INC-12345."' +
       '\n\n**Workflow for alert handling:** ' +
-      '\n- Use "list\\_alerts" with filter:"acked:false" to find unacked alerts' +
+      '\n- Use "list_alerts" with filter:"acked:false" to find unacked alerts' +
       '\n- Use this tool to acknowledge (stops notifications)' +
       '\n- Investigate issue' +
-      '\n- Use "add\\_alert\\_note" to document findings and actions' +
+      '\n- Use "add_alert_note" to document findings and actions' +
       '\n- Resolve underlying issue (alert auto-clears when metrics normalize)' +
       '\n\n**Note:** If alert continues (still above threshold), it stays acknowledged until cleared. New instances = new alerts. ' +
-      '\n\n**Related tools:** "list\\_alerts" (find alerts), "get\\_alert" (investigate), "add\\_alert\\_note" (document), "generate\\_alert\\_link" (share).',
+      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (investigate), "add_alert_note" (document), "generate_alert_link" (share).',
     annotations: {
       title: 'Acknowledge alert',
       readOnlyHint: false,
@@ -159,7 +159,7 @@ export const alertsTools: Tool[] = [
       '\n- Note false positives' +
       '\n- Link to tickets/incidents' +
       '\n\n**Required parameters:** ' +
-      '\n- alertId: Alert ID from "list\\_alerts"' +
+      '\n- alertId: Alert ID from "list_alerts"' +
       '\n- note: Your documentation/findings' +
       '\n\n**Use cases and examples:** ' +
       '\n\n**During investigation:** ' +
@@ -181,11 +181,11 @@ export const alertsTools: Tool[] = [
       '\n- Document "why false alarm" for future reference' +
       '\n- Use clear, actionable language' +
       '\n\n**Workflow:** ' +
-      '\n- Acknowledge alert with "acknowledge\\_alert" (stops notifications)' +
+      '\n- Acknowledge alert with "acknowledge_alert" (stops notifications)' +
       '\n- Add initial note: "Starting investigation"' +
       '\n- Add notes as you discover findings' +
       '\n- Add final note with resolution or next steps' +
-      '\n\n**Related tools:** "acknowledge\\_alert" (first step), "get\\_alert" (view existing notes), "list\\_alerts" (find alerts).',
+      '\n\n**Related tools:** "acknowledge_alert" (first step), "get_alert" (view existing notes), "list_alerts" (find alerts).',
     annotations: {
       title: 'Add alert note',
       readOnlyHint: false,
@@ -237,7 +237,7 @@ export const alertsTools: Tool[] = [
       '\n- Is escalation chain configured correctly?' +
       '\n' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_alert\\_rule" (detailed conditions), "list\\_escalation\\_chains" (destination chains), "update\\_alert\\_rule" (modify routing).',
+      '\n\n**Related tools:** "get_alert_rule" (detailed conditions), "list_escalation_chains" (destination chains), "update_alert_rule" (modify routing).',
     annotations: {
       title: 'List alert rules',
       readOnlyHint: true,
@@ -265,7 +265,7 @@ export const alertsTools: Tool[] = [
       '\n' +
       '\n\n**Matching conditions explained:** ' +
       '\n- deviceGroups: Which resource/device folders this rule applies to (e.g., /Production/, /Database Servers/) ' +
-      '\n- datasources: Which datasources trigger this rule (e.g., CPU, Memory, AWS\_EC2) ' +
+      '\n- datasources: Which datasources trigger this rule (e.g., CPU, Memory, AWS_EC2) ' +
       '\n- datapoints: Specific metrics (e.g., CPUBusyPercent, MemoryUsedPercent) ' +
       '\n- instances: Filter by instance name (e.g., C: drive only, eth0 interface only) ' +
       '\n- severity: Alert levels (critical, error, warn) ' +
@@ -274,8 +274,8 @@ export const alertsTools: Tool[] = [
       '\n- "Why did this CPU alert go to wrong team?" → Check resource/device group + datasource filters ' +
       '\n- "Why didn\'t I get paged?" → Verify alert matches conditions AND check escalation chain ' +
       '\n- "Too many alerts" → Review if conditions too broad, add instance filters ' +
-      '\n\n**Workflow:** Use "list\\_alert\\_rules" to find ruleId, then use this tool to review complete matching logic and routing. ' +
-      '\n\n**Related tools:** "list\\_alert\\_rules" (find rules), "update\\_alert\\_rule" (modify), "get\\_escalation\\_chain" (check notification chain).',
+      '\n\n**Workflow:** Use "list_alert_rules" to find ruleId, then use this tool to review complete matching logic and routing. ' +
+      '\n\n**Related tools:** "list_alert_rules" (find rules), "update_alert_rule" (modify), "get_escalation_chain" (check notification chain).',
     annotations: {
       title: 'Get alert rule details',
       readOnlyHint: true,
@@ -361,7 +361,7 @@ export const alertsTools: Tool[] = [
       '2. Create alert rules (define WHICH alerts go to which chains) ' +
       '3. Test with sample alerts ' +
       '4. Monitor alert routing to verify working correctly ' +
-      '\n\n**Related tools:** "list\\_escalation\\_chains" (create chains first), "update\\_alert\\_rule" (modify), "list\\_alert\\_rules" (view all), "list\\_alerts" (test routing).',
+      '\n\n**Related tools:** "list_escalation_chains" (create chains first), "update_alert_rule" (modify), "list_alert_rules" (view all), "list_alerts" (test routing).',
     annotations: {
       title: 'Create alert rule',
       readOnlyHint: false,
@@ -408,7 +408,7 @@ export const alertsTools: Tool[] = [
       '\n- Broaden/narrow alert scope' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- ruleId: Alert rule ID (from "list\\_alert\\_rules") ' +
+      '\n- ruleId: Alert rule ID (from "list_alert_rules") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New rule name ' +
       '\n- priority: Change evaluation order ' +
@@ -439,11 +439,11 @@ export const alertsTools: Tool[] = [
       '\n- Rule B (priority 2): datasources="CPU" ' +
       '\n- Alert from Production resource/device with CPU datasource → Rule A wins (priority 1) ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_alert\\_rule" to review current configuration ' +
-      '2. Use "list\\_alert\\_rules" to check priority conflicts ' +
+      '1. Use "get_alert_rule" to review current configuration ' +
+      '2. Use "list_alert_rules" to check priority conflicts ' +
       '3. Update alert rule ' +
       '4. Monitor new alerts to verify routing correctly ' +
-      '\n\n**Related tools:** "get\\_alert\\_rule" (review), "list\\_alert\\_rules" (check priorities), "list\\_alerts" (verify routing).',
+      '\n\n**Related tools:** "get_alert_rule" (review), "list_alert_rules" (check priorities), "list_alerts" (verify routing).',
     annotations: {
       title: 'Update alert rule',
       readOnlyHint: false,
@@ -498,10 +498,10 @@ export const alertsTools: Tool[] = [
       '\n- Cleanup after reorganization' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- ruleId: Alert rule ID to delete (from "list\\_alert\\_rules") ' +
+      '\n- ruleId: Alert rule ID to delete (from "list_alert_rules") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "get\\_alert\\_rule" to understand what alerts this rule matches ' +
-      '2. Use "list\\_alert\\_rules" to identify which rule will handle these alerts after deletion ' +
+      '1. Use "get_alert_rule" to understand what alerts this rule matches ' +
+      '2. Use "list_alert_rules" to identify which rule will handle these alerts after deletion ' +
       '3. If replacing, create new rule with LOWER priority BEFORE deleting old one ' +
       '4. Verify alert coverage gap won\'t occur ' +
       '\n\n**Impact of deletion:** ' +
@@ -532,7 +532,7 @@ export const alertsTools: Tool[] = [
       '\n- Delete priority 10 (catch-all) → Alerts with no other match might go unnotified! ' +
       '\n\n**⚠️ NEVER delete catch-all rule (high priority like 99) without replacement - creates notification black hole!** ' +
       '\n\n**Best practice:** Create replacement rule BEFORE deleting old rule to ensure continuous alert coverage. ' +
-      '\n\n**Related tools:** "get\\_alert\\_rule" (review before delete), "list\\_alert\\_rules" (check coverage), "create\\_alert\\_rule" (replacement).',
+      '\n\n**Related tools:** "get_alert_rule" (review before delete), "list_alert_rules" (check coverage), "create_alert_rule" (replacement).',
     annotations: {
       title: 'Delete alert rule',
       readOnlyHint: false,
@@ -556,7 +556,7 @@ export const alertsTools: Tool[] = [
     description: 'List alert action chains in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are action chains:** Ordered escalation/notification sequences (stages) that alert rules invoke to deliver notifications (email, SMS, integrations) and to escalate if not acknowledged. ' +
       '\n\n**Returns:** Array of action chains with id, name, description, and stages. ' +
-      '\n\n**Related tools:** "get\\_action\\_chain", "create\\_action\\_chain", "list\\_action\\_rules" (rules reference chains via actionChainId).',
+      '\n\n**Related tools:** "get_action_chain", "create_action_chain", "list_action_rules" (rules reference chains via actionChainId).',
     annotations: { title: 'List action chains', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -573,7 +573,7 @@ export const alertsTools: Tool[] = [
     name: 'get_action_chain',
     description: 'Get details of a specific alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Full chain config: name, description, and the ordered stages (recipients/integrations per stage). ' +
-      '\n\n**Related tools:** "list\\_action\\_chains", "update\\_action\\_chain".',
+      '\n\n**Related tools:** "list_action_chains", "update_action_chain".',
     annotations: { title: 'Get action chain', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -590,8 +590,8 @@ export const alertsTools: Tool[] = [
     description: 'Create an alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines a reusable notification/escalation sequence that alert rules can reference. ' +
       '\n\n**Required:** name and stages. Each stage is a list of recipients/integration targets; alerts escalate from one stage to the next if not acknowledged. ' +
-      '\n\n**Tip:** Use "get\\_action\\_chain" on an existing chain to see the exact `stages` structure, then adapt it via `config`. ' +
-      '\n\n**Related tools:** "create\\_action\\_rule" (wire the chain to alerts), "update\\_action\\_chain".',
+      '\n\n**Tip:** Use "get_action_chain" on an existing chain to see the exact `stages` structure, then adapt it via `config`. ' +
+      '\n\n**Related tools:** "create_action_rule" (wire the chain to alerts), "update_action_chain".',
     annotations: { title: 'Create action chain', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -617,8 +617,8 @@ export const alertsTools: Tool[] = [
     name: 'update_action_chain',
     description: 'Update an alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** actionChainId plus any of name, description, stages (or additional fields via `config`). Partial update. ' +
-      '\n\n**Best practice:** Use "get\\_action\\_chain" first to review the current `stages` before modifying. ' +
-      '\n\n**Related tools:** "get\\_action\\_chain", "list\\_action\\_chains".',
+      '\n\n**Best practice:** Use "get_action_chain" first to review the current `stages` before modifying. ' +
+      '\n\n**Related tools:** "get_action_chain", "list_action_chains".',
     annotations: { title: 'Update action chain', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -645,7 +645,7 @@ export const alertsTools: Tool[] = [
     name: 'delete_action_chain',
     description: 'Delete an alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Warning:** Action rules referencing this chain will lose their notification target. Verify no active action rule depends on it first. ' +
-      '\n\n**Related tools:** "list\\_action\\_rules" (check dependencies), "get\\_action\\_chain".',
+      '\n\n**Related tools:** "list_action_rules" (check dependencies), "get_action_chain".',
     annotations: { title: 'Delete action chain', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -661,7 +661,7 @@ export const alertsTools: Tool[] = [
     description: 'List alert action rules in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are action rules:** Rules that match alerts (by device groups, devices, datasource, datapoint, severity) and route them to an action chain for notification/escalation. ' +
       '\n\n**Returns:** Array of action rules with id, name, levelStr, deviceGroups, actionChainId, enabled. ' +
-      '\n\n**Related tools:** "get\\_action\\_rule", "create\\_action\\_rule", "list\\_action\\_chains".',
+      '\n\n**Related tools:** "get_action_rule", "create_action_rule", "list_action_chains".',
     annotations: { title: 'List action rules', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -678,7 +678,7 @@ export const alertsTools: Tool[] = [
     name: 'get_action_rule',
     description: 'Get details of a specific alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Match criteria (deviceGroups, devices, datasource, datapoint, instance, severity levelStr), the linked actionChainId, and enabled status. ' +
-      '\n\n**Related tools:** "list\\_action\\_rules", "update\\_action\\_rule", "set\\_action\\_rule\\_status".',
+      '\n\n**Related tools:** "list_action_rules", "update_action_rule", "set_action_rule_status".',
     annotations: { title: 'Get action rule', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -694,9 +694,9 @@ export const alertsTools: Tool[] = [
     name: 'create_action_rule',
     description: 'Create an alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Routes matching alerts to an action chain for notification/escalation. ' +
-      '\n\n**Required:** name, actionChainId (from "list\\_action\\_chains"), deviceGroups (array of group filters), and levelStr (severity levels, e.g., "Warn,Error,Critical"). ' +
+      '\n\n**Required:** name, actionChainId (from "list_action_chains"), deviceGroups (array of group filters), and levelStr (severity levels, e.g., "Warn,Error,Critical"). ' +
       '\n\n**Optional match criteria:** devices, datasource, datapoint, instance, resourceProperties, enabled. ' +
-      '\n\n**Related tools:** "list\\_action\\_chains", "update\\_action\\_rule", "set\\_action\\_rule\\_status".',
+      '\n\n**Related tools:** "list_action_chains", "update_action_rule", "set_action_rule_status".',
     annotations: { title: 'Create action rule', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -728,8 +728,8 @@ export const alertsTools: Tool[] = [
     name: 'update_action_rule',
     description: 'Update an alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** actionRuleId plus any fields to change (name, actionChainId, deviceGroups, levelStr, devices, datasource, datapoint, instance, enabled, or additional fields via `config`). Partial update. ' +
-      '\n\n**Tip:** To only toggle enabled/disabled, prefer "set\\_action\\_rule\\_status". ' +
-      '\n\n**Related tools:** "get\\_action\\_rule", "list\\_action\\_rules".',
+      '\n\n**Tip:** To only toggle enabled/disabled, prefer "set_action_rule_status". ' +
+      '\n\n**Related tools:** "get_action_rule", "list_action_rules".',
     annotations: { title: 'Update action rule', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -758,7 +758,7 @@ export const alertsTools: Tool[] = [
     name: 'delete_action_rule',
     description: 'Delete an alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Warning:** Alerts previously matched by this rule will no longer trigger its notifications/escalations. ' +
-      '\n\n**Related tools:** "get\\_action\\_rule" (review before delete), "list\\_action\\_rules".',
+      '\n\n**Related tools:** "get_action_rule" (review before delete), "list_action_rules".',
     annotations: { title: 'Delete action rule', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -774,7 +774,7 @@ export const alertsTools: Tool[] = [
     description: 'Enable or disable an alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Toggles only the enabled status of an action rule without modifying its other configuration. ' +
       '\n\n**Parameters:** actionRuleId, enabled (true to enable, false to disable). ' +
-      '\n\n**Related tools:** "update\\_action\\_rule" (full edit), "get\\_action\\_rule".',
+      '\n\n**Related tools:** "update_action_rule" (full edit), "get_action_rule".',
     annotations: { title: 'Set action rule status', readOnlyHint: false },
     inputSchema: {
       type: 'object',

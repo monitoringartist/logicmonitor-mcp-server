@@ -31,9 +31,9 @@ export const reportsTools: Tool[] = [
       '\n- Monthly: End-of-month SLA reports' +
       '\n- Quarterly: Capacity planning reviews' +
       '\n- On-demand: Generate for specific incidents/audits' +
-      '\n\n**Workflow:** Use this tool to find reports, then "get\\_report" for details, or "generate\\_report" to run on-demand. ' +
+      '\n\n**Workflow:** Use this tool to find reports, then "get_report" for details, or "generate_report" to run on-demand. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_report" (details), "list\\_report\\_groups" (organization), "generate\\_report" (run now).',
+      '\n\n**Related tools:** "get_report" (details), "list_report_groups" (organization), "generate_report" (run now).',
     annotations: {
       title: 'List reports',
       readOnlyHint: true,
@@ -64,8 +64,8 @@ export const reportsTools: Tool[] = [
       '\n- Format: PDF (management), HTML (web), CSV (data analysis)' +
       '\n- Scope: Which resources/devices/groups are included' +
       '\n- Date range: Last 7 days, last month, custom period' +
-      '\n\n**Workflow:** Use "list\\_reports" to find reportId, then use this tool for complete configuration. ' +
-      '\n\n**Related tools:** "list\\_reports" (find reports), "update\\_report" (modify), "generate\\_report" (run now).',
+      '\n\n**Workflow:** Use "list_reports" to find reportId, then use this tool for complete configuration. ' +
+      '\n\n**Related tools:** "list_reports" (find reports), "update_report" (modify), "generate_report" (run now).',
     annotations: {
       title: 'Get report details',
       readOnlyHint: true,
@@ -89,8 +89,8 @@ export const reportsTools: Tool[] = [
       '\n\n**What this does:** Creates a scheduled or on-demand report (e.g., Alert, Alert SLA, Dashboard, Device Inventory, Resource Metric Trends) that can be delivered via email in HTML, PDF, CSV, or WORD format. ' +
       '\n\n**Required parameters:**' +
       '\n- name: The report name' +
-      '\n- type: The report type. Common values: "Alert", "Alert SLA", "Alert Threshold", "Dashboard", "Device Inventory", "Resource Metric Trends", "SLA", "Website SLA", "Audit", "Custom". (Use "get\\_report" on an existing report to see exact type strings.)' +
-      '\n\n**⚠️ Report definitions are type-specific.** Each report type requires different configuration (scope, columns, date range, etc.). The most reliable approach is to export an existing report of the same type via "get\\_report", adapt it, and pass the type-specific fields via `config`. ' +
+      '\n- type: The report type. Common values: "Alert", "Alert SLA", "Alert Threshold", "Dashboard", "Device Inventory", "Resource Metric Trends", "SLA", "Website SLA", "Audit", "Custom". (Use "get_report" on an existing report to see exact type strings.)' +
+      '\n\n**⚠️ Report definitions are type-specific.** Each report type requires different configuration (scope, columns, date range, etc.). The most reliable approach is to export an existing report of the same type via "get_report", adapt it, and pass the type-specific fields via `config`. ' +
       '\n\n**Optional parameters:**' +
       '\n- description: Report description' +
       '\n- groupId: Report group ID (0 = root report group)' +
@@ -100,7 +100,7 @@ export const reportsTools: Tool[] = [
       '\n- scheduleTimezone: Timezone for the schedule' +
       '\n- recipients: Array of email delivery recipients' +
       '\n- config: Any additional type-specific report attributes (merged into the request body)' +
-      '\n\n**Related tools:** "get\\_report" (export a template), "list\\_reports" (browse existing), "update\\_report", "delete\\_report".',
+      '\n\n**Related tools:** "get_report" (export a template), "list_reports" (browse existing), "update_report", "delete_report".',
     annotations: {
       title: 'Create report',
       readOnlyHint: false,
@@ -160,13 +160,13 @@ export const reportsTools: Tool[] = [
     description: 'Update an existing report in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Modifies a report\'s name, description, group, format, schedule, recipients, or type-specific configuration. Uses a partial update (only the fields you provide are changed). ' +
       '\n\n**Required parameters:**' +
-      '\n- reportId: The ID of the report to update (from "list\\_reports")' +
+      '\n- reportId: The ID of the report to update (from "list_reports")' +
       '\n\n**Optional parameters (what to change):**' +
       '\n- name, description, groupId, format, delivery, schedule, scheduleTimezone, recipients' +
       '\n- type: The report type (the API may require this when changing type-specific fields)' +
       '\n- config: Any additional type-specific report attributes to update (merged into the body)' +
-      '\n\n**Best practice:** Use "get\\_report" first to review the current configuration (including its `type`), then change only the needed fields. ' +
-      '\n\n**Related tools:** "get\\_report" (review before update), "list\\_reports" (find report), "delete\\_report".',
+      '\n\n**Best practice:** Use "get_report" first to review the current configuration (including its `type`), then change only the needed fields. ' +
+      '\n\n**Related tools:** "get_report" (review before update), "list_reports" (find report), "delete_report".',
     annotations: {
       title: 'Update report',
       readOnlyHint: false,
@@ -234,9 +234,9 @@ export const reportsTools: Tool[] = [
       '\n- Cannot be undone' +
       '\n\n**What this does:** Permanently removes a report from LogicMonitor. Previously generated/delivered report files are not affected. ' +
       '\n\n**Required parameters:**' +
-      '\n- reportId: The ID of the report to delete (from "list\\_reports")' +
-      '\n\n**Before deleting:** Use "get\\_report" to verify it is the correct report and consider exporting its configuration for backup. ' +
-      '\n\n**Related tools:** "get\\_report" (backup/verify before delete), "list\\_reports" (find report), "update\\_report" (modify instead of delete).',
+      '\n- reportId: The ID of the report to delete (from "list_reports")' +
+      '\n\n**Before deleting:** Use "get_report" to verify it is the correct report and consider exporting its configuration for backup. ' +
+      '\n\n**Related tools:** "get_report" (backup/verify before delete), "list_reports" (find report), "update_report" (modify instead of delete).',
     annotations: {
       title: 'Delete report',
       readOnlyHint: false,
@@ -256,14 +256,14 @@ export const reportsTools: Tool[] = [
   {
     name: 'generate_report',
     description: 'Run (generate) a report on demand in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Triggers an immediate execution of an existing report definition. Generation is asynchronous: this returns a `taskId` that you pass to "get\\_report\\_task\\_result" to check status and retrieve the generated report (e.g., a download URL). ' +
+      '\n\n**What this does:** Triggers an immediate execution of an existing report definition. Generation is asynchronous: this returns a `taskId` that you pass to "get_report_task_result" to check status and retrieve the generated report (e.g., a download URL). ' +
       '\n\n**Required parameters:**' +
-      '\n- reportId: The ID of the report to run (from "list\\_reports")' +
+      '\n- reportId: The ID of the report to run (from "list_reports")' +
       '\n\n**Optional parameters:**' +
       '\n- receiveEmails: Comma-separated email address(es) that LogicMonitor should email the generated report to' +
       '\n- withAdminId: Generate the report as a specific admin/user ID (0 or omitted = current user)' +
-      '\n\n**Workflow:** Call this tool, then poll "get\\_report\\_task\\_result" with the returned `taskId` until the report is ready. ' +
-      '\n\n**Related tools:** "get\\_report\\_task\\_result" (fetch status/output), "list\\_reports" (find reportId), "get\\_report" (report details).',
+      '\n\n**Workflow:** Call this tool, then poll "get_report_task_result" with the returned `taskId` until the report is ready. ' +
+      '\n\n**Related tools:** "get_report_task_result" (fetch status/output), "list_reports" (find reportId), "get_report" (report details).',
     annotations: {
       title: 'Generate report',
       readOnlyHint: false,
@@ -291,11 +291,11 @@ export const reportsTools: Tool[] = [
   {
     name: 'get_report_task_result',
     description: 'Get the result of an on-demand report generation in LogicMonitor (LM) monitoring. ' +
-      '\n\n**What this does:** Retrieves the status and output of a report run started via "generate\\_report", using the `taskId` it returned. The report may not be ready immediately; poll until it completes. ' +
+      '\n\n**What this does:** Retrieves the status and output of a report run started via "generate_report", using the `taskId` it returned. The report may not be ready immediately; poll until it completes. ' +
       '\n\n**Required parameters:**' +
       '\n- reportId: The ID of the report that was run' +
-      '\n- taskId: The task ID returned by "generate\\_report"' +
-      '\n\n**Related tools:** "generate\\_report" (start a report run).',
+      '\n- taskId: The task ID returned by "generate_report"' +
+      '\n\n**Related tools:** "generate_report" (start a report run).',
     annotations: {
       title: 'Get report task result',
       readOnlyHint: true,
@@ -339,9 +339,9 @@ export const reportsTools: Tool[] = [
       '\n- Group compliance/audit reports separately ' +
       '\n- Separate internal vs customer-facing reports ' +
       '\n- Structure reports by delivery schedule ' +
-      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list\\_reports" filtered by groupId to see reports in specific folder. ' +
+      '\n\n**Workflow:** Use this tool to browse hierarchy, then "list_reports" filtered by groupId to see reports in specific folder. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_report\\_group" (details), "list\\_reports" (reports in group), "create\\_report\\_group" (create folder).',
+      '\n\n**Related tools:** "get_report_group" (details), "list_reports" (reports in group), "create_report_group" (create folder).',
     annotations: {
       title: 'List report groups',
       readOnlyHint: true,
@@ -366,8 +366,8 @@ export const reportsTools: Tool[] = [
       '\n- Verify group hierarchy' +
       '\n- Review group structure before creating reports' +
       '\n' +
-      '\n\n**Workflow:** Use "list\\_report\\_groups" to find groupId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_report\\_groups" (find groups), "list\\_reports" (reports in group), "create\\_report\\_group" (create new).',
+      '\n\n**Workflow:** Use "list_report_groups" to find groupId, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_report_groups" (find groups), "list_reports" (reports in group), "create_report_group" (create new).',
     annotations: {
       title: 'Get report group details',
       readOnlyHint: true,
@@ -409,7 +409,7 @@ export const reportsTools: Tool[] = [
       '\n- Create groups before creating reports ' +
       '\n- Use descriptive names matching business needs ' +
       '\n- Keep hierarchy shallow (2-3 levels max) ' +
-      '\n\n**Related tools:** "list\\_report\\_groups" (view hierarchy), "create\\_report" (add reports), "update\\_report\\_group" (modify).',
+      '\n\n**Related tools:** "list_report_groups" (view hierarchy), "create_report" (add reports), "update_report_group" (modify).',
     annotations: {
       title: 'Create report group',
       readOnlyHint: false,
@@ -441,12 +441,12 @@ export const reportsTools: Tool[] = [
       '\n- Reorganize report structure' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Report group ID (from "list\\_report\\_groups") ' +
+      '\n- groupId: Report group ID (from "list_report_groups") ' +
       '\n\n**Optional parameters:** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
       '\n- parentId: New parent group (moves group) ' +
-      '\n\n**Related tools:** "list\\_report\\_groups" (find group), "get\\_report\\_group" (verify), "list\\_reports" (reports in group).',
+      '\n\n**Related tools:** "list_report_groups" (find group), "get_report_group" (verify), "list_reports" (reports in group).',
     annotations: {
       title: 'Update report group',
       readOnlyHint: false,
@@ -482,9 +482,9 @@ export const reportsTools: Tool[] = [
       '\n- Simplify report hierarchy' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Report group ID to delete (from "list\\_report\\_groups") ' +
+      '\n- groupId: Report group ID to delete (from "list_report_groups") ' +
       '\n\n**Before deleting:** Move all reports and subgroups first, then delete empty group. ' +
-      '\n\n**Related tools:** "list\\_reports" (check for reports), "list\\_report\\_groups" (check for subgroups), "update\\_report" (move reports).',
+      '\n\n**Related tools:** "list_reports" (check for reports), "list_report_groups" (check for subgroups), "update_report" (move reports).',
     annotations: {
       title: 'Delete report group',
       readOnlyHint: false,

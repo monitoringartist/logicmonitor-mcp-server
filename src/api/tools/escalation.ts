@@ -25,7 +25,7 @@ export const escalationTools: Tool[] = [
       '\n- "Why didn\'t I get notified?" → Verify you\'re in the escalation chain ' +
       '\n- "Update on-call rotation" → Modify escalation chain recipients ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_escalation\\_chain" (detailed stages), "list\\_alert\\_rules" (see which rules use chain), "list\\_recipient\\_groups" (available notification targets).',
+      '\n\n**Related tools:** "get_escalation_chain" (detailed stages), "list_alert_rules" (see which rules use chain), "list_recipient_groups" (available notification targets).',
     annotations: {
       title: 'List escalation chains',
       readOnlyHint: true,
@@ -62,8 +62,8 @@ export const escalationTools: Tool[] = [
       'Stage 1 (0 min): Email "oncall@company.com", SMS "+1-555-1234" ' +
       'Stage 2 (15 min): PagerDuty integration, Email "team-lead@company.com" ' +
       'Stage 3 (30 min): Slack webhook, Email "engineering-manager@company.com" ' +
-      '\n\n**Workflow:** Use "list\\_escalation\\_chains" to find chainId, then use this tool to review complete notification workflow. ' +
-      '\n\n**Related tools:** "list\\_escalation\\_chains" (find chains), "update\\_escalation\\_chain" (modify), "list\\_recipient\\_groups" (see recipient groups).',
+      '\n\n**Workflow:** Use "list_escalation_chains" to find chainId, then use this tool to review complete notification workflow. ' +
+      '\n\n**Related tools:** "list_escalation_chains" (find chains), "update_escalation_chain" (modify), "list_recipient_groups" (see recipient groups).',
     annotations: {
       title: 'Get escalation chain details',
       readOnlyHint: true,
@@ -156,7 +156,7 @@ export const escalationTools: Tool[] = [
       '\n- Business hours chains for non-critical alerts (reduce after-hours noise) ' +
       '\n- Test escalation chains before production use ' +
       '\n- Document who is in each stage for on-call handoffs ' +
-      '\n\n**Related tools:** "list\\_recipient\\_groups" (find groups), "list\\_integrations" (find integrations), "create\\_alert\\_rule" (route alerts to chain), "list\\_escalation\\_chains" (view all).',
+      '\n\n**Related tools:** "list_recipient_groups" (find groups), "list_integrations" (find integrations), "create_alert_rule" (route alerts to chain), "list_escalation_chains" (view all).',
     annotations: {
       title: 'Create escalation chain',
       readOnlyHint: false,
@@ -194,7 +194,7 @@ export const escalationTools: Tool[] = [
       '\n- Update business hours schedules' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- chainId: Escalation chain ID (from "list\\_escalation\\_chains") ' +
+      '\n- chainId: Escalation chain ID (from "list_escalation_chains") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New chain name ' +
       '\n- description: Updated description ' +
@@ -215,11 +215,11 @@ export const escalationTools: Tool[] = [
       '\n- New alerts use updated stages ' +
       '\n- Disabling chain stops all notifications for alerts routed to it ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_escalation\\_chain" to review current configuration ' +
-      '2. Use "list\\_alert\\_rules" to see which rules use this chain (impact analysis) ' +
+      '1. Use "get_escalation_chain" to review current configuration ' +
+      '2. Use "list_alert_rules" to see which rules use this chain (impact analysis) ' +
       '3. Update escalation chain ' +
       '4. Monitor alerts to verify new configuration works ' +
-      '\n\n**Related tools:** "get\\_escalation\\_chain" (review), "list\\_alert\\_rules" (impact analysis), "list\\_recipient\\_groups" (find recipient groups).',
+      '\n\n**Related tools:** "get_escalation_chain" (review), "list_alert_rules" (impact analysis), "list_recipient_groups" (find recipient groups).',
     annotations: {
       title: 'Update escalation chain',
       readOnlyHint: false,
@@ -265,9 +265,9 @@ export const escalationTools: Tool[] = [
       '\n- Cleanup unused chains' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- chainId: Escalation chain ID to delete (from "list\\_escalation\\_chains") ' +
+      '\n- chainId: Escalation chain ID to delete (from "list_escalation_chains") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list\\_alert\\_rules" with filter to find ALL rules using this chain ' +
+      '1. Use "list_alert_rules" with filter to find ALL rules using this chain ' +
       '2. Create/identify replacement escalation chain ' +
       '3. Update all alert rules to use new chain BEFORE deleting ' +
       '4. Verify no rules still reference this chain ' +
@@ -300,7 +300,7 @@ export const escalationTools: Tool[] = [
       '4. Delete duplicate chains ' +
       '\n\n**⚠️ NEVER delete escalation chain without updating alert rules first - notifications will silently stop!** ' +
       '\n\n**Best practice:** Always migrate alert rules to replacement chain BEFORE deleting old chain. ' +
-      '\n\n**Related tools:** "list\\_alert\\_rules" (find usage), "update\\_alert\\_rule" (migrate rules), "create\\_escalation\\_chain" (create replacement).',
+      '\n\n**Related tools:** "list_alert_rules" (find usage), "update_alert_rule" (migrate rules), "create_escalation_chain" (create replacement).',
     annotations: {
       title: 'Delete escalation chain',
       readOnlyHint: false,
@@ -345,7 +345,7 @@ export const escalationTools: Tool[] = [
       '\n- "Add new team member" → Add to group, automatically included in alerts ' +
       '\n\n**Workflow:** Use this tool to find groups, then use in escalation chains to notify multiple people at once. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_recipient\\_group" (details), "list\\_escalation\\_chains" (see usage).',
+      '\n\n**Related tools:** "get_recipient_group" (details), "list_escalation_chains" (see usage).',
     annotations: {
       title: 'List recipient groups',
       readOnlyHint: true,
@@ -375,8 +375,8 @@ export const escalationTools: Tool[] = [
       '\n- Usage: Which escalation chains reference this group ' +
       '\n- Description: Purpose/team name ' +
       '\n\n**Before modifying group:** Review escalation chain usage to understand impact of changes. Removing member from group affects all chains using that group. ' +
-      '\n\n**Workflow:** Use "list\\_recipient\\_groups" to find groupId, then use this tool to review membership before updating. ' +
-      '\n\n**Related tools:** "list\\_recipient\\_groups" (find groups), "update\\_recipient\\_group" (modify), "list\\_escalation\\_chains" (see where used).',
+      '\n\n**Workflow:** Use "list_recipient_groups" to find groupId, then use this tool to review membership before updating. ' +
+      '\n\n**Related tools:** "list_recipient_groups" (find groups), "update_recipient_group" (modify), "list_escalation_chains" (see where used).',
     annotations: {
       title: 'Get recipient group details',
       readOnlyHint: true,
@@ -449,7 +449,7 @@ export const escalationTools: Tool[] = [
       '\n- Use groups in escalation chains instead of individual recipients ' +
       '\n- Keep groups small (3-10 members) for manageability ' +
       '\n- Document group purpose in description ' +
-      '\n\n**Related tools:** "update\\_recipient\\_group" (change members), "create\\_escalation\\_chain" (use groups).',
+      '\n\n**Related tools:** "update_recipient_group" (change members), "create_escalation_chain" (use groups).',
     annotations: {
       title: 'Create recipient group',
       readOnlyHint: false,
@@ -487,7 +487,7 @@ export const escalationTools: Tool[] = [
       '\n- Rename group' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Recipient group ID (from "list\\_recipient\\_groups") ' +
+      '\n- groupId: Recipient group ID (from "list_recipient_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New group name ' +
       '\n- description: Updated description ' +
@@ -506,10 +506,10 @@ export const escalationTools: Tool[] = [
       '\n- Removing member: They stop receiving notifications ' +
       '\n- Adding member: They start receiving notifications ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_recipient\\_group" to see current members ' +
+      '1. Use "get_recipient_group" to see current members ' +
       '2. Update group with new membership ' +
       '3. Changes take effect for next alerts ' +
-      '\n\n**Related tools:** "get\\_recipient\\_group" (review), "list\\_recipient\\_groups" (find group).',
+      '\n\n**Related tools:** "get_recipient_group" (review), "list_recipient_groups" (find group).',
     annotations: {
       title: 'Update recipient group',
       readOnlyHint: false,
@@ -555,9 +555,9 @@ export const escalationTools: Tool[] = [
       '\n- Cleanup unused groups' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- groupId: Recipient group ID to delete (from "list\\_recipient\\_groups") ' +
+      '\n- groupId: Recipient group ID to delete (from "list_recipient_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "list\\_escalation\\_chains" to find chains using this group ' +
+      '1. Use "list_escalation_chains" to find chains using this group ' +
       '2. Create replacement group or identify individual recipients ' +
       '3. Update all escalation chains BEFORE deleting group ' +
       '4. Verify no chains reference this group ' +
@@ -572,7 +572,7 @@ export const escalationTools: Tool[] = [
       '4. Verify updated ' +
       '5. Delete old group ' +
       '\n\n**Best practice:** Migrate escalation chains to replacement group/recipients BEFORE deleting to prevent notification gaps. ' +
-      '\n\n**Related tools:** "list\\_escalation\\_chains" (find usage), "create\\_recipient\\_group" (replacement), "update\\_escalation\\_chain" (migrate).',
+      '\n\n**Related tools:** "list_escalation_chains" (find usage), "create_recipient_group" (replacement), "update_escalation_chain" (migrate).',
     annotations: {
       title: 'Delete recipient group',
       readOnlyHint: false,

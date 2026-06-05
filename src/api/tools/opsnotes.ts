@@ -38,7 +38,7 @@ export const opsnotesTools: Tool[] = [
       '\n- By device: filter:"monitorObjectName~*prod-web*" ' +
       '\n\n**Displayed on:** Graphs, dashboards, resource/device pages - visible wherever metrics are shown. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_opsnote" (details), "create\\_opsnote" (add new), "create\\_device\\_sdt" (maintenance windows).',
+      '\n\n**Related tools:** "get_opsnote" (details), "create_opsnote" (add new), "create_device_sdt" (maintenance windows).',
     annotations: {
       title: 'List OpsNotes',
       readOnlyHint: true,
@@ -63,8 +63,8 @@ export const opsnotesTools: Tool[] = [
       '\n- Check scope of operational event' +
       '\n- Verify linked resources' +
       '\n' +
-      '\n\n**Workflow:** Use "list\\_opsnotes" to find note ID, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list\\_opsnotes" (find notes), "create\\_opsnote" (add new), "update\\_opsnote" (modify).',
+      '\n\n**Workflow:** Use "list_opsnotes" to find note ID, then use this tool for complete details. ' +
+      '\n\n**Related tools:** "list_opsnotes" (find notes), "create_opsnote" (add new), "update_opsnote" (modify).',
     annotations: {
       title: 'Get OpsNote details',
       readOnlyHint: true,
@@ -148,8 +148,8 @@ export const opsnotesTools: Tool[] = [
       '2. Updates: Add notes as you discover findings ' +
       '3. Resolution: Create note "RESOLVED: Killed runaway process" ' +
       '\n\n**After creation:** ' +
-      'OpsNotes appear as vertical lines on graphs at the timestamp. Hover to see note text. Use "list\\_opsnotes" to search/review notes. ' +
-      '\n\n**Related tools:** "list\\_opsnotes" (view all notes), "update\\_opsnote" (modify), "delete\\_opsnote" (remove).',
+      'OpsNotes appear as vertical lines on graphs at the timestamp. Hover to see note text. Use "list_opsnotes" to search/review notes. ' +
+      '\n\n**Related tools:** "list_opsnotes" (view all notes), "update_opsnote" (modify), "delete_opsnote" (remove).',
     annotations: {
       title: 'Create OpsNote',
       readOnlyHint: false,
@@ -192,7 +192,7 @@ export const opsnotesTools: Tool[] = [
       '\n- Change scope (different device/group)' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- opsNoteId: OpsNote ID (from "list\\_opsnotes") ' +
+      '\n- opsNoteId: OpsNote ID (from "list_opsnotes") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- note: New note text ' +
       '\n- timestamp: Corrected time (epoch milliseconds) ' +
@@ -213,10 +213,10 @@ export const opsnotesTools: Tool[] = [
       '{opsNoteId: 111, tags: ["deployment", "rollback", "production", "critical"]} ' +
       '// Added more descriptive tags ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "list\\_opsnotes" to find note to update ' +
+      '1. Use "list_opsnotes" to find note to update ' +
       '2. Update with new information ' +
       '3. Graph annotations update immediately ' +
-      '\n\n**Related tools:** "list\\_opsnotes" (find note), "create\\_opsnote" (create new), "delete\\_opsnote" (remove).',
+      '\n\n**Related tools:** "list_opsnotes" (find note), "create_opsnote" (create new), "delete_opsnote" (remove).',
     annotations: {
       title: 'Update OpsNote',
       readOnlyHint: false,
@@ -258,7 +258,7 @@ export const opsnotesTools: Tool[] = [
       '\n- Cleanup old test notes' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- opsNoteId: OpsNote ID to delete (from "list\\_opsnotes") ' +
+      '\n- opsNoteId: OpsNote ID to delete (from "list_opsnotes") ' +
       '\n\n**Impact:** ' +
       '\n- Note removed from all graphs and dashboards immediately ' +
       '\n- Historical record deleted (cannot be recovered) ' +
@@ -271,11 +271,11 @@ export const opsnotesTools: Tool[] = [
       '\n\n**Best practice:** ' +
       'Consider updating note instead of deleting if it just needs correction. Deletion removes historical record. ' +
       '\n\n**Workflow:** ' +
-      '1. Use "list\\_opsnotes" to find note ' +
+      '1. Use "list_opsnotes" to find note ' +
       '2. Verify correct note before deleting ' +
       '3. Delete note ' +
       '4. Annotation disappears from graphs immediately ' +
-      '\n\n**Related tools:** "list\\_opsnotes" (find note), "update\\_opsnote" (alternative to deletion), "create\\_opsnote" (recreate if needed).',
+      '\n\n**Related tools:** "list_opsnotes" (find note), "update_opsnote" (alternative to deletion), "create_opsnote" (recreate if needed).',
     annotations: {
       title: 'Delete OpsNote',
       readOnlyHint: false,

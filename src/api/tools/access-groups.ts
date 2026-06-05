@@ -31,9 +31,9 @@ export const accessGroupsTools: Tool[] = [
       '\n- Access Group "Production" - Only prod resource/device' +
       '\n- Access Group "Dev/Test" - Only non-prod resource/device' +
       '\n- Junior staff limited to dev/test access group' +
-      '\n\n**Workflow:** Use this tool to find access groups, then assign users to groups via "update\\_user" to control resource visibility. ' +
+      '\n\n**Workflow:** Use this tool to find access groups, then assign users to groups via "update_user" to control resource visibility. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_access\\_group" (details), "create\\_access\\_group" (create new), "list\\_users" (see user assignments), "list\\_resources" (associate resource/device with groups).',
+      '\n\n**Related tools:** "get_access_group" (details), "create_access_group" (create new), "list_users" (see user assignments), "list_resources" (associate resource/device with groups).',
     annotations: {
       title: 'List access groups',
       readOnlyHint: true,
@@ -66,8 +66,8 @@ export const accessGroupsTools: Tool[] = [
       '\n- Removing resource: Users lose visibility to those resource/device' +
       '\n- Removing user: User loses visibility to all resources in group' +
       '\n- Deleting group: All users lose their access scope' +
-      '\n\n**Workflow:** Use "list\\_access\\_groups" to find accessGroupId, then use this tool to review complete configuration before modifications. ' +
-      '\n\n**Related tools:** "list\\_access\\_groups" (find groups), "update\\_access\\_group" (modify), "list\\_users" (see user access).',
+      '\n\n**Workflow:** Use "list_access_groups" to find accessGroupId, then use this tool to review complete configuration before modifications. ' +
+      '\n\n**Related tools:** "list_access_groups" (find groups), "update_access_group" (modify), "list_users" (see user access).',
     annotations: {
       title: 'Get access group details',
       readOnlyHint: true,
@@ -148,7 +148,7 @@ export const accessGroupsTools: Tool[] = [
       '\n- One access group per team (department isolation)' +
       '\n- Empty resourceGroups = full access (admin groups)' +
       '\n- Descriptive names: "Customer Name - Environment"' +
-      '\n\n**Related tools:** "update\\_access\\_group" (add/remove resources), "list\\_access\\_groups" (view all), "create\\_user" (assign users to group), "list\\_resource\\_groups" (find group IDs).',
+      '\n\n**Related tools:** "update_access_group" (add/remove resources), "list_access_groups" (view all), "create_user" (assign users to group), "list_resource_groups" (find group IDs).',
     annotations: {
       title: 'Create access group',
       readOnlyHint: false,
@@ -185,7 +185,7 @@ export const accessGroupsTools: Tool[] = [
       '\n- Remove decommissioned resources' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- accessGroupId: Access group ID (from "list\\_access\\_groups") ' +
+      '\n- accessGroupId: Access group ID (from "list_access_groups") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New access group name ' +
       '\n- description: Updated description ' +
@@ -208,8 +208,8 @@ export const accessGroupsTools: Tool[] = [
       '\n- Adding resource/device group: Users instantly gain access to new resource/device ' +
       '\n- Users currently viewing removed resources will see "no access" errors ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_access\\_group" to see current configuration ' +
-      '2. Use "list\\_users" to see which users affected by change ' +
+      '1. Use "get_access_group" to see current configuration ' +
+      '2. Use "list_users" to see which users affected by change ' +
       '3. Update access group with new resource scope ' +
       '4. Notify users of access changes ' +
       '\n\n**Example: Customer adds new infrastructure:** ' +
@@ -218,7 +218,7 @@ export const accessGroupsTools: Tool[] = [
       '   // Returns: resourceGroups: [10,11] ' +
       '3. Add new group: update_access_group(accessGroupId: 123, resourceGroups: [10,11,12]) ' +
       '4. Customer users now see new AWS resource/device ' +
-      '\n\n**Related tools:** "get\\_access\\_group" (review before update), "list\\_access\\_groups" (find group), "list\\_users" (see affected users), "list\\_resource\\_groups" (find group IDs).',
+      '\n\n**Related tools:** "get_access_group" (review before update), "list_access_groups" (find group), "list_users" (see affected users), "list_resource_groups" (find group IDs).',
     annotations: {
       title: 'Update access group',
       readOnlyHint: false,
@@ -263,10 +263,10 @@ export const accessGroupsTools: Tool[] = [
       '\n- Cleanup unused access groups' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- accessGroupId: Access group ID to delete (from "list\\_access\\_groups") ' +
+      '\n- accessGroupId: Access group ID to delete (from "list_access_groups") ' +
       '\n\n**Before deleting - CRITICAL CHECKS:** ' +
-      '1. Use "get\\_access\\_group" to see which resources are in scope ' +
-      '2. Use "list\\_users" with filter to find ALL users assigned to this group ' +
+      '1. Use "get_access_group" to see which resources are in scope ' +
+      '2. Use "list_users" with filter to find ALL users assigned to this group ' +
       '3. Verify users have alternate access groups to move to ' +
       '4. Coordinate with users - they will lose access immediately ' +
       '\n\n**Impact of deletion:** ' +
@@ -299,7 +299,7 @@ export const accessGroupsTools: Tool[] = [
       '4. Delete old access group ' +
       '\n\n**⚠️ NEVER delete access group with active users unless intentionally revoking their access immediately!** ' +
       '\n\n**Best practice:** Always reassign users to new access group BEFORE deleting old group to prevent access disruption. ' +
-      '\n\n**Related tools:** "get\\_access\\_group" (check users), "list\\_users" (find affected users), "update\\_user" (reassign users), "create\\_access\\_group" (create replacement).',
+      '\n\n**Related tools:** "get_access_group" (check users), "list_users" (find affected users), "update_user" (reassign users), "create_access_group" (create replacement).',
     annotations: {
       title: 'Delete access group',
       readOnlyHint: false,

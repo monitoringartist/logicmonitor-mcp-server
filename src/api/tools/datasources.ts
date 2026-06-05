@@ -9,18 +9,18 @@ export const datasourcesTools: Tool[] = [
       '\n\n**Returns:** Array of datasources with: id, name, displayName, description, appliesTo (which resource/device it monitors), collection method, datapoints/metrics collected. ' +
       '\n\n**What are datasources:** Templates that define WHAT to monitor (e.g., CPU, memory, disk), HOW to collect it (SNMP, WMI, API), and WHEN to alert. LogicMonitor has 2000+ pre-built datasources for common technologies. ' +
       '\n\n**When to use:** ' +
-      '\n- Find datasource for specific technology (e.g., "AWS\\_EC2", "VMware\\_vCenter")' +
+      '\n- Find datasource for specific technology (e.g., "AWS_EC2", "VMware_vCenter")' +
       '\n- Discover what can be monitored' +
       '\n- Get datasource IDs for API operations' +
       '\n- Browse monitoring capabilities' +
       '\n\n**Common filter patterns:** ' +
       '\n- By name: filter:"name\\~\\*CPU\\*" or filter:"displayName\\~\\*Memory\\*"' +
       '\n- Cloud providers: filter:"name\\~\\*AWS\\*" or filter:"name\\~\\*Azure\\*"' +
-      '\n- Database: filter:"name\\~\\*MySQL\\*" or filter:"name\\~\\*SQL\\_Server\\*"' +
+      '\n- Database: filter:"name\\~\\*MySQL\\*" or filter:"name\\~\\*SQL_Server\\*"' +
       '\n- Network: filter:"name\\~\\*Cisco\\*" or filter:"name\\~\\*SNMP\\*"' +
-      '\n\n**Examples:** AWS\\_EC2 (monitors EC2 instances), SNMP\\_Network\\_Interfaces (network stats), WinCPU (Windows CPU), Linux\\_SSH (Linux via SSH). ' +
+      '\n\n**Examples:** AWS_EC2 (monitors EC2 instances), SNMP_Network_Interfaces (network stats), WinCPU (Windows CPU), Linux_SSH (Linux via SSH). ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_datasource" (details), "list\\_resource\\_datasources" (see what\'s applied to specific resource/device).',
+      '\n\n**Related tools:** "get_datasource" (details), "list_resource_datasources" (see what\'s applied to specific resource/device).',
     annotations: {
       title: 'List datasources',
       readOnlyHint: true,
@@ -55,8 +55,8 @@ export const datasourcesTools: Tool[] = [
       '\n- isWindows() - Only Windows resource/device' +
       '\n- system.devicetype == "server" - Only servers' +
       '\n- hasCategory("AWS/EC2") - Only AWS EC2 instances' +
-      '\n\n**Workflow:** Use "list\\_datasources" to find dataSourceId, then use this tool to understand how it works. ' +
-      '\n\n**Related tools:** "list\\_datasources" (find datasource), "list\\_resource\\_datasources" (see which resource/device use it).',
+      '\n\n**Workflow:** Use "list_datasources" to find dataSourceId, then use this tool to understand how it works. ' +
+      '\n\n**Related tools:** "list_datasources" (find datasource), "list_resource_datasources" (see which resource/device use it).',
     annotations: {
       title: 'Get datasource details',
       readOnlyHint: true,
@@ -78,11 +78,11 @@ export const datasourcesTools: Tool[] = [
     name: 'create_datasource',
     description: 'Create a new DataSource (LogicModule) in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Defines a new monitoring module: collection method, appliesTo logic, datapoints, graphs, and alert thresholds. ' +
-      '\n\n**⚠️ DataSources are complex, type-specific modules.** The most reliable approach is to export an existing similar DataSource via "get\\_datasource" (with `fields: "*"`), adapt it, and pass the full definition via `config`. ' +
+      '\n\n**⚠️ DataSources are complex, type-specific modules.** The most reliable approach is to export an existing similar DataSource via "get_datasource" (with `fields: "*"`), adapt it, and pass the full definition via `config`. ' +
       '\n\n**Required:** a `config` object containing at least `name`, `collector` (collection method), and `appliesTo`. ' +
       '\n\n**Optional:** `createGraph` (boolean) to auto-create default graphs. ' +
-      '\n\n**Tip:** For sharing/distributing modules prefer "import\\_datasource" with official XML/JSON. ' +
-      '\n\n**Related tools:** "get\\_datasource", "update\\_datasource", "import\\_datasource".',
+      '\n\n**Tip:** For sharing/distributing modules prefer "import_datasource" with official XML/JSON. ' +
+      '\n\n**Related tools:** "get_datasource", "update_datasource", "import_datasource".',
     annotations: { title: 'Create datasource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -103,8 +103,8 @@ export const datasourcesTools: Tool[] = [
     description: 'Update an existing DataSource (LogicModule) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** dataSourceId and a `config` with the fields to change. Partial update. ' +
       '\n\n**Optional:** `reason` (audit reason for the change), `forceUniqueIdentifier`. ' +
-      '\n\n**⚠️ Caution:** Editing a built-in/LogicMonitor-managed DataSource may require a `reason` and can be overwritten by future module updates. Review with "get\\_datasource" first. ' +
-      '\n\n**Related tools:** "get\\_datasource", "list\\_datasource\\_update\\_reasons".',
+      '\n\n**⚠️ Caution:** Editing a built-in/LogicMonitor-managed DataSource may require a `reason` and can be overwritten by future module updates. Review with "get_datasource" first. ' +
+      '\n\n**Related tools:** "get_datasource", "list_datasource_update_reasons".',
     annotations: { title: 'Update datasource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -126,8 +126,8 @@ export const datasourcesTools: Tool[] = [
     name: 'delete_datasource',
     description: 'Delete a DataSource (LogicModule) from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Permanently removes the module and stops all monitoring it provided across every applied device. Historical data may be lost. Cannot be undone. ' +
-      '\n\n**Before deleting:** Use "list\\_datasource\\_devices" to see how many resources rely on it. ' +
-      '\n\n**Related tools:** "get\\_datasource", "list\\_datasource\\_devices".',
+      '\n\n**Before deleting:** Use "list_datasource_devices" to see how many resources rely on it. ' +
+      '\n\n**Related tools:** "get_datasource", "list_datasource_devices".',
     annotations: { title: 'Delete datasource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -147,7 +147,7 @@ export const datasourcesTools: Tool[] = [
       '\n- format: "xml" or "json"' +
       '\n- handleConflict (JSON only): how to resolve name conflicts (e.g., "all", "ignore")' +
       '\n- fieldsToPreserve (JSON only): comma-separated fields to keep from the existing module' +
-      '\n\n**Related tools:** "create\\_datasource" (build from scratch), "get\\_datasource".',
+      '\n\n**Related tools:** "create_datasource" (build from scratch), "get_datasource".',
     annotations: { title: 'Import datasource', readOnlyHint: false },
     inputSchema: {
       type: 'object',
@@ -165,7 +165,7 @@ export const datasourcesTools: Tool[] = [
     name: 'list_datasource_overview_graphs',
     description: 'List overview graphs defined on a DataSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are overview graphs:** Aggregate graphs that summarize data across all instances of the datasource on a device. ' +
-      '\n\n**Related tools:** "get\\_datasource\\_overview\\_graph", "get\\_datasource".',
+      '\n\n**Related tools:** "get_datasource_overview_graph", "get_datasource".',
     annotations: { title: 'List datasource overview graphs', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -182,7 +182,7 @@ export const datasourcesTools: Tool[] = [
   {
     name: 'get_datasource_overview_graph',
     description: 'Get the definition of a specific DataSource overview graph in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list\\_datasource\\_overview\\_graphs".',
+      '\n\n**Related tools:** "list_datasource_overview_graphs".',
     annotations: { title: 'Get datasource overview graph', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -198,7 +198,7 @@ export const datasourcesTools: Tool[] = [
     name: 'list_datasource_devices',
     description: 'List the resources/devices a DataSource is currently applied to in LogicMonitor (LM) monitoring. ' +
       '\n\n**When to use:** Assess impact before editing/deleting a datasource, or audit where a module is collecting. ' +
-      '\n\n**Related tools:** "get\\_datasource", "delete\\_datasource".',
+      '\n\n**Related tools:** "get_datasource", "delete_datasource".',
     annotations: { title: 'List datasource devices', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -216,7 +216,7 @@ export const datasourcesTools: Tool[] = [
     name: 'list_datasource_update_reasons',
     description: 'List the audit history of update reasons for a DataSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Change records (who/when/why) for the module. ' +
-      '\n\n**Related tools:** "update\\_datasource" (provide a `reason` when editing).',
+      '\n\n**Related tools:** "update_datasource" (provide a `reason` when editing).',
     annotations: { title: 'List datasource update reasons', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -244,21 +244,21 @@ export const datasourcesTools: Tool[] = [
       '\n- Check datasource health' +
       '\n' +
       '\n\n**What you discover:** ' +
-      '\n- Which datasources are active (e.g., WinCPU, WinMemory, SNMP\_Network\_Interfaces) ' +
+      '\n- Which datasources are active (e.g., WinCPU, WinMemory, SNMP_Network_Interfaces) ' +
       '\n- How many instances per datasource (e.g., 3 disks, 4 network interfaces) ' +
       '\n- Collection status: Collecting data vs errors ' +
       '\n- Alert status: Any active alerts from this datasource ' +
       '\n\n**This is step 1 for getting metrics:** ' +
       '**Complete workflow to retrieve metric data:** ' +
       '1. Use this tool → get deviceDataSourceId for datasource you want (e.g., WinCPU) ' +
-      '2. Use "list\\_device\\_instances" → get instanceId for specific instance ' +
-      '3. Use "get\\_device\\_instance\\_data" → get actual metric values ' +
+      '2. Use "list_device_instances" → get instanceId for specific instance ' +
+      '3. Use "get_device_instance_data" → get actual metric values ' +
       '\n\n**Troubleshooting use cases:** ' +
       '\n- "Why no CPU data?" → Check if WinCPU datasource is applied and collecting ' +
       '\n- "Find disk datasource" → Look for datasource with "disk" or "volume" in name ' +
       '\n- "Check datasource errors" → Review status field for error messages ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "list\\_device\\_instances" (next step), "get\\_device\\_instance\\_data" (get metrics), "update\\_device\\_datasource" (enable/disable).',
+      '\n\n**Related tools:** "list_device_instances" (next step), "get_device_instance_data" (get metrics), "update_device_datasource" (enable/disable).',
     annotations: {
       title: 'List resource/device datasources',
       readOnlyHint: true,
@@ -294,8 +294,8 @@ export const datasourcesTools: Tool[] = [
       '\n- status: Collection status (normal vs error) ' +
       '\n- alertStatus: Any active alerts from this datasource ' +
       '\n- stopMonitoring: Whether datasource is disabled on this resource/device ' +
-      '\n\n**Workflow:** Use "list\\_device\\_datasources" to find deviceDataSourceId, then use this tool for detailed status. ' +
-      '\n\n**Related tools:** "list\\_device\\_datasources" (find datasource), "list\\_device\\_instances" (get instances), "update\\_device\\_datasource" (enable/disable).',
+      '\n\n**Workflow:** Use "list_device_datasources" to find deviceDataSourceId, then use this tool for detailed status. ' +
+      '\n\n**Related tools:** "list_device_datasources" (find datasource), "list_device_instances" (get instances), "update_device_datasource" (enable/disable).',
     annotations: {
       title: 'Get resource/device datasource details',
       readOnlyHint: true,
@@ -329,8 +329,8 @@ export const datasourcesTools: Tool[] = [
       '\n- Update device-specific thresholds' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- deviceId: Device ID (from "list\\_resources") ' +
-      '\n- deviceDataSourceId: Device datasource ID (from "list\\_device\\_datasources") ' +
+      '\n- deviceId: Device ID (from "list_resources") ' +
+      '\n- deviceDataSourceId: Device datasource ID (from "list_device_datasources") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- disableAlerting: true (mute alerts) or false (enable alerts) ' +
       '\n- stopMonitoring: true (stop data collection) or false (resume monitoring) ' +
@@ -363,8 +363,8 @@ export const datasourcesTools: Tool[] = [
       'pollingInterval: 60 (every minute for critical metrics) ' +
       '\n\n**Low-frequency monitoring:** ' +
       'pollingInterval: 600 (every 10 minutes for less critical metrics) ' +
-      '\n\n**Workflow:** Use "list\\_device\\_datasources" to find deviceDataSourceId, then update configuration. ' +
-      '\n\n**Related tools:** "list\\_device\\_datasources" (find datasource), "get\\_device\\_datasource" (check current config), "list\\_device\\_instances" (see monitored instances).',
+      '\n\n**Workflow:** Use "list_device_datasources" to find deviceDataSourceId, then update configuration. ' +
+      '\n\n**Related tools:** "list_device_datasources" (find datasource), "get_device_datasource" (check current config), "list_device_instances" (see monitored instances).',
     annotations: {
       title: 'Update resource/device datasource',
       readOnlyHint: false,

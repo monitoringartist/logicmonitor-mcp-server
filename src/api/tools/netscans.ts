@@ -32,9 +32,9 @@ export const netscansTools: Tool[] = [
       '\n- "Production Servers" - Scan 192.168.1.0/24 every 6 hours via nmap ' +
       '\n- "AWS EC2 Discovery" - Query AWS API every hour for new instances ' +
       '\n- "Network resources/Devices" - SNMP walk 10.0.0.0/8 daily for routers/switches ' +
-      '\n\n**Workflow:** Use this tool to review netscans, then "get\\_netscan" for detailed configuration including filters and resource/device properties. ' +
+      '\n\n**Workflow:** Use this tool to review netscans, then "get_netscan" for detailed configuration including filters and resource/device properties. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get\\_netscan" (configuration details), "create\\_netscan" (set up auto-discovery), "run\\_netscan" (trigger manual scan).',
+      '\n\n**Related tools:** "get_netscan" (configuration details), "create_netscan" (set up auto-discovery), "run_netscan" (trigger manual scan).',
     annotations: {
       title: 'List NetScans',
       readOnlyHint: true,
@@ -71,8 +71,8 @@ export const netscansTools: Tool[] = [
       '\n- "Why resource/device not discovered?" → Check if IP in target range and not excluded by filters ' +
       '\n- "Wrong credentials?" → Verify credential properties configured in netscan ' +
       '\n- "resources/Devices missing properties?" → Check default properties applied by netscan ' +
-      '\n\n**Workflow:** Use "list\\_netscans" to find netscanId, then use this tool to review complete configuration. ' +
-      '\n\n**Related tools:** "list\\_netscans" (find netscan), "update\\_netscan" (modify), "run\\_netscan" (execute now).',
+      '\n\n**Workflow:** Use "list_netscans" to find netscanId, then use this tool to review complete configuration. ' +
+      '\n\n**Related tools:** "list_netscans" (find netscan), "update_netscan" (modify), "run_netscan" (execute now).',
     annotations: {
       title: 'Get NetScan details',
       readOnlyHint: true,
@@ -103,7 +103,7 @@ export const netscansTools: Tool[] = [
       '\n' +
       '\n\n**Required parameters:** ' +
       '\n- name: NetScan name (e.g., "Production Network Scan", "AWS EC2 Discovery") ' +
-      '\n- collectorId: Collector to perform scan (from "list\\_collectors") ' +
+      '\n- collectorId: Collector to perform scan (from "list_collectors") ' +
       '\n- targetType: "subnet", "iprange", "script", "awsEC2", "azureVMs", etc. ' +
       '\n- target: What to scan (depends on type - subnet CIDR, IP range, script, etc.) ' +
       '\n\n**Optional parameters:** ' +
@@ -150,8 +150,8 @@ export const netscansTools: Tool[] = [
       '\n- Schedule during low-traffic hours (scans generate network traffic) ' +
       '\n- Test credentials before scheduling ' +
       '\n- Group resource/device appropriately with deviceGroupId ' +
-      '\n\n**After creation:** NetScan runs on schedule. Use "list\\_netscans" to view, "get\\_netscan" for details. Check "list\\_resources" to see discovered resources/devices. ' +
-      '\n\n**Related tools:** "list\\_collectors" (find collector), "list\\_resource\\_groups" (find deviceGroupId), "update\\_netscan" (modify), "delete\\_netscan" (remove).',
+      '\n\n**After creation:** NetScan runs on schedule. Use "list_netscans" to view, "get_netscan" for details. Check "list_resources" to see discovered resources/devices. ' +
+      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find deviceGroupId), "update_netscan" (modify), "delete_netscan" (remove).',
     annotations: {
       title: 'Create NetScan',
       readOnlyHint: false,
@@ -200,7 +200,7 @@ export const netscansTools: Tool[] = [
       '\n- Update exclusion filters' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: NetScan ID (from "list\\_netscans") ' +
+      '\n- netscanId: NetScan ID (from "list_netscans") ' +
       '\n\n**Optional parameters (what to change):** ' +
       '\n- name: New NetScan name ' +
       '\n- target: New IP range/subnet ' +
@@ -218,10 +218,10 @@ export const netscansTools: Tool[] = [
       '\n\n**Add exclusions:** ' +
       '{netscanId: 123, excludeFilters: ["192.168.1.0/24", "192.168.2.50-192.168.2.100"]} ' +
       '\n\n**Best practice workflow:** ' +
-      '1. Use "get\\_netscan" to review current settings ' +
+      '1. Use "get_netscan" to review current settings ' +
       '2. Update NetScan configuration ' +
       '3. Changes apply on next scheduled run ' +
-      '\n\n**Related tools:** "get\\_netscan" (review), "list\\_netscans" (find netscan), "delete\\_netscan" (remove).',
+      '\n\n**Related tools:** "get_netscan" (review), "list_netscans" (find netscan), "delete_netscan" (remove).',
     annotations: {
       title: 'Update NetScan',
       readOnlyHint: false,
@@ -261,7 +261,7 @@ export const netscansTools: Tool[] = [
       '\n- Migrating to different discovery method' +
       '\n' +
       '\n\n**Required parameters:** ' +
-      '\n- netscanId: NetScan ID to delete (from "list\\_netscans") ' +
+      '\n- netscanId: NetScan ID to delete (from "list_netscans") ' +
       '\n\n**Impact:** ' +
       '\n- NetScan stops running (no more automatic discovery) ' +
       '\n- Previously discovered resource/device remain in monitoring (not deleted) ' +
@@ -269,7 +269,7 @@ export const netscansTools: Tool[] = [
       '\n- Cannot be undone ' +
       '\n\n**Best practice:** ' +
       'Before deleting, decide if you still need discovery for this network. resources/Devices already discovered remain monitored. ' +
-      '\n\n**Related tools:** "list\\_netscans" (find NetScan), "get\\_netscan" (verify before delete), "list\\_resources" (see discovered resources/devices).',
+      '\n\n**Related tools:** "list_netscans" (find NetScan), "get_netscan" (verify before delete), "list_resources" (see discovered resources/devices).',
     annotations: {
       title: 'Delete NetScan',
       readOnlyHint: false,
