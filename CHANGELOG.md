@@ -1,71 +1,60 @@
 # Changelog
 
-## [v0.1.0] - 2025-12-04
-## [v1.0.0] - 2026-06-06
-
-### 📦 Other Changes
-- Update changelog before release (71a4007)
-- Add important pagination note to API tool documentation (a72cb91)
-- Update modelcontextprotocol/sdk to 12.4.2 (d207e47)
-
-
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.0] - full LM API coverage
+## [v1.0.0] - 2026-06-06
 
 ### Added
-- Strict `fields` validation against the Swagger v3 spec. For 42 canonical list/get tools (devices, device groups, alerts, dashboards, dashboard groups, widgets, websites, website groups, collectors, collector groups, users, roles, datasources, eventsources, configsources, SDTs, opsnotes, reports, recipient groups, alert rules, escalation chains), an invalid `fields` name now raises a clear `INVALID_PARAMETERS` error with closest-match suggestions instead of being silently ignored by the API. Valid field names are generated from the spec via `npm run generate:field-schemas` (`scripts/generate-field-schemas.mjs` → `src/api/field-schemas.ts`), so allow-lists stay in lock-step with the API. Tools without a known response model are unaffected (fail-open).
-- Device Group deep-dive tools (15 new), completing the Device Groups category and reaching **100% LogicMonitor API v3 coverage** (393/393 operations, 356 total MCP tools):
-  - Cluster alert configurations: `list_resource_group_cluster_alert_confs`, `get_resource_group_cluster_alert_conf`, `create_resource_group_cluster_alert_conf`, `update_resource_group_cluster_alert_conf`, `delete_resource_group_cluster_alert_conf`
-  - Group datasources: `list_resource_group_datasources`, `get_resource_group_datasource`, `update_resource_group_datasource`
-  - Group datasource alert settings: `get_resource_group_datasource_alert_setting`, `update_resource_group_datasource_alert_setting`
-  - Group properties: `create_resource_group_property`, `delete_resource_group_property` (complementing the existing `update_resource_group_property`)
-  - Group alerts & SDTs: `list_resource_group_alerts`, `list_resource_group_sdts`, `get_resource_group_sdt_history`
-  - PUT and PATCH update operations are consolidated into single `update_*` tools (PATCH semantics)
-- LOW-priority API coverage batch (56 new tools across 22 categories), raising overall coverage to ~95% (374/393 operations) with 341 total MCP tools:
-  - Log management: log alert pipelines/processors (`list/get/create/update/delete_log_alert_group`, `list/get/create/update/delete_log_alert`, `set_log_alert_status`), log query groups (`list/get/create/update/delete_log_query_group`, `list_log_query_group_queries`, `list_log_query_groups_by_type`, `move_log_queries`), log partitions (`list/get/create/update/delete_log_partition`, `get_log_partition_retentions`, `log_partition_action`), and tracked query groups (`list/get/create/update/delete_tracked_query_group`)
-  - Cloud onboarding (read-oriented validation): `get_aws_account_id`, `get_aws_external_id`, `test_aws_account`, `verify_aws_billing_permissions`, `discover_azure_subscriptions`, `test_azure_account`, `verify_azure_storage_permissions`, `test_gcp_account`, `test_saas_account`
-  - Diagnostics & metrics: `get_diagnostic_remediation_sources`, `get_diagnostic_remediation_results`, `get_metrics_summary`, `get_metrics_usage`
-  - Extras & singletons: `get_configsource_update_reasons`, `get_website_sdt_history`, `get_website_graph_by_name`, `update_default_dashboard`, `escalate_alert`, `map_unmap_module_to_access_group`, `get_integration_audit_logs`, `get_external_api_stats`, `get_logicmodule_metadata`, `list_unmonitored_devices`, `get_contract_info`, `add_dns_mapping`
-  - Documentation note: ConfigSource and EventSource JSON imports were already covered by the existing `import_configsource`/`import_eventsource` tools (`format: "json"`); those categories are now marked fully covered
-- Cost Optimization Recommendations tools: `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, and `list_cost_optimization_recommendation_categories` (read-only, backed by the `/cost-optimization/recommendations` API)
-- Dashboard Widget tools: `list_widgets`, `list_dashboard_widgets`, `get_widget`, `get_widget_data` (read-only) and `create_widget`, `update_widget`, `delete_widget` (write), backed by the `/dashboard/widgets` API
-- Collector management tools: `create_collector`, `update_collector`, `delete_collector`, `acknowledge_collector_down_alert` (write) and `get_collector_installer` (read-only; returns an authenticated installer download URL rather than the binary), backed by the `/setting/collector/collectors` API
-- Website monitoring data tools (read-only): `get_website_checkpoint_data` (raw checkpoint datapoint values) and `get_website_graph_data` (rendered graph series for a checkpoint), backed by the `/website/websites/{id}/checkpoints` API
-- ConfigSource management tools: `create_configsource`, `update_configsource`, `delete_configsource`, and `import_configsource` (JSON/XML upload via multipart)
-- EventSource management tools: `create_eventsource`, `update_eventsource`, `delete_eventsource`, and `import_eventsource` (JSON/XML upload via multipart)
-- Expanded SDT management: `create_sdt` (any SDT target type) and `update_sdt`, complementing the existing device SDT tools
-- Report management tools: `create_report`, `update_report`, and `delete_report`, backed by the `/report/reports` API
-- Collector group & agent log level tools (8 new): `create_collector_group`, `update_collector_group`, `delete_collector_group`, `update_collector_agent_log_level` (write) and `list_collector_agent_log_levels`, `get_collector_agent_log_level`, `get_collector_events`, `get_collector_status_check` (read-only) — bringing the Collector Groups category to full coverage
-- Job Monitor (BatchJob) tools (6 new): `list_job_monitors`, `get_job_monitor`, `create_job_monitor`, `update_job_monitor`, `delete_job_monitor`, `import_job_monitor` (JSON/XML multipart)
-- DiagnosticSource tools (7 new): CRUD (`list/get/create/update/delete_diagnosticsource`), `import_diagnosticsource` (JSON), and `execute_diagnosticsource` (run on demand)
-- AppliesTo Function tools (6 new): CRUD (`list/get/create/update/delete_applies_to_function`) and `import_applies_to_function` (JSON)
-- SNMP OID tools (6 new): CRUD (`list/get/create/update/delete_oid`) and `import_oid` (JSON)
-- RemediationSource tools (6 new): CRUD (`list/get/create/update/delete_remediationsource`) and `execute_remediation` (run on demand)
-- TopologySource tools (6 new): CRUD (`list/get/create/update/delete_topologysource`) and `import_topologysource` (JSON)
-- User & API token write tools (6 new): `create_user`, `update_user`, `delete_user`, `create_api_token`, `update_api_token`, `delete_api_token`, backed by the `/setting/admins` API
-- Bulk instance data & instance graph tools (2 new): `fetch_instances_data` (bulk metric fetch via `/device/instances/datafetch`) and `get_instance_graph_data_by_id` (graph data addressed by instance ID + graph ID)
-- Website group tools (6 new): `create_website_group`, `update_website_group`, `delete_website_group` (write; properties/testLocation via `config`), plus `list_website_group_websites`, `list_website_group_sdts`, and `get_website_group_sdt_history` (read-only), backed by the `/website/groups` API — bringing the Website Groups category to full coverage
-- Role write tools (3 new): `create_role`, `update_role`, and `delete_role` (privileges and other Role fields passed via `config`), backed by the `/setting/roles` API — bringing the Roles category to full coverage
-- Report execution tools (2 new): `generate_report` (run a report on demand; returns a `taskId`) and `get_report_task_result` (fetch the run status/output), backed by the `/report/reports/{id}/executions` and `/report/reports/{id}/tasks/{taskId}` APIs — bringing the Report Execution category to full coverage
-- Collector debug command tools (2 new): `execute_debug_command` (submit a debug command to a collector; returns a `sessionId`) and `get_debug_command_result` (fetch the command output), backed by the `/debug` API — bringing the Collector Debug Commands category to full coverage
-- Dashboard group write tools (4 new): `create_dashboard_group`, `update_dashboard_group`, `delete_dashboard_group` (with `allowNonEmptyGroup`), and `clone_dashboard_group` (async clone, optionally recursive), backed by the `/dashboard/groups` API — bringing the Dashboard Groups category to full coverage
-- LogSource tools (6 new): `list_logsources`, `get_logsource`, `create_logsource`, `update_logsource`, `delete_logsource`, and `import_logsource` (JSON multipart) — bringing the LogSources category to full coverage
-- PropertySource (property rule) tools (6 new): `list_property_rules`, `get_property_rule`, `create_property_rule`, `update_property_rule`, `delete_property_rule`, and `import_property_rule` (JSON multipart) — bringing the PropertySources category to full coverage
-- DataSource management tools (8 new): `create_datasource`, `update_datasource`, `delete_datasource`, `import_datasource` (XML/JSON multipart), `list_datasource_overview_graphs`, `get_datasource_overview_graph`, `list_datasource_devices`, `list_datasource_update_reasons` — bringing the DataSource Management category to full coverage
-- Alert automation tools (11 new): action chains (`list_action_chains`, `get_action_chain`, `create_action_chain`, `update_action_chain`, `delete_action_chain`) and action rules (`list_action_rules`, `get_action_rule`, `create_action_rule`, `update_action_rule`, `delete_action_rule`, `set_action_rule_status`), backed by the `/setting/action/chains` and `/setting/action/rules` APIs — bringing the Alert Automation category to full coverage
-- Device deep-dive tools (32 new): datasource instance CRUD (`create_resource_instance`, `update_resource_instance`, `delete_resource_instance`), instance groups (`list_resource_instance_groups`, `get_resource_instance_group`, `create_resource_instance_group`, `update_resource_instance_group`, `update_instance_group_alert_threshold`, `get_instance_group_overview_graph_data`), alert settings (`list_resource_alert_settings`, `list_instance_alert_settings`, `get_instance_alert_setting`, `update_instance_alert_setting`), collected configs (`list_resource_instance_configs`, `get_resource_instance_config`, `collect_resource_instance_config`), graph/data (`get_instance_graph_data`, `get_resource_datasource_data`), NetFlow (`list_resource_netflow_flows`, `list_resource_netflow_ports`, `list_resource_netflow_endpoints`, `get_resource_top_talkers_graph`), SDT history (`get_resource_sdt_history`, `get_resource_datasource_sdt_history`, `get_instance_sdt_history`), device properties (`create_resource_property`, `delete_resource_property`), and `list_resource_alerts`, `list_resource_eventsources`, `schedule_resource_auto_discovery`, `get_resources_delta_id`, `get_resources_delta` — bringing the Devices API category to full coverage
+- **352 MCP tools** (177 read-only, 175 write) — **100% LogicMonitor API v3 coverage** across 29 tool categories:
+  - Alerts (21): `list_alerts`, `get_alert`, `acknowledge_alert`, `add_alert_note`, `escalate_alert`, alert rules (`list/get/create/update/delete_alert_rule`), action chains (`list/get/create/update/delete_action_chain`), action rules (`list/get/create/update/delete_action_rule`, `set_action_rule_status`)
+  - Resources/Devices (8): `list_resources`, `get_resource`, `create_resource`, `update_resource`, `delete_resource`, `list_resource_properties`, `update_resource_property`, `list_unmonitored_devices`
+  - Resource Instances & Deep-Dive (38): instance CRUD (`list_resource_instances`, `get_resource_instance_data`, `create/update/delete_resource_instance`), instance groups (`list/get/create/update_resource_instance_group`, `update_instance_group_alert_threshold`, `get_instance_group_overview_graph_data`), alert settings (`list_resource_alert_settings`, `list_instance_alert_settings`, `get/update_instance_alert_setting`), collected configs (`list/get_resource_instance_config`, `collect_resource_instance_config`), graph/data (`get_instance_graph_data`, `get_resource_datasource_data`, `fetch_instances_data`, `get_instance_graph_data_by_id`, `get_metrics_summary`, `get_metrics_usage`), NetFlow (`list_resource_netflow_flows/ports/endpoints`, `get_resource_top_talkers_graph`), SDT history (`get_resource/resource_datasource/instance_sdt_history`), properties (`create/delete_resource_property`), and `list_resource_alerts`, `list_resource_eventsources`, `schedule_resource_auto_discovery`, `get_resources_delta_id`, `get_resources_delta`
+  - Resource Groups (22): `list/get/create/update/delete_resource_group`, properties (`list/update/create/delete_resource_group_property`), cluster alert configs (`list/get/create/update/delete_resource_group_cluster_alert_conf`), group datasources (`list/get/update_resource_group_datasource`, `get/update_resource_group_datasource_alert_setting`), `list_resource_group_alerts`, `list_resource_group_sdts`, `get_resource_group_sdt_history`
+  - Dashboards & Groups (23): `list/get/create/update/delete_dashboard`, `link_dashboard`, `link_resource`, `link_alert`, `link_website`, dashboard groups (`list/get/create/update/delete/clone_dashboard_group`), `update_default_dashboard`, widgets (`list_widgets`, `list_dashboard_widgets`, `get/create/update/delete_widget`, `get_widget_data`)
+  - Collectors (20): `list/get/create/update/delete_collector`, `get_collector_installer`, `acknowledge_collector_down_alert`, debug commands (`execute_debug_command`, `get_debug_command_result`), collector groups (`list/get/create/update/delete_collector_group`), agent log levels (`list/get/update_collector_agent_log_level`), `get_collector_events`, `get_collector_status_check`, `list_collector_versions`
+  - DataSources (13): `list/get/create/update/delete_datasource`, `import_datasource`, `list_datasource_overview_graphs`, `get_datasource_overview_graph`, `list_datasource_devices`, `list_datasource_update_reasons`, resource datasources (`list/get/update_resource_datasource`)
+  - Websites (18): `list/get/create/update/delete_website`, website groups (`list/get/create/update/delete_website_group`, `list_website_group_websites`, `list_website_group_sdts`, `get_website_group_sdt_history`), `get_website_sdt_history`, `get_website_graph_by_name`, `list_website_checkpoints`, `get_website_checkpoint_data`, `get_website_graph_data`
+  - Reports (12): `list/get/create/update/delete_report`, `generate_report`, `get_report_task_result`, report groups (`list/get/create/update/delete_report_group`)
+  - Users & Roles (15): `list/get/create/update/delete_user`, `list/get/create/update/delete_role`, API tokens (`list/create/update/delete_api_token`), `get_external_api_stats`
+  - SDTs (6): `list_sdts`, `get_sdt`, `create_resource_sdt`, `create_sdt`, `update_sdt`, `delete_sdt`
+  - Escalation & Recipient Groups (10): `list/get/create/update/delete_escalation_chain`, `list/get/create/update/delete_recipient_group`
+  - Log Sources & Management (37): `list/get/create/update/delete/import_logsource`, log alert groups (`list/get/create/update/delete_log_alert_group`), log alerts (`list/get/create/update/delete_log_alert`, `set_log_alert_status`), log query groups (`list/get/create/update/delete_log_query_group`, `list_log_query_group_queries`, `list_log_query_groups_by_type`, `move_log_queries`), log partitions (`list/get/create/update/delete_log_partition`, `get_log_partition_retentions`, `log_partition_action`), tracked query groups (`list/get/create/update/delete_tracked_query_group`)
+  - ConfigSources (7): `list/get/create/update/delete_configsource`, `import_configsource`, `get_configsource_update_reasons`
+  - EventSources (6): `list/get/create/update/delete_eventsource`, `import_eventsource`
+  - PropertySources (6): `list/get/create/update/delete_property_rule`, `import_property_rule`
+  - Services (10): `list/get/create/update/delete_service`, service groups (`list/get/create/update/delete_service_group`)
+  - LogicModules (13): AppliesTo functions (`list/get/create/update/delete/import_applies_to_function`), SNMP OIDs (`list/get/create/update/delete/import_oid`), `get_logicmodule_metadata`
+  - Topology (8): `list/get/create/update/delete/import_topologysource`, `list_topologies`, `get_topology`
+  - Diagnostics (15): diagnostic sources (`list/get/create/update/delete/import_diagnosticsource`, `execute_diagnosticsource`), remediation sources (`list/get/create/update/delete_remediationsource`, `execute_remediation`), `get_diagnostic_remediation_sources`, `get_diagnostic_remediation_results`
+  - Job Monitors (6): `list/get/create/update/delete/import_job_monitor`
+  - Cost Optimization (3): `list_cost_optimization_recommendations`, `get_cost_optimization_recommendation`, `list_cost_optimization_recommendation_categories`
+  - Cloud Onboarding (9): `get_aws_account_id`, `get_aws_external_id`, `test_aws_account`, `verify_aws_billing_permissions`, `discover_azure_subscriptions`, `test_azure_account`, `verify_azure_storage_permissions`, `test_gcp_account`, `test_saas_account`
+  - Integrations (6): `list/get/create/update/delete_integration`, `get_integration_audit_logs`
+  - Access Groups (6): `list/get/create/update/delete_access_group`, `map_unmap_module_to_access_group`
+  - NetScans (5): `list/get/create/update/delete_netscan`
+  - OpsNotes (5): `list/get/create/update/delete_opsnote`
+  - Audit Logs (2): `list_audit_logs`, `get_audit_log`
+  - Miscellaneous (2): `get_contract_info`, `add_dns_mapping`
+- **Tool collapsing** — 2 levels of CRUD tool collapsing to reduce the advertised tool count for AI agents:
+  - Level 1 (`MCP_COLLAPSE_TOOLS_LEVEL_1=true`): merges per-verb CRUD tools (`list_`/`get_`/`create_`/`update_`/`delete_`/`import_`) of the same resource into a single `manage_<resource>` tool with an `operation` parameter. Reduces full tool count from 352 to ~144 and read-only from 177 to ~124
+  - Level 2 (`MCP_COLLAPSE_TOOLS_LEVEL_2=true`, additive on level 1): folds remaining leaf tools (sub-collection reads, data/graph/history endpoints, and actions like `acknowledge_*`) into the matching parent `manage_<resource>` tool as extra `<verb>_<remainder>` operations. Reduces further to ~92 (full) / ~80 (read-only)
+  - No functionality is lost: original operations remain available through the consolidated tools via the `operation` parameter. Write operations are still rejected in read-only mode
+- Strict `fields` validation against the Swagger v3 spec for 42 canonical list/get tools. An invalid `fields` name now raises a clear `INVALID_PARAMETERS` error with closest-match suggestions. Valid field names are generated from the spec via `npm run generate:field-schemas`
+- OAuth 2.1 Authorization Server endpoints for MCP clients (e.g. Claude's remote connector): `/.well-known/oauth-protected-resource` (RFC 9728), `/.well-known/oauth-authorization-server` (RFC 8414), `POST /oauth/register` (RFC 7591 DCR), `GET /oauth/authorize` (authorization code + PKCE S256), `POST /oauth/token` (authorization_code and rotating refresh_token grants)
+- `EXPRESS_TRUST_PROXY` environment variable to honor `X-Forwarded-For` behind reverse proxies (Azure Container Apps, Cloudflare, nginx)
+- `MCP_COLLAPSE_TOOLS_LEVEL_1` and `MCP_COLLAPSE_TOOLS_LEVEL_2` environment variables / CLI flags
+- Read-only mode (`MCP_READ_ONLY=true`) — enabled by default; restricts to 177 safe, read-only tools
 
 ### Changed
-- None
+- Restructured codebase: extracted HTTP transport from monolithic `index.ts` into `run-http.ts`, tools split into per-domain files under `src/api/tools/`, handlers under `src/api/handlers/`
 
 ### Fixed
-- None
+- Passport strategies are now registered under their provider name, so `passport.authenticate('azure'|'google'|'okta'|'auth0'|'custom')` resolves correctly instead of failing with "Unknown authentication strategy" for non-GitHub providers
 
-## [0.1.0] - Initial Release
+## [0.1.0] - 2025-12-04
 
 ### Added
 - Initial implementation of LogicMonitor MCP Server
