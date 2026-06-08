@@ -4,17 +4,23 @@
 
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { LogicMonitorHandlers } from './handlers.js';
-import { LogicMonitorClient } from './client.js';
+import { createMockClient } from './fixtures-helpers.js';
 import { MCPError } from '../utils/core/error-handler.js';
 
-/** Build a minimal mock client exposing only the methods these tests touch. */
+/**
+ * Full mock client (derived from the real client surface) with the specific
+ * datasource methods these tests touch wired to deterministic returns.
+ */
 function makeMockClient() {
-  return {
-    listDataSources: jest.fn(async () => ({ items: [], total: 0 })),
-    getDataSource: jest.fn(async () => ({ id: 1, name: 'DS' })),
-    deleteDataSource: jest.fn(async () => ({ success: true })),
-    listDataSourceDevices: jest.fn(async () => ({ items: [], total: 0 })),
-  } as unknown as LogicMonitorClient;
+  return createMockClient(
+    {
+      listDataSources: jest.fn(async () => ({ items: [], total: 0 })),
+      getDataSource: jest.fn(async () => ({ id: 1, name: 'DS' })),
+      deleteDataSource: jest.fn(async () => ({ success: true })),
+      listDataSourceDevices: jest.fn(async () => ({ items: [], total: 0 })),
+    },
+    { wireReadDefaults: false },
+  );
 }
 
 describe('LogicMonitorHandlers collapsed-tool dispatch', () => {

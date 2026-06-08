@@ -1030,6 +1030,47 @@ export MCP_BEARER_TOKEN=$(openssl rand -base64 32)
 - [ ] Logs reviewed regularly
 - [ ] Minimal LogicMonitor API permissions granted
 
+## Development
+
+### Build, Lint, Test
+
+```bash
+npm run build          # Compile TypeScript to build/
+npm run lint           # ESLint
+npm test               # Run the Jest suite (ESM via ts-jest)
+npm run test:coverage  # Run with coverage thresholds
+```
+
+### Swagger-Derived Generators
+
+Two committed modules are generated from the LogicMonitor Swagger v3 spec so the
+server and its tests stay in lock-step with the official API. Regenerate them
+after the API changes (both download the spec from LogicMonitor by default, or
+accept a local path argument):
+
+```bash
+npm run generate:field-schemas   # -> src/api/field-schemas.ts (strict `fields` validation)
+npm run generate:fixtures        # -> src/api/fixtures.ts (schema-accurate test fixtures)
+```
+
+### Test Fixtures & Mock Client
+
+Unit tests use Swagger-derived fixtures (`src/api/fixtures.ts`) via helpers in
+`src/api/fixtures-helpers.ts`, so mocked API responses match the real LM payload
+shapes (correct field names, plausible values) instead of ad-hoc inline objects:
+
+```ts
+import { createMockClient, lmFixture, lmListResponse } from './fixtures-helpers.js';
+
+const client = createMockClient();                 // jest.Mocked<LogicMonitorClient>, reads pre-wired to fixtures
+const device = lmFixture('Device', { id: 7 });     // schema-accurate single resource
+const page = lmListResponse([device], { total: 1 });// LM list pagination envelope
+```
+
+A drift test (`src/api/fixtures.test.ts`) validates every fixture field against
+the generated field schemas and verifies the mock client mirrors the real client
+surface.
+
 ## Troubleshooting
 
 ### "LogicMonitor credentials are required"

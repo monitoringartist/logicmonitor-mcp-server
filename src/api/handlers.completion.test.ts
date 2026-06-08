@@ -5,15 +5,15 @@
 import { jest } from '@jest/globals';
 import { LogicMonitorHandlers } from './handlers.js';
 import { LogicMonitorClient } from './client.js';
+import { createMockClient } from './fixtures-helpers.js';
 
 describe('LogicMonitorHandlers - Completion', () => {
   let mockClient: jest.Mocked<LogicMonitorClient>;
   let handlers: LogicMonitorHandlers;
 
   beforeEach(() => {
-    mockClient = {
-      listResources: jest.fn(),
-    } as any;
+    // Read defaults are disabled so each test sets its own listResources return.
+    mockClient = createMockClient({}, { wireReadDefaults: false });
 
     handlers = new LogicMonitorHandlers(mockClient);
   });
