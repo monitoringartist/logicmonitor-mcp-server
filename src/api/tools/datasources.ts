@@ -258,6 +258,8 @@ export const datasourcesTools: Tool[] = [
       '\n- "Find disk datasource" → Look for datasource with "disk" or "volume" in name ' +
       '\n- "Check datasource errors" → Review status field for error messages ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
+      '\n\n**APM / traced services:** An APM service is a resource with deviceType:6, so this tool lists the trace datasource(s) applied to it. ' +
+      'Use the returned deviceDataSourceId with "list_resource_instances" to enumerate the service\'s operations (endpoints/routes). ' +
       '\n\n**Related tools:** "list_device_instances" (next step), "get_device_instance_data" (get metrics), "update_device_datasource" (enable/disable).',
     annotations: {
       title: 'List resource/device datasources',

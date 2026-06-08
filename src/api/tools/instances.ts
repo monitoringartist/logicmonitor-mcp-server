@@ -21,6 +21,8 @@ export const instancesTools: Tool[] = [
       '\n- Use this tool to list instances and get instanceId' +
       '\n- Use "get_resource_instance_data" with instanceId to get actual metrics' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
+      '\n\n**APM / traced services:** For an APM service (a resource with deviceType:6), the instances of its trace datasource are the monitored operations (endpoints/routes). ' +
+      'So this tool lists APM operations; pass the resulting instanceId to "get_resource_instance_data" to read that operation\'s RED metrics. ' +
       '\n\n**Related tools:** "list_resource_datasources" (first step), "get_resource_instance_data" (get metrics).',
     annotations: {
       title: 'List datasource instances',
@@ -67,6 +69,8 @@ export const instancesTools: Tool[] = [
       '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
       '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
+      '\n\n**APM / traced services:** APM services are resources with deviceType:6, so the same workflow returns service- and operation-level RED metrics. ' +
+      'Pass a service instance for service-wide metrics or an operation instance for per-endpoint metrics; common datapoints are Duration, OperationCount, and ErrorOperationCount. ' +
       '\n\n**Related tools:** "list_resource_datasources", "list_resource_instances".',
     annotations: {
       title: 'Get time-series metric data',
@@ -651,6 +655,7 @@ export const instancesTools: Tool[] = [
     description: 'List alerts for a specific resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Active/historical alerts scoped to the device. ' +
       '\n\n**Parameters:** deviceId, optional start/end (epoch seconds), needMessage, pagination/filter. ' +
+      '\n\n**APM / traced services:** APM services are resources with deviceType:6, so passing an APM service deviceId returns that service\'s alerts. ' +
       '\n\n**Related tools:** "list_alerts" (account-wide), "get_alert".',
     annotations: { title: 'List device alerts', readOnlyHint: true },
     inputSchema: {

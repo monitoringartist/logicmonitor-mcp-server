@@ -22,6 +22,10 @@ export const devicesTools: Tool[] = [
       '\n- By custom property: filter:"customProperties.name:company.team,customProperties.value:teamA" ' +
       '\n- By collector: filter:"preferredCollectorId:123" ' +
       '\n- Multiple conditions: filter:"hostStatus:alive,displayName\\~\\*web\\*" (comma = AND) ' +
+      '\n\n**APM / traced services:** LogicMonitor APM (distributed tracing) services are not a separate API; they are regular resources/devices with deviceType:6. ' +
+      'Use filter:"deviceType:6" to discover all APM/traced services, then this same tool family operates on them: "get_resource" for service detail, ' +
+      '"list_resource_datasources" for the applied trace datasources, "list_resource_instances" for operations (endpoints/routes), ' +
+      '"get_resource_instance_data" for RED metrics (Duration, OperationCount, ErrorOperationCount), and "list_resource_alerts" for service alerts. ' +
       '\n\n**Query vs Filter:** ' +
       '\n- query: Simplified search across displayName, description, name (OR logic). Use for quick lookups: query:"prod-web-01"' +
       '\n- filter: Precise LM filter syntax with any field. Use for complex conditions: filter:"hostStatus:alive,displayName~\\*prod\\*"' +
@@ -57,6 +61,7 @@ export const devicesTools: Tool[] = [
       '\n- Verify collector assignment' +
       '\n- Review custom properties before updating' +
       '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
+      '\n\n**APM / traced services:** APM (distributed tracing) services are resources with deviceType:6, so this tool returns the full service detail for them too (OpenTelemetry attributes appear as properties). ' +
       '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "link_resource" (get UI link).',
     annotations: {
       title: 'Get resource/device details',
