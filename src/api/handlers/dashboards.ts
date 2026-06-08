@@ -47,19 +47,19 @@ export const dashboardsToolHandlers: ToolHandlerMap = {
     return await client.deleteDashboard(args.dashboardId);
   },
 
-  'generate_dashboard_link': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'link_dashboard': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.generateDashboardLink(args.dashboardId);
   },
 
-  'generate_resource_link': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'link_resource': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.generateResourceLink(args.deviceId);
   },
 
-  'generate_alert_link': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'link_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.generateAlertLink(args.alertId);
   },
 
-  'generate_website_link': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'link_website': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.generateWebsiteLink(args.websiteId);
   },
 

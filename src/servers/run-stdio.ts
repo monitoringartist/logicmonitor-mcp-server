@@ -9,6 +9,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import { buildCollapsedTools } from '../api/tools/collapse.js';
 import { createServer } from './server.js';
 import { ServerConfig } from '../utils/core/cli-config.js';
 
@@ -30,7 +31,11 @@ export function runStdio(appConfig: ServerConfig, version: string): void {
       company: LM_COMPANY,
       bearerToken: LM_BEARER_TOKEN,
     });
-    lmHandlers = new LogicMonitorHandlers(lmClient);
+    lmHandlers = new LogicMonitorHandlers(lmClient, {
+      collapseToolsLevel1: appConfig.collapseToolsLevel1,
+      collapseToolsLevel2: appConfig.collapseToolsLevel2,
+      readOnly: ONLY_READONLY_TOOLS,
+    });
     console.error('✅ LogicMonitor credentials configured');
   } else {
     console.error('⚠️  Warning: LM_COMPANY and LM_BEARER_TOKEN not set');
@@ -56,6 +61,14 @@ export function runStdio(appConfig: ServerConfig, version: string): void {
     if (unknownTools.length > 0) {
       console.error('⚠️  Unknown tools in enabled tools list:', unknownTools.join(', '));
     }
+  }
+
+  // Collapse per-verb tools into manage_<resource> tools if enabled
+  if (appConfig.collapseToolsLevel1) {
+    const beforeCount = TOOLS.length;
+    TOOLS = buildCollapsedTools(TOOLS, { level2: appConfig.collapseToolsLevel2 }).tools;
+    const levelLabel = appConfig.collapseToolsLevel2 ? 'level 1+2' : 'level 1';
+    console.error(`ℹ️  Collapsed tools (${levelLabel}): ${beforeCount} -> ${TOOLS.length} tools`);
   }
 
   // Create server instance using factory pattern

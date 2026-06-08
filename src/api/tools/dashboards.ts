@@ -16,10 +16,10 @@ export const dashboardsTools: Tool[] = [
       '\n- By name: filter:"name\\~\\*AWS\\*" (find all AWS dashboards)' +
       '\n- By group: filter:"groupId:5" or filter:"groupName\\~\\*Cloud\\*"' +
       '\n- By owner: filter:"owner:john.doe"' +
-      '\n\n**Next step:** Use "generate_dashboard_link" with the dashboard ID to get the full clickable URL for sharing. ' +
+      '\n\n**Next step:** Use "link_dashboard" with the dashboard ID to get the full clickable URL for sharing. ' +
       '\n\n**Tip:** Dashboards are organized in groups. Use "list_dashboard_groups" to browse the hierarchy. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get_dashboard" (details), "generate_dashboard_link" (get URL), "list_dashboard_groups" (browse hierarchy).',
+      '\n\n**Related tools:** "get_dashboard" (details), "link_dashboard" (get URL), "list_dashboard_groups" (browse hierarchy).',
     annotations: {
       title: 'List dashboards',
       readOnlyHint: true,
@@ -54,8 +54,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Export dashboard configuration for backup' +
       '\n- Audit which resources/devices/metrics are being visualized' +
       '\n- Document dashboard purpose and widgets' +
-      '\n\n**Workflow:** Use "list_dashboards" to find dashboardId, then get details, then "generate_dashboard_link" to get shareable URL. ' +
-      '\n\n**Related tools:** "list_dashboards" (find dashboard), "generate_dashboard_link" (get URL), "update_dashboard" (modify), "list_dashboard_groups" (browse folders).',
+      '\n\n**Workflow:** Use "list_dashboards" to find dashboardId, then get details, then "link_dashboard" to get shareable URL. ' +
+      '\n\n**Related tools:** "list_dashboards" (find dashboard), "link_dashboard" (get URL), "update_dashboard" (modify), "list_dashboard_groups" (browse folders).',
     annotations: {
       title: 'Get dashboard details',
       readOnlyHint: true,
@@ -95,7 +95,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Create empty dashboard with name and folder' +
       '\n- Use LogicMonitor UI to add widgets visually (easier than JSON)' +
       '\n- Use "get_dashboard" to export widgetsConfig for cloning' +
-      '\n- Use "generate_dashboard_link" to get shareable URL' +
+      '\n- Use "link_dashboard" to get shareable URL' +
       '\n\n**Common dashboard types:** ' +
       '\n\n**NOC/SOC Dashboard:** ' +
       '\n- Alert widgets showing critical alerts' +
@@ -118,8 +118,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Make critical dashboards "sharable" for NOC displays' +
       '\n- Use widgetTokens for dynamic filtering (##defaultDeviceGroup##)' +
       '\n- Clone existing dashboards using "get_dashboard" widgetsConfig' +
-      '\n\n**After creation:** Use "generate_dashboard_link" to get the full URL for sharing or embedding. ' +
-      '\n\n**Related tools:** "generate_dashboard_link" (get URL), "list_dashboards" (browse existing), "get_dashboard" (export for cloning), "update_dashboard" (modify).',
+      '\n\n**After creation:** Use "link_dashboard" to get the full URL for sharing or embedding. ' +
+      '\n\n**Related tools:** "link_dashboard" (get URL), "list_dashboards" (browse existing), "get_dashboard" (export for cloning), "update_dashboard" (modify).',
     annotations: {
       title: 'Create dashboard',
       readOnlyHint: false,
@@ -182,8 +182,8 @@ export const dashboardsTools: Tool[] = [
       '\n- Use API only for name/description/folder changes' +
       '\n- Or use "get_dashboard" to export, modify JSON, then update' +
       '\n\n**Best practice:** Use "get_dashboard" first to see current configuration, then update specific fields. ' +
-      '\n\n**After update:** Use "generate_dashboard_link" to get updated URL if needed. ' +
-      '\n\n**Related tools:** "get_dashboard" (review before update), "list_dashboards" (find dashboard), "generate_dashboard_link" (get new URL).',
+      '\n\n**After update:** Use "link_dashboard" to get updated URL if needed. ' +
+      '\n\n**Related tools:** "get_dashboard" (review before update), "list_dashboards" (find dashboard), "link_dashboard" (get new URL).',
     annotations: {
       title: 'Update dashboard',
       readOnlyHint: false,
@@ -261,7 +261,7 @@ export const dashboardsTools: Tool[] = [
 
   // Dashboard Link Tools
   {
-    name: 'generate_dashboard_link',
+    name: 'link_dashboard',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) dashboard. ' +
       `\n\n**Returns:** Complete dashboard URL with full group hierarchy path, dashboard details (id, name, groupName), and group path array. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/dashboards/dashboardGroups-{path},dashboards-{id}` +
       '\n\n**When to use:** ' +
@@ -289,7 +289,7 @@ export const dashboardsTools: Tool[] = [
     },
   },
   {
-    name: 'generate_resource_link',
+    name: 'link_resource',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) resource/device. ' +
       `\n\n**Returns:** Complete resource URL plus resource/device details (id, name, displayName). URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/resources/treeNodes/t-d,id-{deviceId}?source=details` +
       '\n\n**When to use:** ' +
@@ -299,7 +299,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Document infrastructure with direct LM links' +
       '\n\n**Why use this:** Provides the canonical resource details URL so clicking the link navigates directly to the resource/device details view. ' +
       '\n\n**Workflow:** First find resource/device using "list_resources" or "search_resources", then use this tool with deviceId to generate shareable link. ' +
-      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "generate_alert_link" (link to resource/device alerts).',
+      '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "link_alert" (link to resource/device alerts).',
     annotations: {
       title: 'Generate resource/device link',
       readOnlyHint: true,
@@ -317,7 +317,7 @@ export const dashboardsTools: Tool[] = [
     },
   },
   {
-    name: 'generate_alert_link',
+    name: 'link_alert',
     description: 'Generate a direct URL/link/weburl for a LogicMonitor (LM) alert. ' +
       `\n\n**Returns:** Direct URL to alert details page. URL pattern: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/alerts/{alertId}` +
       '\n\n**When to use:** ' +
@@ -347,7 +347,7 @@ export const dashboardsTools: Tool[] = [
 
   // Generate Link Group Tools
   {
-    name: 'generate_website_link',
+    name: 'link_website',
     description: 'Generate a direct direct URL/link/weburl for a LogicMonitor (LM) website monitor with full hierarchy path for easy sharing and navigation. ' +
       '\n\n**What this does:** Creates shareable URL that opens specific website monitor in LogicMonitor UI, preserving the full folder hierarchy path. Link works for anyone with access to the LogicMonitor portal. ' +
       `\n\n**Returns:** Complete URL in format: https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/websites/treeNodes#websiteGroups-{groupId1},websiteGroups-{groupId2},...,websites-{websiteId} ` +
@@ -381,7 +381,7 @@ export const dashboardsTools: Tool[] = [
       '\n- **Context-preserving:** Shows full folder hierarchy when opened' +
       '\n\n**Workflow example:** ' +
       '\n- Find website monitor: list_websites() → websiteId: 789' +
-      '\n- Generate link: generate_website_link(websiteId: 789)' +
+      '\n- Generate link: link_website(websiteId: 789)' +
       '\n- Share link: "Check this monitor: https://company.logicmonitor.com/santaba/uiv4/websites/..."' +
       '\n\n**Access requirements:** ' +
       'Link recipients must: ' +
@@ -393,7 +393,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Include in runbooks for quick troubleshooting access' +
       '\n- Add to monitoring dashboards for drill-down capability' +
       '\n- Share with stakeholders who have LM access' +
-      '\n\n**Related tools:** "list_websites" (find website), "get_website" (verify details), "generate_dashboard_link" (for dashboards), "generate_resource_link" (for resources/devices), "generate_alert_link" (for alerts).',
+      '\n\n**Related tools:** "list_websites" (find website), "get_website" (verify details), "link_dashboard" (for dashboards), "link_resource" (for resources/devices), "link_alert" (for alerts).',
     annotations: {
       title: 'Generate website monitor link',
       readOnlyHint: true,

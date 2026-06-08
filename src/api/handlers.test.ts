@@ -1096,7 +1096,7 @@ describe('LogicMonitorHandlers', () => {
         };
         mockClient.generateDashboardLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_dashboard_link', {
+        const result = await handlers.handleToolCall('link_dashboard', {
           dashboardId: 1,
         });
 
@@ -1111,7 +1111,7 @@ describe('LogicMonitorHandlers', () => {
         };
         mockClient.generateResourceLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_resource_link', {
+        const result = await handlers.handleToolCall('link_resource', {
           deviceId: 1,
         });
 
@@ -1125,7 +1125,7 @@ describe('LogicMonitorHandlers', () => {
         };
         mockClient.generateAlertLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_alert_link', {
+        const result = await handlers.handleToolCall('link_alert', {
           alertId: 'alert1',
         });
 
@@ -1140,7 +1140,7 @@ describe('LogicMonitorHandlers', () => {
         };
         mockClient.generateWebsiteLink.mockResolvedValue(mockDeeplink);
 
-        const result = await handlers.handleToolCall('generate_website_link', {
+        const result = await handlers.handleToolCall('link_website', {
           websiteId: 1,
         });
 

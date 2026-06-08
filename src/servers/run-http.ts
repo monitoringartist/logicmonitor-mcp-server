@@ -27,6 +27,7 @@ import crypto from 'crypto';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import { buildCollapsedTools } from '../api/tools/collapse.js';
 import { listLMResources, readLMResource } from '../api/resources.js';
 import { listLMPrompts, getLMPrompt, generatePromptMessages } from '../api/prompts.js';
 import {
@@ -590,7 +591,11 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
       bearerToken: LM_BEARER_TOKEN,
       logger: log,
     });
-    lmHandlers = new LogicMonitorHandlers(lmClient);
+    lmHandlers = new LogicMonitorHandlers(lmClient, {
+      collapseToolsLevel1: appConfig.collapseToolsLevel1,
+      collapseToolsLevel2: appConfig.collapseToolsLevel2,
+      readOnly: ONLY_READONLY_TOOLS,
+    });
     log('info', 'LogicMonitor credentials configured for company: ' + LM_COMPANY);
   } else {
     log('warn', 'LM_COMPANY and LM_BEARER_TOKEN not set');
@@ -619,6 +624,17 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
     }
   }
 
+  // Collapse per-verb tools into manage_<resource> tools if enabled
+  if (appConfig.collapseToolsLevel1) {
+    const beforeCount = TOOLS.length;
+    TOOLS = buildCollapsedTools(TOOLS, { level2: appConfig.collapseToolsLevel2 }).tools;
+    log('info', 'Collapsed tools', {
+      level: appConfig.collapseToolsLevel2 ? 2 : 1,
+      original_count: beforeCount,
+      collapsed_count: TOOLS.length,
+    });
+  }
+
   // Store active MCP servers and sessions
   const mcpServers = new Map<string, { serverInstance: any; cleanup: () => Promise<void> }>();
   const httpSessions = new Map<string, { serverInstance: any; sessionId: string; cleanup: () => Promise<void> }>();
@@ -645,7 +661,11 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
         bearerToken: customToken,
         logger: log,
       });
-      handlers = new LogicMonitorHandlers(client);
+      handlers = new LogicMonitorHandlers(client, {
+        collapseToolsLevel1: appConfig.collapseToolsLevel1,
+        collapseToolsLevel2: appConfig.collapseToolsLevel2,
+        readOnly: ONLY_READONLY_TOOLS,
+      });
     }
 
     // Get user scope for this session
@@ -714,7 +734,11 @@ export function runHttp(appConfig: ServerConfig, version: string): void {
             bearerToken: currentCustomToken,
             logger: log,
           });
-          currentHandlers = new LogicMonitorHandlers(customClient);
+          currentHandlers = new LogicMonitorHandlers(customClient, {
+            collapseToolsLevel1: appConfig.collapseToolsLevel1,
+            collapseToolsLevel2: appConfig.collapseToolsLevel2,
+            readOnly: ONLY_READONLY_TOOLS,
+          });
         } else if (!currentHandlers) {
           throw new Error('LogicMonitor credentials not configured.');
         }

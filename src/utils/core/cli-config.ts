@@ -25,6 +25,16 @@ export interface ServerConfig {
   enabledTools?: string[];
   readOnly: boolean;
 
+  // Collapse per-verb CRUD tools (list/get/create/update/delete/import) into
+  // single `manage_<resource>` tools with an `operation` parameter. Reduces the
+  // advertised tool count for AI agents. Default false (no behavior change).
+  collapseToolsLevel1: boolean;
+
+  // Additionally fold leaf tools (sub-collection reads, data/graph/history
+  // endpoints, and actions) into the matching parent `manage_<resource>` tool as
+  // extra operations. Only valid when collapseToolsLevel1 is true. Default false.
+  collapseToolsLevel2: boolean;
+
   // LM credentials
   lmCompany: string;
   lmBearerToken: string;
@@ -125,6 +135,8 @@ export function parseConfig(): ServerConfig {
   const enabledToolsStr = process.env.MCP_ENABLED_TOOLS || getFlag('', '--enabled-tools');
   const enabledTools = enabledToolsStr ? enabledToolsStr.split(',').map(t => t.trim()) : undefined;
   const readOnly = process.env.MCP_READ_ONLY === 'false' ? false : (process.env.MCP_READ_ONLY === 'true' || hasFlag('', '--read-only') || true);
+  const collapseToolsLevel1 = process.env.MCP_COLLAPSE_TOOLS_LEVEL_1 === 'true' || hasFlag('', '--collapse-tools-level-1');
+  const collapseToolsLevel2 = process.env.MCP_COLLAPSE_TOOLS_LEVEL_2 === 'true' || hasFlag('', '--collapse-tools-level-2');
 
   // LM credentials (env takes precedence over flags)
   const lmCompany = process.env.LM_COMPANY || getFlag('', '--lm-company') || '';
@@ -151,6 +163,8 @@ export function parseConfig(): ServerConfig {
     logLevel,
     enabledTools,
     readOnly,
+    collapseToolsLevel1,
+    collapseToolsLevel2,
     lmCompany,
     lmBearerToken,
     mcpBearerToken,
@@ -261,6 +275,15 @@ export function validateConfig(config: ServerConfig): void {
     console.error('   Valid options: debug, info, warn, error');
     process.exit(1);
   }
+
+  // Level-2 collapsing is additive on top of level 1 and is meaningless on its own.
+  if (config.collapseToolsLevel2 && !config.collapseToolsLevel1) {
+    console.error('❌ Error: --collapse-tools-level-2 requires --collapse-tools-level-1');
+    console.error('   Enable level 1 as well:');
+    console.error('     --collapse-tools-level-1 --collapse-tools-level-2');
+    console.error('   or set MCP_COLLAPSE_TOOLS_LEVEL_1=true and MCP_COLLAPSE_TOOLS_LEVEL_2=true');
+    process.exit(1);
+  }
 }
 
 /**
@@ -276,6 +299,8 @@ export function displayConfig(config: ServerConfig): void {
       debug: config.debug,
       logLevel: config.logLevel,
       readOnly: config.readOnly,
+      collapseToolsLevel1: config.collapseToolsLevel1,
+      collapseToolsLevel2: config.collapseToolsLevel2,
       enabledTools: config.enabledTools?.length || 'all',
     }));
   } else {
@@ -292,6 +317,10 @@ export function displayConfig(config: ServerConfig): void {
     console.log(`${emoji ? '📊 ' : ''}Log Level: ${config.logLevel}`);
     console.log(`${emoji ? '🏢 ' : ''}LM Account: ${config.lmCompany}`);
     console.log(`${emoji ? '🔒 ' : ''}Mode: ${config.readOnly ? 'read-only' : 'read-write'}`);
+    const collapseStatus = config.collapseToolsLevel1
+      ? `level 1${config.collapseToolsLevel2 ? ' + level 2' : ''}`
+      : 'disabled';
+    console.log(`${emoji ? '🧰 ' : ''}Collapse Tools: ${collapseStatus}`);
     if (config.enabledTools) {
       console.log(`${emoji ? '🛠️  ' : ''}Enabled Tools: ${config.enabledTools.join(', ')}`);
     }
@@ -352,6 +381,20 @@ TOOL CONFIGURATION:
                              Default: true (safer)
                              To enable write operations: MCP_READ_ONLY=false
                              Env: MCP_READ_ONLY
+
+  --collapse-tools-level-1   Collapse per-verb CRUD tools (list/get/create/
+                             update/delete/import) into single manage_<resource>
+                             tools with an "operation" parameter. Reduces the
+                             advertised tool count for AI agents.
+                             Default: false
+                             Env: MCP_COLLAPSE_TOOLS_LEVEL_1
+
+  --collapse-tools-level-2   Additionally fold leaf tools (sub-collection reads,
+                             data/graph/history endpoints, and actions) into the
+                             matching parent manage_<resource> tool as extra
+                             operations. Requires --collapse-tools-level-1.
+                             Default: false
+                             Env: MCP_COLLAPSE_TOOLS_LEVEL_2
 
 AUTHENTICATION (sse/streamable-http transports):
   --mcp-bearer-token <token> Static bearer token required for MCP requests

@@ -23,7 +23,7 @@ export const websitesTools: Tool[] = [
       '\n- By name: filter:"name\\~\\*production\\*"' +
       '\n\n**Use cases:** Monitor public websites, API endpoints, login pages, load balancer health checks, SaaS service availability. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get_website" (details), "create_website" (add new), "generate_website_link" (get URL).',
+      '\n\n**Related tools:** "get_website" (details), "create_website" (add new), "link_website" (get URL).',
     annotations: {
       title: 'List website monitors',
       readOnlyHint: true,
@@ -62,7 +62,7 @@ export const websitesTools: Tool[] = [
       '\n- Troubleshoot why website checks are failing' +
       '\n- Document what endpoints are monitored' +
       '\n\n**Workflow:** Use "list_websites" to find websiteId, then use this tool for complete monitoring configuration. ' +
-      '\n\n**Related tools:** "list_websites" (find website), "update_website" (modify), "generate_website_link" (get URL), "list_website_checkpoints" (available locations).',
+      '\n\n**Related tools:** "list_websites" (find website), "update_website" (modify), "link_website" (get URL), "list_website_checkpoints" (available locations).',
     annotations: {
       title: 'Get website monitor details',
       readOnlyHint: true,
@@ -135,8 +135,8 @@ export const websitesTools: Tool[] = [
       '\n- Use internal testLocation for private/VPN applications' +
       '\n- Test multi-step transactions for critical user flows' +
       '\n- Set failedCount >=2 to reduce false alarms' +
-      '\n\n**After creation:** Use "generate_website_link" to get direct URL to view monitor results. ' +
-      '\n\n**Related tools:** "list_website_checkpoints" (find locations), "generate_website_link" (get URL), "update_website" (modify), "list_websites" (browse existing).',
+      '\n\n**After creation:** Use "link_website" to get direct URL to view monitor results. ' +
+      '\n\n**Related tools:** "list_website_checkpoints" (find locations), "link_website" (get URL), "update_website" (modify), "list_websites" (browse existing).',
     annotations: {
       title: 'Create website monitor',
       readOnlyHint: false,
@@ -208,7 +208,7 @@ export const websitesTools: Tool[] = [
       '{websiteId: 123, steps: [{url: "/api/v2/health"}, {url: "/api/v2/status"}]} // New API version ' +
       '\n\n**Best practice:** Use "get_website" first to review current configuration, then update specific fields. ' +
       '\n\n**After update:** Monitor may take 1-2 minutes to reflect changes in next check cycle. ' +
-      '\n\n**Related tools:** "get_website" (review before update), "list_websites" (find website), "generate_website_link" (get updated URL).',
+      '\n\n**Related tools:** "get_website" (review before update), "list_websites" (find website), "link_website" (get updated URL).',
     annotations: {
       title: 'Update website monitor',
       readOnlyHint: false,

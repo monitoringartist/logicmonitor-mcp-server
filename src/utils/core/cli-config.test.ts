@@ -42,6 +42,8 @@ describe('CLI Configuration Parser', () => {
     delete process.env.MCP_LOG_LEVEL;
     delete process.env.MCP_ENABLED_TOOLS;
     delete process.env.MCP_READ_ONLY;
+    delete process.env.MCP_COLLAPSE_TOOLS_LEVEL_1;
+    delete process.env.MCP_COLLAPSE_TOOLS_LEVEL_2;
     delete process.env.MCP_BEARER_TOKEN;
     delete process.env.MCP_ALLOW_UNAUTHENTICATED;
     delete process.env.TLS_CERT_FILE;
@@ -93,6 +95,8 @@ describe('CLI Configuration Parser', () => {
         expect(config.logFormat).toBe('human');
         expect(config.logLevel).toBe('info');
         expect(config.readOnly).toBe(true);
+        expect(config.collapseToolsLevel1).toBe(false);
+        expect(config.collapseToolsLevel2).toBe(false);
       });
 
       it('should have empty LM credentials by default', () => {
@@ -180,6 +184,27 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.readOnly).toBe(false);
+      });
+
+      it('should parse collapse-tools-level-1 flag from env', () => {
+        process.env.MCP_COLLAPSE_TOOLS_LEVEL_1 = 'true';
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(true);
+      });
+
+      it('should parse collapse-tools-level-2 flag from env', () => {
+        process.env.MCP_COLLAPSE_TOOLS_LEVEL_2 = 'true';
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel2).toBe(true);
+      });
+
+      it('should default collapse-tools levels to false', () => {
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(false);
+        expect(config.collapseToolsLevel2).toBe(false);
       });
 
       it('should parse LM credentials from env', () => {
@@ -289,6 +314,21 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.readOnly).toBe(true);
+      });
+
+      it('should parse collapse-tools-level-1 flag from CLI', () => {
+        process.argv = ['node', 'script.js', '--collapse-tools-level-1'];
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(true);
+      });
+
+      it('should parse collapse-tools-level-2 flag from CLI', () => {
+        process.argv = ['node', 'script.js', '--collapse-tools-level-1', '--collapse-tools-level-2'];
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(true);
+        expect(config.collapseToolsLevel2).toBe(true);
       });
 
       it('should parse LM credentials from CLI', () => {
@@ -558,6 +598,8 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
+        collapseToolsLevel1: false,
+        collapseToolsLevel2: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
         allowUnauthenticated: false,
@@ -566,6 +608,26 @@ describe('CLI Configuration Parser', () => {
 
     it('should pass validation with valid config', () => {
       expect(() => validateConfig(config)).not.toThrow();
+    });
+
+    it('should pass validation when both collapse levels are enabled', () => {
+      config.collapseToolsLevel1 = true;
+      config.collapseToolsLevel2 = true;
+
+      expect(() => validateConfig(config)).not.toThrow();
+      expect(process.exit).not.toHaveBeenCalled();
+    });
+
+    it('should fail validation when level 2 is enabled without level 1', () => {
+      config.collapseToolsLevel1 = false;
+      config.collapseToolsLevel2 = true;
+
+      validateConfig(config);
+
+      expect(process.exit).toHaveBeenCalledWith(1);
+      expect(
+        consoleErrors.some(e => e.includes('--collapse-tools-level-2 requires --collapse-tools-level-1')),
+      ).toBe(true);
     });
 
     it('should fail validation when LM company is missing', () => {
@@ -711,6 +773,8 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
+        collapseToolsLevel1: false,
+        collapseToolsLevel2: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
         allowUnauthenticated: false,
@@ -785,6 +849,23 @@ describe('CLI Configuration Parser', () => {
       expect(consoleOutput.some(o => o.includes('Mode: read-write'))).toBe(true);
     });
 
+    it('should show collapse tools level 1 status', () => {
+      config.collapseToolsLevel1 = true;
+
+      displayConfig(config);
+
+      expect(consoleOutput.some(o => o.includes('Collapse Tools: level 1'))).toBe(true);
+    });
+
+    it('should show collapse tools level 2 status', () => {
+      config.collapseToolsLevel1 = true;
+      config.collapseToolsLevel2 = true;
+
+      displayConfig(config);
+
+      expect(consoleOutput.some(o => o.includes('Collapse Tools: level 1 + level 2'))).toBe(true);
+    });
+
     it('should show enabled tools when configured', () => {
       config.enabledTools = ['tool1', 'tool2', 'tool3'];
       
@@ -852,6 +933,8 @@ describe('CLI Configuration Parser', () => {
       expect(output).toContain('TOOL CONFIGURATION');
       expect(output).toContain('--enabled-tools');
       expect(output).toContain('--read-only');
+      expect(output).toContain('--collapse-tools-level-1');
+      expect(output).toContain('--collapse-tools-level-2');
     });
 
     it('should include LogicMonitor API options', () => {

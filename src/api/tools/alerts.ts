@@ -30,7 +30,7 @@ export const alertsTools: Tool[] = [
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Important:** Alert API does NOT support OR operator (||). Use comma for AND only. For complex queries, make multiple calls. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "get_alert" (full details), "acknowledge_alert" (acknowledge), "add_alert_note" (add notes), "generate_alert_link" (get URL).',
+      '\n\n**Related tools:** "get_alert" (full details), "acknowledge_alert" (acknowledge), "add_alert_note" (add notes), "link_alert" (get URL).',
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
@@ -65,7 +65,7 @@ export const alertsTools: Tool[] = [
       '\n- Review alert history and escalation' +
       '\n- Get context before acknowledging' +
       '\n\n**Workflow:** First use "list_alerts" to find the alertId, then use this tool for complete investigation details. ' +
-      '\n\n**Related tools:** "acknowledge_alert" (acknowledge alert), "add_alert_note" (document findings), "generate_alert_link" (share with team).',
+      '\n\n**Related tools:** "acknowledge_alert" (acknowledge alert), "add_alert_note" (document findings), "link_alert" (share with team).',
     annotations: {
       title: 'Get alert details',
       readOnlyHint: true,
@@ -122,7 +122,7 @@ export const alertsTools: Tool[] = [
       '\n- Use "add_alert_note" to document findings and actions' +
       '\n- Resolve underlying issue (alert auto-clears when metrics normalize)' +
       '\n\n**Note:** If alert continues (still above threshold), it stays acknowledged until cleared. New instances = new alerts. ' +
-      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (investigate), "add_alert_note" (document), "generate_alert_link" (share).',
+      '\n\n**Related tools:** "list_alerts" (find alerts), "get_alert" (investigate), "add_alert_note" (document), "link_alert" (share).',
     annotations: {
       title: 'Acknowledge alert',
       readOnlyHint: false,

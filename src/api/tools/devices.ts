@@ -28,7 +28,7 @@ export const devicesTools: Tool[] = [
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
       '\n\n**Performance tips:** Use autoPaginate:false for large environments (>1000 resources/devices) and paginate manually to avoid timeouts. ' +
-      '\n\n**Related tools:** "get_resource" (details), "generate_resource_link" (get UI link).',
+      '\n\n**Related tools:** "get_resource" (details), "link_resource" (get UI link).',
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
@@ -57,7 +57,7 @@ export const devicesTools: Tool[] = [
       '\n- Verify collector assignment' +
       '\n- Review custom properties before updating' +
       '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
-      '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "generate_resource_link" (get UI link).',
+      '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "link_resource" (get UI link).',
     annotations: {
       title: 'Get resource/device details',
       readOnlyHint: true,
@@ -103,7 +103,7 @@ export const devicesTools: Tool[] = [
       '\n- Credentials: {name: "ssh.user", value: "monitoring"} (for authentication)' +
       '\n\n**Performance tip:** For >50 resources/devices, use batch mode to avoid rate limits. ' +
       '\n\n**After creation:** Use "list_resources" to verify resource/device was added, check hostStatus. ' +
-      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find folder), "update_resource" (modify), "generate_resource_link" (get URL).',
+      '\n\n**Related tools:** "list_collectors" (find collector), "list_resource_groups" (find folder), "update_resource" (modify), "link_resource" (get URL).',
     annotations: {
       title: 'Add resource/device(s)',
       readOnlyHint: false,

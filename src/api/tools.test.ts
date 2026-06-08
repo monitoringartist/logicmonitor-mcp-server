@@ -488,19 +488,19 @@ describe('getLogicMonitorTools', () => {
         const tools = getLogicMonitorTools(false);
         const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('generate_dashboard_link');
-        expect(toolNames).toContain('generate_resource_link');
-        expect(toolNames).toContain('generate_alert_link');
-        expect(toolNames).toContain('generate_website_link');
+        expect(toolNames).toContain('link_dashboard');
+        expect(toolNames).toContain('link_resource');
+        expect(toolNames).toContain('link_alert');
+        expect(toolNames).toContain('link_website');
       });
 
       it('should mark link tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
 
-        const dashboardLink = tools.find(t => t.name === 'generate_dashboard_link');
-        const resourceLink = tools.find(t => t.name === 'generate_resource_link');
-        const alertLink = tools.find(t => t.name === 'generate_alert_link');
-        const websiteLink = tools.find(t => t.name === 'generate_website_link');
+        const dashboardLink = tools.find(t => t.name === 'link_dashboard');
+        const resourceLink = tools.find(t => t.name === 'link_resource');
+        const alertLink = tools.find(t => t.name === 'link_alert');
+        const websiteLink = tools.find(t => t.name === 'link_website');
 
         expect(dashboardLink?.annotations?.readOnlyHint).toBe(true);
         expect(resourceLink?.annotations?.readOnlyHint).toBe(true);

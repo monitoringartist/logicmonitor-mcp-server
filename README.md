@@ -247,6 +247,19 @@ npm start -- --lm-company mycompany --lm-bearer-token "your-token"
 |------|---------------------|---------|-------------|
 | `--enabled-tools <list>` | `MCP_ENABLED_TOOLS` | all | Comma-separated list of enabled tools |
 | `--read-only` | `MCP_READ_ONLY` | `true` | Enable only read-only tools (safer). Set `MCP_READ_ONLY=false` to enable write operations |
+| `--collapse-tools-level-1` | `MCP_COLLAPSE_TOOLS_LEVEL_1` | `false` | Collapse per-verb CRUD tools (`list_`/`get_`/`create_`/`update_`/`delete_`/`import_`) into single `manage_<resource>` tools that take an `operation` parameter. Reduces the advertised tool count so large tool sets are easier for AI agents. Honors read-only mode (write operations are rejected at call time) |
+| `--collapse-tools-level-2` | `MCP_COLLAPSE_TOOLS_LEVEL_2` | `false` | Additionally fold leaf tools (sub-collection reads, data/graph/history endpoints, and actions such as `acknowledge_*`) into the matching parent `manage_<resource>` tool as extra `<verb>_<remainder>` operations, reducing the tool count further. Requires `--collapse-tools-level-1` |
+
+#### Tool Count Reduction
+
+Collapsing reduces the number of advertised tools, which makes large tool sets easier for AI agents to select from. Approximate counts:
+
+| Mode | Base | Level 1 | Level 2 |
+|------|-----:|--------:|--------:|
+| Full (read-write) | 352 | 144 | 92 |
+| Read-only | 177 | 124 | 80 |
+
+> Level 2 is additive on top of level 1 and requires it to be enabled. No tool functionality is lost when collapsing: the original operations remain available through the consolidated `manage_<resource>` tools via the `operation` parameter.
 
 ### LogicMonitor API (Required)
 
@@ -475,7 +488,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 ### Resource/Device Management
 
 **Read-Only:**
-- `generate_resource_link` - Generate direct link to device in LM UI
+- `link_resource` - Generate direct link to device in LM UI
 - `get_resource` - Get detailed device information by ID
 - `list_resources` - List all monitored resources/devices with filtering (supports simple search via `query` parameter or advanced filtering via `filter` parameter)
 
@@ -498,7 +511,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 ### Alert Management
 
 **Read-Only:**
-- `generate_alert_link` - Generate direct link to alert in LM UI
+- `link_alert` - Generate direct link to alert in LM UI
 - `get_action_chain` - Get action chain details
 - `get_action_rule` - Get action rule details
 - `get_alert` - Get detailed alert information
@@ -596,7 +609,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 - `clone_dashboard_group` - Clone a dashboard group (optionally recursive)
 - `create_dashboard_group` - Create a dashboard group
 - `delete_dashboard_group` - Delete a dashboard group
-- `generate_dashboard_link` - Generate direct link to dashboard in LM UI
+- `link_dashboard` - Generate direct link to dashboard in LM UI
 - `get_dashboard` - Get dashboard details
 - `get_dashboard_group` - Get dashboard group details
 - `get_report` - Get report details
@@ -664,7 +677,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 **Read-Only:**
 - `create_website_group` - Create a website group
 - `delete_website_group` - Delete a website group (optionally with children)
-- `generate_website_link` - Generate direct link to website in LM UI
+- `link_website` - Generate direct link to website in LM UI
 - `get_website` - Get website monitor details
 - `get_website_checkpoint_data` - Get raw monitoring data for a website checkpoint
 - `get_website_graph_data` - Get rendered graph data for a website checkpoint
