@@ -91,7 +91,7 @@ export function generatePromptMessages(name: string, args?: Record<string, any>)
             'I\'ll use the list_resources tool with query parameter to find this resource, ' +
             'eventually ask user to select one particular resource from the list if there is multiple resources matching search condition, ' +
             'list_alerts tool to find any alerts for this resource, ' +
-            'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
+            'link_resource tool to create direct link to LogicMonitor for this resource, ' +
             'list_resource_datasources tool to find available datasources for this resource, ' +
             'list_resource_instances tool to find available instances for this resource, ' +
             'get_resource_instance_data tool to get data for this resource (start time must be before current time), ' +

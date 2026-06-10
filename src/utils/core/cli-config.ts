@@ -24,7 +24,16 @@ export interface ServerConfig {
   // Tool configuration
   enabledTools?: string[];
   readOnly: boolean;
-  disableSearch: boolean;
+
+  // Collapse per-verb CRUD tools (list/get/create/update/delete/import) into
+  // single `manage_<resource>` tools with an `operation` parameter. Reduces the
+  // advertised tool count for AI agents. Default false (no behavior change).
+  collapseToolsLevel1: boolean;
+
+  // Additionally fold leaf tools (sub-collection reads, data/graph/history
+  // endpoints, and actions) into the matching parent `manage_<resource>` tool as
+  // extra operations. Only valid when collapseToolsLevel1 is true. Default false.
+  collapseToolsLevel2: boolean;
 
   // LM credentials
   lmCompany: string;
@@ -32,6 +41,11 @@ export interface ServerConfig {
 
   // MCP Server authentication
   mcpBearerToken?: string; // Optional static bearer token for MCP server authentication
+
+  // Explicit opt-in to run network transports (sse/streamable-http) without any
+  // authentication. Required because the tools can perform destructive operations
+  // (delete devices, alert rules, etc.) and must not be exposed unauthenticated by accident.
+  allowUnauthenticated: boolean;
 
   // OAuth/OIDC configuration (for remote servers)
   oauth?: OAuthConfig;
@@ -121,7 +135,8 @@ export function parseConfig(): ServerConfig {
   const enabledToolsStr = process.env.MCP_ENABLED_TOOLS || getFlag('', '--enabled-tools');
   const enabledTools = enabledToolsStr ? enabledToolsStr.split(',').map(t => t.trim()) : undefined;
   const readOnly = process.env.MCP_READ_ONLY === 'false' ? false : (process.env.MCP_READ_ONLY === 'true' || hasFlag('', '--read-only') || true);
-  const disableSearch = process.env.MCP_DISABLE_SEARCH === 'true' || hasFlag('', '--disable-search');
+  const collapseToolsLevel1 = process.env.MCP_COLLAPSE_TOOLS_LEVEL_1 === 'true' || hasFlag('', '--collapse-tools-level-1');
+  const collapseToolsLevel2 = process.env.MCP_COLLAPSE_TOOLS_LEVEL_2 === 'true' || hasFlag('', '--collapse-tools-level-2');
 
   // LM credentials (env takes precedence over flags)
   const lmCompany = process.env.LM_COMPANY || getFlag('', '--lm-company') || '';
@@ -129,6 +144,9 @@ export function parseConfig(): ServerConfig {
 
   // MCP Server authentication (static bearer token)
   const mcpBearerToken = process.env.MCP_BEARER_TOKEN || getFlag('', '--mcp-bearer-token') || undefined;
+
+  // Explicit opt-in to allow unauthenticated network access
+  const allowUnauthenticated = process.env.MCP_ALLOW_UNAUTHENTICATED === 'true' || hasFlag('', '--allow-unauthenticated');
 
   // OAuth configuration (optional, for remote servers)
   const oauth = parseOAuthConfig(address);
@@ -145,10 +163,12 @@ export function parseConfig(): ServerConfig {
     logLevel,
     enabledTools,
     readOnly,
-    disableSearch,
+    collapseToolsLevel1,
+    collapseToolsLevel2,
     lmCompany,
     lmBearerToken,
     mcpBearerToken,
+    allowUnauthenticated,
     oauth,
   };
 }
@@ -223,6 +243,27 @@ export function validateConfig(config: ServerConfig): void {
     process.exit(1);
   }
 
+  // Network transports must not run unauthenticated unless explicitly opted in.
+  // These tools can perform destructive operations, so we fail closed by default.
+  if (config.transport !== 'stdio') {
+    const hasAuthentication = !!(config.oauth || config.mcpBearerToken);
+    if (!hasAuthentication && !config.allowUnauthenticated) {
+      console.error('❌ Error: refusing to start a network transport without authentication');
+      console.error('');
+      console.error(`   The '${config.transport}' transport exposes tools that can modify and delete`);
+      console.error('   LogicMonitor resources. Running without authentication is disabled by default.');
+      console.error('');
+      console.error('   Configure authentication (recommended):');
+      console.error('     export MCP_BEARER_TOKEN=your-secret-token-here');
+      console.error('   or set up OAuth/OIDC (OAUTH_PROVIDER, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET).');
+      console.error('');
+      console.error('   To intentionally run WITHOUT authentication (not recommended), opt in:');
+      console.error('     export MCP_ALLOW_UNAUTHENTICATED=true');
+      console.error('');
+      process.exit(1);
+    }
+  }
+
   if (!['json', 'human'].includes(config.logFormat)) {
     console.error(`❌ Error: Invalid log format '${config.logFormat}'`);
     console.error('   Valid options: json, human');
@@ -232,6 +273,15 @@ export function validateConfig(config: ServerConfig): void {
   if (!['debug', 'info', 'warn', 'error'].includes(config.logLevel)) {
     console.error(`❌ Error: Invalid log level '${config.logLevel}'`);
     console.error('   Valid options: debug, info, warn, error');
+    process.exit(1);
+  }
+
+  // Level-2 collapsing is additive on top of level 1 and is meaningless on its own.
+  if (config.collapseToolsLevel2 && !config.collapseToolsLevel1) {
+    console.error('❌ Error: --collapse-tools-level-2 requires --collapse-tools-level-1');
+    console.error('   Enable level 1 as well:');
+    console.error('     --collapse-tools-level-1 --collapse-tools-level-2');
+    console.error('   or set MCP_COLLAPSE_TOOLS_LEVEL_1=true and MCP_COLLAPSE_TOOLS_LEVEL_2=true');
     process.exit(1);
   }
 }
@@ -249,7 +299,8 @@ export function displayConfig(config: ServerConfig): void {
       debug: config.debug,
       logLevel: config.logLevel,
       readOnly: config.readOnly,
-      disableSearch: config.disableSearch,
+      collapseToolsLevel1: config.collapseToolsLevel1,
+      collapseToolsLevel2: config.collapseToolsLevel2,
       enabledTools: config.enabledTools?.length || 'all',
     }));
   } else {
@@ -266,9 +317,10 @@ export function displayConfig(config: ServerConfig): void {
     console.log(`${emoji ? '📊 ' : ''}Log Level: ${config.logLevel}`);
     console.log(`${emoji ? '🏢 ' : ''}LM Account: ${config.lmCompany}`);
     console.log(`${emoji ? '🔒 ' : ''}Mode: ${config.readOnly ? 'read-only' : 'read-write'}`);
-    if (config.disableSearch) {
-      console.log(`${emoji ? '🚫 ' : ''}Search: disabled`);
-    }
+    const collapseStatus = config.collapseToolsLevel1
+      ? `level 1${config.collapseToolsLevel2 ? ' + level 2' : ''}`
+      : 'disabled';
+    console.log(`${emoji ? '🧰 ' : ''}Collapse Tools: ${collapseStatus}`);
     if (config.enabledTools) {
       console.log(`${emoji ? '🛠️  ' : ''}Enabled Tools: ${config.enabledTools.join(', ')}`);
     }
@@ -330,8 +382,31 @@ TOOL CONFIGURATION:
                              To enable write operations: MCP_READ_ONLY=false
                              Env: MCP_READ_ONLY
 
-  --disable-search           Disable search tools
-                             Env: MCP_DISABLE_SEARCH=true
+  --collapse-tools-level-1   Collapse per-verb CRUD tools (list/get/create/
+                             update/delete/import) into single manage_<resource>
+                             tools with an "operation" parameter. Reduces the
+                             advertised tool count for AI agents.
+                             Default: false
+                             Env: MCP_COLLAPSE_TOOLS_LEVEL_1
+
+  --collapse-tools-level-2   Additionally fold leaf tools (sub-collection reads,
+                             data/graph/history endpoints, and actions) into the
+                             matching parent manage_<resource> tool as extra
+                             operations. Requires --collapse-tools-level-1.
+                             Default: false
+                             Env: MCP_COLLAPSE_TOOLS_LEVEL_2
+
+AUTHENTICATION (sse/streamable-http transports):
+  --mcp-bearer-token <token> Static bearer token required for MCP requests
+                             Env: MCP_BEARER_TOKEN
+
+  --allow-unauthenticated    Explicitly allow running a network transport with no
+                             authentication. Disabled by default because the tools
+                             can delete devices, alert rules, etc.
+                             Env: MCP_ALLOW_UNAUTHENTICATED=true
+
+  OAuth/OIDC can also be configured via OAUTH_PROVIDER, OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET (and related OAUTH_* variables).
 
 LOGICMONITOR API (REQUIRED):
   --lm-company <name>        LogicMonitor company/account name (subdomain)

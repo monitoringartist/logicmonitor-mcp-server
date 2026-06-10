@@ -142,6 +142,42 @@ describe('getLogicMonitorTools', () => {
         expect(tool.inputSchema.additionalProperties).toBe(false);
       });
     });
+
+    it('should declare items for every array-typed schema node', () => {
+      const tools = getLogicMonitorTools(false);
+
+      // MCP clients reject `{ type: 'array' }` without an `items` definition.
+      // Recursively assert that every array node (at any nesting depth) has items.
+      const findArraysMissingItems = (node: unknown, path: string): string[] => {
+        if (!node || typeof node !== 'object') {
+          return [];
+        }
+        const offenders: string[] = [];
+        const schema = node as Record<string, unknown>;
+
+        if (schema.type === 'array' && schema.items === undefined) {
+          offenders.push(path);
+        }
+
+        const properties = schema.properties as Record<string, unknown> | undefined;
+        if (properties) {
+          for (const [key, value] of Object.entries(properties)) {
+            offenders.push(...findArraysMissingItems(value, `${path}.${key}`));
+          }
+        }
+        if (schema.items) {
+          offenders.push(...findArraysMissingItems(schema.items, `${path}.items`));
+        }
+
+        return offenders;
+      };
+
+      const offenders = tools.flatMap(tool =>
+        findArraysMissingItems(tool.inputSchema, tool.name),
+      );
+
+      expect(offenders).toEqual([]);
+    });
   });
 
   describe('Specific Tool Categories', () => {
@@ -211,6 +247,77 @@ describe('getLogicMonitorTools', () => {
       });
     });
 
+    describe('Cost Optimization Tools', () => {
+      it('should include cost optimization recommendation tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('list_cost_recommendations');
+        expect(toolNames).toContain('get_cost_recommendation');
+        expect(toolNames).toContain('list_cost_recommendation_categories');
+      });
+
+      it('should mark all cost optimization tools as read-only', () => {
+        const tools = getLogicMonitorTools(false);
+        const costTools = tools.filter(t => t.name.startsWith('list_cost_recommendation') ||
+          t.name.startsWith('get_cost_recommendation'));
+
+        expect(costTools).toHaveLength(3);
+        costTools.forEach(tool => {
+          expect(tool.annotations?.readOnlyHint).toBe(true);
+        });
+      });
+
+      it('should require id for get_cost_recommendation', () => {
+        const tools = getLogicMonitorTools(false);
+        const getTool = tools.find(t => t.name === 'get_cost_recommendation');
+
+        expect(getTool?.inputSchema.required).toContain('id');
+      });
+    });
+
+    describe('Widget Tools', () => {
+      it('should include all widget tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('list_widgets');
+        expect(toolNames).toContain('list_dashboard_widgets');
+        expect(toolNames).toContain('get_widget');
+        expect(toolNames).toContain('get_widget_data');
+        expect(toolNames).toContain('create_widget');
+        expect(toolNames).toContain('update_widget');
+        expect(toolNames).toContain('delete_widget');
+      });
+
+      it('should have correct read-only hints for widget tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        const readOnly = ['list_widgets', 'list_dashboard_widgets', 'get_widget', 'get_widget_data'];
+        const write = ['create_widget', 'update_widget', 'delete_widget'];
+
+        readOnly.forEach(name => {
+          expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(true);
+        });
+        write.forEach(name => {
+          expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(false);
+        });
+      });
+
+      it('should require the expected identifiers', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'list_dashboard_widgets')?.inputSchema.required)
+          .toContain('dashboardId');
+        expect(tools.find(t => t.name === 'get_widget')?.inputSchema.required)
+          .toContain('widgetId');
+        expect(tools.find(t => t.name === 'create_widget')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['dashboardId', 'name', 'type']));
+        expect(tools.find(t => t.name === 'delete_widget')?.inputSchema.required)
+          .toContain('widgetId');
+      });
+    });
+
     describe('Collector Tools', () => {
       it('should include collector tools', () => {
         const tools = getLogicMonitorTools(false);
@@ -228,6 +335,42 @@ describe('getLogicMonitorTools', () => {
 
         expect(listTool?.annotations?.readOnlyHint).toBe(true);
         expect(getTool?.annotations?.readOnlyHint).toBe(true);
+      });
+
+      it('should include collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('create_collector');
+        expect(toolNames).toContain('update_collector');
+        expect(toolNames).toContain('delete_collector');
+        expect(toolNames).toContain('get_collector_installer');
+        expect(toolNames).toContain('acknowledge_collector_down_alert');
+      });
+
+      it('should set correct read-only hints for collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        // get_collector_installer is read-only (returns a URL, no mutation)
+        expect(tools.find(t => t.name === 'get_collector_installer')?.annotations?.readOnlyHint).toBe(true);
+
+        ['create_collector', 'update_collector', 'delete_collector', 'acknowledge_collector_down_alert']
+          .forEach(name => {
+            expect(tools.find(t => t.name === name)?.annotations?.readOnlyHint).toBe(false);
+          });
+      });
+
+      it('should require expected identifiers for collector management tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'update_collector')?.inputSchema.required)
+          .toContain('collectorId');
+        expect(tools.find(t => t.name === 'delete_collector')?.inputSchema.required)
+          .toContain('collectorId');
+        expect(tools.find(t => t.name === 'get_collector_installer')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['collectorId', 'osAndArch']));
+        expect(tools.find(t => t.name === 'acknowledge_collector_down_alert')?.inputSchema.required)
+          .toContain('collectorId');
       });
     });
 
@@ -318,6 +461,26 @@ describe('getLogicMonitorTools', () => {
         expect(toolNames).toContain('update_website');
         expect(toolNames).toContain('delete_website');
       });
+
+      it('should include website data tools as read-only', () => {
+        const tools = getLogicMonitorTools(false);
+        const toolNames = tools.map(t => t.name);
+
+        expect(toolNames).toContain('get_website_checkpoint_data');
+        expect(toolNames).toContain('get_website_graph_data');
+
+        expect(tools.find(t => t.name === 'get_website_checkpoint_data')?.annotations?.readOnlyHint).toBe(true);
+        expect(tools.find(t => t.name === 'get_website_graph_data')?.annotations?.readOnlyHint).toBe(true);
+      });
+
+      it('should require expected identifiers for website data tools', () => {
+        const tools = getLogicMonitorTools(false);
+
+        expect(tools.find(t => t.name === 'get_website_checkpoint_data')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['websiteId', 'checkpointId']));
+        expect(tools.find(t => t.name === 'get_website_graph_data')?.inputSchema.required)
+          .toEqual(expect.arrayContaining(['websiteId', 'checkpointId', 'graphName']));
+      });
     });
 
     describe('Link Tools', () => {
@@ -325,19 +488,19 @@ describe('getLogicMonitorTools', () => {
         const tools = getLogicMonitorTools(false);
         const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('generate_dashboard_link');
-        expect(toolNames).toContain('generate_resource_link');
-        expect(toolNames).toContain('generate_alert_link');
-        expect(toolNames).toContain('generate_website_link');
+        expect(toolNames).toContain('link_dashboard');
+        expect(toolNames).toContain('link_resource');
+        expect(toolNames).toContain('link_alert');
+        expect(toolNames).toContain('link_website');
       });
 
       it('should mark link tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
 
-        const dashboardLink = tools.find(t => t.name === 'generate_dashboard_link');
-        const resourceLink = tools.find(t => t.name === 'generate_resource_link');
-        const alertLink = tools.find(t => t.name === 'generate_alert_link');
-        const websiteLink = tools.find(t => t.name === 'generate_website_link');
+        const dashboardLink = tools.find(t => t.name === 'link_dashboard');
+        const resourceLink = tools.find(t => t.name === 'link_resource');
+        const alertLink = tools.find(t => t.name === 'link_alert');
+        const websiteLink = tools.find(t => t.name === 'link_website');
 
         expect(dashboardLink?.annotations?.readOnlyHint).toBe(true);
         expect(resourceLink?.annotations?.readOnlyHint).toBe(true);
@@ -408,7 +571,9 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most list tools should have pagination
-        if (tool.name !== 'list_website_checkpoints') { // Some exceptions
+        // (a device's applied eventsources is a small fixed list with no pagination)
+        const paginationExempt = ['list_website_checkpoints', 'list_resource_eventsources', 'list_collector_agent_log_levels'];
+        if (!paginationExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('size');
           expect(properties).toHaveProperty('offset');
         }
@@ -422,9 +587,18 @@ describe('getLogicMonitorTools', () => {
       listTools.forEach(tool => {
         const properties = tool.inputSchema.properties || {};
 
-        // Most list tools should have filter (some exceptions exist)
-        if (tool.name !== 'list_website_checkpoints' &&
-            tool.name !== 'list_collector_versions') {
+        // Most list tools should have filter (some exceptions exist).
+        // Device/instance alert-setting and applied-eventsource endpoints
+        // do not support a filter parameter in the LM API.
+        const filterExempt = [
+          'list_website_checkpoints',
+          'list_collector_versions',
+          'list_resource_alert_confs',
+          'list_instance_alert_confs',
+          'list_resource_eventsources',
+          'list_collector_agent_log_levels',
+        ];
+        if (!filterExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('filter');
         }
       });
@@ -480,6 +654,73 @@ describe('getLogicMonitorTools', () => {
     });
   });
 
+  // Guards the read-only mode boundary. getLogicMonitorTools(true) filters on
+  // readOnlyHint === true, so a missing or incorrect hint would either leak a
+  // mutating tool into read-only mode or hide a safe tool. These assertions make
+  // any such drift fail loudly.
+  describe('Read-Only Annotation Coverage', () => {
+    it('should have a strictly boolean readOnlyHint on every tool', () => {
+      const tools = getLogicMonitorTools(false);
+
+      const offenders = tools.filter(
+        tool => tool.annotations?.readOnlyHint !== true && tool.annotations?.readOnlyHint !== false,
+      );
+
+      expect(offenders.map(t => t.name)).toEqual([]);
+    });
+
+    it('should partition every tool into exactly read-only or write (no gaps, no overlap)', () => {
+      const allTools = getLogicMonitorTools(false);
+      const readOnlyCount = allTools.filter(t => t.annotations?.readOnlyHint === true).length;
+      const writeCount = allTools.filter(t => t.annotations?.readOnlyHint === false).length;
+
+      expect(readOnlyCount + writeCount).toBe(allTools.length);
+    });
+
+    it('should return exactly the read-only tools from getLogicMonitorTools(true)', () => {
+      const allTools = getLogicMonitorTools(false);
+      const readOnlyTools = getLogicMonitorTools(true);
+
+      const expectedNames = allTools
+        .filter(t => t.annotations?.readOnlyHint === true)
+        .map(t => t.name)
+        .sort();
+      const actualNames = readOnlyTools.map(t => t.name).sort();
+
+      expect(actualNames).toEqual(expectedNames);
+      // Defense in depth: nothing in the read-only set may be a write tool.
+      readOnlyTools.forEach(tool => {
+        expect(tool.annotations?.readOnlyHint).toBe(true);
+      });
+    });
+
+    it('should never mark a mutating-verb tool as read-only', () => {
+      const tools = getLogicMonitorTools(false);
+      // Prefixes whose operations always modify state in the LM API.
+      const mutatingPrefixes = [
+        'acknowledge_', 'add_', 'clone_', 'collect_', 'create_', 'delete_',
+        'escalate_', 'execute_', 'import_', 'log_', 'map_', 'move_',
+        'schedule_', 'set_', 'update_',
+      ];
+
+      const leaked = tools.filter(
+        tool => mutatingPrefixes.some(p => tool.name.startsWith(p)) && tool.annotations?.readOnlyHint === true,
+      );
+
+      expect(leaked.map(t => t.name)).toEqual([]);
+    });
+
+    it('should always mark pure read tools (list_/get_) as read-only', () => {
+      const tools = getLogicMonitorTools(false);
+
+      const misflagged = tools.filter(
+        tool => (tool.name.startsWith('list_') || tool.name.startsWith('get_')) && tool.annotations?.readOnlyHint !== true,
+      );
+
+      expect(misflagged.map(t => t.name)).toEqual([]);
+    });
+  });
+
   describe('Tool Count', () => {
     it('should have a reasonable number of tools', () => {
       const allTools = getLogicMonitorTools(false);
@@ -487,8 +728,8 @@ describe('getLogicMonitorTools', () => {
       // Should have at least 50 tools (comprehensive API coverage)
       expect(allTools.length).toBeGreaterThanOrEqual(50);
 
-      // Should have fewer than 200 tools (reasonable upper bound)
-      expect(allTools.length).toBeLessThan(200);
+      // Should have fewer than 400 tools (reasonable upper bound; full API ~393 operations)
+      expect(allTools.length).toBeLessThan(400);
     });
 
     it('should have at least 30% read-only tools', () => {
@@ -548,7 +789,8 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most list tools should support fields parameter
-        if (tool.name !== 'list_website_checkpoints') {
+        const listFieldsExempt = ['list_website_checkpoints', 'list_collector_agent_log_levels'];
+        if (!listFieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
       });
@@ -561,9 +803,39 @@ describe('getLogicMonitorTools', () => {
       getTools.forEach(tool => {
         const properties = tool.inputSchema.properties || {};
 
-        // Most get tools should support fields parameter
-        if (tool.name !== 'get_resource_instance_data' &&
-            tool.name !== 'get_topology') {
+        // Most get tools should support fields parameter.
+        // Data-rendering / action endpoints (instance data, topology, widget data,
+        // collector installer URL, website checkpoint/graph data) accept other
+        // params (time range / format) instead of field selection.
+        const fieldsExempt = [
+          'get_resource_instance_data',
+          'get_topology',
+          'get_widget_data',
+          'get_collector_installer',
+          'get_website_checkpoint_data',
+          'get_website_graph_data',
+          'get_instance_graph_data',
+          'get_resource_datasource_data',
+          'get_instance_group_overview_graph_data',
+          'get_resource_top_talkers_graph',
+          'get_resources_delta_id',
+          'get_resources_delta',
+          'get_datasource_overview_graph',
+          'get_debug_command_result',
+          'get_report_task_result',
+          'get_collector_agent_log_level',
+          'get_collector_events',
+          'get_collector_status_check',
+          'get_instance_graph_data_by_id',
+          'get_aws_account_id',
+          'get_aws_external_id',
+          'get_website_graph_by_name',
+          'get_diagnostic_remediation_sources',
+          'get_diagnostic_remediation_results',
+          'get_integration_audit_logs',
+          'get_resource_group_cluster_alert_conf',
+        ];
+        if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
       });
