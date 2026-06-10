@@ -514,7 +514,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'list_resource_group_datasources',
     description: 'List the datasources applied to a resource/device group in LogicMonitor (LM). ' +
-      '\n\n**Related tools:** "get_resource_group_datasource", "update_resource_group_datasource", "get_resource_group_datasource_alert_setting".',
+      '\n\n**Related tools:** "get_resource_group_datasource", "update_resource_group_datasource", "get_resource_group_datasource_alert_conf".',
     annotations: { title: 'List resource/device group datasources', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -560,7 +560,7 @@ export const deviceGroupsTools: Tool[] = [
 
   // Device Group - DataSource Alert Settings
   {
-    name: 'get_resource_group_datasource_alert_setting',
+    name: 'get_resource_group_datasource_alert_conf',
     description: 'Get the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM).',
     annotations: { title: 'Get resource/device group datasource alert setting', readOnlyHint: true },
     inputSchema: {
@@ -575,7 +575,7 @@ export const deviceGroupsTools: Tool[] = [
     },
   },
   {
-    name: 'update_resource_group_datasource_alert_setting',
+    name: 'update_resource_group_datasource_alert_conf',
     description: 'Update the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
     annotations: { title: 'Update resource/device group datasource alert setting', readOnlyHint: false },
     inputSchema: {

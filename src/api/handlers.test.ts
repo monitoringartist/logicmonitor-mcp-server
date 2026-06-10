@@ -1218,7 +1218,7 @@ describe('LogicMonitorHandlers', () => {
   });
 
   describe('Cost Optimization Recommendations', () => {
-    describe('list_cost_optimization_recommendations', () => {
+    describe('list_cost_recommendations', () => {
       it('should list recommendations passing pagination, filter and fields', async () => {
         const mockResponse = {
           total: 1,
@@ -1236,7 +1236,7 @@ describe('LogicMonitorHandlers', () => {
 
         mockClient.listCostOptimizationRecommendations.mockResolvedValue(mockResponse as never);
 
-        const result = await handlers.handleToolCall('list_cost_optimization_recommendations', {
+        const result = await handlers.handleToolCall('list_cost_recommendations', {
           size: 25,
           offset: 0,
           filter: 'recommendationCategory:"EBS Unattached"',
@@ -1253,7 +1253,7 @@ describe('LogicMonitorHandlers', () => {
       });
     });
 
-    describe('get_cost_optimization_recommendation', () => {
+    describe('get_cost_recommendation', () => {
       it('should get a recommendation by composite id', async () => {
         const mockRecommendation = {
           id: '123-456-EBS_UNATTACHED',
@@ -1263,7 +1263,7 @@ describe('LogicMonitorHandlers', () => {
 
         mockClient.getCostOptimizationRecommendation.mockResolvedValue(mockRecommendation as never);
 
-        const result = await handlers.handleToolCall('get_cost_optimization_recommendation', {
+        const result = await handlers.handleToolCall('get_cost_recommendation', {
           id: '123-456-EBS_UNATTACHED',
         });
 
@@ -1275,7 +1275,7 @@ describe('LogicMonitorHandlers', () => {
       });
     });
 
-    describe('list_cost_optimization_recommendation_categories', () => {
+    describe('list_cost_recommendation_categories', () => {
       it('should list recommendation categories', async () => {
         const mockResponse = {
           total: 1,
@@ -1284,7 +1284,7 @@ describe('LogicMonitorHandlers', () => {
 
         mockClient.listCostOptimizationRecommendationCategories.mockResolvedValue(mockResponse as never);
 
-        const result = await handlers.handleToolCall('list_cost_optimization_recommendation_categories', {
+        const result = await handlers.handleToolCall('list_cost_recommendation_categories', {
           size: 50,
           offset: 0,
         });
@@ -1348,9 +1348,9 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.updateInstanceGroupAlertThreshold).toHaveBeenCalledWith(1, 2, 3, 4, { alertExpr: '> 90 95 99' });
     });
 
-    it('update_instance_alert_setting forwards config', async () => {
+    it('update_instance_alert_conf forwards config', async () => {
       mockClient.updateDeviceInstanceAlertSetting.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_instance_alert_setting', {
+      await handlers.handleToolCall('update_instance_alert_conf', {
         deviceId: 1, deviceDataSourceId: 2, instanceId: 3, alertSettingId: 4, config: { disableAlerting: true },
       });
       expect(mockClient.updateDeviceInstanceAlertSetting).toHaveBeenCalledWith(1, 2, 3, 4, { disableAlerting: true });
@@ -1855,15 +1855,15 @@ describe('LogicMonitorHandlers', () => {
       expect(mockClient.updateDeviceGroupDatasource).toHaveBeenCalledWith(5, 8, expect.objectContaining({ disableAlerting: true }));
     });
 
-    it('get_resource_group_datasource_alert_setting passes ids', async () => {
+    it('get_resource_group_datasource_alert_conf passes ids', async () => {
       mockClient.getDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
-      await handlers.handleToolCall('get_resource_group_datasource_alert_setting', { groupId: 5, dataSourceId: 9 });
+      await handlers.handleToolCall('get_resource_group_datasource_alert_conf', { groupId: 5, dataSourceId: 9 });
       expect(mockClient.getDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.any(Object));
     });
 
-    it('update_resource_group_datasource_alert_setting merges config', async () => {
+    it('update_resource_group_datasource_alert_conf merges config', async () => {
       mockClient.updateDeviceGroupDatasourceAlertSetting.mockResolvedValue({} as never);
-      await handlers.handleToolCall('update_resource_group_datasource_alert_setting', { groupId: 5, dataSourceId: 9, config: { disableAlerting: false } });
+      await handlers.handleToolCall('update_resource_group_datasource_alert_conf', { groupId: 5, dataSourceId: 9, config: { disableAlerting: false } });
       expect(mockClient.updateDeviceGroupDatasourceAlertSetting).toHaveBeenCalledWith(5, 9, expect.objectContaining({ disableAlerting: false }));
     });
 

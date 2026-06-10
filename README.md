@@ -543,7 +543,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 - `get_datasource` - Get datasource details
 - `get_datasource_overview_graph` - Get an overview graph definition
 - `get_eventsource` - Get eventsource details
-- `get_instance_alert_setting` - Get an instance alert setting
+- `get_instance_alert_conf` - Get an instance alert setting
 - `get_instance_graph_data` - Get rendered graph data for an instance
 - `get_instance_graph_data_by_id` - Get graph data by instance ID + graph ID
 - `get_instance_group_overview_graph_data` - Get instance group overview graph data
@@ -566,10 +566,10 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 - `list_datasource_update_reasons` - List a datasource's change/audit history
 - `list_datasources` - List all available datasources
 - `list_eventsources` - List all eventsources
-- `list_instance_alert_settings` - List a specific instance's alert settings
+- `list_instance_alert_confs` - List a specific instance's alert settings
 - `list_logsources` - List LogSources (LM Logs collection rules)
 - `list_property_rules` - List PropertySources (auto property assignment rules)
-- `list_resource_alert_settings` - List a device's instance alert settings
+- `list_resource_alert_confs` - List a device's instance alert settings
 - `list_resource_alerts` - List alerts for a specific device
 - `list_resource_datasources` - List datasources applied to device
 - `list_resource_eventsources` - List eventsources applied to a device
@@ -784,7 +784,7 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 ### Properties & Configuration
 
 **Read-Only:**
-- `get_resource_group_datasource_alert_setting` - Alert thresholds for a group datasource
+- `get_resource_group_datasource_alert_conf` - Alert thresholds for a group datasource
 - `list_resource_group_alerts` - Alerts across a device group
 - `list_resource_group_cluster_alert_confs` / `get_resource_group_cluster_alert_conf` - Cluster alert configurations
 - `list_resource_group_datasources` / `get_resource_group_datasource` - DataSources applied to a device group
@@ -802,10 +802,10 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 - `delete_resource_instance` - Delete a datasource instance
 - `delete_resource_property` - Delete a custom property from a device
 - `schedule_resource_auto_discovery` - Trigger Active Discovery on a device
-- `update_instance_alert_setting` - Update an instance alert threshold
+- `update_instance_alert_conf` - Update an instance alert threshold
 - `update_instance_group_alert_threshold` - Set a datapoint alert threshold on an instance group
 - `update_resource_group_datasource` - Update a datasource applied to a device group
-- `update_resource_group_datasource_alert_setting` - Update group datasource alert thresholds
+- `update_resource_group_datasource_alert_conf` - Update group datasource alert thresholds
 - `update_resource_group_property` - Update device group property value
 - `update_resource_instance` - Update a datasource instance
 - `update_resource_instance_group` - Update a datasource instance group
@@ -843,9 +843,9 @@ The server provides 352 tools for comprehensive LogicMonitor operations (100% Lo
 ### Cost Optimization
 
 **Read-Only:**
-- `get_cost_optimization_recommendation` - Get a single recommendation by its composite ID
-- `list_cost_optimization_recommendation_categories` - List available recommendation categories
-- `list_cost_optimization_recommendations` - List cloud cost optimization recommendations (filter by `recommendationCategory`/`recommendationStatus`)
+- `get_cost_recommendation` - Get a single recommendation by its composite ID
+- `list_cost_recommendation_categories` - List available recommendation categories
+- `list_cost_recommendations` - List cloud cost optimization recommendations (filter by `recommendationCategory`/`recommendationStatus`)
 
 ### Log Management (Pipelines, Queries, Partitions)
 

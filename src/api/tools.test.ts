@@ -252,15 +252,15 @@ describe('getLogicMonitorTools', () => {
         const tools = getLogicMonitorTools(false);
         const toolNames = tools.map(t => t.name);
 
-        expect(toolNames).toContain('list_cost_optimization_recommendations');
-        expect(toolNames).toContain('get_cost_optimization_recommendation');
-        expect(toolNames).toContain('list_cost_optimization_recommendation_categories');
+        expect(toolNames).toContain('list_cost_recommendations');
+        expect(toolNames).toContain('get_cost_recommendation');
+        expect(toolNames).toContain('list_cost_recommendation_categories');
       });
 
       it('should mark all cost optimization tools as read-only', () => {
         const tools = getLogicMonitorTools(false);
-        const costTools = tools.filter(t => t.name.startsWith('list_cost_optimization') ||
-          t.name.startsWith('get_cost_optimization'));
+        const costTools = tools.filter(t => t.name.startsWith('list_cost_recommendation') ||
+          t.name.startsWith('get_cost_recommendation'));
 
         expect(costTools).toHaveLength(3);
         costTools.forEach(tool => {
@@ -268,9 +268,9 @@ describe('getLogicMonitorTools', () => {
         });
       });
 
-      it('should require id for get_cost_optimization_recommendation', () => {
+      it('should require id for get_cost_recommendation', () => {
         const tools = getLogicMonitorTools(false);
-        const getTool = tools.find(t => t.name === 'get_cost_optimization_recommendation');
+        const getTool = tools.find(t => t.name === 'get_cost_recommendation');
 
         expect(getTool?.inputSchema.required).toContain('id');
       });
@@ -593,8 +593,8 @@ describe('getLogicMonitorTools', () => {
         const filterExempt = [
           'list_website_checkpoints',
           'list_collector_versions',
-          'list_resource_alert_settings',
-          'list_instance_alert_settings',
+          'list_resource_alert_confs',
+          'list_instance_alert_confs',
           'list_resource_eventsources',
           'list_collector_agent_log_levels',
         ];

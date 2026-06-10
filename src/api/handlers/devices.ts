@@ -222,7 +222,7 @@ export const devicesToolHandlers: ToolHandlerMap = {
     return await client.deleteDeviceProperty(args.deviceId, args.propertyName);
   },
 
-  'list_resource_alert_settings': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'list_resource_alert_confs': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.listDeviceAlertSettings(args.deviceId, {
       start: args.start,
       end: args.end,
@@ -231,7 +231,7 @@ export const devicesToolHandlers: ToolHandlerMap = {
     });
   },
 
-  'list_instance_alert_settings': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'list_instance_alert_confs': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.listDeviceInstanceAlertSettings(
       args.deviceId,
       args.deviceDataSourceId,
@@ -240,7 +240,7 @@ export const devicesToolHandlers: ToolHandlerMap = {
     );
   },
 
-  'get_instance_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'get_instance_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.getDeviceInstanceAlertSetting(
       args.deviceId,
       args.deviceDataSourceId,
@@ -250,7 +250,7 @@ export const devicesToolHandlers: ToolHandlerMap = {
     );
   },
 
-  'update_instance_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'update_instance_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.updateDeviceInstanceAlertSetting(
       args.deviceId,
       args.deviceDataSourceId,

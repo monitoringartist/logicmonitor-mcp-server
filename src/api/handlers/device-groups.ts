@@ -118,11 +118,11 @@ export const deviceGroupsToolHandlers: ToolHandlerMap = {
     return await client.updateDeviceGroupDatasource(groupId, dataSourceId, { ...rest, ...(config || {}) });
   },
 
-  'get_resource_group_datasource_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'get_resource_group_datasource_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.getDeviceGroupDatasourceAlertSetting(args.groupId, args.dataSourceId, { fields: args.fields });
   },
 
-  'update_resource_group_datasource_alert_setting': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+  'update_resource_group_datasource_alert_conf': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     const { groupId, dataSourceId, config, ...rest } = args;
     return await client.updateDeviceGroupDatasourceAlertSetting(groupId, dataSourceId, { ...rest, ...(config || {}) });
   },

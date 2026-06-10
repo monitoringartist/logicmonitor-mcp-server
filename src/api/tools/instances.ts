@@ -343,10 +343,10 @@ export const instancesTools: Tool[] = [
     },
   },
   {
-    name: 'list_resource_alert_settings',
+    name: 'list_resource_alert_confs',
     description: 'List datasource instance alert settings across an entire resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Alert threshold/configuration settings for the device\'s monitored instances. ' +
-      '\n\n**Related tools:** "list_instance_alert_settings", "get_instance_alert_setting".',
+      '\n\n**Related tools:** "list_instance_alert_confs", "get_instance_alert_conf".',
     annotations: { title: 'List device alert settings', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -362,9 +362,9 @@ export const instancesTools: Tool[] = [
     },
   },
   {
-    name: 'list_instance_alert_settings',
+    name: 'list_instance_alert_confs',
     description: 'List alert settings for a specific datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "get_instance_alert_setting", "update_instance_alert_setting".',
+      '\n\n**Related tools:** "get_instance_alert_conf", "update_instance_alert_conf".',
     annotations: { title: 'List instance alert settings', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -380,9 +380,9 @@ export const instancesTools: Tool[] = [
     },
   },
   {
-    name: 'get_instance_alert_setting',
+    name: 'get_instance_alert_conf',
     description: 'Get a specific alert setting for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
-      '\n\n**Related tools:** "list_instance_alert_settings", "update_instance_alert_setting".',
+      '\n\n**Related tools:** "list_instance_alert_confs", "update_instance_alert_conf".',
     annotations: { title: 'Get instance alert setting', readOnlyHint: true },
     inputSchema: {
       type: 'object',
@@ -398,10 +398,10 @@ export const instancesTools: Tool[] = [
     },
   },
   {
-    name: 'update_instance_alert_setting',
+    name: 'update_instance_alert_conf',
     description: 'Update an alert setting (threshold) for a datasource instance on a resource/device in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** deviceId, deviceDataSourceId, instanceId, alertSettingId, and a `config` with fields to change (e.g., alertExpr, disableAlerting). ' +
-      '\n\n**Related tools:** "get_instance_alert_setting".',
+      '\n\n**Related tools:** "get_instance_alert_conf".',
     annotations: { title: 'Update instance alert setting', readOnlyHint: false },
     inputSchema: {
       type: 'object',
