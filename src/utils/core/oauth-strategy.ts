@@ -30,7 +30,7 @@ export interface OAuthUser {
  */
 export function configureOAuthStrategy(config: OAuthConfig): void {
   const strategy = createStrategy(config);
-  passport.use(strategy);
+  passport.use(config.provider, strategy);
 
   // Serialize user for session storage
   passport.serializeUser((user: any, done) => {

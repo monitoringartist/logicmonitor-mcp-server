@@ -30,6 +30,13 @@ export interface MCPTokenPayload {
   client_id?: string;
   /** Token ID (jti - JWT ID for tracking) */
   jti?: string;
+  /**
+   * Token usage discriminator. Access tokens carry 'access' (tokens minted
+   * before this claim existed carry none and are treated as access tokens).
+   * Refresh tokens carry 'refresh' and MUST be rejected by access-token
+   * validation — they are only exchangeable at the /oauth/token endpoint.
+   */
+  token_use?: 'access' | 'refresh';
   /** User metadata */
   user?: {
     id: string;
@@ -103,6 +110,7 @@ export class JWTValidator {
       iat: now,
       exp: now + this.config.expiresIn,
       scope: payload.scope || 'mcp:tools',
+      token_use: 'access',
       jti: payload.jti || crypto.randomBytes(16).toString('hex'),
       ...(payload.client_id && { client_id: payload.client_id }),
       ...(payload.user && { user: payload.user }),
@@ -111,6 +119,76 @@ export class JWTValidator {
     return jwt.sign(fullPayload, this.config.secret, {
       algorithm: this.config.algorithm,
     });
+  }
+
+  /**
+   * Create a stateless refresh token (JWT).
+   *
+   * Unlike the previous in-memory opaque refresh tokens, these survive
+   * process restarts (container redeploys, scale-from-zero wakes) because
+   * validity is established cryptographically rather than by server-side
+   * lookup. Trade-off: they cannot be individually revoked — rotating
+   * JWT_SECRET is the only kill switch, and it invalidates every token.
+   */
+  createRefreshToken(
+    payload: Partial<MCPTokenPayload>,
+    expiresInSeconds: number = 30 * 24 * 60 * 60,
+  ): string {
+    const now = Math.floor(Date.now() / 1000);
+
+    const fullPayload: MCPTokenPayload = {
+      sub: payload.sub || 'unknown',
+      aud: this.config.audience,
+      iss: this.config.issuer,
+      iat: now,
+      exp: now + expiresInSeconds,
+      scope: payload.scope || 'mcp:tools',
+      token_use: 'refresh',
+      jti: crypto.randomBytes(16).toString('hex'),
+      ...(payload.client_id && { client_id: payload.client_id }),
+      ...(payload.user && { user: payload.user }),
+    };
+
+    return jwt.sign(fullPayload, this.config.secret, {
+      algorithm: this.config.algorithm,
+    });
+  }
+
+  /**
+   * Validate a refresh token. Same signature/audience/issuer checks as
+   * access tokens, plus the token MUST carry token_use === 'refresh'.
+   */
+  validateRefreshToken(token: string): TokenValidationResult {
+    try {
+      const decoded = jwt.verify(token, this.config.secret, {
+        algorithms: [this.config.algorithm],
+        audience: this.config.audience,
+        issuer: this.config.issuer,
+        complete: false,
+      }) as MCPTokenPayload;
+
+      if (decoded.token_use !== 'refresh') {
+        return {
+          valid: false,
+          error: 'Token is not a refresh token',
+          errorCode: 'invalid_token',
+        };
+      }
+
+      return { valid: true, payload: decoded };
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return { valid: false, error: 'Refresh token has expired', errorCode: 'expired' };
+      }
+      if (error instanceof jwt.JsonWebTokenError) {
+        return { valid: false, error: error.message, errorCode: 'invalid_token' };
+      }
+      return {
+        valid: false,
+        error: error instanceof Error ? error.message : 'Unknown validation error',
+        errorCode: 'invalid_token',
+      };
+    }
   }
 
   /**
@@ -132,6 +210,17 @@ export class JWTValidator {
         issuer: this.config.issuer,
         complete: false,
       }) as MCPTokenPayload;
+
+      // Refresh tokens must never be accepted as access tokens. Tokens
+      // minted before the token_use claim existed carry no claim and are
+      // treated as access tokens.
+      if (decoded.token_use === 'refresh') {
+        return {
+          valid: false,
+          error: 'Refresh tokens cannot be used as access tokens',
+          errorCode: 'invalid_token',
+        };
+      }
 
       // Additional audience validation (defense in depth)
       // RFC 8707: audience can be string or array of strings

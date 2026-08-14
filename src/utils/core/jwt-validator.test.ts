@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import jsonwebtoken from 'jsonwebtoken';
 import {
   JWTValidator,
   getJWTValidator,
@@ -490,11 +491,106 @@ describe('JWT Validator', () => {
         validator.validateToken('a.b'),
         validator.validateToken('not-a-jwt-at-all'),
       ];
-      
+
       results.forEach(result => {
         expect(result.valid).toBe(false);
         expect(result.errorCode).toBe('invalid_token');
       });
+    });
+  });
+
+  describe('refresh tokens (stateless)', () => {
+    const user = {
+      id: 'user-123',
+      username: 'jamie',
+      displayName: 'Jamie',
+      email: 'jamie@example.com',
+    };
+
+    it('should create a refresh token that validates via validateRefreshToken', () => {
+      const token = validator.createRefreshToken({
+        sub: user.id,
+        scope: 'mcp:tools lm:admin',
+        user,
+        client_id: 'mcp-abc',
+      });
+
+      expect(isJWT(token)).toBe(true);
+
+      const result = validator.validateRefreshToken(token);
+      expect(result.valid).toBe(true);
+      expect(result.payload?.token_use).toBe('refresh');
+      expect(result.payload?.sub).toBe('user-123');
+      expect(result.payload?.scope).toBe('mcp:tools lm:admin');
+      expect(result.payload?.client_id).toBe('mcp-abc');
+      expect(result.payload?.user?.email).toBe('jamie@example.com');
+    });
+
+    it('should survive validator re-creation with the same secret (restart simulation)', () => {
+      const token = validator.createRefreshToken({ sub: user.id, scope: 'mcp:tools', user });
+
+      // Simulate a process restart: brand-new validator instance, same secret
+      const rebooted = new JWTValidator(testConfig);
+      const result = rebooted.validateRefreshToken(token);
+
+      expect(result.valid).toBe(true);
+      expect(result.payload?.sub).toBe('user-123');
+    });
+
+    it('should reject a refresh token used as an access token', () => {
+      const token = validator.createRefreshToken({ sub: user.id, scope: 'mcp:tools', user });
+
+      const result = validator.validateToken(token);
+      expect(result.valid).toBe(false);
+      expect(result.errorCode).toBe('invalid_token');
+      expect(result.error).toContain('Refresh tokens cannot be used as access tokens');
+    });
+
+    it('should reject an access token used as a refresh token', () => {
+      const token = validator.createToken({ sub: user.id, scope: 'mcp:tools' });
+
+      const result = validator.validateRefreshToken(token);
+      expect(result.valid).toBe(false);
+      expect(result.errorCode).toBe('invalid_token');
+    });
+
+    it('should reject an expired refresh token', () => {
+      const token = validator.createRefreshToken({ sub: user.id, scope: 'mcp:tools' }, -10);
+
+      const result = validator.validateRefreshToken(token);
+      expect(result.valid).toBe(false);
+      expect(result.errorCode).toBe('expired');
+    });
+
+    it('should reject a refresh token signed with a different secret', () => {
+      const other = new JWTValidator({ ...testConfig, secret: 'a-completely-different-secret' });
+      const token = other.createRefreshToken({ sub: user.id, scope: 'mcp:tools' });
+
+      const result = validator.validateRefreshToken(token);
+      expect(result.valid).toBe(false);
+      expect(result.errorCode).toBe('invalid_token');
+    });
+
+    it('should still validate legacy access tokens without token_use claim', () => {
+      // Tokens minted before the token_use claim existed carry no claim;
+      // they must continue to validate as access tokens.
+      const now = Math.floor(Date.now() / 1000);
+      const legacyToken = jsonwebtoken.sign(
+        {
+          sub: 'user-legacy',
+          aud: testConfig.audience,
+          iss: testConfig.issuer,
+          iat: now,
+          exp: now + 3600,
+          scope: 'mcp:tools',
+        },
+        testConfig.secret,
+        { algorithm: 'HS256' },
+      );
+
+      const result = validator.validateToken(legacyToken);
+      expect(result.valid).toBe(true);
+      expect(result.payload?.sub).toBe('user-legacy');
     });
   });
 });

@@ -1,5 +1,7 @@
 # Changelog
 
+## added cleared:true to list_alarms
+
 ## [v0.1.0] - 2025-12-04
 
 ### 📦 Other Changes

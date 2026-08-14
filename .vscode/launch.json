@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug MCP Server",
+      "program": "${workspaceFolder}/build/servers/index.js",
+      "preLaunchTask": "npm: build",
+      "env": {
+        "MCP_TRANSPORT": "streamable-http"
+      },
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

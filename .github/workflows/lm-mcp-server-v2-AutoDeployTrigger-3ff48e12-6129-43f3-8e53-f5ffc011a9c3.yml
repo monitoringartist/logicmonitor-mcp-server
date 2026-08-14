@@ -1,0 +1,46 @@
+name: Trigger auto deployment for lm-mcp-server-v2
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/lm-mcp-server-v2-AutoDeployTrigger-3ff48e12-6129-43f3-8e53-f5ffc011a9c3.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.LMMCPSERVERV2_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.LMMCPSERVERV2_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.LMMCPSERVERV2_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          dockerfilePath: Dockerfile
+          registryUrl: ca9834d44b6eacr.azurecr.io
+          registryUsername: ${{ secrets.LMMCPSERVERV2_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.LMMCPSERVERV2_REGISTRY_PASSWORD }}
+          containerAppName: lm-mcp-server-v2
+          resourceGroup: rg-logicmonitor-mcp
+          imageToBuild: ca9834d44b6eacr.azurecr.io/lm-mcp-server-v2:${{ github.sha }}
+
+

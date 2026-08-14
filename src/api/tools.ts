@@ -744,6 +744,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- query: Simple text search by resource/device name only (e.g., query:"production", query:"k8s-cluster")' +
       '\n- filter: Precise LM filter syntax with any alert field. Use for severity, acked status, etc.' +
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
+      '\n\n**Cleared alerts:** By default, only active (non-cleared) alerts are returned. Set cleared: true to retrieve cleared/resolved alerts instead. If the filter parameter already contains a cleared condition, it takes precedence over this flag.' +
       '\n\n**Important:** Alert API does NOT support OR operator (||). Use comma for AND only. For complex queries, make multiple calls. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
       '\n\n**Related tools:** "get\\_alert" (full details), "acknowledge\\_alert" (acknowledge), "add\\_alert\\_note" (add notes), "generate\\_alert\\_link" (get URL).',
@@ -765,6 +766,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
           type: 'boolean',
           description: 'Whether to include alert message details',
           default: true,
+        },
+        cleared: {
+          type: 'boolean',
+          description: 'Set to true to return cleared/resolved alerts. Defaults to false (active alerts only).',
+          default: false,
         },
       },
       additionalProperties: false,
