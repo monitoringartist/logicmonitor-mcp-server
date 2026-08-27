@@ -239,6 +239,14 @@ export class LogicMonitorClient {
     let allItems: T[] = [];
     let totalCount = 0;
     let hasMore = true;
+    // LM's alert/alerts endpoint (among others) can return a bogus negative
+    // "total" for large result sets. A negative/unknown total must never be
+    // trusted as a stop signal, so pages keep fetching until a short page
+    // (fewer items than requested) or an empty page proves we've reached the
+    // end. This cap is a backstop against an unbounded loop if that never
+    // happens (e.g. a server that always returns a full page).
+    const MAX_PAGES = 500;
+    let pageCount = 0;
 
     this.logger?.('debug', 'Starting pagination', {
       path,
@@ -290,6 +298,7 @@ export class LogicMonitorClient {
         // Add items from this page
         const items = response.items || [];
         allItems = allItems.concat(items);
+        pageCount += 1;
 
         this.logger?.('debug', 'Fetched page', {
           path,
@@ -300,8 +309,25 @@ export class LogicMonitorClient {
           total: totalCount,
         });
 
-        // Check if we have more pages
-        if (items.length === 0 || allItems.length >= totalCount) {
+        // Check if we have more pages. A negative/zero totalCount is bogus
+        // (seen in practice on /alert/alerts) and must not short-circuit
+        // this early -- only a genuinely non-negative total can prove
+        // completion via the count comparison. A short page (fewer items
+        // than requested) is otherwise the reliable end-of-results signal.
+        if (
+          items.length === 0 ||
+          items.length < size ||
+          (totalCount >= 0 && allItems.length >= totalCount) ||
+          pageCount >= MAX_PAGES
+        ) {
+          if (pageCount >= MAX_PAGES && items.length > 0 && items.length >= size) {
+            this.logger?.('error', 'Pagination stopped at MAX_PAGES safety cap', {
+              path,
+              pageCount,
+              totalItems: allItems.length,
+              reportedTotal: totalCount,
+            });
+          }
           hasMore = false;
         } else {
           // Calculate next offset based on actual items returned
@@ -421,7 +447,12 @@ export class LogicMonitorClient {
     autoPaginate?: boolean;
   }) {
     const { autoPaginate = false, ...otherParams } = params || {};
-    const cleanedParams = this.cleanParams(otherParams);
+    // Default to newest-first. Without an explicit sort, LM's API returns
+    // alerts in ascending (oldest-first) order, so a page-size-bounded
+    // caller (or a paginateAll call cut short by a bogus total -- see
+    // paginateAll) would only ever see the oldest open alerts and never
+    // discover newer ones.
+    const cleanedParams = this.cleanParams({ sort: '-startEpoch', ...otherParams });
 
     if (autoPaginate) {
       return this.paginateAll<any>('/alert/alerts', cleanedParams);
