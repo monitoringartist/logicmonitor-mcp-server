@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { LogicMonitorHandlers } from './handlers.js';
+import { LogicMonitorHandlers, toEpochSeconds, EPOCH_MILLIS_THRESHOLD } from './handlers.js';
 import { LogicMonitorClient } from './client.js';
 import { LogicMonitorApiError } from '../utils/core/lm-error.js';
 
@@ -707,6 +707,76 @@ describe('LogicMonitorHandlers', () => {
           end: 1234567900,
           format: 'json',
         });
+      });
+
+      it('should convert epoch millisecond start/end to seconds', async () => {
+        mockClient.getDeviceDataSourceInstanceData.mockResolvedValue({ data: [], timestamps: [] });
+
+        // LM's /data endpoint reads start/end as seconds; a Date.now()-style
+        // millisecond value is otherwise rejected with 400 "Start time must be
+        // before current time".
+        await handlers.handleToolCall('get_resource_instance_data', {
+          deviceId: 1,
+          deviceDataSourceId: 2,
+          instanceId: 3,
+          start: 1700000000123,
+          end: 1700003600999,
+        });
+
+        expect(mockClient.getDeviceDataSourceInstanceData).toHaveBeenCalledWith(1, 2, 3, {
+          datapoints: undefined,
+          start: 1700000000,
+          end: 1700003600,
+          format: undefined,
+        });
+      });
+
+      it('should pass epoch second start/end through unchanged', async () => {
+        mockClient.getDeviceDataSourceInstanceData.mockResolvedValue({ data: [], timestamps: [] });
+
+        await handlers.handleToolCall('get_resource_instance_data', {
+          deviceId: 1,
+          deviceDataSourceId: 2,
+          instanceId: 3,
+          start: 1700000000,
+          end: 1700003600,
+        });
+
+        expect(mockClient.getDeviceDataSourceInstanceData).toHaveBeenCalledWith(1, 2, 3, {
+          datapoints: undefined,
+          start: 1700000000,
+          end: 1700003600,
+          format: undefined,
+        });
+      });
+    });
+
+    describe('toEpochSeconds', () => {
+      it('leaves undefined/null/empty alone', () => {
+        expect(toEpochSeconds(undefined)).toBeUndefined();
+        expect(toEpochSeconds(null)).toBeUndefined();
+        expect(toEpochSeconds('')).toBeUndefined();
+      });
+
+      it('keeps values below the millisecond threshold', () => {
+        expect(toEpochSeconds(0)).toBe(0);
+        expect(toEpochSeconds(1700000000)).toBe(1700000000);
+        expect(toEpochSeconds(EPOCH_MILLIS_THRESHOLD - 1)).toBe(EPOCH_MILLIS_THRESHOLD - 1);
+      });
+
+      it('divides values at or above the threshold by 1000 and floors', () => {
+        expect(toEpochSeconds(EPOCH_MILLIS_THRESHOLD)).toBe(EPOCH_MILLIS_THRESHOLD / 1000);
+        expect(toEpochSeconds(1700000000999)).toBe(1700000000);
+        expect(toEpochSeconds(Date.now())).toBeLessThan(EPOCH_MILLIS_THRESHOLD);
+      });
+
+      it('accepts numeric strings', () => {
+        expect(toEpochSeconds('1700000000999')).toBe(1700000000);
+        expect(toEpochSeconds('1700000000')).toBe(1700000000);
+      });
+
+      it('passes non-numeric input through for the API to reject', () => {
+        expect(toEpochSeconds('yesterday')).toBe('yesterday');
       });
     });
   });

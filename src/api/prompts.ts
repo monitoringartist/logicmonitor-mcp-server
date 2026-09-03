@@ -94,7 +94,7 @@ export function generatePromptMessages(name: string, args?: Record<string, any>)
             'generate_resource_link tool to create direct link to LogicMonitor for this resource, ' +
             'list_resource_datasources tool to find available datasources for this resource, ' +
             'list_resource_instances tool to find available instances for this resource, ' +
-            'get_resource_instance_data tool to get data for this resource (start time must be before current time), ' +
+            'get_resource_instance_data tool to get data for this resource (start/end are epoch seconds, start time must be before current time), ' +
             'get_resource_group tool to get the group details for this resource, ' +
             'get_collector tool to get the collector details for this resource, ' +
             'get_collector_group tool to get the collector group details for this resource. ' +

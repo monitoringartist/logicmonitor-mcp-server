@@ -10,6 +10,30 @@ import { autoFormatFilter, SEARCH_FIELDS } from '../utils/helpers/filters.js';
 import { LogicMonitorApiError } from '../utils/core/lm-error.js';
 import { MCPError, ErrorCodes, ErrorSuggestions, createMCPError } from '../utils/core/error-handler.js';
 
+/**
+ * Any epoch value at or above this is treated as milliseconds. 1e11 seconds
+ * is the year 5138, so no realistic seconds value reaches it, while every
+ * millisecond timestamp since 1973 exceeds it.
+ */
+export const EPOCH_MILLIS_THRESHOLD = 1e11;
+
+/**
+ * LogicMonitor's instance data endpoint reads start/end as epoch SECONDS.
+ * Callers (and LLMs) frequently pass Date.now()-style milliseconds, which LM
+ * then rejects with HTTP 400 "Start time must be before current time" because
+ * the value is thousands of years in the future. Convert defensively.
+ */
+export function toEpochSeconds(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n)) {
+    return value as number | undefined;
+  }
+  return n >= EPOCH_MILLIS_THRESHOLD ? Math.floor(n / 1000) : n;
+}
+
 // Default field sets for curated responses (when no fields parameter specified)
 const DEFAULT_DEVICE_FIELDS = [
   'id', 'displayName', 'name', 'hostGroupIds', 'preferredCollectorId',
@@ -486,8 +510,8 @@ export class LogicMonitorHandlers {
             args.instanceId,
             {
               datapoints: args.datapoints,
-              start: args.start,
-              end: args.end,
+              start: toEpochSeconds(args.start),
+              end: toEpochSeconds(args.end),
               format: args.format,
             },
           );
