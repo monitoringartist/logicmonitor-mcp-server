@@ -1126,8 +1126,8 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
       '\n- deviceDataSourceId: From "get\\_resource\\_datasource" or "list\\_resource\\_datasources"' +
       '\n- instanceId: From "list\\_resource\\_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
-      '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
-      '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
+      '\n- start/end: Time range in epoch SECONDS (not milliseconds!), start time must be before current time. Millisecond values are auto-converted to seconds.' +
+      '\n\n**Example:** Get last hour CPU data: start=Math.floor(Date.now()/1000)-3600, end=Math.floor(Date.now()/1000) ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
       '\n\n**Related tools:** "list\\_resource\\_datasources", "list\\_resource\\_instances".',
     annotations: {
@@ -1155,11 +1155,11 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         },
         start: {
           type: 'number',
-          description: 'Start time (epoch milliseconds), start time must be before current time',
+          description: 'Start time (epoch seconds, not milliseconds), start time must be before current time',
         },
         end: {
           type: 'number',
-          description: 'End time (epoch milliseconds)',
+          description: 'End time (epoch seconds, not milliseconds)',
         },
         format: {
           type: 'string',
@@ -2403,7 +2403,7 @@ const ALL_LOGICMONITOR_TOOLS: Tool[] = [
         },
         endDateTime: {
           type: 'number',
-          description: 'End time (epoch milliseconds)',
+          description: 'End time (epoch seconds, not milliseconds)',
         },
         comment: {
           type: 'string',

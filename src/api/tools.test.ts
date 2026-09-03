@@ -370,6 +370,25 @@ describe('getLogicMonitorTools', () => {
         expect(listInstances?.annotations?.readOnlyHint).toBe(true);
         expect(getData?.annotations?.readOnlyHint).toBe(true);
       });
+
+      it('should document get_resource_instance_data start/end as epoch seconds', () => {
+        const tools = getLogicMonitorTools(false);
+        const getData = tools.find(t => t.name === 'get_resource_instance_data');
+        const props = getData?.inputSchema.properties as Record<string, { description?: string }>;
+
+        // LM's /data endpoint reads start/end as seconds. Describing them as
+        // milliseconds led every LLM caller to send Date.now(), which LM
+        // rejects with 400 "Start time must be before current time".
+        expect(getData?.description).toMatch(/epoch SECONDS/);
+        expect(getData?.description).not.toMatch(/Date\.now\(\)-3600000/);
+        expect(getData?.description).toMatch(/Math\.floor\(Date\.now\(\)\/1000\)/);
+        expect(getData?.description).toMatch(/start time must be before current time/);
+        expect(props.start.description).toMatch(/epoch seconds/);
+        expect(props.start.description).toMatch(/start time must be before current time/);
+        expect(props.end.description).toMatch(/epoch seconds/);
+        expect(props.start.description).not.toMatch(/\(epoch milliseconds\)/);
+        expect(props.end.description).not.toMatch(/\(epoch milliseconds\)/);
+      });
     });
   });
 
