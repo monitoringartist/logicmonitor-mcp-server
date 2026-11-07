@@ -42,6 +42,9 @@ export const opsnotesTools: Tool[] = [
     annotations: {
       title: 'List OpsNotes',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -68,6 +71,9 @@ export const opsnotesTools: Tool[] = [
     annotations: {
       title: 'Get OpsNote details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -153,6 +159,9 @@ export const opsnotesTools: Tool[] = [
     annotations: {
       title: 'Create OpsNote',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -220,6 +229,9 @@ export const opsnotesTools: Tool[] = [
     annotations: {
       title: 'Update OpsNote',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -279,6 +291,9 @@ export const opsnotesTools: Tool[] = [
     annotations: {
       title: 'Delete OpsNote',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

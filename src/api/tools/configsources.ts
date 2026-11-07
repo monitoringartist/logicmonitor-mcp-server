@@ -33,6 +33,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'List ConfigSources',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -63,6 +66,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'Get ConfigSource details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -93,6 +99,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'Create ConfigSource',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -138,6 +147,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'Update ConfigSource',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -191,6 +203,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'Delete ConfigSource',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -219,6 +234,9 @@ export const configsourcesTools: Tool[] = [
     annotations: {
       title: 'Import ConfigSource',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -250,7 +268,7 @@ export const configsourcesTools: Tool[] = [
   {
     name: 'get_configsource_update_reasons',
     description: 'Get the update reasons (change history notes) for a ConfigSource in LogicMonitor (LM).',
-    annotations: { title: 'Get ConfigSource update reasons', readOnlyHint: true },
+    annotations: { title: 'Get ConfigSource update reasons', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {

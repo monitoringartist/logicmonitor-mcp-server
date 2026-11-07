@@ -8,7 +8,7 @@ export const topologyTools: Tool[] = [
     description: 'List TopologySources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are TopologySources:** LogicModules that discover relationships between resources to build topology maps. ' +
       '\n\n**Related tools:** "get_topologysource", "create_topologysource".',
-    annotations: { title: 'List topologysources', readOnlyHint: true },
+    annotations: { title: 'List topologysources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -19,7 +19,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'get_topologysource',
     description: 'Get details of a specific TopologySource in LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Get topologysource', readOnlyHint: true },
+    annotations: { title: 'Get topologysource', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -34,7 +34,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'create_topologysource',
     description: 'Create a TopologySource in LogicMonitor (LM) monitoring. Definition via `config`. ',
-    annotations: { title: 'Create topologysource', readOnlyHint: false },
+    annotations: { title: 'Create topologysource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -47,7 +47,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'update_topologysource',
     description: 'Update a TopologySource in LogicMonitor (LM) monitoring. Partial update via `config`. Optional reason. ',
-    annotations: { title: 'Update topologysource', readOnlyHint: false },
+    annotations: { title: 'Update topologysource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -62,7 +62,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'delete_topologysource',
     description: 'Delete a TopologySource from LogicMonitor (LM) monitoring. Cannot be undone. ',
-    annotations: { title: 'Delete topologysource', readOnlyHint: false },
+    annotations: { title: 'Delete topologysource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -75,7 +75,7 @@ export const topologyTools: Tool[] = [
   {
     name: 'import_topologysource',
     description: 'Import a TopologySource definition (JSON) into LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Import topologysource', readOnlyHint: false },
+    annotations: { title: 'Import topologysource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -98,7 +98,7 @@ export const topologyTools: Tool[] = [
       '\n- By name: filter:"name~\\*core\\*" ' +
       '\n\n**Workflow:** Use this tool to find a map `id`, then "get_topology" for its connectivity data. ' +
       '\n\n**Related tools:** "get_topology" (map data), "list_topologysources" (discovery modules).',
-    annotations: { title: 'List topology maps', readOnlyHint: true },
+    annotations: { title: 'List topology maps', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -139,6 +139,9 @@ export const topologyTools: Tool[] = [
     annotations: {
       title: 'Get network topology',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

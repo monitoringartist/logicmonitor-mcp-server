@@ -23,6 +23,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'List dashboards',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -59,6 +62,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Get dashboard details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -123,6 +129,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Create dashboard',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -187,6 +196,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Update dashboard',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -245,6 +257,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Delete dashboard',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -275,6 +290,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Generate dashboard link',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -303,6 +321,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Generate resource/device link',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -331,6 +352,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Generate alert link',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -397,6 +421,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Generate website monitor link',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -431,6 +458,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'List dashboard groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -456,6 +486,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Get dashboard group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -477,7 +510,7 @@ export const dashboardsTools: Tool[] = [
       '\n\n**Required:** name. ' +
       '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), plus widgetTokens/template via `config`. ' +
       '\n\n**Related tools:** "list_dashboard_groups", "create_dashboard" (place dashboards in the group).',
-    annotations: { title: 'Create dashboard group', readOnlyHint: false },
+    annotations: { title: 'Create dashboard group', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -499,7 +532,7 @@ export const dashboardsTools: Tool[] = [
     description: 'Update a dashboard group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), or additional fields via `config`. Partial update. ' +
       '\n\n**Related tools:** "get_dashboard_group", "list_dashboard_groups".',
-    annotations: { title: 'Update dashboard group', readOnlyHint: false },
+    annotations: { title: 'Update dashboard group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -524,7 +557,7 @@ export const dashboardsTools: Tool[] = [
       '\n\n**Parameters:** groupId; optional allowNonEmptyGroup (default false). ' +
       '\n\n**Before deleting:** Use "get_dashboard_group" to check dashboard/subgroup counts. ' +
       '\n\n**Related tools:** "get_dashboard_group", "list_dashboard_groups".',
-    annotations: { title: 'Delete dashboard group', readOnlyHint: false },
+    annotations: { title: 'Delete dashboard group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -541,7 +574,7 @@ export const dashboardsTools: Tool[] = [
       '\n\n**What this does:** Asynchronously copies an existing dashboard group into a new group. ' +
       '\n\n**Parameters:** groupId (source group), a `config` describing the new group (at least `name`, and `parentId` for placement), and optional recursive (clone subgroups/dashboards too). ' +
       '\n\n**Related tools:** "create_dashboard_group", "get_dashboard_group".',
-    annotations: { title: 'Clone dashboard group', readOnlyHint: false },
+    annotations: { title: 'Clone dashboard group', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -562,7 +595,7 @@ export const dashboardsTools: Tool[] = [
   {
     name: 'update_default_dashboard',
     description: 'Update the default dashboard preference (user data) in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
-    annotations: { title: 'Update default dashboard', readOnlyHint: false },
+    annotations: { title: 'Update default dashboard', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -589,6 +622,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'List widgets',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -614,6 +650,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'List widgets on a dashboard',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -644,6 +683,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Get widget details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -678,6 +720,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Get widget data',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -725,6 +770,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Create widget',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -788,6 +836,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Update widget',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -850,6 +901,9 @@ export const dashboardsTools: Tool[] = [
     annotations: {
       title: 'Delete widget',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

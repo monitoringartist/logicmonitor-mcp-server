@@ -8,7 +8,7 @@ export const integrationsTools: Tool[] = [
     description: 'Get integration audit logs for the LogicMonitor (LM) portal. ' +
       '\n\n**Portal-wide:** Returns audit logs across all integrations; there is no per-integration filter (do not pass an integrationId). ' +
       'The only supported parameter is `format` (e.g., "csv").',
-    annotations: { title: 'Get integration audit logs', readOnlyHint: true },
+    annotations: { title: 'Get integration audit logs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { format: { type: 'string', description: 'Response format (e.g., csv).' } },
@@ -60,6 +60,9 @@ export const integrationsTools: Tool[] = [
     annotations: {
       title: 'List integrations',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -97,6 +100,9 @@ export const integrationsTools: Tool[] = [
     annotations: {
       title: 'Get integration details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -165,6 +171,9 @@ export const integrationsTools: Tool[] = [
     annotations: {
       title: 'Create integration',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -223,6 +232,9 @@ export const integrationsTools: Tool[] = [
     annotations: {
       title: 'Update integration',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -284,6 +296,9 @@ export const integrationsTools: Tool[] = [
     annotations: {
       title: 'Delete integration',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

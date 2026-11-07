@@ -27,6 +27,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'List website monitors',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -66,6 +69,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Get website monitor details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -140,6 +146,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Create website monitor',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -212,6 +221,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Update website monitor',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -271,6 +283,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Delete website monitor',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -313,6 +328,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'List website groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -338,6 +356,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Get website group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -359,7 +380,7 @@ export const websitesTools: Tool[] = [
       '\n\n**Required:** name. ' +
       '\n\n**Optional:** description, parentId (defaults to root group 1 if omitted), disableAlerting, stopMonitoring, plus properties/testLocation via `config`. ' +
       '\n\n**Related tools:** "list_website_groups", "create_website" (place monitors in the group).',
-    annotations: { title: 'Create website group', readOnlyHint: false },
+    annotations: { title: 'Create website group', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -384,7 +405,7 @@ export const websitesTools: Tool[] = [
       '\n\n**Parameters:** groupId plus any of name, description, parentId (move the group), disableAlerting, stopMonitoring, or additional fields via `config`. Partial update. ' +
       '\n\n**Optional:** opType ("refresh"/"add"/"replace") controls how `properties` are merged when supplied. ' +
       '\n\n**Related tools:** "get_website_group", "list_website_groups".',
-    annotations: { title: 'Update website group', readOnlyHint: false },
+    annotations: { title: 'Update website group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -412,7 +433,7 @@ export const websitesTools: Tool[] = [
       '\n\n**Parameters:** groupId; optional deleteChildren (1 = delete contained websites/subgroups too, 0 = only an empty group). ' +
       '\n\n**Before deleting:** Use "get_website_group" to check the website/subgroup counts. ' +
       '\n\n**Related tools:** "get_website_group", "list_website_groups".',
-    annotations: { title: 'Delete website group', readOnlyHint: false },
+    annotations: { title: 'Delete website group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -428,7 +449,7 @@ export const websitesTools: Tool[] = [
     description: 'List the website monitors that belong directly to a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of website monitors (web/ping checks) in the group, with id, name, type, status. ' +
       '\n\n**Related tools:** "list_website_groups", "get_website_group", "list_websites".',
-    annotations: { title: 'List websites in group', readOnlyHint: true },
+    annotations: { title: 'List websites in group', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -446,7 +467,7 @@ export const websitesTools: Tool[] = [
     description: 'List the active/scheduled down times (SDTs) configured on a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of SDT entries affecting the group: id, type, start/end time, comment. ' +
       '\n\n**Related tools:** "get_website_group_sdt_history" (past SDTs), "create_sdt", "list_website_groups".',
-    annotations: { title: 'List website group SDTs', readOnlyHint: true },
+    annotations: { title: 'List website group SDTs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -464,7 +485,7 @@ export const websitesTools: Tool[] = [
     description: 'Get the scheduled down time (SDT) history for a specific website group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of historical (expired) SDT entries for the group: id, type, start/end time, comment. ' +
       '\n\n**Related tools:** "list_website_group_sdts" (active SDTs), "list_website_groups".',
-    annotations: { title: 'Get website group SDT history', readOnlyHint: true },
+    annotations: { title: 'Get website group SDT history', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -482,7 +503,7 @@ export const websitesTools: Tool[] = [
   {
     name: 'get_website_sdt_history',
     description: 'Get the scheduled downtime (SDT) history for a website in LogicMonitor (LM).',
-    annotations: { title: 'Get website SDT history', readOnlyHint: true },
+    annotations: { title: 'Get website SDT history', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -498,7 +519,7 @@ export const websitesTools: Tool[] = [
     description: 'Get rendered graph data for a website by graph name in LogicMonitor (LM). ' +
       '\n\n**Parameters:** websiteId, graphName, optional start/end (epoch seconds) and format. ' +
       '\n\n**⚠️ graphName must be an exact existing graph name** for the website (LM returns "No such graph(name=...)" otherwise). Names depend on the check type, e.g. "Response Time", "Rendering Time", "Status" — they are not datapoint names like "ping". Inspect the website config via "get_website" to find valid graph names.',
-    annotations: { title: 'Get website graph by name', readOnlyHint: true },
+    annotations: { title: 'Get website graph by name', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -549,6 +570,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'List checkpoint locations',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -581,6 +605,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Get website checkpoint data',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -643,6 +670,9 @@ export const websitesTools: Tool[] = [
     annotations: {
       title: 'Get website graph data',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

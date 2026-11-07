@@ -24,6 +24,9 @@ export const costOptimizationTools: Tool[] = [
     annotations: {
       title: 'List cost optimization recommendations',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -61,6 +64,9 @@ export const costOptimizationTools: Tool[] = [
     annotations: {
       title: 'Get cost optimization recommendation details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -89,6 +95,9 @@ export const costOptimizationTools: Tool[] = [
     annotations: {
       title: 'List cost optimization recommendation categories',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

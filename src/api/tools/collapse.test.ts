@@ -166,6 +166,25 @@ describe('buildCollapsedTools', () => {
       expect(manageTool.annotations?.readOnlyHint).toBe(false);
     });
 
+    it('aggregates the remaining hints from the riskiest member operation', () => {
+      const withHints = (tool: Tool, destructiveHint: boolean, idempotentHint: boolean, openWorldHint: boolean): Tool => ({
+        ...tool,
+        annotations: { ...tool.annotations, destructiveHint, idempotentHint, openWorldHint },
+      });
+      const manage = buildCollapsedTools([
+        withHints(makeTool('list_foos', true), false, true, false),
+        withHints(makeTool('create_foo', false), false, false, false),
+        withHints(makeTool('delete_foo', false, { id: { type: 'number' } }, ['id']), true, true, true),
+      ]).tools.find(t => t.name === 'manage_foo')!;
+
+      expect(manage.annotations).toMatchObject({
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: true,
+      });
+    });
+
     it('synthesizes a description mentioning each operation', () => {
       expect(manageTool.description).toContain('operation="list"');
       expect(manageTool.description).toContain('operation="get"');

@@ -38,6 +38,9 @@ export const auditTools: Tool[] = [
     annotations: {
       title: 'List audit logs',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -66,6 +69,9 @@ export const auditTools: Tool[] = [
     annotations: {
       title: 'Get audit details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

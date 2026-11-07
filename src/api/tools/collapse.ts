@@ -413,6 +413,10 @@ export function buildCollapsedTools(
       annotations: {
         title: `Manage ${builder.resource.replace(/_/g, ' ')}`,
         readOnlyHint: allReadOnly,
+        // A collapsed tool is only as safe as its riskiest operation.
+        destructiveHint: sortedMembers.some(m => m.tool.annotations?.destructiveHint === true),
+        idempotentHint: sortedMembers.every(m => m.tool.annotations?.idempotentHint === true),
+        openWorldHint: sortedMembers.some(m => m.tool.annotations?.openWorldHint === true),
       },
       inputSchema: {
         type: 'object',

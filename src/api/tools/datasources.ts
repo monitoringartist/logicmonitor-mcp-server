@@ -24,6 +24,9 @@ export const datasourcesTools: Tool[] = [
     annotations: {
       title: 'List datasources',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -60,6 +63,9 @@ export const datasourcesTools: Tool[] = [
     annotations: {
       title: 'Get datasource details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -83,7 +89,7 @@ export const datasourcesTools: Tool[] = [
       '\n\n**Optional:** `createGraph` (boolean) to auto-create default graphs. ' +
       '\n\n**Tip:** For sharing/distributing modules prefer "import_datasource" with official XML/JSON. ' +
       '\n\n**Related tools:** "get_datasource", "update_datasource", "import_datasource".',
-    annotations: { title: 'Create datasource', readOnlyHint: false },
+    annotations: { title: 'Create datasource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -105,7 +111,7 @@ export const datasourcesTools: Tool[] = [
       '\n\n**Optional:** `reason` (audit reason for the change), `forceUniqueIdentifier`. ' +
       '\n\n**⚠️ Caution:** Editing a built-in/LogicMonitor-managed DataSource may require a `reason` and can be overwritten by future module updates. Review with "get_datasource" first. ' +
       '\n\n**Related tools:** "get_datasource", "list_datasource_update_reasons".',
-    annotations: { title: 'Update datasource', readOnlyHint: false },
+    annotations: { title: 'Update datasource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -128,7 +134,7 @@ export const datasourcesTools: Tool[] = [
       '\n\n**⚠️ WARNING:** Permanently removes the module and stops all monitoring it provided across every applied device. Historical data may be lost. Cannot be undone. ' +
       '\n\n**Before deleting:** Use "list_datasource_devices" to see how many resources rely on it. ' +
       '\n\n**Related tools:** "get_datasource", "list_datasource_devices".',
-    annotations: { title: 'Delete datasource', readOnlyHint: false },
+    annotations: { title: 'Delete datasource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -148,7 +154,7 @@ export const datasourcesTools: Tool[] = [
       '\n- handleConflict (JSON only): how to resolve name conflicts (e.g., "all", "ignore")' +
       '\n- fieldsToPreserve (JSON only): comma-separated fields to keep from the existing module' +
       '\n\n**Related tools:** "create_datasource" (build from scratch), "get_datasource".',
-    annotations: { title: 'Import datasource', readOnlyHint: false },
+    annotations: { title: 'Import datasource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -166,7 +172,7 @@ export const datasourcesTools: Tool[] = [
     description: 'List overview graphs defined on a DataSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are overview graphs:** Aggregate graphs that summarize data across all instances of the datasource on a device. ' +
       '\n\n**Related tools:** "get_datasource_overview_graph", "get_datasource".',
-    annotations: { title: 'List datasource overview graphs', readOnlyHint: true },
+    annotations: { title: 'List datasource overview graphs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -183,7 +189,7 @@ export const datasourcesTools: Tool[] = [
     name: 'get_datasource_overview_graph',
     description: 'Get the definition of a specific DataSource overview graph in LogicMonitor (LM) monitoring. ' +
       '\n\n**Related tools:** "list_datasource_overview_graphs".',
-    annotations: { title: 'Get datasource overview graph', readOnlyHint: true },
+    annotations: { title: 'Get datasource overview graph', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -199,7 +205,7 @@ export const datasourcesTools: Tool[] = [
     description: 'List the resources/devices a DataSource is currently applied to in LogicMonitor (LM) monitoring. ' +
       '\n\n**When to use:** Assess impact before editing/deleting a datasource, or audit where a module is collecting. ' +
       '\n\n**Related tools:** "get_datasource", "delete_datasource".',
-    annotations: { title: 'List datasource devices', readOnlyHint: true },
+    annotations: { title: 'List datasource devices', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -217,7 +223,7 @@ export const datasourcesTools: Tool[] = [
     description: 'List the audit history of update reasons for a DataSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Change records (who/when/why) for the module. ' +
       '\n\n**Related tools:** "update_datasource" (provide a `reason` when editing).',
-    annotations: { title: 'List datasource update reasons', readOnlyHint: true },
+    annotations: { title: 'List datasource update reasons', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -264,6 +270,9 @@ export const datasourcesTools: Tool[] = [
     annotations: {
       title: 'List resource/device datasources',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -301,6 +310,9 @@ export const datasourcesTools: Tool[] = [
     annotations: {
       title: 'Get resource/device datasource details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -370,6 +382,9 @@ export const datasourcesTools: Tool[] = [
     annotations: {
       title: 'Update resource/device datasource',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

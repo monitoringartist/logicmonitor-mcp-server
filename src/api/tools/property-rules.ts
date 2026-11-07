@@ -9,7 +9,7 @@ export const propertyRulesTools: Tool[] = [
       '\n\n**What are PropertySources:** Modules that automatically assign properties to resources based on a script and appliesTo logic (e.g., auto-detect cloud tags, OS details, application metadata). ' +
       '\n\n**Returns:** Array of property rules with id, name, appliesTo, group, script details. ' +
       '\n\n**Related tools:** "get_property_rule", "create_property_rule".',
-    annotations: { title: 'List property rules', readOnlyHint: true },
+    annotations: { title: 'List property rules', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -27,7 +27,7 @@ export const propertyRulesTools: Tool[] = [
     description: 'Get details of a specific PropertySource (property rule) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Full rule config: name, appliesTo, script (groovy/embed/powershell/external), params, schedule. ' +
       '\n\n**Related tools:** "list_property_rules", "update_property_rule".',
-    annotations: { title: 'Get property rule', readOnlyHint: true },
+    annotations: { title: 'Get property rule', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -47,7 +47,7 @@ export const propertyRulesTools: Tool[] = [
       '\n\n**Required:** a `config` containing at least `name`, `appliesTo`, and the script fields (e.g., `groovyScript` with `scriptType: "embed"`). ' +
       '\n\n**Tip:** For sharing/distributing prefer "import_property_rule" with official JSON. ' +
       '\n\n**Related tools:** "get_property_rule", "update_property_rule", "import_property_rule".',
-    annotations: { title: 'Create property rule', readOnlyHint: false },
+    annotations: { title: 'Create property rule', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -67,7 +67,7 @@ export const propertyRulesTools: Tool[] = [
       '\n\n**Parameters:** propertyRuleId and a `config` with fields to change. Partial update. Optional `reason` (audit note). ' +
       '\n\n**Best practice:** Review with "get_property_rule" first. ' +
       '\n\n**Related tools:** "get_property_rule", "list_property_rules".',
-    annotations: { title: 'Update property rule', readOnlyHint: false },
+    annotations: { title: 'Update property rule', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -88,7 +88,7 @@ export const propertyRulesTools: Tool[] = [
     description: 'Delete a PropertySource (property rule) from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Permanently removes the module; properties it auto-assigned will no longer be maintained. Cannot be undone. ' +
       '\n\n**Related tools:** "get_property_rule" (review before delete).',
-    annotations: { title: 'Delete property rule', readOnlyHint: false },
+    annotations: { title: 'Delete property rule', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -107,7 +107,7 @@ export const propertyRulesTools: Tool[] = [
       '\n- handleConflict: how to resolve name conflicts (e.g., "all", "ignore")' +
       '\n- fieldsToPreserve: comma-separated fields to keep from the existing module' +
       '\n\n**Related tools:** "create_property_rule" (build from scratch).',
-    annotations: { title: 'Import property rule', readOnlyHint: false },
+    annotations: { title: 'Import property rule', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {

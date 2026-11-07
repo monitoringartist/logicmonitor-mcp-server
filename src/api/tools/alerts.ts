@@ -34,6 +34,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'List alerts',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -69,6 +72,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Get alert details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -126,6 +132,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Acknowledge alert',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -189,6 +198,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Add alert note',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -241,6 +253,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'List alert rules',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -279,6 +294,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Get alert rule details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -365,6 +383,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Create alert rule',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -447,6 +468,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Update alert rule',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -536,6 +560,9 @@ export const alertsTools: Tool[] = [
     annotations: {
       title: 'Delete alert rule',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -557,7 +584,7 @@ export const alertsTools: Tool[] = [
       '\n\n**What are action chains:** Ordered escalation/notification sequences (stages) that alert rules invoke to deliver notifications (email, SMS, integrations) and to escalate if not acknowledged. ' +
       '\n\n**Returns:** Array of action chains with id, name, description, and stages. ' +
       '\n\n**Related tools:** "get_action_chain", "create_action_chain", "list_action_rules" (rules reference chains via actionChainId).',
-    annotations: { title: 'List action chains', readOnlyHint: true },
+    annotations: { title: 'List action chains', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -574,7 +601,7 @@ export const alertsTools: Tool[] = [
     description: 'Get details of a specific alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Full chain config: name, description, and the ordered stages (recipients/integrations per stage). ' +
       '\n\n**Related tools:** "list_action_chains", "update_action_chain".',
-    annotations: { title: 'Get action chain', readOnlyHint: true },
+    annotations: { title: 'Get action chain', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -592,7 +619,7 @@ export const alertsTools: Tool[] = [
       '\n\n**Required:** name and stages. Each stage is a list of recipients/integration targets; alerts escalate from one stage to the next if not acknowledged. ' +
       '\n\n**Tip:** Use "get_action_chain" on an existing chain to see the exact `stages` structure, then adapt it via `config`. ' +
       '\n\n**Related tools:** "create_action_rule" (wire the chain to alerts), "update_action_chain".',
-    annotations: { title: 'Create action chain', readOnlyHint: false },
+    annotations: { title: 'Create action chain', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -619,7 +646,7 @@ export const alertsTools: Tool[] = [
       '\n\n**Parameters:** actionChainId plus any of name, description, stages (or additional fields via `config`). Partial update. ' +
       '\n\n**Best practice:** Use "get_action_chain" first to review the current `stages` before modifying. ' +
       '\n\n**Related tools:** "get_action_chain", "list_action_chains".',
-    annotations: { title: 'Update action chain', readOnlyHint: false },
+    annotations: { title: 'Update action chain', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -646,7 +673,7 @@ export const alertsTools: Tool[] = [
     description: 'Delete an alert action chain in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Warning:** Action rules referencing this chain will lose their notification target. Verify no active action rule depends on it first. ' +
       '\n\n**Related tools:** "list_action_rules" (check dependencies), "get_action_chain".',
-    annotations: { title: 'Delete action chain', readOnlyHint: false },
+    annotations: { title: 'Delete action chain', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -662,7 +689,7 @@ export const alertsTools: Tool[] = [
       '\n\n**What are action rules:** Rules that match alerts (by device groups, devices, datasource, datapoint, severity) and route them to an action chain for notification/escalation. ' +
       '\n\n**Returns:** Array of action rules with id, name, levelStr, deviceGroups, actionChainId, enabled. ' +
       '\n\n**Related tools:** "get_action_rule", "create_action_rule", "list_action_chains".',
-    annotations: { title: 'List action rules', readOnlyHint: true },
+    annotations: { title: 'List action rules', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -679,7 +706,7 @@ export const alertsTools: Tool[] = [
     description: 'Get details of a specific alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Match criteria (deviceGroups, devices, datasource, datapoint, instance, severity levelStr), the linked actionChainId, and enabled status. ' +
       '\n\n**Related tools:** "list_action_rules", "update_action_rule", "set_action_rule_status".',
-    annotations: { title: 'Get action rule', readOnlyHint: true },
+    annotations: { title: 'Get action rule', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -697,7 +724,7 @@ export const alertsTools: Tool[] = [
       '\n\n**Required:** name, actionChainId (from "list_action_chains"), deviceGroups (array of group filters), and levelStr (severity levels, e.g., "Warn,Error,Critical"). ' +
       '\n\n**Optional match criteria:** devices, datasource, datapoint, instance, resourceProperties, enabled. ' +
       '\n\n**Related tools:** "list_action_chains", "update_action_rule", "set_action_rule_status".',
-    annotations: { title: 'Create action rule', readOnlyHint: false },
+    annotations: { title: 'Create action rule', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -730,7 +757,7 @@ export const alertsTools: Tool[] = [
       '\n\n**Parameters:** actionRuleId plus any fields to change (name, actionChainId, deviceGroups, levelStr, devices, datasource, datapoint, instance, enabled, or additional fields via `config`). Partial update. ' +
       '\n\n**Tip:** To only toggle enabled/disabled, prefer "set_action_rule_status". ' +
       '\n\n**Related tools:** "get_action_rule", "list_action_rules".',
-    annotations: { title: 'Update action rule', readOnlyHint: false },
+    annotations: { title: 'Update action rule', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -759,7 +786,7 @@ export const alertsTools: Tool[] = [
     description: 'Delete an alert action rule in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ Warning:** Alerts previously matched by this rule will no longer trigger its notifications/escalations. ' +
       '\n\n**Related tools:** "get_action_rule" (review before delete), "list_action_rules".',
-    annotations: { title: 'Delete action rule', readOnlyHint: false },
+    annotations: { title: 'Delete action rule', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -775,7 +802,7 @@ export const alertsTools: Tool[] = [
       '\n\n**What this does:** Toggles only the enabled status of an action rule without modifying its other configuration. ' +
       '\n\n**Parameters:** actionRuleId, enabled (true to enable, false to disable). ' +
       '\n\n**Related tools:** "update_action_rule" (full edit), "get_action_rule".',
-    annotations: { title: 'Set action rule status', readOnlyHint: false },
+    annotations: { title: 'Set action rule status', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -791,7 +818,7 @@ export const alertsTools: Tool[] = [
   {
     name: 'escalate_alert',
     description: 'Escalate an alert to the next stage in its escalation chain in LogicMonitor (LM).',
-    annotations: { title: 'Escalate alert', readOnlyHint: false },
+    annotations: { title: 'Escalate alert', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { alertId: { type: 'string', description: 'The alert ID (e.g., DS12345).' } },

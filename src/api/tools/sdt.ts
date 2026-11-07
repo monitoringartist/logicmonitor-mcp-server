@@ -31,6 +31,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Get Scheduled Down Times',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -61,6 +64,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Get Scheduled Down Time details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -105,6 +111,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Schedule maintenance window',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -166,6 +175,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Delete Scheduled Down Time',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -201,6 +213,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Create Scheduled Down Time (any type)',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -258,6 +273,9 @@ export const sdtTools: Tool[] = [
     annotations: {
       title: 'Update Scheduled Down Time',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

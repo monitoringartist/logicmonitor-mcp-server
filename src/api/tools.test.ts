@@ -109,6 +109,58 @@ describe('getLogicMonitorTools', () => {
       });
     });
 
+    it('should declare every MCP annotation hint on all tools', () => {
+      const tools = getLogicMonitorTools(false);
+
+      tools.forEach(tool => {
+        expect(typeof tool.annotations?.title).toBe('string');
+        expect(typeof tool.annotations?.readOnlyHint).toBe('boolean');
+        expect(typeof tool.annotations?.destructiveHint).toBe('boolean');
+        expect(typeof tool.annotations?.idempotentHint).toBe('boolean');
+        expect(typeof tool.annotations?.openWorldHint).toBe('boolean');
+      });
+    });
+
+    it('should keep annotation hints consistent with the tool verb', () => {
+      const tools = getLogicMonitorTools(false);
+
+      tools.forEach(tool => {
+        const a = tool.annotations!;
+        if (a.readOnlyHint) {
+          expect({ name: tool.name, destructiveHint: a.destructiveHint, idempotentHint: a.idempotentHint })
+            .toEqual({ name: tool.name, destructiveHint: false, idempotentHint: true });
+        }
+        if (/^(delete|update)_/.test(tool.name)) {
+          expect({ name: tool.name, destructiveHint: a.destructiveHint, idempotentHint: a.idempotentHint })
+            .toEqual({ name: tool.name, destructiveHint: true, idempotentHint: true });
+        }
+        if (/^(create|import)_/.test(tool.name)) {
+          expect({ name: tool.name, destructiveHint: a.destructiveHint, idempotentHint: a.idempotentHint })
+            .toEqual({ name: tool.name, destructiveHint: false, idempotentHint: false });
+        }
+      });
+    });
+
+    it('should mark only tools that reach outside LM as open-world', () => {
+      const openWorld = getLogicMonitorTools(false)
+        .filter(tool => tool.annotations?.openWorldHint)
+        .map(tool => tool.name)
+        .sort();
+
+      expect(openWorld).toEqual([
+        'discover_azure_subscriptions',
+        'execute_debug_command',
+        'execute_diagnosticsource',
+        'execute_remediation',
+        'test_aws_account',
+        'test_azure_account',
+        'test_gcp_account',
+        'test_saas_account',
+        'verify_aws_billing_permissions',
+        'verify_azure_storage_permissions',
+      ]);
+    });
+
     it('should have unique tool names', () => {
       const tools = getLogicMonitorTools(false);
       const names = tools.map(tool => tool.name);

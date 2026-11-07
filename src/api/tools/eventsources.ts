@@ -36,6 +36,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'List EventSources',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -68,6 +71,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'Get EventSource details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -97,6 +103,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'Create EventSource',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -141,6 +150,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'Update EventSource',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -189,6 +201,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'Delete EventSource',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -217,6 +232,9 @@ export const eventsourcesTools: Tool[] = [
     annotations: {
       title: 'Import EventSource',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

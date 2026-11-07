@@ -37,6 +37,9 @@ export const accessGroupsTools: Tool[] = [
     annotations: {
       title: 'List access groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -71,6 +74,9 @@ export const accessGroupsTools: Tool[] = [
     annotations: {
       title: 'Get access group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -152,6 +158,9 @@ export const accessGroupsTools: Tool[] = [
     annotations: {
       title: 'Create access group',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -222,6 +231,9 @@ export const accessGroupsTools: Tool[] = [
     annotations: {
       title: 'Update access group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -303,6 +315,9 @@ export const accessGroupsTools: Tool[] = [
     annotations: {
       title: 'Delete access group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -321,7 +336,7 @@ export const accessGroupsTools: Tool[] = [
   {
     name: 'map_unmap_module_to_access_group',
     description: 'Map or unmap LogicModules to/from access groups in LogicMonitor (LM). Provide the mapping payload via "config".',
-    annotations: { title: 'Map/unmap module to access group', readOnlyHint: false },
+    annotations: { title: 'Map/unmap module to access group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { config: { type: 'object', additionalProperties: true, description: 'Mapping payload (moduleIds, accessGroupIds, operation).' } },

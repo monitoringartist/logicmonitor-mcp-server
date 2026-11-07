@@ -8,7 +8,7 @@ export const diagnosticsTools: Tool[] = [
     description: 'List DiagnosticSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are DiagnosticSources:** LogicModules that gather diagnostic data on demand (e.g., when an alert fires) to aid troubleshooting. ' +
       '\n\n**Related tools:** "get_diagnosticsource", "create_diagnosticsource".',
-    annotations: { title: 'List diagnosticsources', readOnlyHint: true },
+    annotations: { title: 'List diagnosticsources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -20,7 +20,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'get_diagnosticsource',
     description: 'Get details of a specific DiagnosticSource in LogicMonitor (LM) monitoring. ' +
       '\n\n**Related tools:** "list_diagnosticsources".',
-    annotations: { title: 'Get diagnosticsource', readOnlyHint: true },
+    annotations: { title: 'Get diagnosticsource', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -36,7 +36,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'create_diagnosticsource',
     description: 'Create a DiagnosticSource in LogicMonitor (LM) monitoring. Definition passed via `config`. ' +
       '\n\n**Related tools:** "get_diagnosticsource" (template), "import_diagnosticsource".',
-    annotations: { title: 'Create diagnosticsource', readOnlyHint: false },
+    annotations: { title: 'Create diagnosticsource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -50,7 +50,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'update_diagnosticsource',
     description: 'Update a DiagnosticSource in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** diagnosticSourceId, `config`, optional reason. ',
-    annotations: { title: 'Update diagnosticsource', readOnlyHint: false },
+    annotations: { title: 'Update diagnosticsource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -65,7 +65,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'delete_diagnosticsource',
     description: 'Delete a DiagnosticSource from LogicMonitor (LM) monitoring. Cannot be undone. ',
-    annotations: { title: 'Delete diagnosticsource', readOnlyHint: false },
+    annotations: { title: 'Delete diagnosticsource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -78,7 +78,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'import_diagnosticsource',
     description: 'Import a DiagnosticSource definition (JSON) into LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Import diagnosticsource', readOnlyHint: false },
+    annotations: { title: 'Import diagnosticsource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -94,7 +94,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'execute_diagnosticsource',
     description: 'Manually execute a DiagnosticSource in LogicMonitor (LM) monitoring to gather diagnostic data on demand. ' +
       '\n\n**Parameters:** the execution request via `config` (e.g., deviceId, deviceDataSourceId / instance to run against). ',
-    annotations: { title: 'Execute diagnosticsource', readOnlyHint: false },
+    annotations: { title: 'Execute diagnosticsource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     inputSchema: {
       type: 'object',
       properties: {
@@ -111,7 +111,7 @@ export const diagnosticsTools: Tool[] = [
     description: 'List RemediationSources in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are RemediationSources:** LogicModules that run automated remediation actions (scripts) in response to alerts. ' +
       '\n\n**Related tools:** "get_remediationsource", "execute_remediation".',
-    annotations: { title: 'List remediationsources', readOnlyHint: true },
+    annotations: { title: 'List remediationsources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -122,7 +122,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'get_remediationsource',
     description: 'Get details of a specific RemediationSource in LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Get remediationsource', readOnlyHint: true },
+    annotations: { title: 'Get remediationsource', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -137,7 +137,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'create_remediationsource',
     description: 'Create a RemediationSource in LogicMonitor (LM) monitoring. Definition via `config`. ',
-    annotations: { title: 'Create remediationsource', readOnlyHint: false },
+    annotations: { title: 'Create remediationsource', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -150,7 +150,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'update_remediationsource',
     description: 'Update a RemediationSource in LogicMonitor (LM) monitoring. Partial update via `config`. Optional reason. ',
-    annotations: { title: 'Update remediationsource', readOnlyHint: false },
+    annotations: { title: 'Update remediationsource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -165,7 +165,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'delete_remediationsource',
     description: 'Delete a RemediationSource from LogicMonitor (LM) monitoring. Cannot be undone. ',
-    annotations: { title: 'Delete remediationsource', readOnlyHint: false },
+    annotations: { title: 'Delete remediationsource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -180,7 +180,7 @@ export const diagnosticsTools: Tool[] = [
     description: 'Manually execute a RemediationSource remediation action in LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** This runs a remediation script/action against a target — verify the target before executing. ' +
       '\n\n**Parameters:** the execution request via `config`. ',
-    annotations: { title: 'Execute remediation', readOnlyHint: false },
+    annotations: { title: 'Execute remediation', readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true },
     inputSchema: {
       type: 'object',
       properties: {
@@ -195,7 +195,7 @@ export const diagnosticsTools: Tool[] = [
   {
     name: 'get_diagnostic_remediation_sources',
     description: 'List diagnostic remediation sources applicable to a resource/alert in LogicMonitor (LM).',
-    annotations: { title: 'Get diagnostic remediation sources', readOnlyHint: true },
+    annotations: { title: 'Get diagnostic remediation sources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -210,7 +210,7 @@ export const diagnosticsTools: Tool[] = [
     name: 'get_diagnostic_remediation_results',
     description: 'Get diagnostic remediation execution results in LogicMonitor (LM). ' +
       '\n\n**Required:** Provide exactly one of `resourceId` (the device/host ID) or `alertId`. Optionally narrow by `moduleType`.',
-    annotations: { title: 'Get diagnostic remediation results', readOnlyHint: true },
+    annotations: { title: 'Get diagnostic remediation results', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {

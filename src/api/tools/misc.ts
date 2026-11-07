@@ -6,7 +6,7 @@ export const miscTools: Tool[] = [
   {
     name: 'get_contract_info',
     description: 'Get contract and usage information for the LogicMonitor (LM) portal.',
-    annotations: { title: 'Get contract info', readOnlyHint: true },
+    annotations: { title: 'Get contract info', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...fieldsSchema },
@@ -18,7 +18,7 @@ export const miscTools: Tool[] = [
   {
     name: 'add_dns_mapping',
     description: 'Add a DNS mapping in LogicMonitor (LM). Provide the mapping payload via "config".',
-    annotations: { title: 'Add DNS mapping', readOnlyHint: false },
+    annotations: { title: 'Add DNS mapping', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { config: { type: 'object', additionalProperties: true, description: 'DNS mapping payload.' } },

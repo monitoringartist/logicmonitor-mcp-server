@@ -40,6 +40,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'List services',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -75,6 +78,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Get service details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -159,6 +165,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Create service',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -222,6 +231,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Update service',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -273,6 +285,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Delete service',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -315,6 +330,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'List service groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -341,6 +359,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Get service group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -398,6 +419,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Create service group',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -450,6 +474,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Update service group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -504,6 +531,9 @@ export const servicesTools: Tool[] = [
     annotations: {
       title: 'Delete service group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

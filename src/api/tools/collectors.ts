@@ -24,6 +24,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'List collectors',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -56,6 +59,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Get collector details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -94,6 +100,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Create collector',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -161,6 +170,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Update collector',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -245,6 +257,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Delete collector',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -277,6 +292,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Get collector installer download URL',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -329,6 +347,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Acknowledge collector down alert',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -359,6 +380,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Execute collector debug command',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     inputSchema: {
       type: 'object',
@@ -387,6 +411,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Get collector debug command result',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -434,6 +461,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'List collector groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -460,6 +490,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'Get collector group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -480,7 +513,7 @@ export const collectorsTools: Tool[] = [
       '\n\n**What this does:** Creates a folder to organize Collectors into a hierarchy. ' +
       '\n\n**Required:** name. **Optional:** description, customProperties, autoBalance settings via `config`. ' +
       '\n\n**Related tools:** "list_collector_groups", "update_collector_group".',
-    annotations: { title: 'Create collector group', readOnlyHint: false },
+    annotations: { title: 'Create collector group', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -498,7 +531,7 @@ export const collectorsTools: Tool[] = [
       '\n\n**Parameters:** groupId plus name, description, or additional fields via `config`. ' +
       '\n\n**Optional query flags:** autoBalanceMonitoredDevices, forceUpdateFailedOverDevices, opType. ' +
       '\n\n**Related tools:** "get_collector_group", "list_collector_groups".',
-    annotations: { title: 'Update collector group', readOnlyHint: false },
+    annotations: { title: 'Update collector group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -519,7 +552,7 @@ export const collectorsTools: Tool[] = [
     description: 'Delete a collector group from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. The group should generally be empty (no Collectors) before deletion. ' +
       '\n\n**Related tools:** "get_collector_group", "list_collector_groups".',
-    annotations: { title: 'Delete collector group', readOnlyHint: false },
+    annotations: { title: 'Delete collector group', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -534,7 +567,7 @@ export const collectorsTools: Tool[] = [
     description: 'List the agent log levels for each component of a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Array of components with their current log level (trace/debug/info/warn/error). ' +
       '\n\n**Related tools:** "get_collector_agent_log_level", "update_collector_agent_log_level".',
-    annotations: { title: 'List collector agent log levels', readOnlyHint: true },
+    annotations: { title: 'List collector agent log levels', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -548,7 +581,7 @@ export const collectorsTools: Tool[] = [
     name: 'get_collector_agent_log_level',
     description: 'Get the agent log level for a specific component of a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**Related tools:** "list_collector_agent_log_levels", "update_collector_agent_log_level".',
-    annotations: { title: 'Get collector agent log level', readOnlyHint: true },
+    annotations: { title: 'Get collector agent log level', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -565,7 +598,7 @@ export const collectorsTools: Tool[] = [
       '\n\n**⚠️ Note:** Verbose levels (trace/debug) increase log volume; revert when finished troubleshooting. ' +
       '\n\n**Parameters:** collectorId, component, and the new level via `config` (e.g., `{ "level": "debug" }`). ' +
       '\n\n**Related tools:** "get_collector_agent_log_level".',
-    annotations: { title: 'Update collector agent log level', readOnlyHint: false },
+    annotations: { title: 'Update collector agent log level', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -582,7 +615,7 @@ export const collectorsTools: Tool[] = [
     description: 'Get recent events for a Collector in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Collector event entries (restarts, failovers, config changes, errors). ' +
       '\n\n**Related tools:** "get_collector", "get_collector_status_check".',
-    annotations: { title: 'Get collector events', readOnlyHint: true },
+    annotations: { title: 'Get collector events', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -597,7 +630,7 @@ export const collectorsTools: Tool[] = [
     description: 'Run a status check on a Collector\'s services in LogicMonitor (LM) monitoring. ' +
       '\n\n**Returns:** Health/status information about the Collector services. ' +
       '\n\n**Related tools:** "get_collector", "get_collector_events".',
-    annotations: { title: 'Get collector status check', readOnlyHint: true },
+    annotations: { title: 'Get collector status check', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -652,6 +685,9 @@ export const collectorsTools: Tool[] = [
     annotations: {
       title: 'List collector versions',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

@@ -8,7 +8,7 @@ export const logicmodulesTools: Tool[] = [
     description: 'List AppliesTo Functions in LogicMonitor (LM) monitoring. ' +
       '\n\n**What are AppliesTo Functions:** Reusable named expressions used in LogicModule AppliesTo logic to target groups of resources. ' +
       '\n\n**Related tools:** "get_applies_to_function", "create_applies_to_function".',
-    annotations: { title: 'List appliesto functions', readOnlyHint: true },
+    annotations: { title: 'List appliesto functions', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -19,7 +19,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'get_applies_to_function',
     description: 'Get details of a specific AppliesTo Function in LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Get appliesto function', readOnlyHint: true },
+    annotations: { title: 'Get appliesto function', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -33,7 +33,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'create_applies_to_function',
     description: 'Create an AppliesTo Function in LogicMonitor (LM) monitoring. Definition via `config` (name, code, description). ',
-    annotations: { title: 'Create appliesto function', readOnlyHint: false },
+    annotations: { title: 'Create appliesto function', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -47,7 +47,7 @@ export const logicmodulesTools: Tool[] = [
     name: 'update_applies_to_function',
     description: 'Update an AppliesTo Function in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** functionId, `config`, optional reason, ignoreReference. ',
-    annotations: { title: 'Update appliesto function', readOnlyHint: false },
+    annotations: { title: 'Update appliesto function', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -64,7 +64,7 @@ export const logicmodulesTools: Tool[] = [
     name: 'delete_applies_to_function',
     description: 'Delete an AppliesTo Function from LogicMonitor (LM) monitoring. Cannot be undone. ' +
       '\n\n**Optional:** ignoreReference to delete even if referenced by LogicModules. ',
-    annotations: { title: 'Delete appliesto function', readOnlyHint: false },
+    annotations: { title: 'Delete appliesto function', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -78,7 +78,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'import_applies_to_function',
     description: 'Import an AppliesTo Function definition (JSON) into LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Import appliesto function', readOnlyHint: false },
+    annotations: { title: 'Import appliesto function', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -96,7 +96,7 @@ export const logicmodulesTools: Tool[] = [
     name: 'list_oids',
     description: 'List SNMP OIDs (MIB definitions) in LogicMonitor (LM) monitoring. ' +
       '\n\n**Related tools:** "get_oid", "create_oid".',
-    annotations: { title: 'List SNMP OIDs', readOnlyHint: true },
+    annotations: { title: 'List SNMP OIDs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
@@ -107,7 +107,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'get_oid',
     description: 'Get details of a specific SNMP OID in LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Get SNMP OID', readOnlyHint: true },
+    annotations: { title: 'Get SNMP OID', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -121,7 +121,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'create_oid',
     description: 'Create an SNMP OID (MIB) definition in LogicMonitor (LM) monitoring. Definition via `config`. ',
-    annotations: { title: 'Create SNMP OID', readOnlyHint: false },
+    annotations: { title: 'Create SNMP OID', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -134,7 +134,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'update_oid',
     description: 'Update an SNMP OID definition in LogicMonitor (LM) monitoring. Partial update via `config`. ',
-    annotations: { title: 'Update SNMP OID', readOnlyHint: false },
+    annotations: { title: 'Update SNMP OID', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -148,7 +148,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'delete_oid',
     description: 'Delete an SNMP OID definition from LogicMonitor (LM) monitoring. Cannot be undone. ',
-    annotations: { title: 'Delete SNMP OID', readOnlyHint: false },
+    annotations: { title: 'Delete SNMP OID', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -161,7 +161,7 @@ export const logicmodulesTools: Tool[] = [
   {
     name: 'import_oid',
     description: 'Import an SNMP OID definition (JSON) into LogicMonitor (LM) monitoring. ',
-    annotations: { title: 'Import SNMP OID', readOnlyHint: false },
+    annotations: { title: 'Import SNMP OID', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -180,7 +180,7 @@ export const logicmodulesTools: Tool[] = [
     description: 'Get portal-wide metadata about LogicModules available in the LogicMonitor (LM) portal. ' +
       '\n\n**No identifier:** This endpoint returns aggregate metadata for all module types and takes no module type/ID. ' +
       'To fetch a specific module, use the type-specific tools instead (e.g., "get_datasource", "get_logsource", "get_property_rule", "get_eventsource", "get_configsource").',
-    annotations: { title: 'Get LogicModule metadata', readOnlyHint: true },
+    annotations: { title: 'Get LogicModule metadata', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...fieldsSchema },

@@ -38,6 +38,9 @@ export const netscansTools: Tool[] = [
     annotations: {
       title: 'List NetScans',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -76,6 +79,9 @@ export const netscansTools: Tool[] = [
     annotations: {
       title: 'Get NetScan details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -155,6 +161,9 @@ export const netscansTools: Tool[] = [
     annotations: {
       title: 'Create NetScan',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -225,6 +234,9 @@ export const netscansTools: Tool[] = [
     annotations: {
       title: 'Update NetScan',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -273,6 +285,9 @@ export const netscansTools: Tool[] = [
     annotations: {
       title: 'Delete NetScan',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

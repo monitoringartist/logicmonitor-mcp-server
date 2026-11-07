@@ -29,6 +29,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'List escalation chains',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -67,6 +70,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Get escalation chain details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -160,6 +166,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Create escalation chain',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -223,6 +232,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Update escalation chain',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -304,6 +316,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Delete escalation chain',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -349,6 +364,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'List recipient groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -380,6 +398,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Get recipient group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -453,6 +474,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Create recipient group',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -513,6 +537,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Update recipient group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -576,6 +603,9 @@ export const escalationTools: Tool[] = [
     annotations: {
       title: 'Delete recipient group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

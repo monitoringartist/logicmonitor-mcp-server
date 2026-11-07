@@ -37,6 +37,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'List reports',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -69,6 +72,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Get report details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -104,6 +110,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Create report',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -170,6 +179,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Update report',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -240,6 +252,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Delete report',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -267,6 +282,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Generate report',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -299,6 +317,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Get report task result',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -345,6 +366,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'List report groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -371,6 +395,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Get report group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -413,6 +440,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Create report group',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -450,6 +480,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Update report group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -488,6 +521,9 @@ export const reportsTools: Tool[] = [
     annotations: {
       title: 'Delete report group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',

@@ -28,6 +28,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'List resource/device groups',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -65,6 +68,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'Get resource/device group details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -127,6 +133,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'Create resource/device group',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -203,6 +212,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'Update resource/device group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -275,6 +287,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'Delete resource/device group',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -327,6 +342,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'List resource/device group properties',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -381,6 +399,9 @@ export const deviceGroupsTools: Tool[] = [
     annotations: {
       title: 'Update resource/device group property',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -407,7 +428,7 @@ export const deviceGroupsTools: Tool[] = [
     description: 'Add a custom property to a resource/device group in LogicMonitor (LM) monitoring. ' +
       '\n\n**What this does:** Creates a new group-level property that is inherited by all resources/devices in the group (unless overridden at a lower level). ' +
       '\n\n**Related tools:** "update_resource_group_property" (modify existing), "delete_resource_group_property" (remove), "list_resource_group_properties" (view all).',
-    annotations: { title: 'Create resource/device group property', readOnlyHint: false },
+    annotations: { title: 'Create resource/device group property', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -423,7 +444,7 @@ export const deviceGroupsTools: Tool[] = [
     name: 'delete_resource_group_property',
     description: 'Delete a custom property from a resource/device group in LogicMonitor (LM) monitoring. ' +
       '\n\n**Related tools:** "update_resource_group_property", "create_resource_group_property", "list_resource_group_properties".',
-    annotations: { title: 'Delete resource/device group property', readOnlyHint: false },
+    annotations: { title: 'Delete resource/device group property', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -441,7 +462,7 @@ export const deviceGroupsTools: Tool[] = [
     description: 'List cluster alert configurations for a resource/device group in LogicMonitor (LM). ' +
       '\n\n**What this does:** Cluster alerts trigger when a threshold number of instances across the group meet a condition (e.g., "more than 5 servers down"). ' +
       '\n\n**Related tools:** "get_resource_group_cluster_alert_conf", "create_resource_group_cluster_alert_conf".',
-    annotations: { title: 'List resource/device group cluster alert configs', readOnlyHint: true },
+    annotations: { title: 'List resource/device group cluster alert configs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -455,7 +476,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'get_resource_group_cluster_alert_conf',
     description: 'Get a specific cluster alert configuration for a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'Get resource/device group cluster alert config', readOnlyHint: true },
+    annotations: { title: 'Get resource/device group cluster alert config', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -469,7 +490,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'create_resource_group_cluster_alert_conf',
     description: 'Create a cluster alert configuration for a resource/device group in LogicMonitor (LM). Provide attributes via "config".',
-    annotations: { title: 'Create resource/device group cluster alert config', readOnlyHint: false },
+    annotations: { title: 'Create resource/device group cluster alert config', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -483,7 +504,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'update_resource_group_cluster_alert_conf',
     description: 'Update a cluster alert configuration for a resource/device group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
-    annotations: { title: 'Update resource/device group cluster alert config', readOnlyHint: false },
+    annotations: { title: 'Update resource/device group cluster alert config', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -498,7 +519,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'delete_resource_group_cluster_alert_conf',
     description: 'Delete a cluster alert configuration from a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'Delete resource/device group cluster alert config', readOnlyHint: false },
+    annotations: { title: 'Delete resource/device group cluster alert config', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -515,7 +536,7 @@ export const deviceGroupsTools: Tool[] = [
     name: 'list_resource_group_datasources',
     description: 'List the datasources applied to a resource/device group in LogicMonitor (LM). ' +
       '\n\n**Related tools:** "get_resource_group_datasource", "update_resource_group_datasource", "get_resource_group_datasource_alert_conf".',
-    annotations: { title: 'List resource/device group datasources', readOnlyHint: true },
+    annotations: { title: 'List resource/device group datasources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -530,7 +551,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'get_resource_group_datasource',
     description: 'Get a specific datasource applied to a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'Get resource/device group datasource', readOnlyHint: true },
+    annotations: { title: 'Get resource/device group datasource', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -545,7 +566,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'update_resource_group_datasource',
     description: 'Update a datasource applied to a resource/device group in LogicMonitor (LM) (e.g., monitoring/collection settings). Uses PATCH semantics; provide changed fields via "config".',
-    annotations: { title: 'Update resource/device group datasource', readOnlyHint: false },
+    annotations: { title: 'Update resource/device group datasource', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -562,7 +583,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'get_resource_group_datasource_alert_conf',
     description: 'Get the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'Get resource/device group datasource alert setting', readOnlyHint: true },
+    annotations: { title: 'Get resource/device group datasource alert setting', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -577,7 +598,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'update_resource_group_datasource_alert_conf',
     description: 'Update the alert settings (thresholds) for a datasource on a resource/device group in LogicMonitor (LM). Uses PATCH semantics; provide changed fields via "config".',
-    annotations: { title: 'Update resource/device group datasource alert setting', readOnlyHint: false },
+    annotations: { title: 'Update resource/device group datasource alert setting', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -594,7 +615,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'list_resource_group_alerts',
     description: 'List alerts for all resources/devices in a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'List resource/device group alerts', readOnlyHint: true },
+    annotations: { title: 'List resource/device group alerts', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -610,7 +631,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'list_resource_group_sdts',
     description: 'List active/scheduled down times (SDTs) for a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'List resource/device group SDTs', readOnlyHint: true },
+    annotations: { title: 'List resource/device group SDTs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -624,7 +645,7 @@ export const deviceGroupsTools: Tool[] = [
   {
     name: 'get_resource_group_sdt_history',
     description: 'Get the scheduled down time (SDT) history for a resource/device group in LogicMonitor (LM).',
-    annotations: { title: 'Get resource/device group SDT history', readOnlyHint: true },
+    annotations: { title: 'Get resource/device group SDT history', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {

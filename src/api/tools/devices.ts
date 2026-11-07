@@ -36,6 +36,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'List monitored resources/devices',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -66,6 +69,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'Get resource/device details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -112,6 +118,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'Add resource/device(s)',
       readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -227,6 +236,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'Update resource/device(s)',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -347,6 +359,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'Delete resource/device(s)',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -419,6 +434,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'List resource/device properties',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -486,6 +504,9 @@ export const devicesTools: Tool[] = [
     annotations: {
       title: 'Update resource/device properties',
       readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -512,7 +533,7 @@ export const devicesTools: Tool[] = [
   {
     name: 'list_unmonitored_devices',
     description: 'List unmonitored devices discovered by LogicMonitor (LM) collectors but not yet added to monitoring.',
-    annotations: { title: 'List unmonitored devices', readOnlyHint: true },
+    annotations: { title: 'List unmonitored devices', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },

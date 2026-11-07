@@ -24,6 +24,9 @@ export const usersTools: Tool[] = [
     annotations: {
       title: 'List users',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -61,6 +64,9 @@ export const usersTools: Tool[] = [
     annotations: {
       title: 'Get user details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -103,6 +109,9 @@ export const usersTools: Tool[] = [
     annotations: {
       title: 'List roles',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -141,6 +150,9 @@ export const usersTools: Tool[] = [
     annotations: {
       title: 'Get role details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -163,7 +175,7 @@ export const usersTools: Tool[] = [
       '\n\n**Privilege structure:** Each privilege typically has `objectType` (e.g., "dashboard_group", "device_group", "setting"), `objectId`, `objectName`, and `operation` ("read"/"write"/"ack"). Pass the full privileges array (and any other Role fields) via `config`. ' +
       '\n\n**Tip:** Use "get_role" on an existing role as a template for the privileges array. ' +
       '\n\n**Related tools:** "get_role" (template/verify), "list_roles", "update_role", "create_user" (assign the role).',
-    annotations: { title: 'Create role', readOnlyHint: false },
+    annotations: { title: 'Create role', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -185,7 +197,7 @@ export const usersTools: Tool[] = [
       '\n\n**Parameters:** roleId plus any of name, description, or additional fields (e.g., the `privileges` array) via `config`. Partial update. ' +
       '\n\n**⚠️ Note:** Replacing the `privileges` array changes what every user assigned this role can access. Use "get_role" first to retrieve the current privileges and modify from there. ' +
       '\n\n**Related tools:** "get_role" (retrieve current config), "list_roles".',
-    annotations: { title: 'Update role', readOnlyHint: false },
+    annotations: { title: 'Update role', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -210,7 +222,7 @@ export const usersTools: Tool[] = [
       '\n- roleId: The ID of the role to delete (from "list_roles")' +
       '\n\n**Before deleting:** Use "get_role" to check `associatedUserCount`. ' +
       '\n\n**Related tools:** "get_role" (check user count), "list_roles", "update_user" (reassign users).',
-    annotations: { title: 'Delete role', readOnlyHint: false },
+    annotations: { title: 'Delete role', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -259,6 +271,9 @@ export const usersTools: Tool[] = [
     annotations: {
       title: 'Get API tokens',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
     inputSchema: {
       type: 'object',
@@ -281,7 +296,7 @@ export const usersTools: Tool[] = [
       '\n\n**What this does:** Creates a LogicMonitor user account and assigns roles. ' +
       '\n\n**Required:** the user definition via `config` — at minimum username and roles (array of role names or {id} objects). May include email, firstName, lastName, password, etc. ' +
       '\n\n**Related tools:** "list_users", "list_roles" (find role names), "create_api_token" (issue API credentials).',
-    annotations: { title: 'Create user', readOnlyHint: false },
+    annotations: { title: 'Create user', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -296,7 +311,7 @@ export const usersTools: Tool[] = [
     description: 'Update a user (admin) in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** userId, `config` (fields to change), optional changePassword, validationOnly. ' +
       '\n\n**Related tools:** "get_user", "list_users".',
-    annotations: { title: 'Update user', readOnlyHint: false },
+    annotations: { title: 'Update user', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -314,7 +329,7 @@ export const usersTools: Tool[] = [
     description: 'Delete a user (admin) from LogicMonitor (LM) monitoring. ' +
       '\n\n**⚠️ WARNING:** Cannot be undone. Any API tokens owned by the user are also removed. ' +
       '\n\n**Related tools:** "get_user", "list_users".',
-    annotations: { title: 'Delete user', readOnlyHint: false },
+    annotations: { title: 'Delete user', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -330,7 +345,7 @@ export const usersTools: Tool[] = [
       '\n\n**⚠️ Security:** The response includes the Access Key — store it securely; it cannot be retrieved again. The token inherits the user\'s permissions. ' +
       '\n\n**Parameters:** userId, `config` (e.g., { "note": "Terraform automation" }), optional type. ' +
       '\n\n**Related tools:** "list_api_tokens", "delete_api_token".',
-    annotations: { title: 'Create API token', readOnlyHint: false },
+    annotations: { title: 'Create API token', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -347,7 +362,7 @@ export const usersTools: Tool[] = [
     description: 'Update an API token (e.g., note or status) for a user in LogicMonitor (LM) monitoring. Partial update via `config`. ' +
       '\n\n**Parameters:** userId, apiTokenId, `config` (fields to change, e.g., { "status": 2 } to disable). ' +
       '\n\n**Related tools:** "list_api_tokens".',
-    annotations: { title: 'Update API token', readOnlyHint: false },
+    annotations: { title: 'Update API token', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -364,7 +379,7 @@ export const usersTools: Tool[] = [
     description: 'Delete (revoke) an API token for a user in LogicMonitor (LM) monitoring. Cannot be undone. ' +
       '\n\n**Parameters:** userId, apiTokenId. ' +
       '\n\n**Related tools:** "list_api_tokens" (find the token ID).',
-    annotations: { title: 'Delete API token', readOnlyHint: false },
+    annotations: { title: 'Delete API token', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: {
@@ -380,7 +395,7 @@ export const usersTools: Tool[] = [
   {
     name: 'get_external_api_stats',
     description: 'Get external API usage statistics for the LogicMonitor (LM) portal.',
-    annotations: { title: 'Get external API stats', readOnlyHint: true },
+    annotations: { title: 'Get external API stats', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       properties: { ...fieldsSchema },

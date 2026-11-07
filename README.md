@@ -485,6 +485,8 @@ npm run start:http
 
 The server provides 352 tools for comprehensive LogicMonitor operations (100% LogicMonitor API v3 coverage). Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
+Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `destructiveHint` (deletes or overwrites existing data), `idempotentHint` (repeating the call has no further effect), and `openWorldHint` (reaches systems outside the LM portal, such as cloud provider APIs or monitored hosts). Collapsed `manage_<resource>` tools take the riskiest value of their operations.
+
 ### Resource/Device Management
 
 **Read-Only:**
