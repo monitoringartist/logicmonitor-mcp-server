@@ -42,8 +42,10 @@ describe('CLI Configuration Parser', () => {
     delete process.env.MCP_LOG_LEVEL;
     delete process.env.MCP_ENABLED_TOOLS;
     delete process.env.MCP_READ_ONLY;
-    delete process.env.MCP_DISABLE_SEARCH;
+    delete process.env.MCP_COLLAPSE_TOOLS_LEVEL_1;
+    delete process.env.MCP_COLLAPSE_TOOLS_LEVEL_2;
     delete process.env.MCP_BEARER_TOKEN;
+    delete process.env.MCP_ALLOW_UNAUTHENTICATED;
     delete process.env.TLS_CERT_FILE;
     delete process.env.TLS_KEY_FILE;
     delete process.env.OAUTH_PROVIDER;
@@ -93,7 +95,8 @@ describe('CLI Configuration Parser', () => {
         expect(config.logFormat).toBe('human');
         expect(config.logLevel).toBe('info');
         expect(config.readOnly).toBe(true);
-        expect(config.disableSearch).toBe(false);
+        expect(config.collapseToolsLevel1).toBe(false);
+        expect(config.collapseToolsLevel2).toBe(false);
       });
 
       it('should have empty LM credentials by default', () => {
@@ -183,11 +186,25 @@ describe('CLI Configuration Parser', () => {
         expect(config.readOnly).toBe(false);
       });
 
-      it('should parse disable-search flag from env', () => {
-        process.env.MCP_DISABLE_SEARCH = 'true';
+      it('should parse collapse-tools-level-1 flag from env', () => {
+        process.env.MCP_COLLAPSE_TOOLS_LEVEL_1 = 'true';
         const config = parseConfig();
-        
-        expect(config.disableSearch).toBe(true);
+
+        expect(config.collapseToolsLevel1).toBe(true);
+      });
+
+      it('should parse collapse-tools-level-2 flag from env', () => {
+        process.env.MCP_COLLAPSE_TOOLS_LEVEL_2 = 'true';
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel2).toBe(true);
+      });
+
+      it('should default collapse-tools levels to false', () => {
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(false);
+        expect(config.collapseToolsLevel2).toBe(false);
       });
 
       it('should parse LM credentials from env', () => {
@@ -204,6 +221,19 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.mcpBearerToken).toBe('mcp-token-456');
+      });
+
+      it('should default allowUnauthenticated to false', () => {
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(false);
+      });
+
+      it('should parse allowUnauthenticated from env', () => {
+        process.env.MCP_ALLOW_UNAUTHENTICATED = 'true';
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(true);
       });
     });
 
@@ -286,11 +316,19 @@ describe('CLI Configuration Parser', () => {
         expect(config.readOnly).toBe(true);
       });
 
-      it('should parse disable-search flag from CLI', () => {
-        process.argv = ['node', 'script.js', '--disable-search'];
+      it('should parse collapse-tools-level-1 flag from CLI', () => {
+        process.argv = ['node', 'script.js', '--collapse-tools-level-1'];
         const config = parseConfig();
-        
-        expect(config.disableSearch).toBe(true);
+
+        expect(config.collapseToolsLevel1).toBe(true);
+      });
+
+      it('should parse collapse-tools-level-2 flag from CLI', () => {
+        process.argv = ['node', 'script.js', '--collapse-tools-level-1', '--collapse-tools-level-2'];
+        const config = parseConfig();
+
+        expect(config.collapseToolsLevel1).toBe(true);
+        expect(config.collapseToolsLevel2).toBe(true);
       });
 
       it('should parse LM credentials from CLI', () => {
@@ -306,6 +344,13 @@ describe('CLI Configuration Parser', () => {
         const config = parseConfig();
         
         expect(config.mcpBearerToken).toBe('mcp-test-token');
+      });
+
+      it('should parse allowUnauthenticated from CLI flag', () => {
+        process.argv = ['node', 'script.js', '--allow-unauthenticated'];
+        const config = parseConfig();
+
+        expect(config.allowUnauthenticated).toBe(true);
       });
     });
 
@@ -553,14 +598,36 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
-        disableSearch: false,
+        collapseToolsLevel1: false,
+        collapseToolsLevel2: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
+        allowUnauthenticated: false,
       };
     });
 
     it('should pass validation with valid config', () => {
       expect(() => validateConfig(config)).not.toThrow();
+    });
+
+    it('should pass validation when both collapse levels are enabled', () => {
+      config.collapseToolsLevel1 = true;
+      config.collapseToolsLevel2 = true;
+
+      expect(() => validateConfig(config)).not.toThrow();
+      expect(process.exit).not.toHaveBeenCalled();
+    });
+
+    it('should fail validation when level 2 is enabled without level 1', () => {
+      config.collapseToolsLevel1 = false;
+      config.collapseToolsLevel2 = true;
+
+      validateConfig(config);
+
+      expect(process.exit).toHaveBeenCalledWith(1);
+      expect(
+        consoleErrors.some(e => e.includes('--collapse-tools-level-2 requires --collapse-tools-level-1')),
+      ).toBe(true);
     });
 
     it('should fail validation when LM company is missing', () => {
@@ -609,9 +676,73 @@ describe('CLI Configuration Parser', () => {
     });
 
     it('should validate all transport types', () => {
+      // Opt in to unauthenticated so the network-auth gate doesn't interfere here.
+      config.allowUnauthenticated = true;
       ['stdio', 'sse', 'streamable-http'].forEach(transport => {
         config.transport = transport as any;
         expect(() => validateConfig(config)).not.toThrow();
+      });
+    });
+
+    describe('network transport authentication gate', () => {
+      it('should fail closed for sse without auth or opt-in', () => {
+        config.transport = 'sse';
+
+        validateConfig(config);
+
+        expect(process.exit).toHaveBeenCalledWith(1);
+        expect(consoleErrors.some(e => e.includes('without authentication'))).toBe(true);
+        expect(consoleErrors.some(e => e.includes('MCP_ALLOW_UNAUTHENTICATED=true'))).toBe(true);
+      });
+
+      it('should fail closed for streamable-http without auth or opt-in', () => {
+        config.transport = 'streamable-http';
+
+        validateConfig(config);
+
+        expect(process.exit).toHaveBeenCalledWith(1);
+      });
+
+      it('should allow stdio without auth or opt-in', () => {
+        config.transport = 'stdio';
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with a static bearer token', () => {
+        config.transport = 'sse';
+        config.mcpBearerToken = 'secret';
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with OAuth configured', () => {
+        config.transport = 'streamable-http';
+        config.oauth = {
+          provider: 'github',
+          clientId: 'id',
+          clientSecret: 'secret',
+          callbackUrl: 'http://localhost:3000/auth/callback',
+          sessionSecret: 'session',
+          tokenRefreshEnabled: true,
+        };
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should allow a network transport with explicit unauthenticated opt-in', () => {
+        config.transport = 'sse';
+        config.allowUnauthenticated = true;
+
+        validateConfig(config);
+
+        expect(process.exit).not.toHaveBeenCalled();
       });
     });
 
@@ -642,9 +773,11 @@ describe('CLI Configuration Parser', () => {
         logFormat: 'human',
         logLevel: 'info',
         readOnly: true,
-        disableSearch: false,
+        collapseToolsLevel1: false,
+        collapseToolsLevel2: false,
         lmCompany: 'testcompany',
         lmBearerToken: 'test-token',
+        allowUnauthenticated: false,
       };
     });
 
@@ -716,12 +849,21 @@ describe('CLI Configuration Parser', () => {
       expect(consoleOutput.some(o => o.includes('Mode: read-write'))).toBe(true);
     });
 
-    it('should show search disabled status', () => {
-      config.disableSearch = true;
-      
+    it('should show collapse tools level 1 status', () => {
+      config.collapseToolsLevel1 = true;
+
       displayConfig(config);
-      
-      expect(consoleOutput.some(o => o.includes('Search: disabled'))).toBe(true);
+
+      expect(consoleOutput.some(o => o.includes('Collapse Tools: level 1'))).toBe(true);
+    });
+
+    it('should show collapse tools level 2 status', () => {
+      config.collapseToolsLevel1 = true;
+      config.collapseToolsLevel2 = true;
+
+      displayConfig(config);
+
+      expect(consoleOutput.some(o => o.includes('Collapse Tools: level 1 + level 2'))).toBe(true);
     });
 
     it('should show enabled tools when configured', () => {
@@ -791,6 +933,8 @@ describe('CLI Configuration Parser', () => {
       expect(output).toContain('TOOL CONFIGURATION');
       expect(output).toContain('--enabled-tools');
       expect(output).toContain('--read-only');
+      expect(output).toContain('--collapse-tools-level-1');
+      expect(output).toContain('--collapse-tools-level-2');
     });
 
     it('should include LogicMonitor API options', () => {

@@ -30,7 +30,12 @@ export interface OAuthUser {
  */
 export function configureOAuthStrategy(config: OAuthConfig): void {
   const strategy = createStrategy(config);
-  passport.use(strategy);
+  // Register the strategy under the provider name so that
+  // passport.authenticate('azure'|'google'|'okta'|'auth0'|'custom'|'github')
+  // resolves correctly. Without this, passport-oauth2 registers under its
+  // default name 'oauth2', causing "Unknown authentication strategy" 500s
+  // at /auth/login for every non-github provider.
+  passport.use(config.provider, strategy);
 
   // Serialize user for session storage
   passport.serializeUser((user: any, done) => {

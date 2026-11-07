@@ -9,6 +9,7 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
 import { getLogicMonitorTools } from '../api/tools.js';
+import { buildCollapsedTools } from '../api/tools/collapse.js';
 import { createServer } from './server.js';
 
 export interface StdioConfig {
@@ -17,13 +18,15 @@ export interface StdioConfig {
   lmBearerToken?: string;
   readOnly: boolean;
   enabledTools?: string[];
+  collapseToolsLevel1?: boolean;
+  collapseToolsLevel2?: boolean;
 }
 
 /**
  * Starts the MCP server with STDIO transport
  */
 export async function startStdioTransport(config: StdioConfig): Promise<void> {
-  const { version, lmCompany, lmBearerToken, readOnly, enabledTools } = config;
+  const { version, lmCompany, lmBearerToken, readOnly, enabledTools, collapseToolsLevel1, collapseToolsLevel2 } = config;
 
   console.error('🚀 Starting LogicMonitor MCP Server in STDIO mode...');
 
@@ -36,7 +39,7 @@ export async function startStdioTransport(config: StdioConfig): Promise<void> {
       company: lmCompany,
       bearerToken: lmBearerToken,
     });
-    lmHandlers = new LogicMonitorHandlers(lmClient);
+    lmHandlers = new LogicMonitorHandlers(lmClient, { collapseToolsLevel1, collapseToolsLevel2, readOnly });
     console.error('✅ LogicMonitor credentials configured');
   } else {
     console.error('⚠️  Warning: LM_COMPANY and LM_BEARER_TOKEN not set');
@@ -62,6 +65,14 @@ export async function startStdioTransport(config: StdioConfig): Promise<void> {
     if (unknownTools.length > 0) {
       console.error('⚠️  Unknown tools in enabled tools list:', unknownTools.join(', '));
     }
+  }
+
+  // Collapse per-verb tools into manage_<resource> tools if enabled
+  if (collapseToolsLevel1) {
+    const beforeCount = tools.length;
+    tools = buildCollapsedTools(tools, { level2: collapseToolsLevel2 }).tools;
+    const levelLabel = collapseToolsLevel2 ? 'level 1+2' : 'level 1';
+    console.error(`ℹ️  Collapsed tools (${levelLabel}): ${beforeCount} -> ${tools.length} tools`);
   }
 
   // Create server instance using factory

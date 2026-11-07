@@ -1,0 +1,178 @@
+#!/usr/bin/env node
+/**
+ * Generate src/api/field-schemas.ts from the LogicMonitor Swagger v3 spec.
+ *
+ * The generated module powers strict `fields` validation: each mapped tool is
+ * associated with a Swagger response model, and the list of valid field names is
+ * extracted directly from that model's properties. This keeps the allow-lists in
+ * lock-step with the official API and prevents silent data loss from typo'd field
+ * names.
+ *
+ * Usage:
+ *   node scripts/generate-field-schemas.mjs [path/to/swagger.json]
+ *
+ * If no path is given the spec is downloaded from the official URL.
+ */
+import { writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const SWAGGER_URL =
+  'https://www.logicmonitor.com/swagger-ui-master/api-v3/dist/swagger.json';
+
+// Schema name -> the canonical GET endpoint whose response model defines the fields.
+const SCHEMA_ENDPOINTS = {
+  Device: '/device/devices',
+  DeviceGroup: '/device/groups',
+  Alert: '/alert/alerts',
+  Dashboard: '/dashboard/dashboards',
+  DashboardGroup: '/dashboard/groups',
+  Widget: '/dashboard/widgets',
+  Website: '/website/websites',
+  WebsiteGroup: '/website/groups',
+  Collector: '/setting/collector/collectors',
+  CollectorGroup: '/setting/collector/groups',
+  Admin: '/setting/admins',
+  Role: '/setting/roles',
+  DataSource: '/setting/datasources',
+  EventSource: '/setting/eventsources',
+  ConfigSource: '/setting/configsources',
+  SDT: '/sdt/sdts',
+  OpsNote: '/setting/opsnotes',
+  Report: '/report/reports',
+  RecipientGroup: '/setting/recipientgroups',
+  AlertRule: '/setting/alert/rules',
+  EscalationChain: '/setting/alert/chains',
+};
+
+// Tool name -> schema. Only the canonical list/get tools whose endpoint is exactly
+// the schema endpoint above are mapped, so validation never falsely rejects a field.
+const TOOL_SCHEMA = {
+  list_resources: 'Device',
+  get_resource: 'Device',
+  list_resource_groups: 'DeviceGroup',
+  get_resource_group: 'DeviceGroup',
+  list_alerts: 'Alert',
+  get_alert: 'Alert',
+  list_dashboards: 'Dashboard',
+  get_dashboard: 'Dashboard',
+  list_dashboard_groups: 'DashboardGroup',
+  get_dashboard_group: 'DashboardGroup',
+  list_widgets: 'Widget',
+  get_widget: 'Widget',
+  list_websites: 'Website',
+  get_website: 'Website',
+  list_website_groups: 'WebsiteGroup',
+  get_website_group: 'WebsiteGroup',
+  list_collectors: 'Collector',
+  get_collector: 'Collector',
+  list_collector_groups: 'CollectorGroup',
+  get_collector_group: 'CollectorGroup',
+  list_users: 'Admin',
+  get_user: 'Admin',
+  list_roles: 'Role',
+  get_role: 'Role',
+  list_datasources: 'DataSource',
+  get_datasource: 'DataSource',
+  list_eventsources: 'EventSource',
+  get_eventsource: 'EventSource',
+  list_configsources: 'ConfigSource',
+  get_configsource: 'ConfigSource',
+  list_sdts: 'SDT',
+  get_sdt: 'SDT',
+  list_opsnotes: 'OpsNote',
+  get_opsnote: 'OpsNote',
+  list_reports: 'Report',
+  get_report: 'Report',
+  list_recipient_groups: 'RecipientGroup',
+  get_recipient_group: 'RecipientGroup',
+  list_alert_rules: 'AlertRule',
+  get_alert_rule: 'AlertRule',
+  list_escalation_chains: 'EscalationChain',
+  get_escalation_chain: 'EscalationChain',
+};
+
+async function loadSpec() {
+  const arg = process.argv[2];
+  if (arg) {
+    if (!existsSync(arg)) {
+      throw new Error(`Swagger file not found: ${arg}`);
+    }
+    return JSON.parse(readFileSync(arg, 'utf8'));
+  }
+  // eslint-disable-next-line no-console
+  console.error(`Downloading swagger spec from ${SWAGGER_URL} ...`);
+  const res = await fetch(SWAGGER_URL);
+  if (!res.ok) {
+    throw new Error(`Failed to download swagger: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+function entityFields(spec, path) {
+  const defs = spec.definitions || {};
+  const resolveRef = (ref) => defs[ref.split('/').pop()];
+  const op = spec.paths?.[path]?.get;
+  if (!op) throw new Error(`No GET operation for ${path}`);
+  const schema = op.responses?.['200']?.schema;
+  if (!schema) throw new Error(`No 200 schema for GET ${path}`);
+  let def = schema.$ref ? resolveRef(schema.$ref) : schema;
+  let props = def.properties || {};
+  // Unwrap pagination response: { ..., items: [ { $ref: Model } ] }
+  if (props.items && props.items.type === 'array' && props.items.items?.$ref) {
+    props = resolveRef(props.items.items.$ref).properties || {};
+  }
+  return Object.keys(props).sort();
+}
+
+async function main() {
+  const spec = await loadSpec();
+
+  const fieldSchemas = {};
+  for (const [schema, path] of Object.entries(SCHEMA_ENDPOINTS)) {
+    fieldSchemas[schema] = entityFields(spec, path);
+  }
+
+  const fieldSchemasBody = Object.entries(fieldSchemas)
+    .map(([schema, fields]) => `  ${schema}: [${fields.map((f) => `'${f}'`).join(', ')}],`)
+    .join('\n');
+
+  const toolSchemaBody = Object.entries(TOOL_SCHEMA)
+    .map(([tool, schema]) => `  ${tool}: '${schema}',`)
+    .join('\n');
+
+  const out = `/**
+ * AUTO-GENERATED FILE — do not edit by hand.
+ *
+ * Generated by scripts/generate-field-schemas.mjs from the LogicMonitor Swagger v3 spec.
+ * Run \`npm run generate:field-schemas\` to regenerate after API changes.
+ *
+ * Maps tools to their Swagger response model and the set of valid \`fields\` names,
+ * enabling strict validation of the optional \`fields\` parameter.
+ */
+
+/** Schema name -> the complete set of valid field names from the Swagger model. */
+export const FIELD_SCHEMAS: Record<string, readonly string[]> = {
+${fieldSchemasBody}
+};
+
+/** Tool name -> the schema in FIELD_SCHEMAS used to validate its \`fields\` parameter. */
+export const TOOL_FIELD_SCHEMA: Record<string, string> = {
+${toolSchemaBody}
+};
+`;
+
+  const here = dirname(fileURLToPath(import.meta.url));
+  const target = join(here, '..', 'src', 'api', 'field-schemas.ts');
+  writeFileSync(target, out, 'utf8');
+  // eslint-disable-next-line no-console
+  console.error(
+    `Wrote ${target} (${Object.keys(fieldSchemas).length} schemas, ${Object.keys(TOOL_SCHEMA).length} tools)`,
+  );
+}
+
+main().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
+  process.exit(1);
+});

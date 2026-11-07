@@ -275,6 +275,8 @@ describe('Authentication E2E Tests', () => {
           OAUTH_PROVIDER: '', // Empty string to unset
           OAUTH_CLIENT_ID: '',
           OAUTH_CLIENT_SECRET: '',
+          // Unauthenticated network access is now opt-in (fail-closed by default)
+          MCP_ALLOW_UNAUTHENTICATED: 'true',
         },
         TEST_PORTS.NO_AUTH,
       );

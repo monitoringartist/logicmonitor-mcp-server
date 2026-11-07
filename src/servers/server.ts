@@ -41,6 +41,25 @@ export interface ServerInstance {
 }
 
 /**
+ * Per-server session metadata.
+ *
+ * The MCP SDK `Server` type isn't extensible, so instead of casting and stashing
+ * fields on it (`(server as any).currentUserScope = ...`), we associate metadata
+ * via a WeakMap. Entries are garbage-collected automatically when the server is.
+ */
+export interface ServerMetadata {
+  userScope: string;
+  sessionId?: string;
+}
+
+const serverMetadata = new WeakMap<Server, ServerMetadata>();
+
+/** Retrieve the session metadata associated with a server instance, if any. */
+export function getServerMetadata(server: Server): ServerMetadata | undefined {
+  return serverMetadata.get(server);
+}
+
+/**
  * Creates a configured MCP server instance with all handlers set up
  *
  * @param config Server configuration
@@ -83,11 +102,11 @@ export function createServer(config: ServerConfig): ServerInstance {
     },
   );
 
-  // Store session-specific metadata
-  (server as any).currentUserScope = userScope;
-  if (sessionId) {
-    (server as any).sessionId = sessionId;
-  }
+  // Store session-specific metadata (typed, via WeakMap — see getServerMetadata).
+  serverMetadata.set(server, {
+    userScope,
+    ...(sessionId ? { sessionId } : {}),
+  });
 
   // Track subscriptions and intervals
   const intervals: NodeJS.Timeout[] = [];

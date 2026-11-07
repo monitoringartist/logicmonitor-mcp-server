@@ -13,7 +13,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -32,10 +32,11 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18, 20, 22]
+        node-version: [22, 24, 26]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -52,12 +53,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Use coverage so jest.config.js coverageThreshold is enforced in CI.
       - name: Run tests
-        run: npm test
+        run: npm run test:coverage
 
       - name: Upload coverage
-        if: matrix.node-version == 18
-        uses: codecov/codecov-action@v5
+        if: matrix.node-version == 22
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage/lcov.info
           flags: unittests
@@ -65,9 +67,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+  field-schemas:
+    name: Field Schemas Up-to-Date
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -75,7 +77,35 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '18'
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Regenerate from the live LogicMonitor Swagger v3 spec and fail if the
+      # committed file drifted (forgotten regen, or an upstream API model change).
+      - name: Regenerate field schemas from Swagger spec
+        run: npm run generate:field-schemas
+
+      - name: Fail if field-schemas.ts is out of date
+        run: |
+          if ! git diff --exit-code src/api/field-schemas.ts; then
+            echo "::error::src/api/field-schemas.ts is out of date. Run 'npm run generate:field-schemas' and commit the result."
+            exit 1
+          fi
+
+  build:
+    name: Build
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -94,16 +124,16 @@ jobs:
 
   docker:
     name: Docker Build Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: false
