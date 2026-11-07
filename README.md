@@ -146,7 +146,7 @@ docker-compose up -d logicmonitor-mcp-http
 
 ### Prerequisites
 
-- Node.js >= 18 (or Docker)
+- Node.js >= 22.12 (or Docker)
 - LogicMonitor account with API access
 - LogicMonitor API Bearer Token
 

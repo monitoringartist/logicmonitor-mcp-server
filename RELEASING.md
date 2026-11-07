@@ -211,7 +211,7 @@ For automated releases, configure these secrets in GitHub:
 
 Runs on every push and PR:
 - Linting
-- Tests on Node.js 18, 20, 22
+- Tests on Node.js 22, 24, 26
 - Build verification
 - Docker build test
 - Code coverage upload

@@ -18,7 +18,7 @@ import { jest } from '@jest/globals';
 import { LogicMonitorClient } from './client.js';
 import { LM_FIXTURES, type LMFixtureModel } from './fixtures.js';
 
-/** Deep clone helper (structuredClone is available on Node >= 18). */
+/** Deep clone helper (structuredClone is available on all supported Node versions). */
 function clone<T>(value: T): T {
   return structuredClone(value);
 }

@@ -21,7 +21,7 @@ This project adheres to a code of conduct. By participating, you are expected to
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js >= 22.12
 - npm >= 9
 - Git
 - LogicMonitor account (for testing)

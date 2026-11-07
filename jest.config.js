@@ -1,3 +1,23 @@
+import vm from 'node:vm';
+
+// sanitize-html (CommonJS) require()s these ESM-only packages. Node >= 22.12 handles that
+// natively, and Jest does too from Node 24.9 (same check Jest uses internally). On older
+// Node, compile them to CommonJS instead; on newer Node, Jest loads them as ESM, where a
+// CommonJS transform would break them.
+const ESM_ONLY_DEPS = ['htmlparser2', 'domhandler', 'domutils', 'domelementtype', 'dom-serializer', 'entities'];
+const jestRequiresEsmNatively = typeof vm.SourceTextModule?.prototype.hasAsyncGraph === 'function';
+const esmOnlyDepsTransform = jestRequiresEsmNatively
+  ? {}
+  : {
+    [`/node_modules/(${ESM_ONLY_DEPS.join('|')})/.+\\.js$`]: [
+      'ts-jest',
+      {
+        useESM: false,
+        tsconfig: { allowJs: true, module: 'commonjs', isolatedModules: true },
+      },
+    ],
+  };
+
 export default {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
@@ -12,7 +32,11 @@ export default {
         useESM: true,
       },
     ],
+    ...esmOnlyDepsTransform,
   },
+  ...(jestRequiresEsmNatively
+    ? {}
+    : { transformIgnorePatterns: [`/node_modules/(?!(${ESM_ONLY_DEPS.join('|')})/)`] }),
   testMatch: [
     '**/__tests__/**/*.test.ts',
     '**/?(*.)+(spec|test).ts',

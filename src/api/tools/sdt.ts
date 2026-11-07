@@ -94,9 +94,9 @@ export const sdtTools: Tool[] = [
       '\n\n**Required parameters:** ' +
       '\n- deviceId: Device to schedule maintenance for (from "list_resources")' +
       '\n- type: "DeviceSDT" (entire device) or "DeviceDataSourceSDT" (specific datasource)' +
-      '\n- startDateTime: Start time in epoch MILLISECONDS (e.g., Date.now() + 3600000 for 1 hour from now)' +
-      '\n- endDateTime: End time in epoch MILLISECONDS' +
-      '\n- comment: Reason for maintenance (REQUIRED for audit trail)' +
+      '\n- startDateTime: Start time in epoch milliseconds (e.g., Date.now() + 3600000 for 1 hour from now)' +
+      '\n- endDateTime: End time in epoch milliseconds' +
+      '\n- comment: Reason for maintenance (required for audit trail)' +
       '\n\n**Time calculation examples:** ' +
       '\n- 1 hour from now: startDateTime: Date.now() + 3600000' +
       '\n- 4 hours maintenance: endDateTime: startDateTime + (4 * 3600000)' +
