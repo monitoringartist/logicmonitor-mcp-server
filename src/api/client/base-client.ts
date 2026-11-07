@@ -78,7 +78,7 @@ export class BaseClient {
   constructor(config: LogicMonitorConfig) {
     this.baseUrl = `https://${config.company}.logicmonitor.com/santaba/rest`;
     this.bearerToken = config.bearerToken;
-    this.timeout = config.timeout || 30000; // Default 30 seconds
+    this.timeout = config.timeout || 120000; // Default 120 seconds
     // Default to 3 retries; allow explicit 0 to disable.
     this.maxRetries = config.maxRetries ?? 3;
     this.logger = config.logger;
