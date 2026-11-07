@@ -37,7 +37,6 @@
         "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/servers/index.js",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix",
-        "format": "eslint src/**/*.ts --fix",
         "generate:field-schemas": "node scripts/generate-field-schemas.mjs",
         "generate:fixtures": "node scripts/generate-fixtures.mjs",
         "scaffold:tool": "node scripts/scaffold-tool.mjs",
