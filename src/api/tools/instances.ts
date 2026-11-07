@@ -66,8 +66,8 @@ export const instancesTools: Tool[] = [
       '\n- deviceDataSourceId: From "get_resource_datasource" or "list_resource_datasources"' +
       '\n- instanceId: From "list_resource_instances"' +
       '\n- datapoints: Comma-separated metric names (e.g., "CPUBusyPercent,MemoryUsedPercent")' +
-      '\n- start/end: Time range in epoch milliseconds (not seconds!), start time must be before current time' +
-      '\n\n**Example:** Get last hour CPU data: start=Date.now()-3600000, end=Date.now() ' +
+      '\n- start/end: Time range in epoch seconds (not milliseconds!), start time must be before current time. Millisecond values are auto-converted to seconds.' +
+      '\n\n**Example:** Get last hour CPU data: start=Math.floor(Date.now()/1000)-3600, end=Math.floor(Date.now()/1000) ' +
       '\n\n**Time range tips:** If omitted, returns last 2 hours. Max range: 1 year. Use shorter ranges for better performance. ' +
       '\n\n**APM / traced services:** APM services are resources with deviceType:6, so the same workflow returns service- and operation-level RED metrics. ' +
       'Pass a service instance for service-wide metrics or an operation instance for per-endpoint metrics; common datapoints are Duration, OperationCount, and ErrorOperationCount. ' +
@@ -97,11 +97,11 @@ export const instancesTools: Tool[] = [
         },
         start: {
           type: 'number',
-          description: 'Start time (epoch milliseconds), start time must be before current time',
+          description: 'Start time (epoch seconds, not milliseconds), start time must be before current time',
         },
         end: {
           type: 'number',
-          description: 'End time (epoch milliseconds)',
+          description: 'End time (epoch seconds, not milliseconds)',
         },
         format: {
           type: 'string',

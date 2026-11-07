@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Passport strategies are now registered under their provider name, so `passport.authenticate('azure'|'google'|'okta'|'auth0'|'custom')` resolves correctly instead of failing with "Unknown authentication strategy" for non-GitHub providers
+- `get_resource_instance_data`: `start`/`end` are epoch seconds (LogicMonitor's `/data` endpoint rejected the previously documented millisecond values with HTTP 400 "Start time must be before current time"). Millisecond values are now converted to seconds automatically.
 
 ## [0.1.0] - 2025-12-04
 

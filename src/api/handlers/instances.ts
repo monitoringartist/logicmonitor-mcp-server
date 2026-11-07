@@ -1,4 +1,4 @@
-import { ToolHandlerMap, ToolHandlerContext } from './shared.js';
+import { ToolHandlerMap, ToolHandlerContext, toEpochSeconds } from './shared.js';
 
 export const instancesToolHandlers: ToolHandlerMap = {
   'list_resource_instances': async ({ client, args }: ToolHandlerContext): Promise<any> => {
@@ -21,8 +21,8 @@ export const instancesToolHandlers: ToolHandlerMap = {
       args.instanceId,
       {
         datapoints: args.datapoints,
-        start: args.start,
-        end: args.end,
+        start: toEpochSeconds(args.start),
+        end: toEpochSeconds(args.end),
         format: args.format,
       },
     );

@@ -6,3 +6,4 @@
  */
 
 export { LogicMonitorHandlers, getRegisteredToolNames } from './handlers/index.js';
+export { toEpochSeconds, EPOCH_MILLIS_THRESHOLD } from './handlers/shared.js';
