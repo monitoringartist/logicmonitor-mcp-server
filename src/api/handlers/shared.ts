@@ -36,7 +36,7 @@ export type ToolHandlerMap = Record<string, ToolHandler>;
 export const EPOCH_MILLIS_THRESHOLD = 1e11;
 
 /**
- * LogicMonitor's instance data endpoint reads start/end as epoch SECONDS.
+ * LogicMonitor's instance data endpoint reads start/end as epoch seconds.
  * Callers (and LLMs) frequently pass Date.now()-style milliseconds, which LM
  * then rejects with HTTP 400 "Start time must be before current time" because
  * the value is thousands of years in the future. Convert defensively.

@@ -6,7 +6,7 @@ export const auditTools: Tool[] = [
   {
     name: 'list_audit_logs',
     description: 'List audit logs in LogicMonitor (LM) monitoring for compliance and security auditing. ' +
-      '\n\n**Returns:** Array of audit log entries with: id, username, IP address, timestamp (happenedOn in epoch SECONDS), description of action performed, sessionId. ' +
+      '\n\n**Returns:** Array of audit log entries with: id, username, IP address, timestamp (happenedOn in epoch seconds), description of action performed, sessionId. ' +
       '\n\n**When to use:** ' +
       '\n- Investigate changes: "Who deleted this resource/device?" → filter:"description~\\*Delete\\*,description~\\*device\\*"' +
       '\n- Track user activity: "What did john.doe do today?" → filter:"username:john.doe,happenedOn>1730851200"' +
@@ -19,7 +19,7 @@ export const auditTools: Tool[] = [
       '\n- **Advanced filtering:** Use filter parameter with LM filter syntax (e.g., filter:"username:admin,happenedOn>1640995200") for precise control' +
       '\n\n**Common filter patterns:** ' +
       '\n- By user: filter:"username:john.doe"' +
-      '\n- By time: filter:"happenedOn>1640995200" (IMPORTANT: epoch SECONDS, not milliseconds!)' +
+      '\n- By time: filter:"happenedOn>1640995200" (IMPORTANT: epoch seconds, not milliseconds!)' +
       '\n- By action type: filter:"description~\\*Create\\*" or filter:"description~\\*Delete\\*" or filter:"description~\\*Update\\*"' +
       '\n- By resource: filter:"description~\\*device\\*" or filter:"description~\\*dashboard\\*"' +
       '\n- By IP: filter:"ip:192.168.1.100"' +
@@ -29,7 +29,7 @@ export const auditTools: Tool[] = [
       '\n- filter: Precise LM filter syntax with any field. Use for time ranges, exact matches: filter:"happenedOn>1640995200"' +
       '\n- If both provided, query is converted to filter and combined with provided filter using AND logic' +
       '\n\n**Critical notes:** ' +
-      '\n- Time uses epoch SECONDS (not milliseconds like other LM APIs)' +
+      '\n- Time uses epoch seconds (not milliseconds like other LM APIs)' +
       '\n- Cannot use OR operator (||) in audit logs, only AND (comma)' +
       '\n- Use autoPaginate:true for complete history (may take time for large datasets)' +
       `\n\n**Web UI access:** https://${process.env.LM_COMPANY}.logicmonitor.com/santaba/uiv4/settings/access-logs (Settings → Audit Logs) ` +

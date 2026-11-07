@@ -542,7 +542,7 @@ describe('getLogicMonitorTools', () => {
         // LM's /data endpoint reads start/end as seconds. Describing them as
         // milliseconds led every LLM caller to send Date.now(), which LM
         // rejects with 400 "Start time must be before current time".
-        expect(getData?.description).toMatch(/epoch SECONDS/);
+        expect(getData?.description).toMatch(/epoch seconds/);
         expect(getData?.description).not.toMatch(/Date\.now\(\)-3600000/);
         expect(getData?.description).toMatch(/Math\.floor\(Date\.now\(\)\/1000\)/);
         expect(getData?.description).toMatch(/start time must be before current time/);
