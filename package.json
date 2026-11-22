@@ -40,6 +40,7 @@
         "generate:field-schemas": "node scripts/generate-field-schemas.mjs",
         "generate:fixtures": "node scripts/generate-fixtures.mjs",
         "scaffold:tool": "node scripts/scaffold-tool.mjs",
+        "swagger:update": "node scripts/update-swagger.mjs",
         "prepare": "npm run build",
         "prepublishOnly": "npm run build && npm test",
         "version": "npm run build && git add -A",
@@ -70,9 +71,7 @@
         "lusca": "^1.7.0",
         "passport": "^0.7.0",
         "passport-github2": "^0.1.12",
-        "passport-oauth2": "^1.8.0",
-        "sanitize-html": "^2.18.1",
-        "winston": "^3.19.0"
+        "passport-oauth2": "^1.8.0"
     },
     "devDependencies": {
         "@jest/globals": "^30.5.2",
@@ -86,7 +85,6 @@
         "@types/passport": "^1.0.17",
         "@types/passport-github2": "^1.2.9",
         "@types/passport-oauth2": "^1.8.0",
-        "@types/sanitize-html": "^2.16.2",
         "@typescript-eslint/eslint-plugin": "^8.72.1",
         "@typescript-eslint/parser": "^8.72.1",
         "cross-env": "^10.1.0",

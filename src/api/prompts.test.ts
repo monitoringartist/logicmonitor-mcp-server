@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from '@jest/globals';
-import { listLMPrompts, getLMPrompt } from './prompts.js';
+import { listLMPrompts, getLMPrompt, generatePromptMessages } from './prompts.js';
 
 describe('LogicMonitor Prompts', () => {
   describe('listLMPrompts', () => {
@@ -74,6 +74,47 @@ describe('LogicMonitor Prompts', () => {
       expect(prompt?.name).toBeTruthy();
       expect(prompt?.description).toBeTruthy();
       expect(prompt?.arguments).toBeDefined();
+    });
+
+    it('should include alert_triage, schedule_maintenance_window, and collector_health_audit prompts', () => {
+      const promptNames = listLMPrompts().map(p => p.name);
+      expect(promptNames).toContain('alert_triage');
+      expect(promptNames).toContain('schedule_maintenance_window');
+      expect(promptNames).toContain('collector_health_audit');
+    });
+  });
+
+  describe('generatePromptMessages', () => {
+    it('should generate messages for alert_triage', () => {
+      const result = generatePromptMessages('alert_triage', {
+        alertId: 'LMD999',
+        resourceName: 'prod-web-01',
+        datasourceName: 'CPU',
+      });
+      expect(result.description).toContain('LMD999');
+      expect(result.messages).toHaveLength(2);
+      expect(result.messages[1].content.text).toContain('get_resource_sdt_history');
+      expect(result.messages[1].content.text).toContain('list_opsnotes');
+    });
+
+    it('should generate messages for schedule_maintenance_window', () => {
+      const result = generatePromptMessages('schedule_maintenance_window', {
+        targetGroupPath: 'Production/Web',
+        durationMinutes: '90',
+        comment: 'OS patching',
+      });
+      expect(result.description).toContain('Production/Web');
+      expect(result.messages[1].content.text).toContain('create_sdt');
+      expect(result.messages[1].content.text).toContain('90');
+    });
+
+    it('should generate messages for collector_health_audit', () => {
+      const result = generatePromptMessages('collector_health_audit', {
+        collectorName: 'col-us-east-01',
+      });
+      expect(result.description).toContain('col-us-east-01');
+      expect(result.messages[1].content.text).toContain('list_collectors');
+      expect(result.messages[1].content.text).toContain('get_collector_status_check');
     });
   });
 });

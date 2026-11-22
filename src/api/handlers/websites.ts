@@ -161,4 +161,36 @@ export const websitesToolHandlers: ToolHandlerMap = {
       format: args.format,
     });
   },
+
+  'list_website_alerts': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listWebsiteAlerts(args.websiteId, {
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      needMessage: args.needMessage,
+      customColumns: args.customColumns,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'list_website_properties': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listWebsiteProperties(args.websiteId, {
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'list_website_sdts': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listWebsiteSDTs(args.websiteId, {
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+  },
 };

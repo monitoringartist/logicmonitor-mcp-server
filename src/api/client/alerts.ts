@@ -136,6 +136,10 @@ export class AlertsClient extends BaseClient {
     return this.request<LMResponse<any>>('PATCH', `/setting/action/rules/${actionRuleId}/status`, { enabled });
   }
 
+  async getActionRuleStatus(actionRuleId: number) {
+    return this.request<LMResponse<any>>('GET', `/setting/action/rules/${actionRuleId}/status`);
+  }
+
   // Alert escalation
   async escalateAlert(alertId: string) {
     return this.request<LMResponse<any>>('POST', `/alert/alerts/${encodeURIComponent(alertId)}/escalate`, {});

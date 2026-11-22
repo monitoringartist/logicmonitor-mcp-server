@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from '@jest/globals';
 import { getLogicMonitorTools } from './tools.js';
+import { ScopeManager } from '../utils/core/scope-manager.js';
 
 describe('getLogicMonitorTools', () => {
   describe('All Tools', () => {
@@ -643,7 +644,14 @@ describe('getLogicMonitorTools', () => {
 
         // Most list tools should have pagination
         // (a device's applied eventsources is a small fixed list with no pagination)
-        const paginationExempt = ['list_website_checkpoints', 'list_resource_eventsources', 'list_collector_agent_log_levels'];
+        const paginationExempt = [
+          'list_website_checkpoints',
+          'list_resource_eventsources',
+          'list_collector_agent_log_levels',
+          'list_collector_upgrade_history',
+          'list_collector_log_files',
+          'list_collector_group_collectors',
+        ];
         if (!paginationExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('size');
           expect(properties).toHaveProperty('offset');
@@ -668,6 +676,9 @@ describe('getLogicMonitorTools', () => {
           'list_instance_alert_confs',
           'list_resource_eventsources',
           'list_collector_agent_log_levels',
+          'list_collector_upgrade_history',
+          'list_collector_log_files',
+          'list_collector_group_collectors',
         ];
         if (!filterExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('filter');
@@ -860,7 +871,13 @@ describe('getLogicMonitorTools', () => {
         const properties = tool.inputSchema.properties || {};
 
         // Most list tools should support fields parameter
-        const listFieldsExempt = ['list_website_checkpoints', 'list_collector_agent_log_levels'];
+        const listFieldsExempt = [
+          'list_website_checkpoints',
+          'list_collector_agent_log_levels',
+          'list_collector_upgrade_history',
+          'list_collector_log_files',
+          'list_collector_group_collectors',
+        ];
         if (!listFieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
@@ -905,11 +922,32 @@ describe('getLogicMonitorTools', () => {
           'get_diagnostic_remediation_results',
           'get_integration_audit_logs',
           'get_resource_group_cluster_alert_conf',
+          'get_collector_log_file',
+          'get_collector_download_token',
+          'get_action_rule_status',
+          'get_focus_cost_usage',
         ];
         if (!fieldsExempt.includes(tool.name)) {
           expect(properties).toHaveProperty('fields');
         }
       });
+    });
+
+    it('should require a write or admin scope for every write tool', () => {
+      const writeTools = getLogicMonitorTools(false).filter(
+        tool => tool.annotations?.readOnlyHint === false,
+      );
+      expect(writeTools.length).toBeGreaterThan(0);
+
+      for (const tool of writeTools) {
+        const requiredScopes = ScopeManager.getToolScopes(tool.name);
+        const hasWriteOrAdmin = requiredScopes.some(scope => ScopeManager.isWriteScope(scope));
+        expect({ tool: tool.name, requiredScopes, hasWriteOrAdmin }).toEqual({
+          tool: tool.name,
+          requiredScopes,
+          hasWriteOrAdmin: true,
+        });
+      }
     });
   });
 });

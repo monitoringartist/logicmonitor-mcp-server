@@ -117,4 +117,21 @@ export class UsersClient extends BaseClient {
   async getExternalApiStats(params?: { fields?: string }) {
     return this.request<LMResponse<any>>('GET', '/apiStats/externalApis', undefined, this.cleanParams(params || {}));
   }
+
+  // API Tokens across all users
+  async listAllApiTokens(params?: {
+    type?: string;
+    permission?: string;
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = '/setting/admins/apitokens';
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
 }

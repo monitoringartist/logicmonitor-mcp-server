@@ -338,7 +338,7 @@ export const deviceGroupsTools: Tool[] = [
       '\n- Document configuration: Export group settings ' +
       '\n\n**Workflow:** Use "list_resource_groups" to find groupId, then use this tool to see properties, then "update_device_group_property" to modify. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "update_device_group_property" (modify property), "get_resource_group" (group details), "list_device_properties" (device-level properties).',
+      '\n\n**Related tools:** "update_device_group_property" (modify property), "get_resource_group" (group details), "list_resource_properties" (device-level properties).',
     annotations: {
       title: 'List resource/device group properties',
       readOnlyHint: true,
@@ -395,7 +395,7 @@ export const deviceGroupsTools: Tool[] = [
       '2. Update property value ' +
       '3. Changes propagate to all member resource/device immediately ' +
       '4. Test monitoring still works (especially for credential changes) ' +
-      '\n\n**Related tools:** "list_device_group_properties" (view all), "list_device_properties" (device-level view), "get_resource_group" (group details).',
+      '\n\n**Related tools:** "list_device_group_properties" (view all), "list_resource_properties" (device-level view), "get_resource_group" (group details).',
     annotations: {
       title: 'Update resource/device group property',
       readOnlyHint: false,
@@ -654,6 +654,35 @@ export const deviceGroupsTools: Tool[] = [
       },
       additionalProperties: false,
       required: ['groupId'],
+    },
+  },
+  {
+    name: 'list_resource_group_resources',
+    description: 'List immediate resources/devices under a resource/device group in LogicMonitor (LM).',
+    annotations: { title: 'List resource group resources', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        ...paginationSchema, ...filterSchema, ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
+  {
+    name: 'get_resource_group_property',
+    description: 'Get a specific property of a resource/device group by property name in LogicMonitor (LM).',
+    annotations: { title: 'Get resource group property', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The resource/device group ID' },
+        propertyName: { type: 'string', description: 'The property name' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['groupId', 'propertyName'],
     },
   },
 

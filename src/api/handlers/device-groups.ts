@@ -150,4 +150,16 @@ export const deviceGroupsToolHandlers: ToolHandlerMap = {
       size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
     });
   },
+
+  'list_resource_group_resources': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listDeviceGroupDevices(args.groupId, {
+      size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'get_resource_group_property': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDeviceGroupProperty(args.groupId, args.propertyName, {
+      fields: args.fields,
+    });
+  },
 };

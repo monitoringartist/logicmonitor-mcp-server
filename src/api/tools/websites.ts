@@ -706,5 +706,73 @@ export const websitesTools: Tool[] = [
       required: ['websiteId', 'checkpointId', 'graphName'],
     },
   },
+  {
+    name: 'list_website_alerts',
+    description: 'List alerts for a specific website in LogicMonitor (LM).',
+    annotations: {
+      title: 'List website alerts',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: { type: 'number', description: 'The website ID' },
+        needMessage: { type: 'boolean', description: 'Include full alert message details' },
+        customColumns: { type: 'string', description: 'Comma-separated list of custom columns to include' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['websiteId'],
+    },
+  },
+  {
+    name: 'list_website_properties',
+    description: 'List properties for a specific website in LogicMonitor (LM).',
+    annotations: {
+      title: 'List website properties',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: { type: 'number', description: 'The website ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['websiteId'],
+    },
+  },
+  {
+    name: 'list_website_sdts',
+    description: 'List scheduled down times (SDTs) for a specific website in LogicMonitor (LM).',
+    annotations: {
+      title: 'List website SDTs',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        websiteId: { type: 'number', description: 'The website ID' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['websiteId'],
+    },
+  },
 
 ];

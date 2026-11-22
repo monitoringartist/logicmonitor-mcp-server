@@ -402,5 +402,21 @@ export const usersTools: Tool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'list_all_api_tokens',
+    description: 'List API tokens across all users in LogicMonitor (LM).',
+    annotations: { title: 'List all API tokens', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', description: 'Optional token type filter (e.g., LMv1, bearer)' },
+        permission: { type: 'string', description: 'Optional permission filter' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+    },
+  },
 
 ];

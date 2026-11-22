@@ -61,6 +61,15 @@ describe('param-aliases', () => {
       const out = normalizeToolArgs('get_collector_group', { deviceGroupId: 3 });
       expect(out.groupId).toBeUndefined();
     });
+
+    it('maps name <-> propertyName bidirectionally for *_property tools', () => {
+      expect(normalizeToolArgs('update_resource_property', { deviceId: 1, name: 'env', value: 'prod' }).propertyName).toBe('env');
+      expect(normalizeToolArgs('delete_resource_property', { deviceId: 1, name: 'env' }).propertyName).toBe('env');
+      expect(normalizeToolArgs('create_resource_property', { deviceId: 1, propertyName: 'env', value: 'prod' }).name).toBe('env');
+      expect(normalizeToolArgs('create_resource_group_property', { groupId: 1, propertyName: 'env', value: 'prod' }).name).toBe('env');
+      // Scoped: non-property tool should not map name -> propertyName
+      expect(normalizeToolArgs('create_resource', { name: 'host1' }).propertyName).toBeUndefined();
+    });
   });
 
   describe('applyToolParamAliases', () => {

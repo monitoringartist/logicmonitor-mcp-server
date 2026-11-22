@@ -316,7 +316,7 @@ export const dashboardsTools: Tool[] = [
       '\n- Build reports with clickable resource/device references' +
       '\n- Document infrastructure with direct LM links' +
       '\n\n**Why use this:** Provides the canonical resource details URL so clicking the link navigates directly to the resource/device details view. ' +
-      '\n\n**Workflow:** First find resource/device using "list_resources" or "search_resources", then use this tool with deviceId to generate shareable link. ' +
+      '\n\n**Workflow:** First find resource/device using "list_resources", then use this tool with deviceId to generate shareable link. ' +
       '\n\n**Related tools:** "list_resources" (find device), "get_resource" (get details), "link_alert" (link to resource/device alerts).',
     annotations: {
       title: 'Generate resource/device link',

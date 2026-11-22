@@ -34,6 +34,7 @@ export interface PendingAuthorization {
   codeChallenge: string;
   codeChallengeMethod: 'S256';
   scope: string;
+  resources?: string[];
   state?: string;
   createdAt: number; // epoch ms
 }
@@ -45,6 +46,7 @@ export interface AuthorizationCode {
   codeChallenge: string;
   codeChallengeMethod: 'S256';
   scope: string;
+  resources?: string[];
   user: {
     id: string;
     username?: string;
@@ -59,6 +61,7 @@ export interface RefreshToken {
   token: string;
   clientId: string;
   scope: string;
+  resources?: string[];
   user: {
     id: string;
     username?: string;
@@ -162,6 +165,7 @@ export function issueAuthorizationCode(input: {
   codeChallenge: string;
   codeChallengeMethod: 'S256';
   scope: string;
+  resources?: string[];
   user: AuthorizationCode['user'];
 }): string {
   const code = crypto.randomBytes(32).toString('hex');
@@ -172,6 +176,7 @@ export function issueAuthorizationCode(input: {
     codeChallenge: input.codeChallenge,
     codeChallengeMethod: input.codeChallengeMethod,
     scope: input.scope,
+    ...(input.resources ? { resources: input.resources } : {}),
     user: input.user,
     createdAt: Date.now(),
     consumed: false,
@@ -203,6 +208,7 @@ export function consumeAuthorizationCode(code: string): AuthorizationCode | null
 export function issueRefreshToken(input: {
   clientId: string;
   scope: string;
+  resources?: string[];
   user: RefreshToken['user'];
 }): string {
   const token = crypto.randomBytes(32).toString('hex');
@@ -211,6 +217,7 @@ export function issueRefreshToken(input: {
     token,
     clientId: input.clientId,
     scope: input.scope,
+    ...(input.resources ? { resources: input.resources } : {}),
     user: input.user,
     createdAt: now,
     expiresAt: now + REFRESH_TOKEN_TTL_MS,

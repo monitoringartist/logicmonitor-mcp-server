@@ -1,5 +1,5 @@
 import { filterFields, DEFAULT_DEVICE_FIELDS, DEFAULT_DEVICE_PROPERTY_FIELDS, ToolHandlerMap, ToolHandlerContext } from './shared.js';
-import { batchProcessor } from '../../utils/helpers/batch-processor.js';
+import { smartBatchProcessor } from '../../utils/helpers/batch-processor.js';
 import { autoFormatFilter, SEARCH_FIELDS } from '../../utils/helpers/filters.js';
 
 export const devicesToolHandlers: ToolHandlerMap = {
@@ -44,10 +44,8 @@ export const devicesToolHandlers: ToolHandlerMap = {
     // Check if this is a batch operation
     if (args.devices && Array.isArray(args.devices)) {
       // Batch mode with adaptive concurrency support
-      // Use smartBatchProcessor for automatic rate limit handling:
-      // const result = await smartBatchProcessor.processBatchSmart(..., { adaptiveConcurrency: true })
       const batchOptions = args.batchOptions || {};
-      const result = await batchProcessor.processBatch(
+      const result = await smartBatchProcessor.processBatchSmart(
         args.devices,
         async (device: any) => {
           const deviceData: any = {
@@ -65,8 +63,10 @@ export const devicesToolHandlers: ToolHandlerMap = {
         },
         {
           maxConcurrent: batchOptions.maxConcurrent || 5,
+          maxConcurrencyLimit: batchOptions.maxConcurrent || 20,
+          adaptiveConcurrency: batchOptions.adaptiveConcurrency ?? true,
           continueOnError: batchOptions.continueOnError ?? true,
-          retryOnRateLimit: true,
+          retryOnRateLimit: false,
           onProgress: progressCallback ? (completed, total) => {
             // Send progress notification if callback provided
             progressCallback(completed, total).catch(() => {
@@ -104,9 +104,9 @@ export const devicesToolHandlers: ToolHandlerMap = {
   'update_resource': async ({ client, args, progressCallback }: ToolHandlerContext): Promise<any> => {
     // Check if this is a batch operation
     if (args.devices && Array.isArray(args.devices)) {
-      // Batch mode
+      // Batch mode with adaptive concurrency support
       const batchOptions = args.batchOptions || {};
-      const result = await batchProcessor.processBatch(
+      const result = await smartBatchProcessor.processBatchSmart(
         args.devices,
         async (device: any) => {
           const { deviceId, opType, ...deviceData } = device;
@@ -117,8 +117,10 @@ export const devicesToolHandlers: ToolHandlerMap = {
         },
         {
           maxConcurrent: batchOptions.maxConcurrent || 5,
+          maxConcurrencyLimit: batchOptions.maxConcurrent || 20,
+          adaptiveConcurrency: batchOptions.adaptiveConcurrency ?? true,
           continueOnError: batchOptions.continueOnError ?? true,
-          retryOnRateLimit: true,
+          retryOnRateLimit: false,
           onProgress: progressCallback ? (completed, total) => {
             progressCallback(completed, total).catch(() => {});
           } : undefined,
@@ -147,9 +149,9 @@ export const devicesToolHandlers: ToolHandlerMap = {
   'delete_resource': async ({ client, args, progressCallback }: ToolHandlerContext): Promise<any> => {
     // Check if this is a batch operation
     if (args.deviceIds && Array.isArray(args.deviceIds)) {
-      // Batch mode
+      // Batch mode with adaptive concurrency support
       const batchOptions = args.batchOptions || {};
-      const result = await batchProcessor.processBatch(
+      const result = await smartBatchProcessor.processBatchSmart(
         args.deviceIds,
         async (deviceId: number) => {
           await client.deleteDevice(deviceId, {
@@ -159,8 +161,10 @@ export const devicesToolHandlers: ToolHandlerMap = {
         },
         {
           maxConcurrent: batchOptions.maxConcurrent || 5,
+          maxConcurrencyLimit: batchOptions.maxConcurrent || 20,
+          adaptiveConcurrency: batchOptions.adaptiveConcurrency ?? true,
           continueOnError: batchOptions.continueOnError ?? true,
-          retryOnRateLimit: true,
+          retryOnRateLimit: false,
           onProgress: progressCallback ? (completed, total) => {
             progressCallback(completed, total).catch(() => {});
           } : undefined,
@@ -371,6 +375,38 @@ export const devicesToolHandlers: ToolHandlerMap = {
   'list_unmonitored_devices': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.listUnmonitoredDevices({
       size: args.size, offset: args.offset, filter: args.filter, fields: args.fields, autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'list_all_resource_instances': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listDeviceInstances(args.deviceId, {
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      start: args.start,
+      end: args.end,
+      netflowFilter: args.netflowFilter,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'list_resource_sdts': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listDeviceSDTs(args.deviceId, {
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      start: args.start,
+      end: args.end,
+      netflowFilter: args.netflowFilter,
+      autoPaginate: args.autoPaginate,
+    });
+  },
+
+  'get_resource_property': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDeviceProperty(args.deviceId, args.propertyName, {
+      fields: args.fields,
     });
   },
 };

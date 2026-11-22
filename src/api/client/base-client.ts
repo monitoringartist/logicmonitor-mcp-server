@@ -21,6 +21,12 @@ export interface LogicMonitorConfig {
    * requests. Set to 0 to disable retrying. Default: 3.
    */
   maxRetries?: number;
+  /**
+   * Maximum number of items fetched by `autoPaginate: true` to prevent unbounded
+   * loops and multi-megabyte payloads from overflowing LLM context windows.
+   * Default: 5000 (or `LM_MAX_PAGINATE_ITEMS` env var).
+   */
+  maxPaginateItems?: number;
   logger?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: any, requestId?: string) => void;
 }
 
@@ -41,10 +47,11 @@ export type LMResponse<T> = T;
 
 // LogicMonitor API v3 returns list responses with this structure
 export interface LMListResponse<T> {
-    total: number;
-    items: T[];
+  total: number;
+  items: T[];
   searchId?: string;
   isMin?: boolean;
+  truncated?: boolean;
 }
 
 /**
@@ -68,11 +75,14 @@ export interface LMApiResponseBody {
   [key: string]: unknown;
 }
 
+export const DEFAULT_MAX_PAGINATE_ITEMS = 5000;
+
 export class BaseClient {
   protected baseUrl: string;
   protected bearerToken: string;
   protected timeout: number;
   protected maxRetries: number;
+  protected maxPaginateItems: number;
   protected logger?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: any, requestId?: string) => void;
 
   constructor(config: LogicMonitorConfig) {
@@ -81,7 +91,32 @@ export class BaseClient {
     this.timeout = config.timeout || 120000; // Default 120 seconds
     // Default to 3 retries; allow explicit 0 to disable.
     this.maxRetries = config.maxRetries ?? 3;
+    const envMaxItems = process.env.LM_MAX_PAGINATE_ITEMS
+      ? parseInt(process.env.LM_MAX_PAGINATE_ITEMS, 10)
+      : undefined;
+    this.maxPaginateItems =
+      config.maxPaginateItems ??
+      (envMaxItems && Number.isFinite(envMaxItems) && envMaxItems > 0 ? envMaxItems : DEFAULT_MAX_PAGINATE_ITEMS);
     this.logger = config.logger;
+  }
+
+  /**
+   * Safely parse a fetch Response body as JSON, falling back to an empty object
+   * on 204/empty bodies or `{ errmsg: rawText }` when an upstream proxy/WAF
+   * returns non-JSON content (e.g. an HTML 502/503 error page).
+   */
+  protected async parseResponseBody(response: Response): Promise<LMApiResponseBody> {
+    const rawText = await response.text();
+    if (rawText.trim().length === 0) {
+      return {};
+    }
+    try {
+      return JSON.parse(rawText) as LMApiResponseBody;
+    } catch {
+      return {
+        errmsg: rawText || response.statusText,
+      };
+    }
   }
 
   /**
@@ -173,7 +208,7 @@ export class BaseClient {
 
       try {
         response = await fetch(url.toString(), options);
-        data = await response.json() as LMApiResponseBody;
+        data = await this.parseResponseBody(response);
 
         const duration = Date.now() - startTime;
 
@@ -344,7 +379,7 @@ export class BaseClient {
           body: form,
           signal: controller.signal,
         });
-        data = await response.json() as LMApiResponseBody;
+        data = await this.parseResponseBody(response);
 
         if (!response.ok) {
           if (response.status === 429 && attempt < this.maxRetries) {
@@ -472,8 +507,12 @@ export class BaseClient {
           total: totalCount,
         });
 
-        // Check if we have more pages
-        if (items.length === 0 || allItems.length >= totalCount) {
+        // Check if we have more pages or reached the safety cap
+        if (
+          items.length === 0 ||
+          allItems.length >= totalCount ||
+          allItems.length >= this.maxPaginateItems
+        ) {
           hasMore = false;
         } else {
           // Calculate next offset based on actual items returned
@@ -489,16 +528,35 @@ export class BaseClient {
       }
     }
 
+    let truncated = false;
+    if (allItems.length > this.maxPaginateItems) {
+      allItems = allItems.slice(0, this.maxPaginateItems);
+      truncated = true;
+    } else if (allItems.length >= this.maxPaginateItems && totalCount > allItems.length) {
+      truncated = true;
+    }
+
+    if (truncated) {
+      this.logger?.('warn', 'Pagination truncated at safety cap', {
+        path,
+        maxPaginateItems: this.maxPaginateItems,
+        returnedItems: allItems.length,
+        totalAvailable: totalCount,
+      });
+    }
+
     this.logger?.('info', 'Pagination complete', {
       path,
       totalPages: Math.ceil(allItems.length / size),
       totalItems: allItems.length,
       expectedTotal: totalCount,
+      ...(truncated ? { truncated: true } : {}),
     });
 
     return {
       total: totalCount,
       items: allItems,
+      ...(truncated ? { truncated: true } : {}),
     };
   }
 }

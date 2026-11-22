@@ -6,6 +6,8 @@
  * - RFC 6750 Section 3.1 (insufficient_scope error)
  */
 
+import { getLogicMonitorTools } from '../../api/tools.js';
+
 /**
  * Scope definitions for MCP tools
  */
@@ -95,9 +97,9 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
 
   // Write operations - require write scopes
   'acknowledge_alert': ['mcp:tools', 'lm:alerts:write'],
-  'add_device': ['mcp:tools', 'lm:devices:write'],
-  'update_device': ['mcp:tools', 'lm:devices:write'],
-  'delete_device': ['mcp:tools', 'lm:devices:write'],
+  'create_resource': ['mcp:tools', 'lm:devices:write'],
+  'update_resource': ['mcp:tools', 'lm:devices:write'],
+  'delete_resource': ['mcp:tools', 'lm:devices:write'],
   'create_widget': ['mcp:tools', 'lm:dashboards:write'],
   'update_widget': ['mcp:tools', 'lm:dashboards:write'],
   'delete_widget': ['mcp:tools', 'lm:dashboards:write'],
@@ -371,6 +373,30 @@ export const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
   'list_website_group_websites': ['mcp:tools', 'lm:read'],
   'list_website_group_sdts': ['mcp:tools', 'lm:read'],
   'get_website_group_sdt_history': ['mcp:tools', 'lm:read'],
+
+  // Additional Swagger v3 coverage tools
+  'list_collector_upgrade_history': ['mcp:tools', 'lm:read'],
+  'list_collector_log_files': ['mcp:tools', 'lm:read'],
+  'get_collector_log_file': ['mcp:tools', 'lm:read'],
+  'get_collector_download_token': ['mcp:tools', 'lm:read'],
+  'restart_collector': ['mcp:tools', 'lm:write'],
+  'trigger_collector_status_check': ['mcp:tools', 'lm:write'],
+  'calculate_collector_sizing': ['mcp:tools', 'lm:read'],
+  'batch_update_collector_agent_log_levels': ['mcp:tools', 'lm:write'],
+  'list_collector_group_collectors': ['mcp:tools', 'lm:read'],
+  'list_all_resource_instances': ['mcp:tools', 'lm:read'],
+  'list_resource_sdts': ['mcp:tools', 'lm:read'],
+  'get_resource_property': ['mcp:tools', 'lm:read'],
+  'list_resource_group_resources': ['mcp:tools', 'lm:read'],
+  'get_resource_group_property': ['mcp:tools', 'lm:read'],
+  'get_resource_instance': ['mcp:tools', 'lm:read'],
+  'list_website_alerts': ['mcp:tools', 'lm:read'],
+  'list_website_properties': ['mcp:tools', 'lm:read'],
+  'list_website_sdts': ['mcp:tools', 'lm:read'],
+  'list_all_api_tokens': ['mcp:tools', 'lm:read'],
+  'get_action_rule_status': ['mcp:tools', 'lm:read'],
+  'import_log_query_groups': ['mcp:tools', 'lm:write'],
+  'get_focus_cost_usage': ['mcp:tools', 'lm:read'],
 };
 
 /**
@@ -384,6 +410,20 @@ export const SCOPE_HIERARCHY: Record<string, string[]> = {
   'lm:dashboards:write': ['lm:dashboards:read'],
   'lm:users:manage': ['lm:read'],
 };
+
+let toolReadOnlyMap: Map<string, boolean> | null = null;
+
+function getToolReadOnlyHint(toolName: string): boolean | undefined {
+  if (!toolReadOnlyMap) {
+    toolReadOnlyMap = new Map<string, boolean>();
+    for (const tool of getLogicMonitorTools(false)) {
+      if (typeof tool.annotations?.readOnlyHint === 'boolean') {
+        toolReadOnlyMap.set(tool.name, tool.annotations.readOnlyHint);
+      }
+    }
+  }
+  return toolReadOnlyMap.get(toolName);
+}
 
 /**
  * Scope Manager class
@@ -427,10 +467,19 @@ export class ScopeManager {
   /**
    * Get required scopes for a tool
    */
-  static getToolScopes(toolName: string): string[] {
+  static getToolScopes(toolName: string, readOnlyHint?: boolean): string[] {
     // Check exact match first
     if (TOOL_SCOPE_REQUIREMENTS[toolName]) {
       return TOOL_SCOPE_REQUIREMENTS[toolName];
+    }
+
+    // Derive default scope from tool's readOnlyHint annotation when available
+    const effectiveReadOnly = readOnlyHint !== undefined ? readOnlyHint : getToolReadOnlyHint(toolName);
+    if (effectiveReadOnly === false) {
+      return ['mcp:tools', 'lm:write'];
+    }
+    if (effectiveReadOnly === true) {
+      return ['mcp:tools', 'lm:read'];
     }
 
     // Default: require basic mcp:tools scope
@@ -448,13 +497,17 @@ export class ScopeManager {
   /**
    * Validate scopes for a tool
    */
-  static validateToolScopes(toolName: string, userScopes: string | undefined): {
+  static validateToolScopes(
+    toolName: string,
+    userScopes: string | undefined,
+    readOnlyHint?: boolean,
+  ): {
     valid: boolean;
     requiredScopes: string[];
     missingScopes: string[];
   } {
     const userScopeArray = this.parseScopes(userScopes);
-    const requiredScopes = this.getToolScopes(toolName);
+    const requiredScopes = this.getToolScopes(toolName, readOnlyHint);
     const hasScopes = this.hasRequiredScopes(userScopeArray, requiredScopes);
     const missingScopes = hasScopes ? [] : this.getMissingScopes(userScopeArray, requiredScopes);
 

@@ -10,4 +10,22 @@ export class MiscClient extends BaseClient {
   async addDNSMapping(body: any) {
     return this.request<LMResponse<any>>('POST', '/setting/dnsmappings', body);
   }
+
+  // FOCUS Cost & Usage export
+  async getFocusCostUsage(params?: {
+    feature?: string;
+    dimensionKey?: string;
+    startTime?: number;
+    endTime?: number;
+    at?: number;
+    metricQualifier?: string;
+    usageBreakdownType?: string;
+    usageBreakdownUnits?: string;
+    sku?: string;
+    tenantIds?: string[];
+    size?: number;
+    offset?: number;
+  }) {
+    return this.request<LMResponse<any>>('GET', '/usage/focusCostUsage', undefined, this.cleanParams(params || {}));
+  }
 }

@@ -30,7 +30,7 @@ export class AccessGroupsClient extends BaseClient {
     description: string;
     tenantId?: number;
   }) {
-    return this.request<LMResponse<any>>('POST', '/setting/accessgroup', data);
+    return this.request<LMResponse<any>>('POST', '/setting/accessgroup/add', data);
   }
 
   async updateAccessGroup(accessGroupId: number, data: {

@@ -157,4 +157,13 @@ export const instancesToolHandlers: ToolHandlerMap = {
   'get_metrics_usage': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.getMetricsUsage({ fields: args.fields });
   },
+
+  'get_resource_instance': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getDeviceDataSourceInstance(
+      args.deviceId,
+      args.deviceDataSourceId,
+      args.instanceId,
+      { fields: args.fields },
+    );
+  },
 };

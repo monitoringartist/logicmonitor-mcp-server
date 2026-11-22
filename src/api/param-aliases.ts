@@ -48,6 +48,10 @@ export const PARAM_ALIAS_RULES: ParamAliasRule[] = [
   { canonical: 'functionId', alias: 'appliesToFunctionId', appliesTo: (n) => n.includes('applies_to_function') },
   // Alert rule: the tool name implies `alertRuleId`.
   { canonical: 'ruleId', alias: 'alertRuleId', appliesTo: (n) => n.includes('alert_rule') },
+  // Resource / group property tools: `create_*_property` uses `name`, whereas
+  // `get_`, `update_`, and `delete_*_property` use `propertyName`.
+  { canonical: 'propertyName', alias: 'name', appliesTo: (n) => n.endsWith('_property') },
+  { canonical: 'name', alias: 'propertyName', appliesTo: (n) => n.endsWith('_property') },
 ];
 
 function rulesFor(toolName: string): ParamAliasRule[] {

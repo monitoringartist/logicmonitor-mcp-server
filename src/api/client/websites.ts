@@ -176,4 +176,46 @@ export class WebsitesClient extends BaseClient {
   async listWebsiteCheckpoints(params?: { fields?: string }) {
     return this.request<LMListResponse<any>>('GET', '/website/smcheckpoints', undefined, params);
   }
+
+  // Website Alerts, Properties, and SDTs
+  async listWebsiteAlerts(
+    websiteId: number,
+    params?: {
+      size?: number;
+      offset?: number;
+      filter?: string;
+      fields?: string;
+      needMessage?: boolean;
+      customColumns?: string;
+      autoPaginate?: boolean;
+    },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/websites/${websiteId}/alerts`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async listWebsiteProperties(
+    websiteId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/websites/${websiteId}/properties`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async listWebsiteSDTs(
+    websiteId: number,
+    params?: { size?: number; offset?: number; filter?: string; fields?: string; autoPaginate?: boolean },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/website/websites/${websiteId}/sdts`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
 }

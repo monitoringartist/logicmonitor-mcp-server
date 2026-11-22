@@ -281,4 +281,18 @@ export class InstancesClient extends BaseClient {
   async getMetricsUsage(params?: { fields?: string }) {
     return this.request<LMResponse<any>>('GET', '/metrics/usage', undefined, this.cleanParams(params || {}));
   }
+
+  async getDeviceDataSourceInstance(
+    deviceId: number,
+    deviceDataSourceId: number,
+    instanceId: number,
+    params?: { fields?: string },
+  ) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/devicedatasources/${deviceDataSourceId}/instances/${instanceId}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
 }

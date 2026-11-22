@@ -121,4 +121,27 @@ export const usersToolHandlers: ToolHandlerMap = {
   'get_external_api_stats': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.getExternalApiStats({ fields: args.fields });
   },
+
+  'list_all_api_tokens': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    const result = await client.listAllApiTokens({
+      type: args.type,
+      permission: args.permission,
+      size: args.size,
+      offset: args.offset,
+      filter: args.filter,
+      fields: args.fields,
+      autoPaginate: args.autoPaginate,
+    });
+
+    if (args.fields) {
+      return result;
+    }
+
+    return {
+      ...result,
+      items: result.items.map((token: any) =>
+        filterFields(token, DEFAULT_API_TOKEN_FIELDS),
+      ),
+    };
+  },
 };

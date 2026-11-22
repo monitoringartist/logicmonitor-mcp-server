@@ -214,4 +214,54 @@ export class DevicesClient extends BaseClient {
     if (autoPaginate) return this.paginateAll<any>('/device/unmonitoreddevices', cleanedParams);
     return this.request<LMListResponse<any>>('GET', '/device/unmonitoreddevices', undefined, cleanedParams);
   }
+
+  // Device Instances, SDTs, and single Property
+  async listDeviceInstances(
+    deviceId: number,
+    params?: {
+      size?: number;
+      offset?: number;
+      filter?: string;
+      fields?: string;
+      start?: number;
+      end?: number;
+      netflowFilter?: string;
+      autoPaginate?: boolean;
+    },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/device/devices/${deviceId}/instances`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async listDeviceSDTs(
+    deviceId: number,
+    params?: {
+      size?: number;
+      offset?: number;
+      filter?: string;
+      fields?: string;
+      start?: number;
+      end?: number;
+      netflowFilter?: string;
+      autoPaginate?: boolean;
+    },
+  ) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/device/devices/${deviceId}/sdts`;
+    if (autoPaginate) return this.paginateAll<any>(path, cleanedParams);
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getDeviceProperty(deviceId: number, propertyName: string, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/devices/${deviceId}/properties/${encodeURIComponent(propertyName)}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
 }

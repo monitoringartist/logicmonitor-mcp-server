@@ -218,4 +218,67 @@ export class CollectorsClient extends BaseClient {
   }) {
     return this.request<LMListResponse<any>>('GET', '/setting/collector/collectors/versions', undefined, params);
   }
+
+  // Collector Upgrade History, Logs, Download Token, Actions, Sizing & Group Collectors
+  async listCollectorUpgradeHistory() {
+    return this.request<LMListResponse<any>>('GET', '/setting/collector/collectors/upgradeHistory');
+  }
+
+  async listCollectorLogFiles(collectorId: number, params?: { format?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/setting/collector/collectors/${collectorId}/logs`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getCollectorLogFile(collectorId: number, fileName: string, params?: { format?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/setting/collector/collectors/${collectorId}/logs/${encodeURIComponent(fileName)}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async getCollectorDownloadToken(collectorId: number) {
+    return this.request<LMResponse<any>>('GET', `/setting/collector/collectors/${collectorId}/downloadToken`);
+  }
+
+  async restartCollector(collectorId: number, body?: any) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/setting/collector/collectors/${collectorId}/services/restart`,
+      body || {},
+    );
+  }
+
+  async triggerCollectorStatusCheck(collectorId: number) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      `/setting/collector/collectors/${collectorId}/services/triggerStatusCheck`,
+    );
+  }
+
+  async calculateCollectorSizing(body: any, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      '/setting/collector/sizing',
+      body,
+      this.cleanParams(params || {}),
+    );
+  }
+
+  async batchUpdateCollectorAgentLogLevels(collectorId: number, levels: any[]) {
+    return this.request<LMResponse<any>>(
+      'PUT',
+      `/setting/collector/collectors/${collectorId}/agentloglevels`,
+      levels,
+    );
+  }
+
+  async listCollectorGroupCollectors(groupId: number) {
+    return this.request<LMListResponse<any>>('GET', `/setting/collector/groups/${groupId}/collectors`);
+  }
 }

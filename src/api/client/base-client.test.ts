@@ -161,6 +161,24 @@ describe('BaseClient.paginateAll', () => {
       /missing total\/items/,
     );
   });
+
+  it('truncates pagination at maxPaginateItems and sets truncated: true', async () => {
+    const cappedClient = new LogicMonitorClient({
+      company: 'test',
+      bearerToken: 'secret-token',
+      maxPaginateItems: 3,
+    });
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ total: 10, items: [{ id: 1 }, { id: 2 }] }))
+      .mockResolvedValueOnce(jsonResponse({ total: 10, items: [{ id: 3 }, { id: 4 }] }));
+
+    const result = await cappedClient.listResources({ autoPaginate: true, size: 2 });
+
+    expect(result.total).toBe(10);
+    expect(result.items).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    expect(result.truncated).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('BaseClient.requestMultipart', () => {
@@ -185,6 +203,45 @@ describe('BaseClient.requestMultipart', () => {
     await expect(makeClient().importDataSource('{}', 'json')).rejects.toMatchObject({
       status: 400,
       errorMessage: 'bad file',
+    });
+  });
+
+  it('preserves HTTP status and raw body when a multipart upload receives a non-JSON proxy error', async () => {
+    fetchMock.mockResolvedValue(
+      new Response('<html><body>413 Payload Too Large</body></html>', {
+        status: 413,
+        statusText: 'Payload Too Large',
+        headers: { 'content-type': 'text/html' },
+      }),
+    );
+    await expect(makeClient().importDataSource('{}', 'json')).rejects.toMatchObject({
+      name: 'LogicMonitorApiError',
+      status: 413,
+      errorMessage: '<html><body>413 Payload Too Large</body></html>',
+    });
+  });
+});
+
+describe('BaseClient non-JSON and empty responses', () => {
+  it('handles 204 No Content empty bodies without throwing a JSON parse error', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+    const result = await makeClient().deleteDevice(123);
+    expect(result).toEqual({});
+  });
+
+  it('preserves HTTP status and raw body when an upstream proxy returns HTML on error', async () => {
+    fetchMock.mockResolvedValue(
+      new Response('<html><body>502 Bad Gateway</body></html>', {
+        status: 502,
+        statusText: 'Bad Gateway',
+        headers: { 'content-type': 'text/html' },
+      }),
+    );
+
+    await expect(makeClient().getDevice(123)).rejects.toMatchObject({
+      name: 'LogicMonitorApiError',
+      status: 502,
+      errorMessage: '<html><body>502 Bad Gateway</body></html>',
     });
   });
 });

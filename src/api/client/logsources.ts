@@ -198,4 +198,14 @@ export class LogsourcesClient extends BaseClient {
   async deleteTrackedQueryGroup(groupId: number) {
     return this.request<LMResponse<any>>('DELETE', `/trackedquerygroups/${groupId}`);
   }
+
+  // Log Query Groups import
+  async importLogQueryGroups(items: any[], params?: { groupType?: string }) {
+    return this.request<LMResponse<any>>(
+      'POST',
+      '/log/logquerygroups/import',
+      items,
+      this.cleanParams(params || {}),
+    );
+  }
 }

@@ -163,6 +163,10 @@ export const alertsToolHandlers: ToolHandlerMap = {
     return await client.setActionRuleStatus(args.actionRuleId, args.enabled);
   },
 
+  'get_action_rule_status': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getActionRuleStatus(args.actionRuleId);
+  },
+
   'escalate_alert': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.escalateAlert(args.alertId);
   },

@@ -813,6 +813,19 @@ export const alertsTools: Tool[] = [
       required: ['actionRuleId', 'enabled'],
     },
   },
+  {
+    name: 'get_action_rule_status',
+    description: 'Get the enabled/disabled status of an alert action rule by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get action rule status', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        actionRuleId: { type: 'number', description: 'The action rule ID' },
+      },
+      additionalProperties: false,
+      required: ['actionRuleId'],
+    },
+  },
 
   // Alert escalation
   {

@@ -705,5 +705,193 @@ export const collectorsTools: Tool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'list_collector_upgrade_history',
+    description: 'List the upgrade history for collectors in LogicMonitor (LM).',
+    annotations: {
+      title: 'List collector upgrade history',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'list_collector_log_files',
+    description: 'List log files for a specific collector in LogicMonitor (LM). ' +
+      'Use format "json" (default) to list log files or "zip" to retrieve a zip archive.',
+    annotations: {
+      title: 'List collector log files',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+        format: { type: 'string', description: 'Response format ("json" or "zip")' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'get_collector_log_file',
+    description: 'Get a specific log file from a collector in LogicMonitor (LM). ' +
+      'Use format "json" (default) for metadata or "zip" to download the file.',
+    annotations: {
+      title: 'Get collector log file',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+        fileName: { type: 'string', description: 'The name of the log file (e.g. 30.wrapper.log.zip)' },
+        format: { type: 'string', description: 'Response format ("json" or "zip")' },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'fileName'],
+    },
+  },
+  {
+    name: 'get_collector_download_token',
+    description: 'Get a short-lived download token for a collector installer in LogicMonitor (LM).',
+    annotations: {
+      title: 'Get collector download token',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'restart_collector',
+    description: 'Restart a collector in LogicMonitor (LM), optionally updating collector configuration files.',
+    annotations: {
+      title: 'Restart collector',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+        config: {
+          type: 'object',
+          additionalProperties: true,
+          description: 'Optional restart configuration (collectorConf, sbproxyConf, collectorSize, wrapperConf, watchdogConf, websiteConf)',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'trigger_collector_status_check',
+    description: 'Trigger an immediate status check for a collector in LogicMonitor (LM).',
+    annotations: {
+      title: 'Trigger collector status check',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+      },
+      additionalProperties: false,
+      required: ['collectorId'],
+    },
+  },
+  {
+    name: 'calculate_collector_sizing',
+    description: 'Calculate collector sizing recommendations in LogicMonitor (LM) based on workload requirements (devices, logs, NetFlow, traps).',
+    annotations: {
+      title: 'Calculate collector sizing',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        config: {
+          type: 'object',
+          additionalProperties: true,
+          description: 'Collector sizing request payload (devices, logs, netflow, traps, options)',
+        },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['config'],
+    },
+  },
+  {
+    name: 'batch_update_collector_agent_log_levels',
+    description: 'Batch update agent log levels for multiple components on a collector in LogicMonitor (LM).',
+    annotations: {
+      title: 'Batch update collector agent log levels',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        collectorId: { type: 'number', description: 'The collector ID' },
+        levels: {
+          type: 'array',
+          items: { type: 'object', additionalProperties: true },
+          description: 'Array of agent log level entries to update',
+        },
+      },
+      additionalProperties: false,
+      required: ['collectorId', 'levels'],
+    },
+  },
+  {
+    name: 'list_collector_group_collectors',
+    description: 'List collectors belonging to a specific collector group in LogicMonitor (LM).',
+    annotations: {
+      title: 'List collector group collectors',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: { type: 'number', description: 'The collector group ID' },
+      },
+      additionalProperties: false,
+      required: ['groupId'],
+    },
+  },
 
 ];

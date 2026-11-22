@@ -196,4 +196,29 @@ export class DeviceGroupsClient extends BaseClient {
     }
     return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
   }
+
+  async listDeviceGroupDevices(groupId: number, params?: {
+    size?: number;
+    offset?: number;
+    filter?: string;
+    fields?: string;
+    autoPaginate?: boolean;
+  }) {
+    const { autoPaginate = false, ...otherParams } = params || {};
+    const cleanedParams = this.cleanParams(otherParams);
+    const path = `/device/groups/${groupId}/devices`;
+    if (autoPaginate) {
+      return this.paginateAll<any>(path, cleanedParams);
+    }
+    return this.request<LMListResponse<any>>('GET', path, undefined, cleanedParams);
+  }
+
+  async getDeviceGroupProperty(groupId: number, propertyName: string, params?: { fields?: string }) {
+    return this.request<LMResponse<any>>(
+      'GET',
+      `/device/groups/${groupId}/properties/${encodeURIComponent(propertyName)}`,
+      undefined,
+      this.cleanParams(params || {}),
+    );
+  }
 }

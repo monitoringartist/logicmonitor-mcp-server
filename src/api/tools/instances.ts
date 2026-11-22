@@ -805,5 +805,21 @@ export const instancesTools: Tool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'get_resource_instance',
+    description: 'Get a specific datasource instance on a resource/device by ID in LogicMonitor (LM).',
+    annotations: { title: 'Get datasource instance', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        deviceDataSourceId: { type: 'number', description: 'The resource/device datasource ID' },
+        instanceId: { type: 'number', description: 'The instance ID' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'deviceDataSourceId', 'instanceId'],
+    },
+  },
 
 ];

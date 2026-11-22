@@ -223,6 +223,20 @@ async function makeRequest(
 }
 
 /**
+ * Parse a Streamable HTTP response body (either JSON or SSE `event: message\ndata: ...`)
+ */
+function parseMCPResponse(body: string, contentType?: string): any {
+  if (contentType?.includes('text/event-stream')) {
+    const dataLine = body.split('\n').find(line => line.startsWith('data: '));
+    if (!dataLine) {
+      throw new Error(`No data line found in SSE response: ${body}`);
+    }
+    return JSON.parse(dataLine.slice(6));
+  }
+  return JSON.parse(body);
+}
+
+/**
  * Wait for server to be ready
  */
 async function waitForServer(port: number, maxAttempts = 30): Promise<void> {
@@ -309,11 +323,14 @@ describe('Authentication E2E Tests', () => {
       expect(health.version).toBeDefined();
     });
 
+    let noAuthSessionId: string;
+
     it('should allow access to /mcp without authentication (200)', async () => {
       const response = await makeRequest(server.port, '/mcp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -327,7 +344,9 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
-      const result = JSON.parse(response.body);
+      noAuthSessionId = response.headers['mcp-session-id'] as string;
+      expect(noAuthSessionId).toBeDefined();
+      const result = parseMCPResponse(response.body, response.headers['content-type']);
       expect(result.jsonrpc).toBe('2.0');
       expect(result.result).toBeDefined();
     });
@@ -344,6 +363,8 @@ describe('Authentication E2E Tests', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
+          'Mcp-Session-Id': noAuthSessionId,
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -352,7 +373,7 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
-      const result = JSON.parse(response.body);
+      const result = parseMCPResponse(response.body, response.headers['content-type']);
       expect(result.jsonrpc).toBe('2.0');
       expect(result.id).toBe('ping-test-1');
       expect(result.result).toEqual({});
@@ -434,11 +455,14 @@ describe('Authentication E2E Tests', () => {
       expect(response.status).toBe(401);
     });
 
+    let bearerSessionId: string;
+
     it('should allow access to /mcp with valid bearer token (200)', async () => {
       const response = await makeRequest(server.port, '/mcp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
         body: JSON.stringify({
@@ -453,7 +477,9 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
-      const result = JSON.parse(response.body);
+      bearerSessionId = response.headers['mcp-session-id'] as string;
+      expect(bearerSessionId).toBeDefined();
+      const result = parseMCPResponse(response.body, response.headers['content-type']);
       expect(result.result).toBeDefined();
     });
 
@@ -477,6 +503,8 @@ describe('Authentication E2E Tests', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
+          'Mcp-Session-Id': bearerSessionId,
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
         body: JSON.stringify({
@@ -486,7 +514,7 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
-      const result = JSON.parse(response.body);
+      const result = parseMCPResponse(response.body, response.headers['content-type']);
       expect(result.jsonrpc).toBe('2.0');
       expect(result.id).toBe('ping-test-2');
       expect(result.result).toEqual({});
@@ -645,11 +673,14 @@ describe('Authentication E2E Tests', () => {
       expect(response.status).toBe(401);
     });
 
+    let mixedSessionId: string;
+
     it('should allow access to /mcp with valid bearer token (200)', async () => {
       const response = await makeRequest(server.port, '/mcp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
         body: JSON.stringify({
@@ -664,6 +695,8 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
+      mixedSessionId = response.headers['mcp-session-id'] as string;
+      expect(mixedSessionId).toBeDefined();
     });
 
     it('should deny access to /mcp/sse without token (401)', async () => {
@@ -685,6 +718,8 @@ describe('Authentication E2E Tests', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json, text/event-stream',
+          'Mcp-Session-Id': mixedSessionId,
           Authorization: `Bearer ${BEARER_TOKEN}`,
         },
         body: JSON.stringify({
@@ -694,7 +729,7 @@ describe('Authentication E2E Tests', () => {
         }),
       });
       expect(response.status).toBe(200);
-      const result = JSON.parse(response.body);
+      const result = parseMCPResponse(response.body, response.headers['content-type']);
       expect(result.jsonrpc).toBe('2.0');
       expect(result.id).toBe('ping-test-4');
       expect(result.result).toEqual({});

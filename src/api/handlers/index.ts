@@ -8,7 +8,7 @@
  * and `getRegisteredToolNames` for implementation/drift checks.
  */
 
-import { LogicMonitorClient } from '../client.js';
+import { LogicMonitorClient, escapeFilterValue } from '../client.js';
 import { MCPError, ErrorCodes } from '../../utils/core/error-handler.js';
 import { ToolHandlerMap, validateFields, handleToolError } from './shared.js';
 import type { ProgressCallback } from './shared.js';
@@ -286,63 +286,88 @@ export class LogicMonitorHandlers {
     ref: { type: string; name?: string; uri?: string },
     argument: { name: string; value: string },
   ): Promise<{ values: string[]; total?: number; hasMore?: boolean }> {
-    // Only support prompt completions for now
-    if (ref.type === 'ref/prompt' && ref.name === 'resource_check') {
-      // Only support resourceName argument
-      if (argument.name === 'resourceName') {
-        const searchValue = argument.value || '';
+    const supportedPromptArgs: Record<string, string[]> = {
+      resource_check: ['resourceName'],
+      alert_triage: ['resourceName', 'datasourceName'],
+      schedule_maintenance_window: ['targetGroupPath', 'resourceName'],
+      collector_health_audit: ['collectorName', 'datasourceName'],
+    };
 
-        // Build OR filter to search across name, displayName, and IP
-        // Using OR (||) to find resources matching any of these fields
-        let filter = '';
-        if (searchValue) {
-          const filters = [
-            `name~"${searchValue}"`,
-            `displayName~"${searchValue}"`,
-            `name:"${searchValue}"`, // Exact IP match
-          ];
-          filter = filters.join('||');
-        }
-
-        try {
-          // Search for resources with a limit of 100 (max per MCP spec)
-          const result = await this.client.listResources({
-            size: 100,
-            offset: 0,
-            filter,
-            fields: 'displayName,name', // Only need displayName and name
-          });
-
-          const items = result.items || [];
-          const total = result.total || items.length;
-
-          // Extract displayNames for completion suggestions
-          const values = items
-            .map((item: any) => item.displayName || item.name)
-            .filter((name: string) => name); // Remove any null/undefined
-
-          return {
-            values,
-            total,
-            hasMore: total > values.length,
-          };
-        } catch (error) {
-          // On error, return empty suggestions
-          console.error('[LogicMonitor MCP] Completion error:', error);
-          return {
-            values: [],
-            total: 0,
-            hasMore: false,
-          };
-        }
-      }
+    if (ref.type !== 'ref/prompt' || !ref.name) {
+      return { values: [], total: 0, hasMore: false };
     }
 
-    // Unsupported completion - return empty
+    const allowedArgs = supportedPromptArgs[ref.name];
+    if (!allowedArgs || !allowedArgs.includes(argument.name)) {
+      return { values: [], total: 0, hasMore: false };
+    }
+
+    const rawValue = (argument.value || '').trim();
+    const searchValue = rawValue ? escapeFilterValue(rawValue) : '';
+
+    try {
+      if (argument.name === 'resourceName') {
+        const filter = searchValue
+          ? [`name~"${searchValue}"`, `displayName~"${searchValue}"`, `name:"${searchValue}"`].join('||')
+          : '';
+        return await this.completeFromList(
+          () => this.client.listResources({ size: 100, offset: 0, filter, fields: 'displayName,name' }),
+          (item: any) => item.displayName || item.name,
+        );
+      }
+
+      if (argument.name === 'collectorName') {
+        const filter = searchValue
+          ? [`hostname~"${searchValue}"`, `description~"${searchValue}"`].join('||')
+          : '';
+        return await this.completeFromList(
+          () => this.client.listCollectors({ size: 100, offset: 0, filter, fields: 'hostname,description' }),
+          (item: any) => item.hostname || item.description,
+        );
+      }
+
+      if (argument.name === 'targetGroupPath') {
+        const filter = searchValue
+          ? [`fullPath~"${searchValue}"`, `name~"${searchValue}"`].join('||')
+          : '';
+        return await this.completeFromList(
+          () => this.client.listDeviceGroups({ size: 100, offset: 0, filter, fields: 'fullPath,name' }),
+          (item: any) => item.fullPath || item.name,
+        );
+      }
+
+      if (argument.name === 'datasourceName') {
+        const filter = searchValue
+          ? [`name~"${searchValue}"`, `displayName~"${searchValue}"`].join('||')
+          : '';
+        return await this.completeFromList(
+          () => this.client.listDataSources({ size: 100, offset: 0, filter, fields: 'displayName,name' }),
+          (item: any) => item.displayName || item.name,
+        );
+      }
+    } catch (error) {
+      console.error('[LogicMonitor MCP] Completion error:', error);
+      return { values: [], total: 0, hasMore: false };
+    }
+
+    return { values: [], total: 0, hasMore: false };
+  }
+
+  private async completeFromList(
+    fetcher: () => Promise<{ items?: any[]; total?: number }>,
+    extractValue: (item: any) => string | undefined,
+  ): Promise<{ values: string[]; total: number; hasMore: boolean }> {
+    const result = await fetcher();
+    const items = result.items || [];
+    const total = result.total || items.length;
+    const values = items
+      .map(extractValue)
+      .filter((v): v is string => Boolean(v));
+
     return {
-      values: [],
-      total: 0,
-      hasMore: false,
+      values,
+      total,
+      hasMore: total > values.length,
     };
   }
 }

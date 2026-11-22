@@ -21,7 +21,7 @@ Model Context Protocol (MCP) server for LogicMonitor - enables AI assistants to 
 
 ## Features
 
-- **352 MCP Tools** for comprehensive LogicMonitor operations (177 read-only, 175 write) — **100% LogicMonitor API v3 coverage**
+- **374 MCP Tools** for comprehensive LogicMonitor operations (195 read-only, 179 write) — **100% LogicMonitor API v3 (v246) coverage** (`PUT` endpoints are intentionally omitted where `PATCH` is available to minimize the number of MCP tools)
 - **Unified Server**: Single server implementation supporting all transport modes (STDIO, SSE, HTTP)
 - **Multiple Transport Modes**: STDIO for local use, SSE/HTTP for remote access
 - **Flexible Authentication**: No auth (dev), bearer token, or OAuth/OIDC
@@ -256,8 +256,8 @@ Collapsing reduces the number of advertised tools, which makes large tool sets e
 
 | Mode | Base | Level 1 | Level 2 |
 |------|-----:|--------:|--------:|
-| Full (read-write) | 352 | 144 | 92 |
-| Read-only | 177 | 124 | 80 |
+| Full (read-write) | 374 | 161 | 102 |
+| Read-only | 195 | 138 | 88 |
 
 > Level 2 is additive on top of level 1 and requires it to be enabled. No tool functionality is lost when collapsing: the original operations remain available through the consolidated `manage_<resource>` tools via the `operation` parameter.
 
@@ -483,7 +483,7 @@ npm run start:http
 
 ## Available Tools
 
-The server provides 352 tools for comprehensive LogicMonitor operations (100% LogicMonitor API v3 coverage). Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
+The server provides 374 tools for comprehensive LogicMonitor operations (**100% LogicMonitor API v3 (v246) coverage**). Where the LogicMonitor API defines both `PUT` (full replace) and `PATCH` (partial update) for the same resource, `PUT` is intentionally omitted in favor of `PATCH` to minimize the number of MCP tools. Tools are categorized by functionality and marked as **read-only** (safe) or **write** (modifies data).
 
 Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `destructiveHint` (deletes or overwrites existing data), `idempotentHint` (repeating the call has no further effect), and `openWorldHint` (reaches systems outside the LM portal, such as cloud provider APIs or monitored hosts). Collapsed `manage_<resource>` tools take the riskiest value of their operations.
 
@@ -503,6 +503,7 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 
 **Read-Only:**
 - `get_resource_group` - Get device group details by ID
+- `list_resource_group_resources` - List immediate devices under a device group
 - `list_resource_groups` - List all device groups/folders
 
 **Write Operations:**
@@ -516,6 +517,7 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `link_alert` - Generate direct link to alert in LM UI
 - `get_action_chain` - Get action chain details
 - `get_action_rule` - Get action rule details
+- `get_action_rule_status` - Get action rule enabled/disabled status
 - `get_alert` - Get detailed alert information
 - `get_alert_rule` - Get alert rule details
 - `list_action_chains` - List notification/escalation action chains
@@ -555,10 +557,13 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `get_resource_datasource` - Get device datasource details
 - `get_resource_datasource_data` - Get aggregated datasource data across instances
 - `get_resource_datasource_sdt_history` - Get a datasource's SDT history
+- `get_resource_instance` - Get a specific datasource instance by ID
 - `get_resource_instance_config` - Get a specific collected config (with content)
 - `get_resource_instance_data` - Get time-series metrics data
 - `get_resource_instance_group` - Get instance group details
 - `get_resource_sdt_history` - Get a device's SDT history
+- `list_all_resource_instances` - List all datasource instances across a device
+- `list_resource_sdts` - List scheduled down times (SDTs) for a device
 - `get_resource_top_talkers_graph` - Get NetFlow top-talkers graph data
 - `get_resources_delta` - Fetch device changes since a delta snapshot
 - `get_resources_delta_id` - Start a device delta-tracking session
@@ -645,22 +650,29 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 ### Collectors & Infrastructure
 
 **Read-Only:**
+- `calculate_collector_sizing` - Calculate collector sizing recommendations
 - `get_collector` - Get collector details
 - `get_collector_agent_log_level` - Get a collector component's log level
+- `get_collector_download_token` - Get a short-lived download token for a collector installer
 - `get_collector_events` - Get recent events for a collector
 - `get_collector_group` - Get collector group details by ID
 - `get_collector_installer` - Get the installer download URL for a collector
+- `get_collector_log_file` - Get a specific collector log file
 - `get_collector_status_check` - Run a status check on a collector's services
 - `get_netscan` - Get NetScan details
 - `get_topology` - Get network topology information
 - `list_collector_agent_log_levels` - List a collector's per-component log levels
+- `list_collector_group_collectors` - List collectors belonging to a collector group
 - `list_collector_groups` - List collector groups
+- `list_collector_log_files` - List log files for a collector
+- `list_collector_upgrade_history` - List collector upgrade history
 - `list_collector_versions` - List available collector versions
 - `list_collectors` - List monitoring collectors (agents)
 - `list_netscans` - List network discovery scans
 
 **Write Operations:**
 - `acknowledge_collector_down_alert` - Acknowledge a collector-down alert
+- `batch_update_collector_agent_log_levels` - Batch update agent log levels for multiple collector components
 - `create_collector` - Register a new collector
 - `create_collector_group` - Create a collector group
 - `create_netscan` - Create NetScan
@@ -669,6 +681,8 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `delete_netscan` - Delete netscan
 - `execute_debug_command` - Run a debug command on a collector (async; returns sessionId)
 - `get_debug_command_result` - Get the output of a collector debug command
+- `restart_collector` - Restart a collector
+- `trigger_collector_status_check` - Trigger an immediate collector status check
 - `update_collector` - Modify collector settings
 - `update_collector_agent_log_level` - Set a collector component's log level
 - `update_collector_group` - Update a collector group
@@ -685,10 +699,13 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `get_website_graph_data` - Get rendered graph data for a website checkpoint
 - `get_website_group` - Get website group details
 - `get_website_group_sdt_history` - Get SDT history for a website group
+- `list_website_alerts` - List alerts for a website
 - `list_website_checkpoints` - List available monitoring checkpoints
 - `list_website_group_sdts` - List active SDTs on a website group
 - `list_website_group_websites` - List website monitors in a group
 - `list_website_groups` - List website groups
+- `list_website_properties` - List properties for a website
+- `list_website_sdts` - List scheduled down times (SDTs) for a website
 - `list_websites` - List website monitors
 - `update_website_group` - Update a website group
 
@@ -749,6 +766,7 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `get_role` - Get role details
 - `get_user` - Get user details
 - `list_access_groups` - List access groups
+- `list_all_api_tokens` - List API tokens across all users
 - `list_api_tokens` - List API tokens for user
 - `list_roles` - List user roles
 - `list_users` - List users/admins
@@ -790,9 +808,9 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `list_resource_group_alerts` - Alerts across a device group
 - `list_resource_group_cluster_alert_confs` / `get_resource_group_cluster_alert_conf` - Cluster alert configurations
 - `list_resource_group_datasources` / `get_resource_group_datasource` - DataSources applied to a device group
-- `list_resource_group_properties` - List properties for device group
+- `list_resource_group_properties` / `get_resource_group_property` - List or get properties for a device group
 - `list_resource_group_sdts` / `get_resource_group_sdt_history` - Device group SDTs and history
-- `list_resource_properties` - List custom properties for device
+- `list_resource_properties` / `get_resource_property` - List or get custom properties for a device
 
 **Write Operations:**
 - `collect_resource_instance_config` - Trigger immediate config collection
@@ -862,7 +880,7 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `create_log_alert` / `update_log_alert` / `delete_log_alert` / `set_log_alert_status`
 - `create_log_alert_group` / `update_log_alert_group` / `delete_log_alert_group`
 - `create_log_partition` / `update_log_partition` / `delete_log_partition` / `log_partition_action`
-- `create_log_query_group` / `update_log_query_group` / `delete_log_query_group` / `move_log_queries`
+- `create_log_query_group` / `update_log_query_group` / `delete_log_query_group` / `import_log_query_groups` / `move_log_queries`
 - `create_tracked_query_group` / `update_tracked_query_group` / `delete_tracked_query_group`
 
 ### Cloud Onboarding (AWS / Azure / GCP / SaaS)
@@ -881,6 +899,7 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 - `get_contract_info` - Contract & usage information
 - `get_diagnostic_remediation_sources` / `get_diagnostic_remediation_results` - Diagnostic remediation
 - `get_external_api_stats` - External API usage statistics
+- `get_focus_cost_usage` - FOCUS v1.3 Cost and Usage shaped usage export
 - `get_integration_audit_logs` - Integration audit logs
 - `get_logicmodule_metadata` - LogicModule metadata
 - `get_metrics_summary` / `get_metrics_usage` - Push-metrics ingestion summary & usage
@@ -896,9 +915,9 @@ Every tool declares the full set of MCP annotations: `title`, `readOnlyHint`, `d
 
 ### Summary
 
-- **177 read-only tools** - Safe for production monitoring
-- **175 write tools** - Require caution (disabled by default with `--read-only`)
-- **352 total tools** (100% LogicMonitor API v3 coverage)
+- **195 read-only tools** - Safe for production monitoring
+- **179 write tools** - Require caution (disabled by default with `--read-only`)
+- **374 total tools** (**100% LogicMonitor API v3 (v246) coverage**; `PUT` endpoints are intentionally omitted where `PATCH` is available to minimize the number of MCP tools)
 
 ## Security Considerations
 
@@ -922,7 +941,7 @@ export MCP_READ_ONLY=true
 npm start
 ```
 
-This disables all 175 write operations, leaving only 177 safe read-only tools.
+This disables all 179 write operations, leaving only 195 safe read-only tools.
 
 ### Authentication Setup
 

@@ -93,13 +93,23 @@ const TOOL_SCHEMA = {
 };
 
 async function loadSpec() {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const pinnedSpec = join(here, '..', 'spec', 'lm-swagger-v3.json');
   const arg = process.argv[2];
+
   if (arg) {
     if (!existsSync(arg)) {
       throw new Error(`Swagger file not found: ${arg}`);
     }
     return JSON.parse(readFileSync(arg, 'utf8'));
   }
+
+  if (existsSync(pinnedSpec)) {
+    // eslint-disable-next-line no-console
+    console.error(`Loading pinned swagger spec from ${pinnedSpec} ...`);
+    return JSON.parse(readFileSync(pinnedSpec, 'utf8'));
+  }
+
   // eslint-disable-next-line no-console
   console.error(`Downloading swagger spec from ${SWAGGER_URL} ...`);
   const res = await fetch(SWAGGER_URL);

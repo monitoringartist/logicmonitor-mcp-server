@@ -81,7 +81,19 @@ export const LM_FIXTURES = {
     "userPermission": "read",
     "userType": "sample-userType",
     "username": "John",
-    "viewPermission": "{\n\n\"Resources\" : true,\n\"Websites\" : true,\n\"Reports\" : true,\n\"Dashboards\" : true,\n\"Alerts\" : true,\n\"Settings\" : true,\n\"Maps\" : true,\n\"Logs\" : true,\n\"Traces\" : true\n\"Modules\" : true\n}"
+    "viewPermission": {
+      "Alerts": true,
+      "Dashboards": true,
+      "Logs": true,
+      "Maps": true,
+      "MetricsExplorer": true,
+      "Modules": true,
+      "Reports": true,
+      "Resources": true,
+      "Settings": true,
+      "Traces": true,
+      "Websites": true
+    }
   },
   Alert: {
     "SDT": {
@@ -114,7 +126,7 @@ export const LM_FIXTURES = {
         "batchJobs": {},
         "billingAlerts": {},
         "billingAlertsMap": {},
-        "budgets": {},
+        "billingBudgets": {},
         "clusterAlertSettings": {},
         "dataSourceInstanceAlertSettings": {},
         "dataSourceInstances": {},
@@ -234,6 +246,7 @@ export const LM_FIXTURES = {
     "ackedOnLocal": "sample-ackedOnLocal",
     "agentConfFields": {},
     "arch": "sample-arch",
+    "archType": "sample-archType",
     "automaticUpgradeInfo": {
       "createdBy": "sample-createdBy",
       "dayOfWeek": "MON",
@@ -1225,7 +1238,7 @@ export const LM_FIXTURES = {
     "id": "sample-id",
     "isEffective": false,
     "minute": 6,
-    "monthDay": 7,
+    "monthDay": "7",
     "sdtType": "oneTime",
     "startDateTime": 1534460400000,
     "startDateTimeOnLocal": "sample-startDateTimeOnLocal",

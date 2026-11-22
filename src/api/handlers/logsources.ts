@@ -187,4 +187,10 @@ export const logsourcesToolHandlers: ToolHandlerMap = {
   'delete_tracked_query_group': async ({ client, args }: ToolHandlerContext): Promise<any> => {
     return await client.deleteTrackedQueryGroup(args.trackedQueryGroupId);
   },
+
+  'import_log_query_groups': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.importLogQueryGroups(args.items || [], {
+      groupType: args.groupType,
+    });
+  },
 };

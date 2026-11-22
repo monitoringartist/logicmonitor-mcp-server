@@ -138,4 +138,46 @@ export const collectorsToolHandlers: ToolHandlerMap = {
       fields: args.fields,
     });
   },
+
+  'list_collector_upgrade_history': async ({ client }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorUpgradeHistory();
+  },
+
+  'list_collector_log_files': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorLogFiles(args.collectorId, {
+      format: args.format,
+    });
+  },
+
+  'get_collector_log_file': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorLogFile(args.collectorId, args.fileName, {
+      format: args.format,
+    });
+  },
+
+  'get_collector_download_token': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.getCollectorDownloadToken(args.collectorId);
+  },
+
+  'restart_collector': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.restartCollector(args.collectorId, args.config || {});
+  },
+
+  'trigger_collector_status_check': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.triggerCollectorStatusCheck(args.collectorId);
+  },
+
+  'calculate_collector_sizing': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.calculateCollectorSizing(args.config || {}, {
+      fields: args.fields,
+    });
+  },
+
+  'batch_update_collector_agent_log_levels': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.batchUpdateCollectorAgentLogLevels(args.collectorId, args.levels || []);
+  },
+
+  'list_collector_group_collectors': async ({ client, args }: ToolHandlerContext): Promise<any> => {
+    return await client.listCollectorGroupCollectors(args.groupId);
+  },
 };

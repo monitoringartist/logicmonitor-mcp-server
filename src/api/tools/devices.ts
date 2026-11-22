@@ -63,7 +63,7 @@ export const devicesTools: Tool[] = [
       '\n- Check resource/device configuration' +
       '\n- Verify collector assignment' +
       '\n- Review custom properties before updating' +
-      '\n\n**Workflow:** Use "list_resources" or "search_resources" first to find the deviceId, then use this tool for complete details. ' +
+      '\n\n**Workflow:** Use "list_resources" first to find the deviceId, then use this tool for complete details. ' +
       '\n\n**APM / traced services:** APM (distributed tracing) services are resources with deviceType:6, so this tool returns the full service detail for them too (OpenTelemetry attributes appear as properties). ' +
       '\n\n**Related tools:** "list_resource_datasources" (see what\'s monitored), "list_resource_properties" (view all properties), "link_resource" (get UI link).',
     annotations: {
@@ -211,7 +211,7 @@ export const devicesTools: Tool[] = [
     description: 'Modify an existing resource/device or multiple resources/devices in LogicMonitor (LM) monitoring. ' +
       '\n\n**Two modes: Single resource/device OR Batch update** ' +
       '\n\n**Single resource/device mode:** ' +
-      '\n- Required: deviceId (from "list_resources" or "search_resources")' +
+      '\n- Required: deviceId (from "list_resources")' +
       '\n- Optional: displayName, description, disableAlerting, preferredCollectorId, customProperties' +
       '\n- opType: "replace" (default) overwrites all, "add" merges with existing' +
       '\n\n**Batch mode:** ' +
@@ -231,7 +231,7 @@ export const devicesTools: Tool[] = [
       '\n\n**opType explained:** ' +
       '\n- "replace": Overwrites entire field (careful with customProperties!)' +
       '\n- "add": Merges/appends to existing values (safer for properties)' +
-      '\n\n**Workflow:** First find deviceId using "list_resources" or "search_resources", then update. ' +
+      '\n\n**Workflow:** First find deviceId using "list_resources", then update. ' +
       '\n\n**Related tools:** "list_resources" (find device), "get_resource" (verify before update), "update_resource_property" (simpler property updates).',
     annotations: {
       title: 'Update resource/device(s)',
@@ -346,7 +346,7 @@ export const devicesTools: Tool[] = [
       '\n- Remove duplicate entries' +
       '\n- Bulk decommissioning' +
       '\n\n**⚠️ CONSIDER ALTERNATIVES FIRST:** ' +
-      '\n- Need temporary suppression? Use "create_resource_sdt" instead (reversible!)' +
+      '\n- Need temporary suppression? Use "create_sdt" instead (reversible!)' +
       '\n- Need to stop monitoring but keep history? Use "update_resource" with disableAlerting:true' +
       '\n- Moving to different collector? Use "update_resource" to change collector' +
       '\n\n**Best practice workflow:** ' +
@@ -355,7 +355,7 @@ export const devicesTools: Tool[] = [
       '\n- If deletion necessary, delete resource/device' +
       '\n- No verification step possible (irreversible)' +
       '\n\n**Batch deletion tip:** For >50 resources/devices, use batch mode with continueOnError:true to handle any failures gracefully. ' +
-      '\n\n**Related tools:** "create_resource_sdt" (temporary alternative), "update_resource" (disable without deleting), "list_resources" (find resource/device to delete).',
+      '\n\n**Related tools:** "create_sdt" (temporary alternative), "update_resource" (disable without deleting), "list_resources" (find resource/device to delete).',
     annotations: {
       title: 'Delete resource/device(s)',
       readOnlyHint: false,
@@ -430,7 +430,7 @@ export const devicesTools: Tool[] = [
       'Many datasources check properties to decide if they should monitor device. Example: AWS_EC2 datasource checks if resource/device has "aws.resourcetype=ec2" property. ' +
       '\n\n**Workflow:** Use "list_resources" to find deviceId, then use this tool to see all properties including inherited ones. ' +
       '\n\n**Important:** A negative "total" value in the response indicates incomplete results. Use pagination (size/offset parameters) or set autoPaginate: true to retrieve all items. ' +
-      '\n\n**Related tools:** "update_device_property" (modify), "get_resource" (see summary), "list_datasources" (see how properties affect monitoring).',
+      '\n\n**Related tools:** "update_resource_property" (modify), "get_resource" (see summary), "list_datasources" (see how properties affect monitoring).',
     annotations: {
       title: 'List resource/device properties',
       readOnlyHint: true,
@@ -465,42 +465,42 @@ export const devicesTools: Tool[] = [
       '\n- Change resource/device tags/metadata' +
       '\n\n**Required parameters:** ' +
       '\n- deviceId: Device ID (from "list_resources")' +
-      '\n- name: Property name (e.g., "ssh.user", "env", "owner")' +
+      '\n- propertyName: Property name (e.g., "ssh.user", "env", "owner")' +
       '\n- value: Property value' +
       '\n\n**Property types and examples:** ' +
       '\n\n**Credentials (override group defaults):** ' +
-      '\n- SSH: name="ssh.user", value="admin"' +
-      '\n- SNMP: name="snmp.community", value="public"' +
-      '\n- WMI: name="wmi.user", value="DOMAIN\\\\monitoring"' +
-      '\n- Database: name="jdbc.user", value="dbmonitor"' +
+      '\n- SSH: propertyName="ssh.user", value="admin"' +
+      '\n- SNMP: propertyName="snmp.community", value="public"' +
+      '\n- WMI: propertyName="wmi.user", value="DOMAIN\\\\monitoring"' +
+      '\n- Database: propertyName="jdbc.user", value="dbmonitor"' +
       '\n\n**Tags and metadata:** ' +
-      '\n- Environment: name="env", value="production"' +
-      '\n- Owner: name="owner", value="platform-team"' +
-      '\n- Cost center: name="cost.center", value="engineering"' +
-      '\n- Application: name="app", value="web-frontend"' +
+      '\n- Environment: propertyName="env", value="production"' +
+      '\n- Owner: propertyName="owner", value="platform-team"' +
+      '\n- Cost center: propertyName="cost.center", value="engineering"' +
+      '\n- Application: propertyName="app", value="web-frontend"' +
       '\n\n**Integration IDs:** ' +
-      '\n- ServiceNow: name="servicenow.ci_id", value="ci12345"' +
-      '\n- JIRA: name="jira.project", value="INFRA"' +
-      '\n- CMDB: name="cmdb.id", value="server-001"' +
+      '\n- ServiceNow: propertyName="servicenow.ci_id", value="ci12345"' +
+      '\n- JIRA: propertyName="jira.project", value="INFRA"' +
+      '\n- CMDB: propertyName="cmdb.id", value="server-001"' +
       '\n\n**Datasource-specific settings:** ' +
-      '\n- Custom threshold: name="threshold.cpu", value="90"' +
-      '\n- Collection interval: name="poll.interval", value="5"' +
-      '\n- Monitoring scope: name="monitor.ports", value="80,443"' +
+      '\n- Custom threshold: propertyName="threshold.cpu", value="90"' +
+      '\n- Collection interval: propertyName="poll.interval", value="5"' +
+      '\n- Monitoring scope: propertyName="monitor.ports", value="80,443"' +
       '\n\n**Device-level vs Group-level:** ' +
       '\n- **Device property** (this tool): Applies only to this resource/device, overrides group property' +
       '\n- **Group property** (update_resource_group): Inherited by all resource/device in group' +
       '\n- Device properties take precedence over group properties' +
       '\n\n**Common scenarios:** ' +
       '\n\n**Override SSH credentials for one resource/device:** ' +
-      '{deviceId: 123, name: "ssh.user", value: "specialadmin"} ' +
+      '{deviceId: 123, propertyName: "ssh.user", value: "specialadmin"} ' +
       '\n\n**Tag resource/device as production:** ' +
-      '{deviceId: 123, name: "env", value: "production"} ' +
+      '{deviceId: 123, propertyName: "env", value: "production"} ' +
       '\n\n**Link to ServiceNow CI:** ' +
-      '{deviceId: 123, name: "servicenow.ci_id", value: "ci-web-01"} ' +
+      '{deviceId: 123, propertyName: "servicenow.ci_id", value: "ci-web-01"} ' +
       '\n\n**Set custom alert threshold:** ' +
-      '{deviceId: 123, name: "cpu.threshold", value: "85"} ' +
-      '\n\n**Workflow:** Use "list_device_properties" to see current properties, then update or add new ones. ' +
-      '\n\n**Related tools:** "list_device_properties" (view all properties), "update_resource" (update multiple properties), "update_resource_group" (set group-level properties).',
+      '{deviceId: 123, propertyName: "cpu.threshold", value: "85"} ' +
+      '\n\n**Workflow:** Use "list_resource_properties" to see current properties, then update or add new ones. ' +
+      '\n\n**Related tools:** "list_resource_properties" (view all properties), "update_resource" (update multiple properties), "update_resource_group" (set group-level properties).',
     annotations: {
       title: 'Update resource/device properties',
       readOnlyHint: false,
@@ -538,6 +538,77 @@ export const devicesTools: Tool[] = [
       type: 'object',
       properties: { ...paginationSchema, ...filterSchema, ...fieldsSchema },
       additionalProperties: false,
+    },
+  },
+  {
+    name: 'list_all_resource_instances',
+    description: 'List all datasource instances across a resource/device in LogicMonitor (LM) without specifying a deviceDataSourceId.',
+    annotations: {
+      title: 'List all resource instances',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Optional start time (epoch seconds)' },
+        end: { type: 'number', description: 'Optional end time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'Optional NetFlow filter' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'list_resource_sdts',
+    description: 'List scheduled down times (SDTs) for a specific resource/device in LogicMonitor (LM).',
+    annotations: {
+      title: 'List resource SDTs',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        start: { type: 'number', description: 'Optional start time (epoch seconds)' },
+        end: { type: 'number', description: 'Optional end time (epoch seconds)' },
+        netflowFilter: { type: 'string', description: 'Optional NetFlow filter' },
+        ...paginationSchema,
+        ...filterSchema,
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId'],
+    },
+  },
+  {
+    name: 'get_resource_property',
+    description: 'Get a specific property of a resource/device by property name in LogicMonitor (LM).',
+    annotations: {
+      title: 'Get resource property',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        deviceId: { type: 'number', description: 'The resource/device ID' },
+        propertyName: { type: 'string', description: 'The property name' },
+        ...fieldsSchema,
+      },
+      additionalProperties: false,
+      required: ['deviceId', 'propertyName'],
     },
   },
 

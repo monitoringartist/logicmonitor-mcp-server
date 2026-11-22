@@ -496,5 +496,23 @@ export const logsourcesTools: Tool[] = [
       required: ['trackedQueryGroupId'],
     },
   },
+  {
+    name: 'import_log_query_groups',
+    description: 'Import log query groups and queries (best-effort) in LogicMonitor (LM).',
+    annotations: { title: 'Import log query groups', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupType: { type: 'string', description: 'Optional log query group type' },
+        items: {
+          type: 'array',
+          items: { type: 'object', additionalProperties: true },
+          description: 'Array of log query group validation/import items',
+        },
+      },
+      additionalProperties: false,
+      required: ['items'],
+    },
+  },
 
 ];

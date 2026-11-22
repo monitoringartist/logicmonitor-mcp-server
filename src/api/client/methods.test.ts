@@ -252,7 +252,7 @@ const cases: Case[] = [
 
   // Access Groups
   { name: 'getAccessGroup', run: c => c.getAccessGroup(1), method: 'GET', path: '/setting/accessgroup/1' },
-  { name: 'createAccessGroup', run: c => c.createAccessGroup({ name: 'n', description: 'd' }), method: 'POST', path: '/setting/accessgroup' },
+  { name: 'createAccessGroup', run: c => c.createAccessGroup({ name: 'n', description: 'd' }), method: 'POST', path: '/setting/accessgroup/add' },
   { name: 'updateAccessGroup', run: c => c.updateAccessGroup(1, {}), method: 'PATCH', path: '/setting/accessgroup/1' },
   { name: 'deleteAccessGroup', run: c => c.deleteAccessGroup(1), method: 'DELETE', path: '/setting/accessgroup/1' },
   { name: 'mapUnmapModuleToAccessGroup', run: c => c.mapUnmapModuleToAccessGroup({}), method: 'POST', path: '/setting/accessgroup/mapunmap/modules' },
@@ -404,6 +404,23 @@ const cases: Case[] = [
   { name: 'listCostOptimizationRecommendations', run: c => c.listCostOptimizationRecommendations(), method: 'GET', path: '/cost-optimization/recommendations' },
   { name: 'getCostOptimizationRecommendation', run: c => c.getCostOptimizationRecommendation('r1'), method: 'GET', path: '/cost-optimization/recommendations/r1' },
   { name: 'listCostOptimizationRecommendationCategories', run: c => c.listCostOptimizationRecommendationCategories(), method: 'GET', path: '/cost-optimization/recommendations/categories' },
+
+  // Additional Swagger v3 endpoints
+  { name: 'listCollectorUpgradeHistory', run: c => c.listCollectorUpgradeHistory(), method: 'GET', path: '/setting/collector/collectors/upgradeHistory' },
+  { name: 'listCollectorLogFiles', run: c => c.listCollectorLogFiles(1), method: 'GET', path: '/setting/collector/collectors/1/logs' },
+  { name: 'getCollectorLogFile', run: c => c.getCollectorLogFile(1, 'wrapper.log'), method: 'GET', path: '/setting/collector/collectors/1/logs/wrapper.log' },
+  { name: 'getCollectorDownloadToken', run: c => c.getCollectorDownloadToken(1), method: 'GET', path: '/setting/collector/collectors/1/downloadToken' },
+  { name: 'restartCollector', run: c => c.restartCollector(1), method: 'POST', path: '/setting/collector/collectors/1/services/restart' },
+  { name: 'triggerCollectorStatusCheck', run: c => c.triggerCollectorStatusCheck(1), method: 'POST', path: '/setting/collector/collectors/1/services/triggerStatusCheck' },
+  { name: 'calculateCollectorSizing', run: c => c.calculateCollectorSizing({}), method: 'POST', path: '/setting/collector/sizing' },
+  { name: 'batchUpdateCollectorAgentLogLevels', run: c => c.batchUpdateCollectorAgentLogLevels(1, []), method: 'PUT', path: '/setting/collector/collectors/1/agentloglevels' },
+  { name: 'listCollectorGroupCollectors', run: c => c.listCollectorGroupCollectors(1), method: 'GET', path: '/setting/collector/groups/1/collectors' },
+  { name: 'getDeviceProperty', run: c => c.getDeviceProperty(1, 'system.hostname'), method: 'GET', path: '/device/devices/1/properties/system.hostname' },
+  { name: 'getDeviceGroupProperty', run: c => c.getDeviceGroupProperty(1, 'group.prop'), method: 'GET', path: '/device/groups/1/properties/group.prop' },
+  { name: 'getDeviceDataSourceInstance', run: c => c.getDeviceDataSourceInstance(1, 2, 3), method: 'GET', path: '/device/devices/1/devicedatasources/2/instances/3' },
+  { name: 'getActionRuleStatus', run: c => c.getActionRuleStatus(1), method: 'GET', path: '/setting/action/rules/1/status' },
+  { name: 'importLogQueryGroups', run: c => c.importLogQueryGroups([]), method: 'POST', path: '/log/logquerygroups/import' },
+  { name: 'getFocusCostUsage', run: c => c.getFocusCostUsage(), method: 'GET', path: '/usage/focusCostUsage' },
 ];
 
 describe('LM client domain methods issue the expected request', () => {
@@ -490,6 +507,13 @@ const listCases: ListCase[] = [
   { name: 'listTopologies', run: (c, ap) => c.listTopologies({ autoPaginate: ap }), path: '/topology/topologies' },
   { name: 'listIntegrations', run: (c, ap) => c.listIntegrations({ autoPaginate: ap }), path: '/setting/integrations' },
   { name: 'listNetscans', run: (c, ap) => c.listNetscans({ autoPaginate: ap }), path: '/setting/netscans' },
+  { name: 'listDeviceInstances', run: (c, ap) => c.listDeviceInstances(1, { autoPaginate: ap }), path: '/device/devices/1/instances' },
+  { name: 'listDeviceSDTs', run: (c, ap) => c.listDeviceSDTs(1, { autoPaginate: ap }), path: '/device/devices/1/sdts' },
+  { name: 'listDeviceGroupDevices', run: (c, ap) => c.listDeviceGroupDevices(1, { autoPaginate: ap }), path: '/device/groups/1/devices' },
+  { name: 'listWebsiteAlerts', run: (c, ap) => c.listWebsiteAlerts(1, { autoPaginate: ap }), path: '/website/websites/1/alerts' },
+  { name: 'listWebsiteProperties', run: (c, ap) => c.listWebsiteProperties(1, { autoPaginate: ap }), path: '/website/websites/1/properties' },
+  { name: 'listWebsiteSDTs', run: (c, ap) => c.listWebsiteSDTs(1, { autoPaginate: ap }), path: '/website/websites/1/sdts' },
+  { name: 'listAllApiTokens', run: (c, ap) => c.listAllApiTokens({ autoPaginate: ap }), path: '/setting/admins/apitokens' },
 ];
 
 describe('LM client list endpoints', () => {

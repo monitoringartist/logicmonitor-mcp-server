@@ -183,6 +183,95 @@ describe('LogicMonitorHandlers - Completion', () => {
         fields: 'displayName,name',
       });
     });
+
+    it('should return completions for collector_health_audit collectorName argument', async () => {
+      mockClient.listCollectors.mockResolvedValue({
+        items: [
+          { hostname: 'col-east-01.example.com', description: 'East Collector 1' },
+          { hostname: 'col-east-02.example.com', description: 'East Collector 2' },
+        ],
+        total: 2,
+      });
+
+      const result = await handlers.handleCompletion(
+        { type: 'ref/prompt', name: 'collector_health_audit' },
+        { name: 'collectorName', value: 'east' },
+      );
+
+      expect(result.values).toEqual(['col-east-01.example.com', 'col-east-02.example.com']);
+      expect(mockClient.listCollectors).toHaveBeenCalledWith({
+        size: 100,
+        offset: 0,
+        filter: 'hostname~"east"||description~"east"',
+        fields: 'hostname,description',
+      });
+    });
+
+    it('should return completions for schedule_maintenance_window targetGroupPath argument', async () => {
+      mockClient.listDeviceGroups.mockResolvedValue({
+        items: [
+          { fullPath: 'Production/Web', name: 'Web' },
+          { fullPath: 'Production/DB', name: 'DB' },
+        ],
+        total: 2,
+      });
+
+      const result = await handlers.handleCompletion(
+        { type: 'ref/prompt', name: 'schedule_maintenance_window' },
+        { name: 'targetGroupPath', value: 'Prod' },
+      );
+
+      expect(result.values).toEqual(['Production/Web', 'Production/DB']);
+      expect(mockClient.listDeviceGroups).toHaveBeenCalledWith({
+        size: 100,
+        offset: 0,
+        filter: 'fullPath~"Prod"||name~"Prod"',
+        fields: 'fullPath,name',
+      });
+    });
+
+    it('should return completions for alert_triage datasourceName argument', async () => {
+      mockClient.listDataSources.mockResolvedValue({
+        items: [
+          { displayName: 'CPU Usage', name: 'WinCPU' },
+          { displayName: 'Linux CPU', name: 'LinuxCPU' },
+        ],
+        total: 2,
+      });
+
+      const result = await handlers.handleCompletion(
+        { type: 'ref/prompt', name: 'alert_triage' },
+        { name: 'datasourceName', value: 'CPU' },
+      );
+
+      expect(result.values).toEqual(['CPU Usage', 'Linux CPU']);
+      expect(mockClient.listDataSources).toHaveBeenCalledWith({
+        size: 100,
+        offset: 0,
+        filter: 'name~"CPU"||displayName~"CPU"',
+        fields: 'displayName,name',
+      });
+    });
+
+    it('should escape special LM filter characters in completion search value', async () => {
+      mockClient.listResources.mockResolvedValue({
+        items: [{ displayName: 'prod:web"01', name: 'web01' }],
+        total: 1,
+      });
+
+      const result = await handlers.handleCompletion(
+        { type: 'ref/prompt', name: 'resource_check' },
+        { name: 'resourceName', value: 'prod:web"01' },
+      );
+
+      expect(result.values).toEqual(['prod:web"01']);
+      expect(mockClient.listResources).toHaveBeenCalledWith({
+        size: 100,
+        offset: 0,
+        filter: 'name~"prod\\:web\\"01"||displayName~"prod\\:web\\"01"||name:"prod\\:web\\"01"',
+        fields: 'displayName,name',
+      });
+    });
   });
 });
 
