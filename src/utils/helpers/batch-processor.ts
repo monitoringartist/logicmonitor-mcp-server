@@ -34,7 +34,7 @@ export interface BatchOptions {
   continueOnError?: boolean;
   /** Callback for progress updates */
   onProgress?: (completed: number, total: number) => void;
-  /** Retry on rate limit errors (default: true) */
+  /** Retry on rate limit errors (default: false — BaseClient already handles 429 retries) */
   retryOnRateLimit?: boolean;
   /** Maximum retry attempts (default: 3) */
   maxRetries?: number;
@@ -60,7 +60,7 @@ export class BatchProcessor {
       maxConcurrent = 5,
       continueOnError = true,
       onProgress,
-      retryOnRateLimit = true,
+      retryOnRateLimit = false,
       maxRetries = 3,
       retryDelay = 1000,
     } = options;

@@ -1,141 +1,193 @@
 /**
  * Streamable HTTP Transport Module
  *
- * Handles HTTP transport for MCP connections with session management
+ * Handles MCP Streamable HTTP transport (POST, GET, DELETE) using the official
+ * MCP SDK `StreamableHTTPServerTransport`.
  */
 
 import { Request, Response } from 'express';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
+import {
+  StreamableHTTPServerTransport,
+  EventStore,
+} from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import crypto from 'crypto';
 
 export interface HTTPSessionInfo {
-  serverInstance: Server;
+  server: Server;
+  transport: StreamableHTTPServerTransport;
   sessionId: string;
   cleanup: () => Promise<void>;
 }
 
 export interface HTTPSessionCallbacks {
-  getOrCreateSession: (sessionId: string) => HTTPSessionInfo;
-  handleMessage: (server: Server, message: JSONRPCMessage) => Promise<any>;
-  onError?: (error: Error, sessionId: string) => void;
-}
-
-export interface HTTPDeleteCallbacks {
   getSession: (sessionId: string) => HTTPSessionInfo | undefined;
+  createSession: (sessionId: string) => { server: Server; cleanup: () => Promise<void> };
+  onSessionInitialized?: (sessionId: string, sessionInfo: HTTPSessionInfo) => void | Promise<void>;
   onClose: (sessionId: string) => void | Promise<void>;
-  onError?: (error: Error, sessionId: string) => void;
+  eventStore?: EventStore;
+  onError?: (error: Error, sessionId?: string) => void;
 }
 
 /**
- * Handles HTTP POST requests for MCP messages with flexible session management
+ * Handles Streamable HTTP requests (POST, GET, DELETE) for MCP sessions.
  *
  * @param req Express request
  * @param res Express response
- * @param callbacks Callbacks for session management
+ * @param callbacks Session lifecycle callbacks
  */
 export async function handleHTTPRequest(
   req: Request,
   res: Response,
   callbacks: HTTPSessionCallbacks,
 ): Promise<void> {
-  // Get or create session ID
-  let sessionId = req.headers['mcp-session-id'] as string | undefined;
-  if (!sessionId) {
-    sessionId = crypto.randomBytes(16).toString('hex');
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+  if (sessionId) {
+    const sessionInfo = callbacks.getSession(sessionId);
+    if (!sessionInfo) {
+      res.status(404).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32001,
+          message: 'Session not found',
+        },
+        id: null,
+      });
+      return;
+    }
+
+    try {
+      await sessionInfo.transport.handleRequest(
+        req,
+        res,
+        req.method === 'POST' ? req.body : undefined,
+      );
+    } catch (error) {
+      if (callbacks.onError && error instanceof Error) {
+        callbacks.onError(error, sessionId);
+      }
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: '2.0',
+          error: {
+            code: -32603,
+            message: 'Internal error',
+          },
+          id: null,
+        });
+      }
+    }
+    return;
   }
 
-  // Get or create session using callback
-  const sessionInfo = callbacks.getOrCreateSession(sessionId);
-
-  try {
-    const message: JSONRPCMessage = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-
-    // Handle the message using callback
-    const response = await callbacks.handleMessage(sessionInfo.serverInstance, message);
-
-    // Set session header (always return the session ID)
-    res.setHeader('Mcp-Session-Id', sessionId);
-
-    // For notifications (null response), return 200 OK
-    if (response === null) {
-      res.status(200).send();
-    } else {
-      res.json(response);
-    }
-  } catch (error) {
-    // Notify error callback if provided
-    if (callbacks.onError && error instanceof Error) {
-      callbacks.onError(error, sessionId);
-    }
-
-    res.setHeader('Mcp-Session-Id', sessionId);
-    res.status(200).json({
+  // Without Mcp-Session-Id, only a POST initialize request can start a new session.
+  if (req.method !== 'POST') {
+    res.status(400).json({
       jsonrpc: '2.0',
       error: {
-        code: -32603,
-        message: 'Internal error',
-        data: error instanceof Error ? error.message : 'An unexpected error occurred',
+        code: -32000,
+        message: 'Bad Request: Mcp-Session-Id header is required',
       },
       id: null,
     });
+    return;
   }
-}
 
-/**
- * Handles HTTP DELETE requests for session termination
- *
- * @param req Express request
- * @param res Express response
- * @param callbacks Callbacks for session management
- */
-export async function handleHTTPDelete(
-  req: Request,
-  res: Response,
-  callbacks: HTTPDeleteCallbacks,
-): Promise<void> {
-  const sessionId = req.headers['mcp-session-id'] as string | undefined;
-
-  if (!sessionId) {
+  let parsedBody: unknown;
+  try {
+    parsedBody = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  } catch {
     res.status(400).json({
-      error: 'invalid_request',
-      error_description: 'Missing Mcp-Session-Id header',
+      jsonrpc: '2.0',
+      error: {
+        code: -32700,
+        message: 'Parse error: Invalid JSON',
+      },
+      id: null,
     });
     return;
   }
 
-  // Get session using callback
-  const sessionInfo = callbacks.getSession(sessionId);
+  const isInit = Array.isArray(parsedBody)
+    ? parsedBody.some(isInitializeRequest)
+    : isInitializeRequest(parsedBody);
 
-  if (!sessionInfo) {
-    res.status(404).json({
-      error: 'session_not_found',
-      error_description: 'The specified session does not exist or has already been terminated',
+  if (!isInit) {
+    res.status(400).json({
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: 'Bad Request: No valid session ID provided',
+      },
+      id: null,
     });
     return;
   }
+
+  const newSessionId = crypto.randomUUID();
+  const { server, cleanup } = callbacks.createSession(newSessionId);
+
+  let closed = false;
+  const closeSession = async () => {
+    if (closed) return;
+    closed = true;
+    await cleanup();
+    await callbacks.onClose(newSessionId);
+  };
+
+  let transport: StreamableHTTPServerTransport;
+  transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: () => newSessionId,
+    eventStore: callbacks.eventStore,
+    onsessioninitialized: async (sid) => {
+      const info: HTTPSessionInfo = {
+        server,
+        transport,
+        sessionId: sid,
+        cleanup,
+      };
+      if (callbacks.onSessionInitialized) {
+        await callbacks.onSessionInitialized(sid, info);
+      }
+    },
+    onsessionclosed: async () => {
+      await closeSession();
+    },
+  });
+
+  transport.onclose = () => {
+    void closeSession();
+  };
+
+  transport.onerror = (error) => {
+    callbacks.onError?.(error, newSessionId);
+  };
 
   try {
-    // Call cleanup before deleting session
-    await sessionInfo.cleanup();
+    await server.connect(transport);
+    await transport.handleRequest(req, res, parsedBody);
 
-    // Call onClose callback
-    await callbacks.onClose(sessionId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Session terminated successfully',
-    });
-  } catch (error) {
-    // Notify error callback if provided
-    if (callbacks.onError && error instanceof Error) {
-      callbacks.onError(error, sessionId);
+    // If initialization failed before a session was established (e.g. 406 Not Acceptable),
+    // clean up the uninitialized server resources immediately.
+    if (!transport.sessionId) {
+      await closeSession();
     }
-
-    res.status(500).json({
-      error: 'internal_error',
-      error_description: 'Failed to terminate session',
-    });
+  } catch (error) {
+    if (callbacks.onError && error instanceof Error) {
+      callbacks.onError(error, newSessionId);
+    }
+    await closeSession();
+    if (!res.headersSent) {
+      res.status(500).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32603,
+          message: 'Internal error',
+        },
+        id: null,
+      });
+    }
   }
 }
-

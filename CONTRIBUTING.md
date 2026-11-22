@@ -26,7 +26,7 @@ We expect all contributors to:
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js >= 22.12
 - Git
 - A LogicMonitor account for testing (optional but recommended)
 

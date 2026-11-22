@@ -10,6 +10,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
   ReadResourceRequestSchema,
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
@@ -21,8 +22,55 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { LogicMonitorClient } from '../api/client.js';
 import { LogicMonitorHandlers } from '../api/handlers.js';
-import { listLMResources, readLMResource } from '../api/resources.js';
+import { listLMResources, listLMResourceTemplates, readLMResource } from '../api/resources.js';
 import { listLMPrompts, getLMPrompt, generatePromptMessages } from '../api/prompts.js';
+import { isMCPError, formatErrorForUser } from '../utils/core/error-handler.js';
+
+/**
+ * Converts a tool execution error into a standard MCP tool result with `isError: true`
+ * so the LLM can read actionable suggestions and self-correct.
+ */
+export function formatToolErrorResult(toolName: string, error: unknown) {
+  if (isMCPError(error)) {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: formatErrorForUser(error),
+        },
+      ],
+      isError: true,
+    };
+  }
+
+  let errorResponse: Record<string, unknown> = {
+    error: 'Unknown error occurred',
+    tool: toolName,
+  };
+
+  if (error instanceof Error) {
+    const lmError = (error as { lmError?: unknown }).lmError;
+    if (lmError) {
+      errorResponse = {
+        error: error.message,
+        tool: toolName,
+        details: lmError,
+      };
+    } else {
+      errorResponse.error = error.message;
+    }
+  }
+
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify(errorResponse, null, 2),
+      },
+    ],
+    isError: true,
+  };
+}
 
 export interface ServerConfig {
   version: string;
@@ -38,6 +86,25 @@ export interface ServerInstance {
   server: Server;
   cleanup: () => Promise<void>;
   startNotificationIntervals?: (sessionId?: string) => void;
+}
+
+/**
+ * Per-server session metadata.
+ *
+ * The MCP SDK `Server` type isn't extensible, so instead of casting and stashing
+ * fields on it (`(server as any).currentUserScope = ...`), we associate metadata
+ * via a WeakMap. Entries are garbage-collected automatically when the server is.
+ */
+export interface ServerMetadata {
+  userScope: string;
+  sessionId?: string;
+}
+
+const serverMetadata = new WeakMap<Server, ServerMetadata>();
+
+/** Retrieve the session metadata associated with a server instance, if any. */
+export function getServerMetadata(server: Server): ServerMetadata | undefined {
+  return serverMetadata.get(server);
 }
 
 /**
@@ -83,11 +150,11 @@ export function createServer(config: ServerConfig): ServerInstance {
     },
   );
 
-  // Store session-specific metadata
-  (server as any).currentUserScope = userScope;
-  if (sessionId) {
-    (server as any).sessionId = sessionId;
-  }
+  // Store session-specific metadata (typed, via WeakMap — see getServerMetadata).
+  serverMetadata.set(server, {
+    userScope,
+    ...(sessionId ? { sessionId } : {}),
+  });
 
   // Track subscriptions and intervals
   const intervals: NodeJS.Timeout[] = [];
@@ -111,6 +178,19 @@ export function createServer(config: ServerConfig): ServerInstance {
         name: r.name,
         description: r.description,
         mimeType: r.mimeType,
+      })),
+    };
+  });
+
+  // Handle resource template listing
+  server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
+    const resourceTemplates = listLMResourceTemplates();
+    return {
+      resourceTemplates: resourceTemplates.map(t => ({
+        uriTemplate: t.uriTemplate,
+        name: t.name,
+        description: t.description,
+        mimeType: t.mimeType,
       })),
     };
   });
@@ -197,39 +277,43 @@ export function createServer(config: ServerConfig): ServerInstance {
     const { name, arguments: args, _meta } = request.params;
     const progressToken = _meta?.progressToken;
 
-    if (!lmHandlers) {
-      throw new Error('LogicMonitor credentials not configured. Please set LM_COMPANY and LM_BEARER_TOKEN environment variables.');
-    }
-
-    // Create progress callback if progress token is provided
-    const progressCallback = progressToken !== undefined
-      ? async (progress: number, total: number) => {
-        try {
-          await server.notification({
-            method: 'notifications/progress',
-            params: {
-              progressToken,
-              progress,
-              total,
-            },
-          }, { relatedRequestId: extra.requestId });
-        } catch (err) {
-          // Silently ignore notification errors
-          console.error('[LogicMonitor MCP] Progress notification error:', err);
-        }
+    try {
+      if (!lmHandlers) {
+        throw new Error('LogicMonitor credentials not configured. Please set LM_COMPANY and LM_BEARER_TOKEN environment variables.');
       }
-      : undefined;
 
-    const result = await lmHandlers.handleToolCall(name, args || {}, progressCallback);
+      // Create progress callback if progress token is provided
+      const progressCallback = progressToken !== undefined
+        ? async (progress: number, total: number) => {
+          try {
+            await server.notification({
+              method: 'notifications/progress',
+              params: {
+                progressToken,
+                progress,
+                total,
+              },
+            }, { relatedRequestId: extra.requestId });
+          } catch (err) {
+            // Silently ignore notification errors
+            console.error('[LogicMonitor MCP] Progress notification error:', err);
+          }
+        }
+        : undefined;
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: lmHandlers.formatResponse(result),
-        },
-      ],
-    };
+      const result = await lmHandlers.handleToolCall(name, args || {}, progressCallback);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: lmHandlers.formatResponse(result),
+          },
+        ],
+      };
+    } catch (error) {
+      return formatToolErrorResult(name, error);
+    }
   });
 
   // Start notification intervals for subscribed resources

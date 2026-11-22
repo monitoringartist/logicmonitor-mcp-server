@@ -429,8 +429,9 @@ describe('Scope Manager', () => {
 
     it('should have requirements for write operations', () => {
       expect(TOOL_SCOPE_REQUIREMENTS['acknowledge_alert']).toContain('lm:alerts:write');
-      expect(TOOL_SCOPE_REQUIREMENTS['add_device']).toContain('lm:devices:write');
-      expect(TOOL_SCOPE_REQUIREMENTS['update_device']).toContain('lm:devices:write');
+      expect(TOOL_SCOPE_REQUIREMENTS['create_resource']).toContain('lm:devices:write');
+      expect(TOOL_SCOPE_REQUIREMENTS['update_resource']).toContain('lm:devices:write');
+      expect(TOOL_SCOPE_REQUIREMENTS['delete_resource']).toContain('lm:devices:write');
     });
 
     it('should have requirements for admin operations', () => {

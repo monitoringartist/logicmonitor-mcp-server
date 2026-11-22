@@ -118,7 +118,7 @@ body:
     attributes:
       label: Node.js Version
       description: Run `node --version`
-      placeholder: e.g., v18.17.0
+      placeholder: e.g., v22.12.0
     validations:
       required: true
 

@@ -98,7 +98,7 @@ export class JWTValidator {
 
     const fullPayload: MCPTokenPayload = {
       sub: payload.sub || 'unknown',
-      aud: this.config.audience, // CRITICAL: Bind token to this resource server
+      aud: payload.aud || this.config.audience, // CRITICAL: Bind token to this resource server
       iss: this.config.issuer,
       iat: now,
       exp: now + this.config.expiresIn,
